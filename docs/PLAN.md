@@ -428,7 +428,7 @@ Phase 2 needs a security review covering the config writer, include file generat
 | Target-level maintenance | New Maint type with reason, ticket, owner, timezone fields; device-level only | After phase 1 | Maint maintainers |
 | Remote smoke graphs | Shared filesystem only (proposed); rrdcached; summary graphs only | Phase 3 | Milestone 1 rrdcached test |
 | Repository and name | `Cacti/plugin_smokeping`, or another name | Before any code is published | Cacti maintainers |
-| Test harness | Whatever maintained plugins use | Milestone 2 | Cacti maintainers |
+| Test harness | Whatever maintained plugins use. Milestone 2 uses Pest 3 from the locked shared plugin harness (`tests/tools/plugin-harness` in Cacti/cacti), as servcheck, webseer, monitor, and maint do, pending confirmation in #12 | Milestone 2 | Cacti maintainers |
 
 ## Risks
 

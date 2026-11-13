@@ -16,6 +16,115 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: lib/HealthCheck.php
+msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %1$d of %2$d series in %3$.1f seconds and has exceeded its time budget %4$d times."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %1$d of %2$d series in %3$.1f seconds, %4$d seconds ago."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %1$d seconds ago and the previous one is still in use: %2$s"
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %1$d targets %2$d seconds ago."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %1$s is not inside the Cacti RRA path %2$s."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr ""
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%1$s is on the writable mount %2$s. Mount SmokePing's data directory read-only."
+msgstr ""
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%1$d of %2$d expected RRD files are not visible through the mount, for example %3$s."
+msgstr ""
+
 #: lib/Pages.php
 msgid "SmokePing View"
 msgstr ""

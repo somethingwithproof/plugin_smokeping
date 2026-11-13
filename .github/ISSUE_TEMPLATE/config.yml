@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a vulnerability
+    url: https://github.com/somethingwithproof/plugin_smokeping/security/advisories/new
+    about: Report security issues privately, not as public issues.
+  - name: Cacti core or another Cacti plugin
+    url: https://github.com/Cacti
+    about: Problems in Cacti itself or in other plugins belong in that project's repository.

@@ -1,0 +1,32 @@
+name: Research
+description: A question that must be answered with evidence before design or code depends on it.
+title: "Research: <question>"
+labels: ["type: research"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What must be known, and which part of the design depends on the answer.
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Method
+      description: Versions, environments, and steps that will produce the evidence.
+    validations:
+      required: true
+  - type: textarea
+    id: exit
+    attributes:
+      label: Exit criteria
+      description: The evidence that closes this issue, and what changes in the plan for each likely outcome.
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References

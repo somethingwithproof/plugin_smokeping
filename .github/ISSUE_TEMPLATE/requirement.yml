@@ -1,0 +1,52 @@
+name: Requirement
+description: A testable behavior the plugin must have.
+title: "<short behavior statement>"
+labels: ["type: requirement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Requirements use IDs in the form `REQ-AREA-NNN` and are indexed in `docs/REQUIREMENTS.md`. See CONTRIBUTING.md for how to write them.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What the plugin must do, and why, in two or three sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements
+      description: One behavior per line, each with an ID and MUST, MUST NOT, or SHOULD.
+      placeholder: |
+        - **REQ-AREA-001** The plugin MUST ...
+        - **REQ-AREA-002** The plugin MUST NOT ...
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: The tests, measurements, or inspections that prove each requirement.
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Plan sections, decision records, and upstream sources this depends on.
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options:
+        - "0, research"
+        - "1, observe"
+        - "2, managed"
+        - "3, remote"
+        - future
+    validations:
+      required: true

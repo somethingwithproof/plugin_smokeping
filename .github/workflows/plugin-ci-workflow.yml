@@ -216,3 +216,24 @@ jobs:
             exit 1
           fi
         fi
+
+  # The inventory script must work with the SmokePing each distribution
+  # ships, run as an unprivileged user.
+  inventory:
+    name: Inventory on ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['debian:13', 'alpine:3.24', 'fedora:44']
+
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Run the inventory script against packaged SmokePing
+      run: docker run --rm -v "$PWD:/plugin:ro" "${{ matrix.image }}" sh /plugin/tests/inventory.sh

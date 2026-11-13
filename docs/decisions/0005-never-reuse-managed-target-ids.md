@@ -4,7 +4,7 @@ Status: Accepted (2026-11-13)
 
 ## Context
 
-SmokePing stores each target's RRD at the path given by its position in the config tree. Section names must match `[-_0-9a-zA-Z.]+`. If a managed target's section name came from an auto-increment column, a plugin reinstall or database restore could reissue a name whose RRD already exists, and the new target would silently append to the old target's history.
+SmokePing stores each target's RRD at the path given by its position in the config tree. Section names must match `[-_0-9a-zA-Z]+`. If a managed target's section name came from an auto-increment column, a plugin reinstall or database restore could reissue a name whose RRD already exists, and the new target would silently append to the old target's history.
 
 ## Decision
 

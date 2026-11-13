@@ -101,11 +101,11 @@ Each row is a milestone 1 test, because a change in any of them changes the desi
 | Fact | Consequence | Source |
 |---|---|---|
 | A target's RRD path is its tree position: `datadir/Section/Sub/target.rrd`. | Tree position is identity; moving or renaming a node creates a new, empty RRD. | [Configuration](https://oss.oetiker.ch/smokeping/doc/smokeping_config.en.html) |
-| Section names must match `[-_0-9a-zA-Z.]+`; `menu` and `title` default to `host`. | Display names can live in `menu`/`title` while the section name stays a stable ID. | Configuration; `lib/Smokeping.pm` |
+| Section names must match `[-_0-9a-zA-Z]+` (dots are allowed only in `slaves=` values); `menu` and `title` default to `host`. | Display names can live in `menu`/`title` while the section name stays a stable ID. | Configuration; `lib/Smokeping.pm` |
 | RRD data sources are `uptime`, `loss`, `median`, `ping1` to `pingN`, each GAUGE with heartbeat `2 × step`; `loss` maximum is `pings`. | Freshness and complete loss are readable from the RRD alone. | `lib/Smokeping.pm` (RRD create) |
 | `step` and `pings` are fixed at RRD creation. | Changing either needs a migration, not an edit. | Configuration |
 | Slave results go to `target~slave.rrd`. | Each location has its own RRD and freshness. | [Master/slave](https://oss.oetiker.ch/smokeping/doc/smokeping_master_slave.en.html) |
-| Slaves cache undelivered results and resend them; the master applies them in timestamp order. | Data for a past period can arrive late. | Master/slave; `lib/Smokeping/Master.pm` |
+| Slaves cache undelivered results and resend them; the master applies them in timestamp order. | Data for a past period can arrive late. | Master/slave; `lib/Smokeping/Slave.pm` (cache and resend), `lib/Smokeping.pm` (ordering) |
 | Master/slave messages are signed with MD5 over the message and a shared secret; TLS is optional. | The plugin cannot strengthen this channel; it documents TLS. | Master/slave |
 | `Smokeping::get_parser()->parse($file)` parses a config outside the daemon; `smokeinfo` uses it. | Inventory can reuse SmokePing's parser from a short CLI script. No daemon is needed. | `lib/Smokeping/Info.pm` |
 | The config grammar supports `@include filename`. | A Cacti-owned file can hold managed targets. | Configuration |
@@ -119,7 +119,7 @@ Each row is a milestone 1 test, because a change in any of them changes the desi
 | `poller_maintenance.php` purges or archives RRD files queued when a data source is deleted. For a path without `<path_rra>` it currently prepends `rra_path`, so an absolute SmokePing path misses. | That miss is an implementation accident and must not be relied on. File permissions are the real protection. | `poller_maintenance.php` |
 | With `storage_location` set to an RRDproxy, RRD paths resolve on the proxy host. | SmokePing paths do not exist there; the plugin refuses to create smoke data sources in that mode. | `lib/rrd.php`, `poller_maintenance.php` |
 | Thold receives values through the `poller_output` hook. | Only polled data sources reach Thold. "None" data sources never do. | plugin_thold `setup.php` |
-| On a remote data collector, CLI processes use the local database by default; web requests use the main database. When the main database is unreachable, the connection mode is `recovery`. | Remote CLI jobs must be explicit about which database they write and must work in recovery mode. | `include/global.php` |
+| On a remote data collector, CLI processes use the local database by default; web requests use the main database. When the main database is unreachable, the connection mode is `offline`; it is `recovery` while the local `poller_output_boost` table still holds rows to replay. | Remote CLI jobs must be explicit about which database they write and must work in both offline and recovery modes. | `include/global.php` |
 | The `remote_agent` hook dispatches unknown actions to plugins; callers are authorized by matching their address to an enabled poller's hostname. | The main server can call plugin actions on a remote collector with Cacti's existing authorization. The authorization is address-based, not cryptographic. | `remote_agent.php` |
 | `call_remote_data_collector()` accepts only relative URLs and uses the configured http or https scheme. | Plugin actions are plain relative requests. | `lib/functions.php` |
 
@@ -310,7 +310,7 @@ When SmokePing runs on a Cacti remote data collector, that collector runs the re
 
 - Plugin configuration tables (targets, profiles, revisions) replicate to remote collectors through the `replicate_out` hook.
 - The reader on each poller handles only targets whose `poller_id` matches.
-- The reader writes the observation cache to the collector's local database, where the script server input reads it. Summary values reach the main server through the normal poller output path, which already handles recovery mode.
+- The reader writes the observation cache to the collector's local database, where the script server input reads it. Summary values reach the main server through the normal poller output path, which already handles offline and recovery modes.
 - The main server fetches inventory and health on demand through plugin actions in the `remote_agent` hook, called with `call_remote_data_collector()`.
 - Applying a revision is a `remote_agent` action that takes only a revision ID. The collector reads the revision content from the main database, checks that it is approved and unapplied, and runs the phase 2 workflow. Repeating the call for the same revision is harmless.
 
@@ -320,7 +320,7 @@ SmokePing slaves appear as locations of a target, each with its own smoke and su
 
 ## Code structure
 
-Plugin code is object-oriented wherever Cacti's plugin contract allows it, following the layout of the `Cacti\Thold` classes in plugin_thold.
+Plugin code is object-oriented wherever Cacti's plugin contract allows it. No maintained Cacti plugin ships a class layout to copy yet (plugin_thold is procedural on `develop`), so milestone 2 defines the layout.
 
 **Where procedural code remains.** Cacti calls plugins by function name, so these entry points stay procedural. Each is a thin shim, parseable on PHP 8.0, that checks the PHP version, validates input, and hands off to a class:
 

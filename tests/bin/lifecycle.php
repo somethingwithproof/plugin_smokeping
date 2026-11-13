@@ -103,6 +103,16 @@ switch ($action) {
 		db_execute("INSERT INTO plugin_smokeping_observation (target_id, location, observed_at) SELECT id, '', 1 FROM plugin_smokeping_target WHERE path = 'Seed/target'");
 
 		break;
+	case 'query':
+		// Read-only inspection for the shell-driven checks.
+		if (stripos(ltrim($argument), 'SELECT') !== 0) {
+			fwrite(STDERR, "Only SELECT is allowed\n");
+			exit(2);
+		}
+
+		ob_end_clean();
+		print json_encode(db_fetch_assoc($argument)) . PHP_EOL;
+		exit(0);
 	case 'state':
 		break;
 	default:

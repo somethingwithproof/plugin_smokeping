@@ -57,7 +57,7 @@ Summary data sources were a separate phase in revision 2. They need no Thold cha
 - Plugin lifecycle and hooks: `api_plugin_register_hook()`, `api_plugin_register_realm()`, tracked plugin tables ([lib/plugins.php](https://github.com/Cacti/cacti/blob/release/1.2.31/lib/plugins.php)).
 - Devices and permissions: `api_device_save()` (`lib/api_device.php`), `is_device_allowed()` and `get_allowed_devices()` (`lib/auth.php`).
 - Templates: `import_xml_data()` (`lib/import.php`).
-- RRD access: `rrd_init()` and `rrdtool_execute()` (`lib/rrd.php`).
+- RRD access: the `path_rrdtool` setting. `rrd_init()` in 1.2.31 opens a write-only pipe (`popen(..., 'w')`), so it cannot return `lastupdate` output; the reader runs `rrdtool -` itself through `proc_open()` with both pipes.
 - Background work: `exec_background()` and `register_process_start()` (`lib/poller.php`).
 - Remote collectors: `call_remote_data_collector()` (`lib/functions.php`) and the `remote_agent` hook (`remote_agent.php`).
 
@@ -360,7 +360,7 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. No ma
 
 Plugin tables hold inventory, mappings, profiles, revisions, audit records, observation cache, and health. They are created and upgraded with Cacti's tracked plugin table API, and the stored plugin version changes only after a migration succeeds. SmokePing stays the only writer of its RRD files.
 
-The reader runs from `poller_bottom` through `exec_background()` as one `register_process_start()` process per poller, with a time budget. Runs are idempotent: an interrupted run leaves the cache consistent and the next run continues. All RRD reads in a run share one rrdtool pipe from `rrd_init()`.
+The reader runs from `poller_bottom` through `exec_background()` as one `register_process_start()` process per poller, with a time budget. Runs are idempotent: an interrupted run leaves the cache consistent and the next run continues. All RRD reads in a run share one `rrdtool -` process, started with `proc_open()` because `rrd_init()` is write-only.
 
 Disabling the plugin stops jobs and leaves SmokePing files untouched. Uninstalling offers an export, asks whether to drop plugin tables, and asks whether to delete plugin-created devices; it never removes RRD files or the managed include file. Backup documentation covers the Cacti database, SmokePing's config including the include file, and `datadir`. A restore test is part of release qualification for each phase.
 

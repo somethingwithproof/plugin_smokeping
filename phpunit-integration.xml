@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Integration suite: drives the plugin through Cacti's own plugin API against
+ an installed Cacti schema. Requires CACTI_PATH (a Cacti checkout with a
+ working include/config.php) and SMOKEPING_TEST_DATABASE=disposable, because
+ the tests install, upgrade, and uninstall the plugin in that database.
+-->
+<phpunit bootstrap="tests/bootstrap-integration.php" cacheResult="false" colors="true">
+    <php>
+        <ini name="error_reporting" value="-1"/>
+    </php>
+    <testsuites>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

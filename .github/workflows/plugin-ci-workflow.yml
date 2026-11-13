@@ -178,6 +178,15 @@ jobs:
       working-directory: cacti/plugins/smokeping
       run: '"$CACTI_PEST_BIN" --configuration=phpunit.xml'
 
+    # Installs, upgrades, and uninstalls the plugin through Cacti's own
+    # plugin API, so it runs before the plugin is installed for the poller.
+    - name: Run lifecycle and realm integration tests
+      working-directory: cacti/plugins/smokeping
+      env:
+        CACTI_PATH: ${{ github.workspace }}/cacti
+        SMOKEPING_TEST_DATABASE: disposable
+      run: '"$CACTI_PEST_BIN" --configuration=phpunit-integration.xml'
+
     - name: Install and enable the plugin
       working-directory: cacti
       run: php cli/plugin_manage.php --plugin=smokeping --install --enable

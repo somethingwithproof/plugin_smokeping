@@ -128,7 +128,7 @@ Each row is a milestone 1 test, because a change in any of them changes the desi
 | Fact | Consequence | Source |
 |---|---|---|
 | Maint keys schedules by type: 1 Cacti device, 2 WebSeer URL, 3 servcheck test. Schedules store a name, type, start and end as Unix timestamps, and an interval. | Device maintenance works unchanged. Target-level maintenance, reasons, tickets, owners, and timezones need Maint changes. | plugin_maint `includes/functions.php`, `includes/database.php` |
-| servcheck runs HTTP(S), DNS, DoH, SMTP, IMAP, POP3, LDAP, FTP, SMB, and MQTT checks from remote collectors. | Managed mode covers only ICMP and TCP. | plugin_servcheck `includes/arrays.php` |
+| servcheck runs HTTP(S), REST API, DNS, DoH, SMTP, IMAP, POP3, LDAP, FTP, TFTP, SCP, SFTP, SSH command, SMB, MQTT, and SNMP checks from remote collectors. | Managed mode covers only ICMP and TCP. | plugin_servcheck `includes/arrays.php` (default branch `main`) |
 
 ## Architecture
 
@@ -345,14 +345,14 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. No ma
 | Repositories | `TargetRepository`, `ObservationRepository`, `RevisionRepository` | The only classes that issue SQL, always through `db_*_prepared()`; take an explicit connection so remote collector code chooses local or main |
 | Readers | `RrdReader`, `InventoryReader` | `RrdReader` wraps Cacti's rrdtool pipe; both sit behind interfaces so tests use fixture RRDs and fixture inventory |
 | Cacti object services | `DeviceProvisioner`, `DataSourceProvisioner` | Call `api_device_save()` and Cacti's data source and graph APIs; never write Cacti tables directly |
-| Services | `FreshnessEvaluator`, `InventoryImporter`, `RevisionPlanner`, `ConfigWriter` | Return decisions as objects; a separate runner applies side effects, the same split as thold's `Transition` and `TransitionRunner` |
+| Services | `FreshnessEvaluator`, `InventoryImporter`, `RevisionPlanner`, `ConfigWriter` | Return decisions as objects; a separate runner applies side effects, so decisions are testable without a database or filesystem |
 | Infrastructure | `Clock` with system and fixed implementations; `IdGenerator` | Injected wherever time or randomness matters, so tests are deterministic |
 
 **Rules.**
 
 - Dependencies come in through constructors. No service locators and no static state, apart from Cacti's globals, which only shims touch.
 - Interfaces exist only at real boundaries: rrdtool, SmokePing, the database, the clock, the filesystem, and remote collectors.
-- `fromRow()` is the only place loose database values are normalized. Tests pin its behavior on empty strings, `NULL`, and malformed values before any logic depends on it, because normalization changed behavior in the thold refactor.
+- `fromRow()` is the only place loose database values are normalized. Tests pin its behavior on empty strings, `NULL`, and malformed values before any logic depends on it, because Cacti stores many values as loose strings and normalizing them can silently change comparisons.
 - PHPStan runs on the class tree with Cacti core on its scan path.
 
 ## Storage, jobs, upgrades, and recovery

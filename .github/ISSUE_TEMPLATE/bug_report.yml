@@ -1,0 +1,27 @@
+name: Bug report
+description: An error in the documents now, or in plugin code once it exists.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong
+      description: For documents, quote the text and say what is incorrect, with a source.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: For code. Leave empty for document errors.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Cacti, PHP, SmokePing, and operating system, when relevant.

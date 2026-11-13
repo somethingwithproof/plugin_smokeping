@@ -14,7 +14,7 @@ SmokePing always runs on, or shares a filesystem with, a Cacti poller. That poll
 
 - No new daemon, socket, credential store, or protocol.
 - A remote SmokePing host needs a full Cacti remote collector: PHP, a web server, and a local database.
-- Remote CLI jobs use the collector's local database by default and must handle recovery mode.
+- Remote CLI jobs use the collector's local database by default and must handle offline and recovery modes.
 - `remote_agent` authorizes callers by address, not cryptographically. Documentation requires https and a restricted network between pollers.
 
 ## Alternatives rejected

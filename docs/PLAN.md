@@ -84,11 +84,11 @@ Features from PHP 8.3 and later are not used: typed class constants, `#[\Overrid
 
 | SmokePing | Released | Status in matrix |
 |---|---|---|
-| 2.9.0 | 2025-02-19 | Required |
-| 2.8.2 | 2021-08-10 | Required |
-| 2.7.3 | 2018-12-20 | Required if a supported distribution still packages it |
+| 2.9.0 | 2025-02-19 | Required: EL 9 (EPEL), Fedora 43 to 45, Alpine 3.22 to 3.24 |
+| 2.8.2 | 2021-08-10 | Required: Debian 13, Ubuntu 24.04, 26.04, 26.10 |
+| 2.7.3 | 2018-12-20 | Required until 2027-06-01: Ubuntu 22.04 only |
 
-Release dates are from the [SmokePing releases page](https://github.com/oetiker/SmokePing/releases). Milestone 1 inventories the packaged version, service user, file layout, file modes, and reload mechanism on each distribution with full vendor support, and drops any line that no supported distribution ships.
+Release dates are from the [SmokePing releases page](https://github.com/oetiker/SmokePing/releases). The [distribution matrix](research/distribution-matrix/README.md) records the packaged version, service user, file layout, file modes, and reload mechanism on each distribution with full vendor support (observed 2026-11-13). EL 10 and openSUSE Leap 16.0 have no vendor package, so they are supported only to the extent a source install is, which the matrix does not cover.
 
 **Plugin metadata.** `INFO` declares `compat = 1.2.31` and `capabilities = online_view:1, online_mgmt:1, offline_view:0, offline_mgmt:0, remote_collect:1`, the same capability set servcheck and webseer declare.
 
@@ -109,7 +109,7 @@ Each row is a milestone 1 test, because a change in any of them changes the desi
 | Master/slave messages are signed with MD5 over the message and a shared secret; TLS is optional. | The plugin cannot strengthen this channel; it documents TLS. | Master/slave |
 | `Smokeping::get_parser()->parse($file)` parses a config outside the daemon; `smokeinfo` uses it. | Inventory can reuse SmokePing's parser from a short CLI script. No daemon is needed. | `lib/Smokeping/Info.pm` |
 | The config grammar supports `@include filename`. | A Cacti-owned file can hold managed targets. | Configuration |
-| `smokeping --config=x --check` validates a config; `--reload` reloads the running daemon. | Validation can run against a candidate without touching the live file. | [Command reference](https://oss.oetiker.ch/smokeping/doc/smokeping.en.html) |
+| `smokeping --config=x --check` validates a config; `--reload` reloads the running daemon. `--check` also tests the host: it fails when `piddir` or a referenced file such as `sendmail` is missing. `--reload` signals the PID in `piddir/smokeping.pid`, which the EL and Fedora units never write because they run `--nodaemon`. | Validation can run against a candidate without touching the live file, but a failing check may be an environment error. Reload goes through `systemctl reload`, not `--reload`. | [Command reference](https://oss.oetiker.ch/smokeping/doc/smokeping.en.html); [distribution matrix](research/distribution-matrix/README.md) |
 
 **Cacti core 1.2.31**
 
@@ -178,7 +178,7 @@ SmokePing always runs on, or shares a filesystem with, a Cacti poller: the main 
 
 ### Topologies
 
-1. **SmokePing on the Cacti main server** (phase 1). The poller user reads `datadir` through group membership.
+1. **SmokePing on the Cacti main server** (phase 1). The poller user reads `datadir` directly: packaged RRD files are `0644` in `0755` directories on every matrix distribution. Where an administrator has tightened those modes, group membership provides read access.
 2. **SmokePing datadir shared with the main server** (phase 1). `datadir` is mounted read-only on the main server. Milestone 1 measures NFS attribute caching delay, and the health page compares `lastupdate` with the clock.
 3. **SmokePing on a Cacti remote data collector** (phase 3). The collector runs the reader, inventory, script server input, and config writer. Summary values reach the main server through the normal poller output path. Smoke graphs need the RRD files readable on the main server, because Cacti renders graphs there. Without a shared filesystem, remote targets get summary graphs only. rrdcached is research.
 
@@ -288,14 +288,15 @@ Managed mode writes only the Cacti-owned include file. Hand-maintained targets a
 **File permissions.**
 
 - The include file and a sibling `requests/` directory are writable by a dedicated group that contains the Cacti poller user. Nothing else in SmokePing's configuration is writable by Cacti.
-- An administrator installs the shipped systemd examples: a `.path` unit with `PathExists=` on `requests/reload`, and a `.service` unit that runs the distribution's reload command, writes `requests/result`, and removes the request. The service takes no input from Cacti beyond the file's existence.
-- Milestone 1 records, per distribution, the daemon user, the reload command, and whether `--check` runs as the poller user, since it loads probe modules and may read files the poller user cannot.
+- An administrator installs the shipped systemd examples: a `.path` unit with `PathExists=` on `requests/reload`, and a `.service` unit that runs `systemctl reload smokeping.service`, writes `requests/result`, and removes the request. The service takes no input from Cacti beyond the file's existence.
+- The [distribution matrix](research/distribution-matrix/README.md) records the daemon user, reload mechanism, and `--check` behavior per distribution. Every packaged unit defines `ExecReload=/bin/kill -HUP $MAINPID`. `smokeping --reload` fails on EL 9 and Fedora because their units write no PID file. Alpine uses OpenRC, so the path-unit design does not apply there, and its packaged `reload` calls a binary path that does not exist.
+- `--check` runs as the packaged poller user (`www-data` on Debian and Ubuntu, `apache` on EL 9) on every matrix distribution. On EL 9 and Fedora the config is `0640 root:apache`, so a poller running as another user cannot read it.
 
 **Workflow.**
 
 1. Prepare a revision. Show affected targets, added packets per second, and added RRD updates per second.
 2. Validate fields and compare the revision's base hash with the include file on disk, to detect external edits.
-3. Write the candidate include file and a candidate main config to a private temporary directory, and run `smokeping --config=<candidate> --check`. Milestone 1 confirms how `@include` resolves relative paths, which decides how the candidate main config is built.
+3. Write the candidate include file and a candidate main config to a private temporary directory, and run `smokeping --config=<candidate> --check`. Run the same check against the live config first: if the baseline fails, the failure is environmental (missing `piddir`, missing `sendmail`) and the revision is not marked invalid. Milestone 1 confirms how `@include` resolves relative paths, which decides how the candidate main config is built.
 4. Replace the live include file atomically (write, fsync, rename) and create `requests/reload`.
 5. Verify: `requests/result` reports success, and each new target receives its first update within `2 × step`.
 6. On failure in step 4 or 5, restore the previous include file, request reload again, and record the failure on the revision.
@@ -436,8 +437,8 @@ Phase 2 needs a security review covering the config writer, include file generat
 | Cacti graph templates cannot match SmokePing's smoke bands | Custom renderer and permission layer return | Fallback renderer limited to smoke graphs, with its own security review |
 | Cacti data source deletion purges a SmokePing RRD | Measurement history lost | Read-only file permissions, purge-queue hook, health warning, release test |
 | Object counts slow Cacti's own pages at 10,000 series | Poor experience for all Cacti users | Measure at milestone 3; document a supported series count |
-| `--check` cannot run as the poller user on some distributions | Managed mode validation fails | A second shipped systemd unit runs the check as the SmokePing user |
-| Packaged SmokePing reloads only as root | Reload needs privilege | The systemd unit provides it; the Cacti user never gains it |
+| `--check` cannot run as the poller user when the poller runs as a user outside the config's group (EL 9 and Fedora config is `0640 root:apache`) | Managed mode validation fails | A second shipped systemd unit runs the check as the SmokePing user |
+| Only root or the `smokeping` user can signal the daemon | Reload needs privilege | The systemd unit runs `systemctl reload`; the Cacti user never gains it |
 | Address-based `remote_agent` authorization | A host sharing a poller's address can call actions | https, restricted poller network, apply requires an approved revision in the main database |
 | Volunteer capacity | Later phases stall | Each phase ships on its own |
 

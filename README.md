@@ -55,7 +55,7 @@ flowchart LR
 - **Milestones** follow the plan's milestones. Each has an epic issue listing its sub-issues and exit evidence.
 - **Issues** are typed by label: `type: requirement`, `type: research`, `type: decision`, `type: epic`. Requirement issues state numbered, testable requirements (`REQ-AREA-NNN`) and acceptance criteria.
 - **Labels** also carry `area:`, `phase:`, `priority:`, and `status:`. See [CONTRIBUTING.md](CONTRIBUTING.md#labels).
-- The [project board](https://github.com/users/somethingwithproof/projects) shows all issues across milestones.
+- The [project board](https://github.com/users/somethingwithproof/projects/6) shows all issues across milestones.
 
 ## Contributing
 

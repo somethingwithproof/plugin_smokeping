@@ -1,0 +1,31 @@
+name: Decision
+description: A choice between options that needs a recorded outcome.
+title: "Decision: <choice to make>"
+labels: ["type: decision"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: The problem and the constraints that make a decision necessary.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options
+      description: Each option with its consequences. Mark the proposed option.
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Decision criteria and owner
+      description: What evidence decides it, who decides, and when it is needed.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: Leave empty until decided. The outcome is also recorded under docs/decisions/.

@@ -115,8 +115,8 @@ Each row is a milestone 1 test, because a change in any of them changes the desi
 
 | Fact | Consequence | Source |
 |---|---|---|
-| `get_data_source_path()` uses an absolute `data_source_path` unchanged, and data templates allow the "None" input method. | A Cacti data source can point at a SmokePing RRD without Cacti polling or writing it. | `lib/functions.php`, `data_templates.php` |
-| `poller_maintenance.php` purges or archives RRD files queued when a data source is deleted. For a path without `<path_rra>` it currently prepends `rra_path`, so an absolute SmokePing path misses. | That miss is an implementation accident and must not be relied on. File permissions are the real protection. | `poller_maintenance.php` |
+| At 1.2.31, `get_data_source_path()` uses an absolute `data_source_path` unchanged. On `1.2.x` since eef6bb07e (GHSA-9qff, 2026-09-24) and on `develop`, `data_source_path_within_rra()` replaces any path outside `rra_path`, or through a symbolic link, with the generated path. A read-only bind mount at `<rra_path>/smokeping` passes (tested 2026-11-13). Data templates allow the "None" input method. | Smoke data sources use `<path_rra>/smokeping/...` through a read-only mount ([ADR 0007](decisions/0007-read-only-mount-under-rra-path.md)). Cacti never polls or writes them. | `lib/functions.php`, `data_templates.php` |
+| `poller_maintenance.php` purges or archives RRD files queued when a data source is deleted or chosen on the RRD cleaner page. On failure it logs a warning and drops the queue entry. The RRD cleaner walks `rra_path` recursively. | Paths under the mount are purge targets. The read-only mount is the protection; the plugin's hooks remove queued entries so the warnings never appear. Unmapped SmokePing RRDs show as unused on the RRD cleaner page. | `poller_maintenance.php` (`remove_files`), `rrdcleaner.php`, `lib/api_data_source.php` |
 | With `storage_location` set to an RRDproxy, RRD paths resolve on the proxy host. | SmokePing paths do not exist there; the plugin refuses to create smoke data sources in that mode. | `lib/rrd.php`, `poller_maintenance.php` |
 | Thold receives values through the `poller_output` hook. | Only polled data sources reach Thold. "None" data sources never do. | plugin_thold `setup.php` |
 | On a remote data collector, CLI processes use the local database by default; web requests use the main database. When the main database is unreachable, the connection mode is `offline`; it is `recovery` while the local `poller_output_boost` table still holds rows to replay. | Remote CLI jobs must be explicit about which database they write and must work in both offline and recovery modes. | `include/global.php` |
@@ -158,7 +158,7 @@ flowchart TB
     end
     SLAVES[SmokePing slaves] --> D
     PIPE --> RRD
-    GR -->|reads absolute paths| RRD
+    GR -->|reads through ro mount under rra_path| RRD
     SS -->|poller_output| THOLD
     UI -->|remote hosts| RA
 ```
@@ -191,7 +191,7 @@ Each SmokePing target and location becomes ordinary Cacti objects created throug
 | Object | Created from | Notes |
 |---|---|---|
 | Device | "SmokePing Target" device template, availability None, assigned to the poller next to SmokePing | Existing devices can be mapped instead; created only on operator confirmation |
-| Smoke data source | "SmokePing Smoke (N pings)" data template, input method None, absolute `data_source_path` to the SmokePing RRD | Never polled; Cacti only reads it |
+| Smoke data source | "SmokePing Smoke (N pings)" data template, input method None, `data_source_path` `<path_rra>/smokeping/<Section>/<target>.rrd` through the read-only mount | Never polled; Cacti only reads it |
 | Summary data source | "SmokePing Summary" data template using the script server input | Polled; reaches Thold through `poller_output` |
 | Graphs | "SmokePing Smoke (N pings)" and "SmokePing Summary" graph templates | Placed in graph trees and protected by graph permissions like any Cacti graph |
 
@@ -201,8 +201,8 @@ Devices created by the plugin appear in device lists and in plugins such as moni
 
 **Protecting SmokePing's files.**
 
-- The Cacti poller and web users get read-only access to SmokePing's `datadir`. They never get write access. This is the only reliable protection against Cacti's purge logic; it is documented in the install guide and checked by the health page, which warns if `datadir` is writable by the Cacti user.
-- The plugin's `device_remove` and `data_source_remove` hooks remove any queued purge entries whose path is under `datadir` before Cacti's maintenance runs, as a second layer.
+- SmokePing's `datadir` is mounted read-only at `<rra_path>/smokeping` ([ADR 0007](decisions/0007-read-only-mount-under-rra-path.md)). Cacti's purge and RRD cleaner reach these paths, and the read-only mount makes every write, rename, and delete fail. The install guide documents the mount, and the health page reports an error when the mount path is missing, outside `rra_path`, reached through a symbolic link, or writable.
+- The plugin's `device_remove` and `data_source_remove` hooks remove any queued purge entries under the mount path before Cacti's maintenance runs, as a second layer.
 - A release test deletes a plugin-created device with "delete data sources" selected and confirms the SmokePing RRD is unchanged.
 - When `storage_location` points at an RRDproxy, the plugin creates summary data sources only and says why.
 
@@ -389,7 +389,7 @@ The setup screen shows packet rate, RRD update rate, and Cacti object count befo
 | Boundary | Control |
 |---|---|
 | Browser to Cacti | Cacti session, csrf-magic, plugin realms, device and graph permissions, prepared queries, contextual escaping |
-| Cacti to RRD files | Read-only group access; the health page warns if `datadir` is writable by Cacti; smoke data source paths derived from inventory and confirmed with `realpath()` under `datadir` |
+| Cacti to RRD files | Read-only mount at `<rra_path>/smokeping`; the health page reports an error if it is writable or reached through a symbolic link; smoke data source paths derived from inventory and confirmed with `realpath()` under the mount |
 | Cacti to SmokePing config (phase 2) | Write access to the include file and `requests/` only; no `sudo`; reload by a fixed systemd unit that takes no input |
 | Main server to remote collector (phase 3) | Cacti's `remote_agent` authorization and the configured https scheme; apply takes only a revision ID and reads content from the main database |
 | Slaves to master | SmokePing's protocol; TLS documented as required |

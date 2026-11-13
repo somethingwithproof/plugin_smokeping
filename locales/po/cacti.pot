@@ -62,6 +62,121 @@ msgstr ""
 msgid "The inventory listed %1$d targets %2$d seconds ago."
 msgstr ""
 
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr ""
+
+#: lib/Html.php
+msgid "OK"
+msgstr ""
+
+#: lib/Html.php
+msgid "Warning"
+msgstr ""
+
+#: lib/Html.php
+msgid "Error"
+msgstr ""
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr ""
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr ""
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr ""
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "Device %d"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr ""
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr ""
+
 #: lib/MountCheck.php
 #, php-format
 msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
@@ -135,10 +250,6 @@ msgstr ""
 
 #: lib/Pages.php setup.php
 msgid "SmokePing"
-msgstr ""
-
-#: lib/Pages.php
-msgid "SmokePing Inventory"
 msgstr ""
 
 #: lib/Pages.php
@@ -235,6 +346,54 @@ msgstr ""
 
 #: lib/Settings.php
 msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Device"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Location"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Master"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Never observed"
 msgstr ""
 
 #: setup.php

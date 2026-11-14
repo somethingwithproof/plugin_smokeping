@@ -50,12 +50,12 @@ for kv in "path_rrdtool=$(command -v rrdtool)" "path_php_binary=$(command -v php
 done
 
 bulk=100
-specs="Perm/a:300:20:normal Perm/b:300:20:normal Perm/u:300:20:normal Perm/xss:300:20:normal Perm/old:300:20:normal Perm/new:300:20:normal"
+specs="Perm/a:300:20:normal Perm/b:300:20:normal Perm/u:300:20:normal Perm/xss:300:20:normal Perm/old:300:20:normal Perm/new:300:20:normal Perm/ro:300:20:normal Perm/rn:300:20:normal"
 n=1
 while [ $n -le $bulk ]; do specs="$specs Bulk/dev$n:300:20:normal"; n=$((n + 1)); done
 php $P/tests/bin/make-fixture-rrds.php $FXDIR $specs
 
-for t in "Perm/a:a.example:20:300" "Perm/b:b.example:20:300" "Perm/u:u.example:20:300" "Perm/xss:xss.example:20:300" "Perm/old:old.example:20:300" "Perm/new:old.example:20:300"; do
+for t in "Perm/a:a.example:20:300" "Perm/b:b.example:20:300" "Perm/u:u.example:20:300" "Perm/xss:xss.example:20:300" "Perm/old:old.example:20:300" "Perm/new:old.example:20:300" "Perm/ro:ro.example:20:300" "Perm/rn:ro.example:20:300"; do
 	$L add_target "$t" >/dev/null
 done
 
@@ -149,6 +149,17 @@ check admin-data-source-page "data source $a_ds" sh -c 'echo "$1" | grep -q "Per
 body=$(get restricted $INV)
 check restricted-admin-sees-own-and-unmapped "Perm/a and the unmapped Perm/u" sh -c 'echo "$1" | grep -q "Perm/a" && echo "$1" | grep -q "Perm/u"' x "$body"
 check restricted-admin-not-other-device "no Perm/b, which is mapped to a device the user may not see" sh -c '! echo "$1" | grep -q "Perm/b"' x "$body"
+
+# A user allowed on device A cannot re-link A's target onto a target that belongs to device B.
+provision_on() { $L map_target "$1|$2" >/dev/null; php $P/cli/smokeping.php provision "$1" --device="$2" >/dev/null 2>&1; }
+provision_on Perm/ro "$dev_a"
+provision_on Perm/rn "$dev_b"
+bad=$($L propose_relink "Perm/ro|Perm/rn" | php -r '$r = json_decode(stream_get_contents(STDIN), true); echo $r["result"];')
+token=$(get restricted $INV | grep -o "name='__csrf_magic' value=\"[^\"]*\"" | head -1 | sed 's/.*value="//;s/"$//')
+check restricted-relink-screen-refused "the confirm screen is not offered for a target on another device" sh -c '! echo "$1" | grep -q "Confirm Re-link"' x "$(get restricted "$INV?action=relink&id=$bad")"
+curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=relink_confirm&id=$bad" "$BASE/$INV"
+row=$(q "SELECT (SELECT status FROM plugin_smokeping_relink WHERE id = $bad) AS s, (SELECT host_id FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id WHERE t.path = 'Perm/ro') AS a, (SELECT host_id FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id WHERE t.path = 'Perm/rn') AS b" | jcell)
+[ "$row" = "proposed $dev_a $dev_b" ] && result PASS restricted-relink-onto-other-device-refused "proposal still open; Perm/ro stays on device $dev_a and Perm/rn on device $dev_b" || result FAIL restricted-relink-onto-other-device-refused "$row"
 
 # ---- scoped user (device A and the hostile device) ----
 body=$(get scoped $VIEW)

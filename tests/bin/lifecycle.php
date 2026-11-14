@@ -120,6 +120,12 @@ switch ($action) {
 		$result = (int) db_fetch_cell("SELECT MAX(id) FROM plugin_smokeping_relink");
 
 		break;
+	case 'map_target':
+		// path|device
+		list($path, $device) = explode('|', $argument);
+		db_execute_prepared('REPLACE INTO plugin_smokeping_mapping (target_id, host_id, mapped_by, mapped_at) SELECT id, ?, 0, 1 FROM plugin_smokeping_target WHERE path = ?', array((int) $device, $path));
+
+		break;
 	case 'revoke_device':
 		// user|device: what an administrator does in User Management.
 		list($user, $device) = explode('|', $argument);

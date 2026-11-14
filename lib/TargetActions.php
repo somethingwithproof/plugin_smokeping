@@ -156,7 +156,7 @@ final class TargetActions {
 	 * the summary data sources follow the new target, and the device mapping
 	 * moves with them.
 	 */
-	public function relink(int $proposalId, int $userId): ActionOutcome {
+	public function relink(int $proposalId, int $userId, int $readerPollerId): ActionOutcome {
 		$proposal = $this->targets->openProposal($proposalId);
 
 		$old      = $proposal['old'] ?? null;
@@ -174,6 +174,12 @@ final class TargetActions {
 		$done    = [];
 		$skipped = [];
 		$hostId  = $this->targets->mappedHost($oldId);
+
+		$refusal = RelinkGuard::refusal($hostId, $this->targets->mappedHost($newId), $old->pollerId, $new->pollerId, $readerPollerId);
+
+		if ($refusal !== null) {
+			return new ActionOutcome($subject, $hostId, [], [$refusal]);
+		}
 
 		foreach ($old->locations() as $location) {
 			$result = $this->provisioner->relink($old, $new, $location);
@@ -200,8 +206,13 @@ final class TargetActions {
 		}
 
 		if ($hostId > 0) {
+			// Map the new target first, without replacing a mapping: if it is no
+			// longer free the old mapping stays and the proposal stays open.
+			if (!$this->objects->mapTarget($newId, $hostId, $userId, $this->clock->now())) {
+				return new ActionOutcome($subject, $hostId, $done, [__('the new target is mapped to another device', 'smokeping')]);
+			}
+
 			$this->targets->unmap($oldId);
-			$this->objects->mapTarget($newId, $hostId, $userId, $this->clock->now());
 			$done[] = __('device %d is mapped to the new target', $hostId, 'smokeping');
 		}
 

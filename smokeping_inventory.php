@@ -39,6 +39,26 @@ $smokeping_action = isset_request_var('action') ? get_nfilter_request_var('actio
 $smokeping_id     = isset_request_var('id') ? get_filter_request_var('id') : 0;
 /* ==================================================== */
 
+/**
+ * Whether the user may re-link this proposal: both targets on the reader's
+ * poller, the new target free or on the old target's device, and that device
+ * one the user may change.
+ */
+function smokeping_relink_permitted($proposal, $targets, $pollerId) {
+	if ($proposal === null || $proposal['old']->id === null || $proposal['new']->id === null) {
+		return false;
+	}
+
+	$oldHost = $targets->mappedHost($proposal['old']->id->value);
+	$newHost = $targets->mappedHost($proposal['new']->id->value);
+
+	if (\Cacti\Smokeping\RelinkGuard::refusal($oldHost, $newHost, $proposal['old']->pollerId, $proposal['new']->pollerId, $pollerId) !== null) {
+		return false;
+	}
+
+	return $oldHost === 0 || is_device_allowed($oldHost);
+}
+
 $smokeping_user = isset($_SESSION['sess_user_id']) && is_numeric($_SESSION['sess_user_id']) ? (int) $_SESSION['sess_user_id'] : 0;
 
 if (in_array($smokeping_action, array('add_confirm', 'relink_confirm', 'relink_dismiss'), true)) {
@@ -62,15 +82,13 @@ if (in_array($smokeping_action, array('add_confirm', 'relink_confirm', 'relink_d
 			$smokeping_lines = $smokeping_service->add($smokeping_target, $smokeping_host, $smokeping_user)->lines();
 		}
 	} else {
-		// The proposal's device must be one the user may change.
+		// Both targets must be on this poller, the new one free or on the old one's device, and that device one the user may change.
 		$smokeping_proposal = $smokeping_targets->openProposal($smokeping_id);
-		$smokeping_old      = $smokeping_proposal === null ? null : $smokeping_proposal['old']->id;
-		$smokeping_host     = $smokeping_old === null ? 0 : $smokeping_targets->mappedHost($smokeping_old->value);
 
-		if ($smokeping_proposal === null || ($smokeping_host > 0 && !is_device_allowed($smokeping_host))) {
-			raise_message('smokeping_action', __('The proposal is not open or its device is not one you may change.', 'smokeping'), MESSAGE_LEVEL_ERROR);
+		if (!smokeping_relink_permitted($smokeping_proposal, $smokeping_targets, $smokeping_settings->pollerId)) {
+			raise_message('smokeping_action', __('The proposal is not open, or it involves a device or poller you may not change.', 'smokeping'), MESSAGE_LEVEL_ERROR);
 		} elseif ($smokeping_action === 'relink_confirm') {
-			$smokeping_lines = $smokeping_service->relink($smokeping_id, $smokeping_user)->lines();
+			$smokeping_lines = $smokeping_service->relink($smokeping_id, $smokeping_user, $smokeping_settings->pollerId)->lines();
 		} else {
 			$smokeping_service->dismiss($smokeping_id, $smokeping_user);
 			$smokeping_lines = array(__('The proposal was dismissed.', 'smokeping'));
@@ -108,7 +126,7 @@ if ($smokeping_action === 'add') {
 if ($smokeping_action === 'relink') {
 	$smokeping_proposal = $smokeping_targets->openProposal($smokeping_id);
 
-	if ($smokeping_proposal === null || $smokeping_proposal['old']->id === null || ($smokeping_targets->mappedHost($smokeping_proposal['old']->id->value) > 0 && !is_device_allowed($smokeping_targets->mappedHost($smokeping_proposal['old']->id->value)))) {
+	if (!smokeping_relink_permitted($smokeping_proposal, $smokeping_targets, $smokeping_settings->pollerId)) {
 		header('Location: smokeping_inventory.php');
 		exit;
 	}

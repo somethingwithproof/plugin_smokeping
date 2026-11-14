@@ -120,8 +120,16 @@ final class ObjectRepository {
 		db_execute_prepared("DELETE FROM plugin_smokeping_object WHERE local_data_id IN ($placeholders)", $localDataIds, true, $this->connection);
 	}
 
-	public function mapTarget(int $targetId, int $hostId, int $userId, int $now): void {
-		db_execute_prepared('REPLACE INTO plugin_smokeping_mapping (target_id, host_id, mapped_by, mapped_at) VALUES (?, ?, ?, ?)', [$targetId, $hostId, $userId, $now], true, $this->connection);
+	/**
+	 * Map a target to a device. An existing mapping is never replaced: a
+	 * target belongs to one device until it is unmapped.
+	 *
+	 * @return bool true when the target is now mapped to this device
+	 */
+	public function mapTarget(int $targetId, int $hostId, int $userId, int $now): bool {
+		db_execute_prepared('INSERT IGNORE INTO plugin_smokeping_mapping (target_id, host_id, mapped_by, mapped_at) VALUES (?, ?, ?, ?)', [$targetId, $hostId, $userId, $now], true, $this->connection);
+
+		return (int) db_fetch_cell_prepared('SELECT host_id FROM plugin_smokeping_mapping WHERE target_id = ?', [$targetId], '', true, $this->connection) === $hostId;
 	}
 
 	/**

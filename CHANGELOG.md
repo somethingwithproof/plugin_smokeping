@@ -4,18 +4,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
-### Added
-
-- Releases are made by pushing a `v<version>` tag: the workflow checks the tag against `INFO` and this changelog, runs the whole CI for the tagged commit, builds the archive, attests its provenance and publishes the GitHub Release with the changelog section as its notes. The procedure is in `docs/RELEASING.md`.
-- CI runs the end-to-end suites on Cacti 1.2.31 and 1.2.x against a MariaDB service container, the install guide's commands on Debian 13 and AlmaLinux 9, a workflow lint, and the release tools' tests. One job, `ci-ok`, needs them all. The test image is built from `tests/docker/Dockerfile`.
-- A live suite, `tests/live/run-live-e2e.sh`, runs the plugin against a real SmokePing network on the release host.
-
-### Changed
-
-- GitHub's automatic source archives hold the same files as the release archive: tests, tools and CI files are left out by `export-ignore`.
-- The end-to-end runners read the network, database host, image and credentials from the environment, and fail when a check fails.
-
-## [1.0.0-rc.1] - Unreleased
+## [1.0.0-rc.1] - 2026-11-14
 
 First release candidate of observe mode (phase 1). The plugin reads SmokePing's configuration and RRD files, shows their state, creates Cacti devices, data sources, and graphs for them, and feeds Thold and Maint. It never writes to SmokePing.
 
@@ -32,12 +21,17 @@ First release candidate of observe mode (phase 1). The plugin reads SmokePing's 
 - A SmokePing top tab for users with the SmokePing View realm (#26).
 - Install, operator, alerting, backup and restore, performance, and failure-qualification documentation (#43, #45, #42, #46).
 - A release archive script that builds from the committed tree and ships only runtime files, the translation template, and the documentation (#44).
+- Releases are made by pushing a `v<version>` tag: the workflow checks the tag against `INFO` and this changelog, runs the whole CI for the tagged commit, builds the archive, attests its provenance and publishes the GitHub Release with the changelog section as its notes. The procedure is in `docs/RELEASING.md`.
+- CI runs the end-to-end suites on Cacti 1.2.31 and 1.2.x against a MariaDB service container, the install guide's commands on Debian 13 and AlmaLinux 9, a workflow lint, and the release tools' tests. One job, `ci-ok`, needs them all. The test image is built from `tests/docker/Dockerfile`.
+- A live suite, `tests/live/run-live-e2e.sh`, runs the plugin against a real SmokePing network on the release host.
 
 ### Changed
 
 - The version is semantic and recorded in `INFO` (#44).
 - The reader time budget, inventory interval and freshness allowance settings refuse values that are not whole numbers in range (#26).
 - The plugin runs no Perl. The Perl Binary and SmokePing Perl Library Directory settings are removed, and the upgrade deletes them; an rc.1 configuration export that lists them still imports (#29).
+- GitHub's automatic source archives hold the same files as the release archive: tests, tools and CI files are left out by `export-ignore`.
+- The end-to-end runners read the network, database host, image and credentials from the environment, and fail when a check fails.
 
 ### Not included
 

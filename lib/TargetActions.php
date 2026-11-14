@@ -73,8 +73,17 @@ final class TargetActions {
 			}
 
 			$done[] = __('created device %d', $hostId, 'smokeping');
+
+			// Another request may have mapped the target between the check above
+			// and createDevice(); its mapping stands and no graphs are added here.
+			if ($this->targets->mappedHost($target->id->value) !== $hostId) {
+				return new ActionOutcome($subject, $hostId, $done, [__('the target was mapped to another device meanwhile; device %d has no SmokePing graphs', $hostId, 'smokeping')]);
+			}
 		} elseif ($mapped === 0) {
-			$this->objects->mapTarget($target->id->value, $hostId, $userId, $this->clock->now());
+			if (!$this->objects->mapTarget($target->id->value, $hostId, $userId, $this->clock->now())) {
+				return new ActionOutcome($subject, $hostId, [], [__('the target was mapped to another device meanwhile', 'smokeping')]);
+			}
+
 			$done[] = __('mapped to device %d', $hostId, 'smokeping');
 		}
 

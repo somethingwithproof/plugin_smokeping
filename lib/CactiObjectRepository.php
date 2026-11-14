@@ -116,6 +116,16 @@ final class CactiObjectRepository {
 	}
 
 	/**
+	 * Remove every graph template from a device template, so Cacti creates no
+	 * graphs of its own for a new device of that template.
+	 */
+	public function unlinkDeviceTemplateGraphs(int $deviceTemplateId): void {
+		if ($deviceTemplateId > 0) {
+			db_execute_prepared('DELETE FROM host_template_graph WHERE host_template_id = ?', [$deviceTemplateId], true, $this->connection);
+		}
+	}
+
+	/**
 	 * The data template a graph template draws from; the smoke templates use one.
 	 */
 	public function dataTemplateOfGraphTemplate(int $graphTemplateId): int {

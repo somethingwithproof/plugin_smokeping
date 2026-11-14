@@ -58,6 +58,14 @@ sgr=$(echo "$out" | sed -n 's/^Summary data source \([0-9]*\) graph \([0-9]*\)$/
 row=$(q "SELECT data_source_path, rrd_step, data_input_id FROM data_template_data WHERE local_data_id = ${ds:-0}" | jcell)
 [ "$row" = "<path_rra>/smokeping/Europe/paris.rrd 300 0" ] && result PASS data-source-path "$row" || result FAIL data-source-path "$row"
 
+# Cacti creates a graph for each graph template of a new device's template; the
+# device template lists none, so the device holds only the plugin's graphs.
+row=$(q "SELECT COUNT(*) FROM graph_local WHERE host_id = ${dev:-0} AND id NOT IN (SELECT local_graph_id FROM plugin_smokeping_object)" | jcell)
+[ "$row" = "0" ] && result PASS device-only-plugin-graphs "no graph outside the plugin's objects" || result FAIL device-only-plugin-graphs "$row graphs the plugin does not own"
+
+row=$(q "SELECT title_cache FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+[ "$row" = "Europe/paris - SmokePing" ] && result PASS graph-titled-for-target "$row" || result FAIL graph-titled-for-target "$row"
+
 row=$(q "SELECT availability_method FROM host WHERE id = ${dev:-0}" | jcell)
 [ "$row" = "0" ] && result PASS device-availability-none "availability_method=0" || result FAIL device-availability-none "$row"
 

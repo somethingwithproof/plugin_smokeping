@@ -182,6 +182,13 @@ switch ($action) {
 		db_execute("DELETE FROM settings WHERE name = 'smokeping_templates_version'");
 
 		break;
+	case 'link_templates':
+		// What an earlier template file left: the device template listing every SmokePing graph template.
+		db_execute("INSERT IGNORE INTO host_template_graph (host_template_id, graph_template_id)
+			SELECT ht.id, gt.id FROM host_template ht, graph_templates gt
+			WHERE ht.name = 'SmokePing Target' AND gt.name LIKE 'SmokePing %'");
+
+		break;
 	case 'remove_templates':
 		// What an operator would do in the UI before a reinstall.
 		db_execute("DELETE FROM host_template_graph WHERE host_template_id IN (SELECT id FROM host_template WHERE name = 'SmokePing Target')");

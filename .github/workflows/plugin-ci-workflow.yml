@@ -215,7 +215,7 @@ jobs:
         CACTI_PATH: ${{ github.workspace }}/cacti
       run: phpstan analyse -c phpstan.neon --no-progress
 
-    - name: Verify translation template
+    - name: Verify translation template and catalogs
       working-directory: cacti/plugins/smokeping
       run: sh locales/build_gettext.sh --check
 

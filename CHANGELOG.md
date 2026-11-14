@@ -24,6 +24,7 @@ First release candidate of observe mode (phase 1). The plugin reads SmokePing's 
 - Releases are made by pushing a `v<version>` tag: the workflow checks the tag against `INFO` and this changelog, runs the whole CI for the tagged commit, builds the archive, attests its provenance and publishes the GitHub Release with the changelog section as its notes. The procedure is in `docs/RELEASING.md`.
 - CI runs the end-to-end suites on Cacti 1.2.31 and 1.2.x against a MariaDB service container, the install guide's commands on Debian 13 and AlmaLinux 9, a workflow lint, and the release tools' tests. One job, `ci-ok`, needs them all. The test image is built from `tests/docker/Dockerfile`.
 - A live suite, `tests/live/run-live-e2e.sh`, runs the plugin against a real SmokePing network on the release host.
+- Translations into Spanish (Spain and Latin America), French, German, Simplified Chinese and Japanese, shipped compiled in the release archive. Cacti 1.2 offers no Latin American Spanish locale, so `es-419` applies once Cacti adds one. CI checks that every catalog covers the template (#83).
 - Each smoke graph's upper limit is sized from its file when the graph is created, as SmokePing sizes its graphs: 1.2 times the largest median of the last day. `cli/smokeping.php size-graphs` sizes them again. The template's 0.05 s limit left the graphs of targets slower than 50 ms empty.
 
 ### Changed

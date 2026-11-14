@@ -396,6 +396,17 @@ else
 	result FAIL graph-button-absent-on-other-device "no graph of an unmapped device to check"
 fi
 
+# Translations: with language support on, each locale Cacti 1.2 offers shows
+# the plugin's own catalog. Cacti has no Latin American Spanish locale, so
+# es-419 ships for when it does and is not requested here.
+$L set_setting "i18n_language_support=1" >/dev/null
+for loc in de-DE es-ES fr-FR ja-JP zh-CN; do
+	get admin "$HEALTH?language=$loc" > "$WORK/i18n-$loc.html"
+	out=$(php $P/tests/bin/i18n-check.php "$P/locales/po/$loc.po" 'SmokePing Health for Poller %d' "$WORK/i18n-$loc.html") && result PASS "translation-$loc" "$out" || result FAIL "translation-$loc" "$out"
+done
+get admin "$HEALTH?language=en-US" > /dev/null
+$L set_setting "i18n_language_support=0" >/dev/null
+
 # Leave no devices behind.
 left=$(q "SELECT id FROM host WHERE description LIKE 'bulk%' OR id IN (SELECT host_id FROM plugin_smokeping_object)" 2>/dev/null | ids_of)
 [ -n "$left" ] && $L remove_devices "$left" >/dev/null 2>&1

@@ -30,6 +30,9 @@ namespace Cacti\Smokeping;
  * Branches and leaves go through Cacti's api_tree_item_save().
  */
 final class SmokepingImportRepository {
+	/** A server-wide lock name of at most 64 characters, unique to the database. */
+	private const LOCK_NAME = "CONCAT('smokeping_import_', LEFT(SHA1(DATABASE()), 20))";
+
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -85,6 +88,20 @@ final class SmokepingImportRepository {
 			'sites'     => $this->names('SELECT id, name FROM sites ORDER BY name'),
 			'trees'     => $this->names('SELECT id, name FROM graph_tree ORDER BY sequence, name'),
 		];
+	}
+
+	/**
+	 * Take the import lock without waiting: true when this connection holds
+	 * it. The lock is per database, so two Cacti installations sharing one
+	 * database server do not block each other, and the server releases it if
+	 * the process dies.
+	 */
+	public function lock(): bool {
+		return (int) db_fetch_cell_prepared('SELECT GET_LOCK(' . self::LOCK_NAME . ', 0)', [], '', true, $this->connection) === 1;
+	}
+
+	public function unlock(): void {
+		db_fetch_cell_prepared('SELECT RELEASE_LOCK(' . self::LOCK_NAME . ')', [], '', true, $this->connection);
 	}
 
 	/**

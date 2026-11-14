@@ -909,6 +909,10 @@ msgid "Cacti does not accept the SmokePing path for a data source."
 msgstr ""
 
 #: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr ""
+
+#: lib/SmokepingImportService.php
 msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
 msgstr ""
 

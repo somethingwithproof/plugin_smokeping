@@ -64,10 +64,19 @@ cat /etc/smokeping/config.d/* > "$W/whole.conf"
 out=$($CLI import-smokeping --dry-run --file="$W/whole.conf" --device-per=target 2>&1); rc=$?
 [ $rc -eq 0 ] && echo "$out" | grep -q 'read on its own, without @include' && [ "$(echo "$out" | grep -c '^create device')" = 4 ] && result PASS upload-one-device-per-target "a whole file, four devices for four targets" || result FAIL upload-one-device-per-target "rc $rc: $(echo "$out" | grep '^create device\|^note' | tr '\n' '|')"
 
-# ---- Apply the plan that was shown.
-out=$($CLI import-smokeping --apply --confirm="$plan" --tree-name=SmokePing 2>&1); rc=$?
+# ---- Apply the plan that was shown, three times at once: exactly one applies.
+for i in 1 2 3; do
+	($CLI import-smokeping --apply --confirm="$plan" --tree-name=SmokePing > "$W/apply$i.out" 2>&1; echo $? > "$W/apply$i.rc") &
+done
+wait
+ok=0
+for i in 1 2 3; do
+	if [ "$(cat "$W/apply$i.rc")" = 0 ]; then ok=$((ok + 1)); out=$(cat "$W/apply$i.out"); rc=0; fi
+done
+refused=$(cat "$W"/apply[123].out | grep -c 'Another SmokePing configuration import is running\|changed since the check')
 row=$(counts)
-[ $rc -eq 0 ] && [ "$row" = "3 5 4 4 3 3 1" ] && result PASS apply-creates "3 devices, 5 summary and 4 smoke data sources, 4 mappings, 3 branches, 3 device leaves, 1 tree" || result FAIL apply-creates "rc $rc, counts $row: $(echo "$out" | tail -5 | tr '\n' '|')"
+[ $ok -eq 1 ] && [ "$refused" -eq 2 ] && result PASS concurrent-apply-once "of three simultaneous applies of one plan, one applied and two were refused" || result FAIL concurrent-apply-once "$ok applied, $refused refused, counts $row"
+[ $ok -eq 1 ] && [ "$row" = "3 5 4 4 3 3 1" ] && result PASS apply-creates "3 devices, 5 summary and 4 smoke data sources, 4 mappings, 3 branches, 3 device leaves, 1 tree" || result FAIL apply-creates "$ok applied, counts $row: $(cat "$W"/apply[123].out | tail -5 | tr '\n' '|')"
 
 paris=$(cell "SELECT id FROM host WHERE hostname = 'paris.example.net'")
 row=$(cell "SELECT COUNT(DISTINCT m.host_id), MIN(h.poller_id), MIN(h.host_template_id = (SELECT id FROM host_template WHERE name = 'SmokePing Target')) FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id JOIN host h ON h.id = m.host_id WHERE t.path IN ('Europe/paris', 'Europe/paris_10')")

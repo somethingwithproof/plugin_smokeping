@@ -114,6 +114,25 @@ final class SmokepingImportService {
 	 * @return array{0: list<string>, 1: list<string>} what was done, and the refusals
 	 */
 	public function apply(Inventory $inventory, string $digest, SmokepingImportOptions $options, bool $upload, string $confirm, int $userId, bool $mayEditTrees): array {
+		// Two applies of one plan at once would both see the devices as
+		// missing and both create them. Under the lock, the second recomputes
+		// the plan after the first has written, so its plan id no longer
+		// matches and it is refused.
+		if (!$this->repository->lock()) {
+			return [[], [__('Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished.', 'smokeping')]];
+		}
+
+		try {
+			return $this->applyLocked($inventory, $digest, $options, $upload, $confirm, $userId, $mayEditTrees);
+		} finally {
+			$this->repository->unlock();
+		}
+	}
+
+	/**
+	 * @return array{0: list<string>, 1: list<string>}
+	 */
+	private function applyLocked(Inventory $inventory, string $digest, SmokepingImportOptions $options, bool $upload, string $confirm, int $userId, bool $mayEditTrees): array {
 		$plan = $this->plan($inventory, $digest, $options, $upload);
 
 		if (!hash_equals($plan->id(), $confirm)) {

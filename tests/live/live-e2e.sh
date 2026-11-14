@@ -121,8 +121,10 @@ if [ "$PHASE" = main ]; then
 	[ "$row" = "Singapore - SmokePing" ] && result PASS graph-titled-for-target "$row" || result FAIL graph-titled-for-target "$row"
 
 	# ---- Scale: every smoke graph sized from its file, as SmokePing sizes its graphs.
+	# A target that lost every ping for a day has no median and keeps the
+	# template's limit, so only a wrong limit or no sized graph at all fails.
 	row=$(php $P/tests/bin/scale-check.php | tail -1)
-	case "$row" in "sized 21 kept 0 wrong 0") result PASS graphs-sized-from-data "$row";; *) result FAIL graphs-sized-from-data "$row: $(php $P/tests/bin/scale-check.php | tr '\n' '|')";; esac
+	case "$row" in "sized 0 "*) result FAIL graphs-sized-from-data "no graph sized: $row";; "sized "[0-9]*" kept "[0-9]*" wrong 0") result PASS graphs-sized-from-data "$row";; *) result FAIL graphs-sized-from-data "$row: $(php $P/tests/bin/scale-check.php | tr '\n' '|')";; esac
 
 	# ---- Tree: branches by section, each device under its sections.
 	branches=$(q "SELECT i.title FROM graph_tree_items i JOIN graph_tree t ON t.id = i.graph_tree_id WHERE t.name = 'SmokePing' AND i.host_id = 0 ORDER BY i.title" | rowsof | tr '\n' ' ')

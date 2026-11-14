@@ -3,7 +3,7 @@
 
 [info]
 name = smokeping
-version = 0.1
+version = 1.0.0-rc.1
 longname = SmokePing
 author = "Thomas Vincent (somethingwithproof)"
 email = thomasvincent@gmail.com

@@ -31,6 +31,6 @@ $smokeping_page = new \Somethingwithproof\Smokeping\ViewPage(
 	new \Somethingwithproof\Smokeping\FreshnessEvaluator(new \Somethingwithproof\Smokeping\SystemClock(), $smokeping_settings->freshnessAllowance)
 );
 
-top_header();
+top_graph_header();
 $smokeping_page->render($smokeping_devices);
 bottom_footer();

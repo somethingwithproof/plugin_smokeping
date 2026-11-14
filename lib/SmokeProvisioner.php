@@ -34,21 +34,30 @@ final class SmokeProvisioner {
 	 * @return int the new device id, or 0 when Cacti refused it
 	 */
 	public function createDevice(Target $target): int {
-		include_once($this->coreLibrary . '/api_device.php');
-
 		$templateId = $this->cacti->deviceTemplateId(TemplateInstaller::DEVICE_TEMPLATE);
 
 		if ($templateId === 0 || $target->id === null) {
 			return 0;
 		}
 
-		$hostId = (int) api_device_save(0, $templateId, $target->displayName(), $target->host, '', 0, '', '', 161, 500, '', AVAIL_NONE, 0, 23, 400, 1, '', 'MD5', '', 'DES', '', '', 5, 1, $target->pollerId);
+		$hostId = $this->saveDevice($target->displayName(), $target->host, $templateId, $target->pollerId, 1);
 
 		if ($hostId > 0) {
 			$this->objects->mapTarget($target->id->value, $hostId, 0, $this->clock->now());
 		}
 
 		return $hostId;
+	}
+
+	/**
+	 * Create a device through Cacti's api_device_save(), with no SNMP and no
+	 * availability check: a SmokePing target device carries SmokePing data
+	 * only. Returns the new device id, or 0 when Cacti refused it.
+	 */
+	public function saveDevice(string $description, string $hostname, int $templateId, int $pollerId, int $siteId): int {
+		include_once($this->coreLibrary . '/api_device.php');
+
+		return (int) api_device_save(0, $templateId, $description, $hostname, '', 0, '', '', 161, 500, '', AVAIL_NONE, 0, 23, 400, 1, '', 'MD5', '', 'DES', '', '', 5, 1, $pollerId, $siteId);
 	}
 
 	/**

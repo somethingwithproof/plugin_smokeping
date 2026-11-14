@@ -1,0 +1,12 @@
+*** Probes ***
+
++ FPing
+
+binary = /usr/bin/fping
+
+++ FPingNormal
+
+++ FPing10
+pings = 10
+
++ DismanPing

@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // SPDX-FileCopyrightText: 2026 Thomas Vincent
 
+// The version INFO declares, which Cacti records as the installed version.
+define('SMOKEPING_VERSION', (string) (parse_ini_file(dirname(__DIR__, 2) . '/INFO', true)['info']['version'] ?? ''));
+
 const SMOKEPING_TABLES = [
 	'plugin_smokeping_health',
 	'plugin_smokeping_mapping',
@@ -11,7 +14,7 @@ const SMOKEPING_TABLES = [
 	'plugin_smokeping_target',
 ];
 
-const SMOKEPING_HOOKS = ['api_device_save', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top'];
+const SMOKEPING_HOOKS = ['api_device_save', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top', 'top_graph_header_tabs', 'top_header_tabs'];
 
 beforeEach(function () {
 	lifecycle('reset');
@@ -29,14 +32,14 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 	$state = lifecycle('install');
 
 	expect($state['plugin']['status'])->toEqual('4')
-		->and($state['plugin']['version'])->toEqual('0.1')
-		->and($state['schema'])->toEqual('2')
+		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION)
+		->and($state['schema'])->toEqual('3')
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tracked'])->toBe(SMOKEPING_TABLES)
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
 		->and($state['realms'])->toEqual([
 			'smokeping.php'                                => 'SmokePing View',
-			'smokeping_inventory.php,smokeping_health.php' => 'SmokePing Admin',
+			'smokeping_inventory.php,smokeping_health.php,smokeping_config.php,smokeping_import.php' => 'SmokePing Admin',
 		])
 		->and($state['admin'])->toBe(2);
 
@@ -64,7 +67,7 @@ it('upgrades from an older recorded version and is idempotent on repeated runs',
 
 	$first = lifecycle('upgrade');
 	expect($first['result'])->toBeTrue()
-		->and($first['plugin']['version'])->toEqual('0.1');
+		->and($first['plugin']['version'])->toEqual(SMOKEPING_VERSION);
 
 	$second = lifecycle('upgrade');
 	$third  = lifecycle('upgrade');
@@ -112,7 +115,7 @@ it('records a failed template import once instead of retrying it on every reques
 
 	expect($first['templates']['host'])->toBe(0)
 		->and(json_decode($first['templates']['failure'], true)['message'])->toContain('missing or empty')
-		->and($first['plugin']['version'])->toEqual('0.1');
+		->and($first['plugin']['version'])->toEqual(SMOKEPING_VERSION);
 
 	// Many later requests neither retry nor log again.
 	for ($i = 0; $i < 5; $i++) {
@@ -174,8 +177,23 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tables']['plugin_smokeping_target'])->toBe(1)
-		->and($state['schema'])->toEqual('2')
-		->and($state['plugin']['version'])->toEqual('0.1');
+		->and($state['schema'])->toEqual('3')
+		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION);
+});
+
+it('removes the Perl settings of schema 2 on upgrade and keeps the others', function () {
+	lifecycle('install');
+	lifecycle('set_setting', 'smokeping_perl_binary=/usr/bin/perl');
+	lifecycle('set_setting', 'smokeping_lib_dir=/usr/share/smokeping');
+	lifecycle('set_setting', 'smokeping_config_file=/etc/smokeping/config-kept');
+	lifecycle('set_schema', '2');
+
+	$state = lifecycle('upgrade');
+	$left  = lifecycle('query', "SELECT name FROM settings WHERE name IN ('smokeping_perl_binary', 'smokeping_lib_dir', 'smokeping_config_file') ORDER BY name");
+
+	expect($state['result'])->toBeTrue()
+		->and($state['schema'])->toEqual('3')
+		->and(array_column(array_filter($left, 'is_array'), 'name'))->toBe(['smokeping_config_file']);
 });
 
 it('refuses a schema newer than the code and leaves the recorded version alone', function () {

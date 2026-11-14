@@ -15,7 +15,7 @@ final class HealthPage {
 	) {
 	}
 
-	public function render(Settings $settings, string $rraPath, string $phpBinary): void {
+	public function render(Settings $settings, string $rraPath, string $phpBinary, bool $readerHost): void {
 		$health   = $this->health->forPoller($settings->pollerId);
 		$expected = [];
 
@@ -27,6 +27,7 @@ final class HealthPage {
 
 		$findings = array_merge(
 			$this->checks->check($health, $phpBinary),
+			[HealthCheck::configFile($settings->configFile, $readerHost, $settings->pollerId)],
 			[HealthCheck::templates($this->templates->present(), $this->templates->failure())],
 			[HealthCheck::devicePollers($this->cacti->summaryDevicesOffPoller($settings->pollerId), $settings->pollerId)],
 			$this->mount->check($settings->mountPath, $rraPath, $expected)

@@ -16,8 +16,6 @@ namespace Somethingwithproof\Smokeping;
 final readonly class Settings {
 	public const NAMES = [
 		'smokeping_config_file',
-		'smokeping_perl_binary',
-		'smokeping_lib_dir',
 		'smokeping_datadir',
 		'smokeping_mount_path',
 		'smokeping_poller_id',
@@ -25,12 +23,11 @@ final readonly class Settings {
 		'smokeping_inventory_interval',
 		'smokeping_freshness_allowance',
 		'smokeping_uninstall_keep_tables',
+		'smokeping_backup_dir',
 	];
 
 	public function __construct(
 		public string $configFile,
-		public string $perlBinary,
-		public string $libDir,
 		public string $datadir,
 		public string $mountPath,
 		public int $pollerId,
@@ -38,6 +35,7 @@ final readonly class Settings {
 		public int $inventoryInterval,
 		public int $freshnessAllowance,
 		public bool $keepTablesOnUninstall,
+		public string $backupDir = '',
 	) {
 	}
 
@@ -57,8 +55,6 @@ final readonly class Settings {
 
 		return new self(
 			configFile: $text('smokeping_config_file', '/etc/smokeping/config'),
-			perlBinary: $text('smokeping_perl_binary', '/usr/bin/perl'),
-			libDir: Row::string($row, 'smokeping_lib_dir'),
 			datadir: rtrim($text('smokeping_datadir', '/var/lib/smokeping'), '/'),
 			mountPath: rtrim($text('smokeping_mount_path', self::defaultMountPath($rraPath)), '/'),
 			pollerId: Row::int($row, 'smokeping_poller_id', 1, 1),
@@ -66,6 +62,7 @@ final readonly class Settings {
 			inventoryInterval: Row::int($row, 'smokeping_inventory_interval', 300, 0),
 			freshnessAllowance: Row::int($row, 'smokeping_freshness_allowance', 60, 0),
 			keepTablesOnUninstall: Row::bool($row, 'smokeping_uninstall_keep_tables'),
+			backupDir: rtrim(Row::string($row, 'smokeping_backup_dir'), '/'),
 		);
 	}
 
@@ -93,25 +90,9 @@ final readonly class Settings {
 			],
 			'smokeping_config_file' => [
 				'friendly_name' => __('SmokePing Configuration File', 'smokeping'),
-				'description'   => __('The main SmokePing configuration file. The plugin only reads it, through SmokePing\'s own parser.', 'smokeping'),
+				'description'   => __('The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file\'s directory.', 'smokeping'),
 				'method'        => 'textbox',
 				'default'       => '/etc/smokeping/config',
-				'max_length'    => '255',
-				'size'          => '60',
-			],
-			'smokeping_perl_binary' => [
-				'friendly_name' => __('Perl Binary', 'smokeping'),
-				'description'   => __('The Perl interpreter that runs the inventory script.', 'smokeping'),
-				'method'        => 'textbox',
-				'default'       => '/usr/bin/perl',
-				'max_length'    => '255',
-				'size'          => '60',
-			],
-			'smokeping_lib_dir' => [
-				'friendly_name' => __('SmokePing Perl Library Directory', 'smokeping'),
-				'description'   => __('The directory holding Smokeping.pm. Leave blank to search the packaged locations.', 'smokeping'),
-				'method'        => 'textbox',
-				'default'       => '',
 				'max_length'    => '255',
 				'size'          => '60',
 			],
@@ -140,6 +121,8 @@ final readonly class Settings {
 				'description'   => __('Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle.', 'smokeping'),
 				'method'        => 'textbox',
 				'default'       => '120',
+				'filter'        => FILTER_VALIDATE_INT,
+				'options'       => ['options' => ['min_range' => 1, 'max_range' => 2147483647]],
 				'max_length'    => '5',
 				'size'          => '5',
 			],
@@ -148,6 +131,8 @@ final readonly class Settings {
 				'description'   => __('Minimum seconds between inventory runs. The inventory also runs when the configuration file changes.', 'smokeping'),
 				'method'        => 'textbox',
 				'default'       => '300',
+				'filter'        => FILTER_VALIDATE_INT,
+				'options'       => ['options' => ['min_range' => 0, 'max_range' => 2147483647]],
 				'max_length'    => '6',
 				'size'          => '6',
 			],
@@ -156,6 +141,8 @@ final readonly class Settings {
 				'description'   => __('Seconds past one step for which a measurement still counts as current.', 'smokeping'),
 				'method'        => 'textbox',
 				'default'       => '60',
+				'filter'        => FILTER_VALIDATE_INT,
+				'options'       => ['options' => ['min_range' => 0, 'max_range' => 2147483647]],
 				'max_length'    => '5',
 				'size'          => '5',
 			],
@@ -168,6 +155,14 @@ final readonly class Settings {
 				'description'   => __('When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way.', 'smokeping'),
 				'method'        => 'checkbox',
 				'default'       => '',
+			],
+			'smokeping_backup_dir' => [
+				'friendly_name' => __('Backup Directory', 'smokeping'),
+				'description'   => __('Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written.', 'smokeping'),
+				'method'        => 'textbox',
+				'default'       => '',
+				'max_length'    => '255',
+				'size'          => '60',
 			],
 		];
 	}

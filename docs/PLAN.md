@@ -172,7 +172,7 @@ flowchart TB
     end
     subgraph Poller["Cacti poller next to SmokePing: main server or remote collector"]
         PB[poller_bottom] --> RJ[poller_smokeping.php reader]
-        RJ --> INV[Inventory script using SmokePing parser]
+        RJ --> INV[PHP parser of SmokePing's configuration]
         RJ --> PIPE[Cacti rrdtool pipe]
         SS[Script server input] --> CACHE[(Observation cache)]
         RJ --> CACHE
@@ -200,7 +200,7 @@ SmokePing always runs on, or shares a filesystem with, a Cacti poller: the main 
 | Plugin pages | Inventory, mapping, health, revisions | Cacti page framework, csrf-magic, realms | Show cached data with its age; never block on SmokePing |
 | Cacti graphs | Smoke graphs and summary graphs | Graph templates shipped as template XML | Standard Cacti behavior for a missing or unreadable RRD |
 | Reader (`poller_smokeping.php`) | Run inventory, read `lastupdate` and bounded fetches through one rrdtool pipe, update cache and health | `poller_bottom`, `exec_background()`, `register_process_start()`, filtered by `poller_id` | Single instance per poller; time budget per run; resumes next cycle |
-| Inventory script | Emit target path, `host`, `probe`, `menu`, `title`, `slaves`, `step`, `pings` as JSON | Perl CLI using `Smokeping::get_parser()`, run by the reader | Parse failure leaves the previous inventory in place and raises a health error |
+| Configuration parser | Read target path, `host`, `probe`, `menu`, `title`, `slaves`, `step`, `pings` from SmokePing's configuration | PHP (`SmokepingConfigParser`), in the reader's process, checked against `Smokeping::get_parser()` by a differential test (decision 0009) | Parse failure leaves the previous inventory in place and raises a health error naming the file and line |
 | Script server input | Return `median`, loss percentage, and data age per target and location | Cacti script server | `U` for median and loss when stale; age always numeric |
 | Config writer (phase 2) | Write the managed include file, run `--check`, request reload, verify | Files only | Failed check or verification restores the previous file and requests reload again |
 | Path unit (phase 2) | Run the package's reload when a request file appears | systemd `.path` and `.service` units, installed by the administrator from shipped examples | Writes a result file the writer reads; no input from Cacti beyond the file's existence |
@@ -386,13 +386,21 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. No ma
 - `fromRow()` is the only place loose database values are normalized. Tests pin its behavior on empty strings, `NULL`, and malformed values before any logic depends on it, because Cacti stores many values as loose strings and normalizing them can silently change comparisons.
 - PHPStan runs on the class tree with Cacti core on its scan path.
 
+**Cacti conventions kept on purpose.** A review against Thold, Monitor, Servcheck, Webseer, Maint and Cacti 1.2.31 (milestone 4b) moved the view to a top tab, put the SmokePing configuration import under Import/Export, and added range filters to the numeric settings. These differences remain, deliberately:
+
+- **Inventory actions are links with confirm screens, not an actions dropdown.** Each action on SmokePing Inventory acts on one target and asks a question on its confirm screen (a new device or which existing one; accept or dismiss a re-link). The bulk path uses Cacti's own idiom: the **Add SmokePing Targets** action in the device list's actions dropdown.
+- **Path settings are text boxes, not `filepath` or `dirpath` fields.** Cacti checks those fields on the web server, but the SmokePing paths exist on the reader's poller, which may be another host; the health page checks them where they are read.
+- **No help links.** Cacti's help links point into the core documentation, which has no page for this plugin; the guides ship in `docs/` and the release archive.
+- **The plugin's own configuration export and import stay under Management** (SmokePing Configuration), next to the pages whose state they carry; Import/Export holds the import of SmokePing's configuration, which creates Cacti objects as Cacti's own imports there do.
+- **Classes under `lib/` with an autoloader** rather than procedural includes, as the layout above describes; hook callbacks and page scripts remain procedural shims.
+
 ## Storage, jobs, upgrades, and recovery
 
 Plugin tables hold inventory, mappings, profiles, revisions, audit records, observation cache, and health. They are created and upgraded with Cacti's tracked plugin table API, and the stored plugin version changes only after a migration succeeds. SmokePing stays the only writer of its RRD files.
 
 The reader runs from `poller_bottom` through `exec_background()` as one `register_process_start()` process per poller, with a time budget. Runs are idempotent: an interrupted run leaves the cache consistent and the next run continues. All RRD reads in a run share one `rrdtool -` process, started with `proc_open()` because `rrd_init()` is write-only.
 
-Disabling the plugin stops jobs and leaves SmokePing files untouched. Uninstalling offers an export, asks whether to drop plugin tables, and asks whether to delete plugin-created devices; it never removes RRD files or the managed include file. Backup documentation covers the Cacti database, SmokePing's config including the include file, and `datadir`. A restore test is part of release qualification for each phase.
+Disabling the plugin stops jobs and leaves SmokePing files untouched. Uninstalling writes a YAML export of the plugin's configuration to `cache/smokeping/` first (Cacti's uninstall hook cannot prompt; [0008](decisions/0008-yaml-and-xml-configuration-files.md)), honors the keep-tables setting, and leaves plugin-created devices in place; it never removes RRD files or the managed include file. Backup documentation covers the Cacti database, SmokePing's config including the include file, and `datadir`. A restore test is part of release qualification for each phase.
 
 ## Performance
 
@@ -497,7 +505,7 @@ This repository holds the proposal and tracks its requirements as GitHub issues 
 - **Devices required.** Every target maps to a Cacti device, created from a marked template on confirmation.
 - **IDs never reused.** Managed section names are random, and apply refuses to reuse an existing RRD path.
 - **PHP guard added.** `setup.php` and shims parse on PHP 8.0 and refuse to run below 8.2, so a 1.2.31 site on an older PHP is not broken by the plugin.
-- **Inventory script.** A short Perl CLI using `Smokeping::get_parser()`, as `smokeinfo` does, instead of a service.
+- **Inventory script.** A short Perl CLI using `Smokeping::get_parser()`, as `smokeinfo` does, instead of a service. Superseded by decision 0009: a PHP parser, with the Perl script kept only as a test oracle.
 - **Managed probes narrowed** to ICMP and TCP because servcheck covers service checks.
 - **Reader uses Cacti's rrdtool pipe.** Cacti object row counts added to the performance section.
 - **Cacti idioms made explicit:** hook list, `config_settings`, `cacti_log()`, csrf-magic, two realms, text domain, template XML import, `varchar` enums, explicit database connections for remote code.

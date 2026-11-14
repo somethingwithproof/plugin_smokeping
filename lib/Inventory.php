@@ -5,7 +5,7 @@
 namespace Somethingwithproof\Smokeping;
 
 /**
- * Targets reported by bin/smokeping-inventory.pl for one poller.
+ * Targets of the SmokePing configuration on one poller.
  */
 final readonly class Inventory {
 	public const FORMAT = 1;
@@ -23,9 +23,8 @@ final readonly class Inventory {
 	}
 
 	/**
-	 * Decode the inventory script's JSON. A document that is not the expected
-	 * format throws; a single malformed target is skipped with a warning so
-	 * one bad node does not hide the rest of the tree.
+	 * Decode an inventory document in JSON, as tests and the differential
+	 * oracle write it.
 	 */
 	public static function fromJson(string $json, int $pollerId): self {
 		try {
@@ -34,6 +33,16 @@ final readonly class Inventory {
 			throw new InventoryError('Inventory output is not JSON: ' . $e->getMessage());
 		}
 
+		return self::fromDocument($document, $pollerId);
+	}
+
+	/**
+	 * Read an inventory document (see SmokepingInventory::document()). A
+	 * document that is not the expected format throws; a single malformed
+	 * target is skipped with a warning so one bad node does not hide the
+	 * rest of the tree.
+	 */
+	public static function fromDocument(mixed $document, int $pollerId): self {
 		if (!is_array($document) || ($document['format'] ?? null) !== self::FORMAT || !isset($document['targets']) || !is_array($document['targets'])) {
 			throw new InventoryError('Inventory output is not format ' . self::FORMAT);
 		}

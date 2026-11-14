@@ -29,7 +29,10 @@ namespace Somethingwithproof\Smokeping;
  * whether the tables exist.
  */
 final class Schema {
-	public const VERSION = 2;
+	public const VERSION = 3;
+
+	/** Settings removed by schema 3, when the plugin stopped running Perl. */
+	private const RETIRED_SETTINGS = ['smokeping_perl_binary', 'smokeping_lib_dir'];
 
 	public const HOOKS = [
 		'config_arrays'            => 'smokeping_config_arrays',
@@ -46,6 +49,8 @@ final class Schema {
 		'api_device_save'          => 'smokeping_api_device_save',
 		'graph_buttons'            => 'smokeping_graph_buttons',
 		'graph_buttons_thumbnails' => 'smokeping_graph_buttons',
+		'top_header_tabs'          => 'smokeping_show_tab',
+		'top_graph_header_tabs'    => 'smokeping_show_tab',
 	];
 
 	private const PLUGIN  = 'smokeping';
@@ -89,6 +94,9 @@ final class Schema {
 				return false;
 			}
 		}
+
+		// Schema 3: the plugin reads SmokePing's configuration itself, so the Perl settings go.
+		db_execute_prepared('DELETE FROM settings WHERE name IN (?, ?)', self::RETIRED_SETTINGS, true, $this->connection);
 
 		db_execute_prepared('REPLACE INTO settings (name, value) VALUES (?, ?)', [self::SETTING, (string) self::VERSION], true, $this->connection);
 

@@ -209,11 +209,33 @@ function smokeping_setup_hooks(): void {
 /**
  * Uninstall never touches SmokePing's RRD files or configuration. Core drops
  * the tracked plugin tables afterwards unless the administrator chose to keep
- * them in the plugin settings.
+ * them in the plugin settings. Before that, the plugin's own configuration is
+ * exported to Cacti's cache directory as YAML, so settings, targets, and
+ * device mappings survive the table drop. A failed export is logged and does
+ * not stop the uninstall.
  */
 function plugin_smokeping_uninstall(): void {
+	global $config;
+
 	if (!smokeping_boot()) {
 		return;
+	}
+
+	$exported = smokeping_config_service()->writeBackup($config['base_path'] . '/cache/smokeping', smokeping_settings()->backupDir, time(), $config['base_path']);
+
+	if ($exported !== null) {
+		$message = __('The SmokePing configuration was exported to %s', $exported, 'smokeping');
+
+		cacti_log('NOTE: Uninstall exported the SmokePing configuration to ' . $exported, false, 'SMOKEPING');
+	} else {
+		$message = __('The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead.', 'smokeping');
+	}
+
+	// Tell the administrator where it went, on the page that ran the uninstall or on the console.
+	if (PHP_SAPI === 'cli') {
+		fwrite(STDERR, $message . PHP_EOL);
+	} elseif (function_exists('raise_message')) {
+		raise_message('smokeping_export', html_escape($message), $exported !== null ? MESSAGE_LEVEL_INFO : MESSAGE_LEVEL_WARN);
 	}
 
 	$schema = new \Somethingwithproof\Smokeping\Schema(false);
@@ -238,9 +260,30 @@ function smokeping_config_arrays(): void {
 		$menu[__('Management')]['plugins/smokeping/' . $file] = $title;
 	}
 
+	foreach (\Somethingwithproof\Smokeping\Pages::importMenu() as $file => $title) {
+		$menu[__('Import/Export')]['plugins/smokeping/' . $file] = $title;
+	}
+
 	if (in_array(get_current_page(), \Somethingwithproof\Smokeping\Pages::upgradeTriggers(), true)) {
 		plugin_smokeping_upgrade();
 	}
+}
+
+/**
+ * top_header_tabs and top_graph_header_tabs hook: the SmokePing tab for users
+ * with the SmokePing View realm. Cacti draws plugin tabs from the link's alt
+ * text in its current themes, and from the image in the classic one.
+ */
+function smokeping_show_tab(): void {
+	global $config;
+
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping') || !api_plugin_user_realm_auth(\Somethingwithproof\Smokeping\Pages::VIEW)) {
+		return;
+	}
+
+	$down = get_current_page() === \Somethingwithproof\Smokeping\Pages::VIEW ? '_down' : '';
+
+	print '<a id="smokeping" href="' . html_escape($config['url_path'] . 'plugins/smokeping/' . \Somethingwithproof\Smokeping\Pages::VIEW) . '"><img src="' . html_escape($config['url_path'] . 'plugins/smokeping/images/tab_smokeping' . $down . '.gif') . '" alt="' . html_escape(__('SmokePing', 'smokeping')) . '"></a>';
 }
 
 function smokeping_config_settings(): void {
@@ -311,6 +354,61 @@ function smokeping_int_list(array $values): array {
 
 function smokeping_purge_guard(): \Somethingwithproof\Smokeping\PurgeGuard {
 	return new \Somethingwithproof\Smokeping\PurgeGuard(new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false));
+}
+
+/**
+ * The configuration export and import. With $webUser the service also checks,
+ * on every call, that the acting user may see every device; the command line
+ * acts as the system and is unrestricted.
+ */
+function smokeping_config_service(bool $webUser = false): \Somethingwithproof\Smokeping\ConfigService {
+	global $config;
+
+	$repository = new \Somethingwithproof\Smokeping\ConfigRepository(false, $config['rra_path']);
+
+	return new \Somethingwithproof\Smokeping\ConfigService($repository, $webUser ? static function () use ($repository): bool {
+		return smokeping_user_sees_every_device($repository);
+	} : null);
+}
+
+/**
+ * Whether the user's device permissions cover every device: only when
+ * get_allowed_devices() returns every device Cacti lists. A user limited to
+ * some devices, however many, is not unrestricted.
+ */
+function smokeping_user_sees_every_device(\Somethingwithproof\Smokeping\ConfigRepository $repository): bool {
+	$allowed = get_allowed_devices();
+
+	return is_array($allowed) && count($allowed) === $repository->deviceCount();
+}
+
+/**
+ * The import of an existing SmokePing configuration. With $webUser the
+ * service checks, on every call, that the acting user may see every device.
+ */
+function smokeping_import_service(bool $webUser = false): \Somethingwithproof\Smokeping\SmokepingImportService {
+	global $config;
+
+	$cacti       = new \Somethingwithproof\Smokeping\CactiObjectRepository(false);
+	$objects     = new \Somethingwithproof\Smokeping\ObjectRepository(false);
+	$settings    = smokeping_settings();
+	$rrdProxy    = read_config_option('storage_location') != 0;
+	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner($settings, $config['rra_path'], $config['library_path'], $rrdProxy, $objects, $cacti, new \Somethingwithproof\Smokeping\SystemClock());
+	$repository  = new \Somethingwithproof\Smokeping\ConfigRepository(false, $config['rra_path']);
+
+	return new \Somethingwithproof\Smokeping\SmokepingImportService(
+		$settings,
+		new \Somethingwithproof\Smokeping\SmokepingImportRepository(false),
+		new \Somethingwithproof\Smokeping\TargetRepository(false),
+		smokeping_target_actions(),
+		$provisioner,
+		$cacti,
+		$config['library_path'],
+		$rrdProxy,
+		$webUser ? static function () use ($repository): bool {
+			return smokeping_user_sees_every_device($repository);
+		} : null
+	);
 }
 
 function smokeping_target_actions(): \Somethingwithproof\Smokeping\TargetActions {

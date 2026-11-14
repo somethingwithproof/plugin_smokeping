@@ -136,7 +136,7 @@ it('keeps lib classes away from request variables and globals', function () {
 });
 
 it('issues SQL only from repository and schema classes, through prepared helpers', function () {
-	$sql = ['Schema.php', 'TargetRepository.php', 'ObservationRepository.php', 'HealthRepository.php', 'CactiObjectRepository.php', 'ObjectRepository.php'];
+	$sql = ['Schema.php', 'TargetRepository.php', 'ObservationRepository.php', 'HealthRepository.php', 'CactiObjectRepository.php', 'ObjectRepository.php', 'ConfigRepository.php', 'SmokepingImportRepository.php'];
 
 	foreach (smokeping_sources() as $file) {
 		$source = (string) file_get_contents(smokeping_root() . '/' . $file);
@@ -151,7 +151,7 @@ it('issues SQL only from repository and schema classes, through prepared helpers
 
 it('passes the smokeping text domain to every translated plugin string', function () {
 	// Labels intentionally reused from core keep the core domain.
-	$core = ['Management'];
+	$core = ['Management', 'Import/Export'];
 
 	foreach (smokeping_sources() as $file) {
 		$tokens = array_values(array_filter(PhpToken::tokenize((string) file_get_contents(smokeping_root() . '/' . $file)), fn ($t) => !$t->is([T_WHITESPACE, T_COMMENT, T_DOC_COMMENT])));

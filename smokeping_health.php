@@ -54,5 +54,5 @@ $smokeping_page = new \Somethingwithproof\Smokeping\HealthPage(
 );
 
 top_header();
-$smokeping_page->render($smokeping_settings, $config['rra_path'], trim((string) read_config_option('path_php_binary')));
+$smokeping_page->render($smokeping_settings, $config['rra_path'], trim((string) read_config_option('path_php_binary')), (int) $config['poller_id'] === $smokeping_settings->pollerId);
 bottom_footer();

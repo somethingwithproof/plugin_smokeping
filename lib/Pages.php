@@ -27,7 +27,8 @@ namespace Somethingwithproof\Smokeping;
  */
 final class Pages {
 	public const VIEW  = 'smokeping.php';
-	public const ADMIN  = ['smokeping_inventory.php', 'smokeping_health.php'];
+	public const IMPORT = 'smokeping_import.php';
+	public const ADMIN  = ['smokeping_inventory.php', 'smokeping_health.php', 'smokeping_config.php', self::IMPORT];
 
 	/**
 	 * @return list<array{name: string, files: list<string>}>
@@ -47,14 +48,27 @@ final class Pages {
 	}
 
 	/**
+	 * Console > Management entries: the administrator pages. The view page is
+	 * a top tab instead, like Cacti's own graph pages, so a user without
+	 * console access reaches it.
+	 *
 	 * @return array<string, string>
 	 */
 	public static function menu(): array {
 		return [
-			'smokeping.php'           => __('SmokePing', 'smokeping'),
 			'smokeping_inventory.php' => __('SmokePing Inventory', 'smokeping'),
 			'smokeping_health.php'    => __('SmokePing Health', 'smokeping'),
+			'smokeping_config.php'    => __('SmokePing Configuration', 'smokeping'),
 		];
+	}
+
+	/**
+	 * Entries for Console > Import/Export, where Cacti lists its own imports.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function importMenu(): array {
+		return [self::IMPORT => __('Import SmokePing Configuration', 'smokeping')];
 	}
 
 	/**
@@ -71,9 +85,16 @@ final class Pages {
 	 * @return array<string, array{title: string, mapping: string, url: string, level: string}>
 	 */
 	public static function navigation(): array {
-		$nav = [];
+		$nav = [
+			self::VIEW . ':' => [
+				'title'   => __('SmokePing', 'smokeping'),
+				'mapping' => '',
+				'url'     => self::VIEW,
+				'level'   => '0',
+			],
+		];
 
-		foreach (self::menu() as $file => $title) {
+		foreach (array_merge(self::menu(), self::importMenu()) as $file => $title) {
 			$nav[$file . ':'] = [
 				'title'   => $title,
 				'mapping' => 'index.php:',

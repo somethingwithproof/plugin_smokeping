@@ -86,12 +86,7 @@ $smokeping_job = new \Somethingwithproof\Smokeping\ReaderJob(
 	new \Somethingwithproof\Smokeping\TargetRepository(false),
 	new \Somethingwithproof\Smokeping\ObservationRepository(false),
 	new \Somethingwithproof\Smokeping\HealthRepository(false),
-	new \Somethingwithproof\Smokeping\ScriptInventoryReader(
-		$smokeping_settings->perlBinary,
-		$config['base_path'] . '/plugins/smokeping/bin/smokeping-inventory.pl',
-		$smokeping_settings->configFile,
-		$smokeping_settings->libDir
-	),
+	new \Somethingwithproof\Smokeping\SmokepingConfigReader($smokeping_settings->configFile),
 	new \Somethingwithproof\Smokeping\RrdtoolProcess((string) read_config_option('path_rrdtool')),
 	new \Somethingwithproof\Smokeping\SystemClock()
 );

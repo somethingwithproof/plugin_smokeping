@@ -1,5 +1,7 @@
 # Inventory script on packaged SmokePing
 
+> Superseded by [decision 0009](../decisions/0009-php-configuration-parser.md): the plugin now parses the configuration in PHP, and this script is the test oracle in `tests/oracle/`. The results below are kept as the record that led to it; `tests/inventory.sh` no longer exists, and [php-config-parser](php-config-parser.md) has the current evidence.
+
 Research for [#18](https://github.com/somethingwithproof/plugin_smokeping/issues/18) and [#29](https://github.com/somethingwithproof/plugin_smokeping/issues/29). Observed 2026-11-13 on aarch64 containers with each distribution's own SmokePing package. `tests/inventory.sh` reproduces every row and runs in CI:
 
 ```sh

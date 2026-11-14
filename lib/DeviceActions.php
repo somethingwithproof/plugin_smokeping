@@ -60,6 +60,7 @@ final class DeviceActions {
 		$matches = $this->targets->unmappedByHost($pollerId, array_values(array_map(fn (array $d) => $d['hostname'], $devices)));
 		$items   = '';
 		$found   = 0;
+		$matched = [];
 
 		foreach ($hostIds as $hostId) {
 			if (!isset($devices[$hostId])) {
@@ -70,11 +71,21 @@ final class DeviceActions {
 			$paths  = array_map(fn (Target $t) => $t->path->value, $matches[strtolower(trim($device['hostname']))] ?? []);
 			$found += count($paths);
 
+			foreach ($matches[strtolower(trim($device['hostname']))] ?? [] as $target) {
+				$matched[] = $target;
+			}
+
 			$items .= '<li>' . html_escape($device['description']) . ': ' . html_escape($paths === [] ? __('no matching SmokePing target', 'smokeping') : implode(', ', $paths)) . '</li>';
 		}
 
 		print '<tr><td class="textArea"><p>' . html_escape(__('Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing\'s data can be graphed, a smoke graph. Devices are never created here.', 'smokeping')) . '</p>';
-		print '<p>' . html_escape(__('%d targets match.', $found, 'smokeping')) . '</p><div class="itemlist"><ul>' . $items . '</ul></div></td></tr>';
+		print '<p>' . html_escape(__('%d targets match.', $found, 'smokeping')) . '</p>';
+
+		foreach (LoadEstimate::forTargets($matched)->lines() as $line) {
+			print '<p>' . html_escape($line) . '</p>';
+		}
+
+		print '<div class="itemlist"><ul>' . $items . '</ul></div></td></tr>';
 	}
 
 	/**

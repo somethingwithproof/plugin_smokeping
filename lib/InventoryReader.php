@@ -20,8 +20,8 @@
 namespace Somethingwithproof\Smokeping;
 
 /**
- * Boundary to SmokePing's configuration. Implementations must use
- * SmokePing's own parser; the plugin never parses the config in PHP.
+ * Boundary to SmokePing's configuration. SmokepingConfigReader reads the
+ * file; tests substitute a fixed inventory.
  */
 interface InventoryReader {
 	/**

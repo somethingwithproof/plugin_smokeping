@@ -1,0 +1,12 @@
+# A SmokePing configuration laid out as the Debian package lays it out: a
+# main file that includes one file per section from config.d. Used by
+# tests/import-e2e.sh, which mounts this directory read-only at /etc/smokeping.
+
+@include /etc/smokeping/config.d/General
+
+@include /etc/smokeping/config.d/Alerts
+@include /etc/smokeping/config.d/Database
+@include /etc/smokeping/config.d/Presentation
+@include /etc/smokeping/config.d/Probes
+@include /etc/smokeping/config.d/Slaves
+@include /etc/smokeping/config.d/Targets

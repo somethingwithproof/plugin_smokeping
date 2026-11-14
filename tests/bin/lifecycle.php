@@ -95,11 +95,18 @@ switch ($action) {
 		$result = $ids;
 
 		break;
+	case 'make_device':
+		// host name|description: a plain device with exactly this identity, as a restore recreates one.
+		list($hostname, $description) = explode('|', $argument, 2);
+		include_once($config['base_path'] . '/lib/api_device.php');
+		$result = (int) api_device_save(0, 0, $description, $hostname, '', 0, '', '', 161, 500, '', AVAIL_NONE, 0, 23, 400, 1, '', 'MD5', '', 'DES', '', '', 5, 1, 1);
+
+		break;
 	case 'update_target':
 		// path|column|value for the few text columns a test needs to make hostile.
 		list($path, $column, $value) = explode('|', $argument, 3);
 
-		if (!in_array($column, array('title', 'menu', 'host'), true)) {
+		if (!in_array($column, array('title', 'menu', 'host', 'admin_state', 'slaves'), true)) {
 			fwrite(STDERR, "Unsupported column\n");
 			exit(2);
 		}
@@ -134,6 +141,26 @@ switch ($action) {
 		include_once($config['base_path'] . '/lib/api_data_source.php');
 		include_once($config['base_path'] . '/lib/utility.php');
 		api_device_remove_multi(array_map('intval', explode(',', $argument)), 2);
+
+		break;
+	case 'fail_mapping_inserts':
+		// A trigger that refuses every mapping insert, to prove an import rolls back whole.
+		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_mapping');
+		db_execute("CREATE TRIGGER smokeping_test_refuse_mapping BEFORE INSERT ON plugin_smokeping_mapping FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'refused by test'");
+
+		break;
+	case 'allow_mapping_inserts':
+		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_mapping');
+
+		break;
+	case 'fail_observation_writes':
+		// A trigger that refuses every write to the observation cache, as a full disk would.
+		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_observation');
+		db_execute("CREATE TRIGGER smokeping_test_refuse_observation BEFORE INSERT ON plugin_smokeping_observation FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'refused by test'");
+
+		break;
+	case 'allow_observation_writes':
+		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_observation');
 
 		break;
 	case 'queue_purge':

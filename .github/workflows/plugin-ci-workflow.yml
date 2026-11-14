@@ -233,17 +233,13 @@ jobs:
           fi
         fi
 
-  # The inventory script must work with the SmokePing each distribution
-  # ships, run as an unprivileged user.
-  inventory:
-    name: Inventory on ${{ matrix.image }}
+  # The plugin's reader of SmokePing's configuration must agree with
+  # SmokePing's own parser (2.7.3, 2.8.2 and 2.9.0) on generated, packaged
+  # and fixture configurations.
+  config-parser:
+    name: SmokePing configuration parser
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    strategy:
-      fail-fast: false
-      matrix:
-        image: ['debian:13', 'alpine:3.24', 'fedora:44']
+    timeout-minutes: 30
 
     steps:
     - name: Checkout plugin
@@ -251,5 +247,5 @@ jobs:
       with:
         persist-credentials: false
 
-    - name: Run the inventory script against packaged SmokePing
-      run: docker run --rm -v "$PWD:/plugin:ro" "${{ matrix.image }}" sh /plugin/tests/inventory.sh
+    - name: Compare with SmokePing's parser
+      run: sh tests/oracle/run.sh "$RUNNER_TEMP/oracle"

@@ -26,7 +26,7 @@ status=0
 rm -rf "$WORK/gen" "$WORK/pkg" "$WORK/out"
 mkdir -p "$WORK/out"
 
-docker run --rm -v "$PLUGIN":/p:ro -v "$WORK":/w "$PHP_IMAGE" \
+docker run --rm --user "$(id -u):$(id -g)" -v "$PLUGIN":/p:ro -v "$WORK":/w "$PHP_IMAGE" \
 	php /p/tests/oracle/generate.php --seed="${SEED:-20261113}" --valid="${VALID:-1000}" --broken="${BROKEN:-200}" --big="${BIG:-10000}" /w/gen
 
 # The fixture, with the files SmokePing's parser checks for.
@@ -35,7 +35,7 @@ cp "$WORK/gen/env/fping" "$WORK/gen/env/dig"
 echo /w/gen/fixture.conf > "$WORK/gen/fixture.list"
 
 # The PHP side of the generated files does not depend on the distribution.
-docker run --rm -v "$PLUGIN":/p:ro -v "$WORK":/w "$PHP_IMAGE" sh -c '
+docker run --rm --user "$(id -u):$(id -g)" -v "$PLUGIN":/p:ro -v "$WORK":/w "$PHP_IMAGE" sh -c '
 	for k in valid broken fixture; do php /p/tests/oracle/parse.php /w/gen/$k.list > /w/out/php-$k.jsonl; done
 	start=$(date +%s.%N); php /p/tests/oracle/parse.php /w/gen/big.list --time > /w/out/php-big.jsonl; end=$(date +%s.%N)
 	echo "$start $end" > /w/out/php-big.time'

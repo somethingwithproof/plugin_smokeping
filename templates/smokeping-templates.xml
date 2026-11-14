@@ -777,6 +777,12 @@
 			</hash_1001038dac80bddd9653967f3a28feb33fc7c9>
 		</items>
 		<inputs>
+			<hash_0901033452f9fced38de14f6de2b5eaa9faa3a>
+				<name>Median Color</name>
+				<description>The color of the median line</description>
+				<column_name>color_id</column_name>
+				<items>hash_00010398c09329d63f97774ca10d1873a55780</items>
+			</hash_0901033452f9fced38de14f6de2b5eaa9faa3a>
 		</inputs>
 	</hash_000103b5c5ecf305a732e7fab5c46c943f16a5>
 	<hash_00010397ed24bdbc23972c14029cdb23b47c76>
@@ -1741,6 +1747,12 @@
 			</hash_10010377be0c6cbbc1b6f153e66c0e2919b92b>
 		</items>
 		<inputs>
+			<hash_090103ecca4d344c47bf8c8a0b9187d2b3ff7f>
+				<name>Median Color</name>
+				<description>The color of the median line</description>
+				<column_name>color_id</column_name>
+				<items>hash_000103901b6e6848f6d79070a7a628c5ef2fb4</items>
+			</hash_090103ecca4d344c47bf8c8a0b9187d2b3ff7f>
 		</inputs>
 	</hash_00010397ed24bdbc23972c14029cdb23b47c76>
 	<hash_0001034bdf1dfd706dcf98785edcbfe5a69d20>
@@ -2895,6 +2907,12 @@
 			</hash_1001039c952ab4483475299af7c65a0545bc0f>
 		</items>
 		<inputs>
+			<hash_09010300b424e6a2a12e05c4e4526e19e210bc>
+				<name>Median Color</name>
+				<description>The color of the median line</description>
+				<column_name>color_id</column_name>
+				<items>hash_000103ffb4d877b70e1fb6903486c7c8185420</items>
+			</hash_09010300b424e6a2a12e05c4e4526e19e210bc>
 		</inputs>
 	</hash_0001034bdf1dfd706dcf98785edcbfe5a69d20>
 	<hash_010103d33587feb439c83cc019c523da237224>

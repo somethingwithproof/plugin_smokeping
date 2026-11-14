@@ -340,9 +340,29 @@ foreach (array(false, true) as $legacy) {
 
 	$add(array('graph_type_id' => GRAPH_ITEM_TYPE_HRULE, 'value' => '0', 'color_id' => sp_color('000000')));
 
+	$medianItem = 0;
+
 	foreach ($gi as $item) {
-		sp_save('graph_templates_item', $item);
+		$id = sp_save('graph_templates_item', $item);
+
+		if ($item['graph_type_id'] === GRAPH_ITEM_TYPE_LINE1) {
+			$medianItem = $id;
+		}
 	}
+
+	// One graph template input, for the median line's color. It is useful to
+	// operators, and Cacti 1.2.32 and later refuse to import a graph template
+	// whose export has no <inputs> element at all.
+	$inputId = sp_save('graph_template_input', array(
+		'hash'              => sp_hash('graph_template_input', "$gtName:median color"),
+		'graph_template_id' => $gtId,
+		'name'              => 'Median Color',
+		'description'       => 'The color of the median line',
+		'column_name'       => 'color_id',
+	));
+
+	db_execute_prepared('DELETE FROM graph_template_input_defs WHERE graph_template_input_id = ?', array($inputId));
+	db_execute_prepared('INSERT INTO graph_template_input_defs (graph_template_input_id, graph_template_item_id) VALUES (?, ?)', array($inputId, $medianItem));
 
 	if (!$legacy) {
 		$exports[] = $gtId;

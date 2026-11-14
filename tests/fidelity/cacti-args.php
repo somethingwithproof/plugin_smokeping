@@ -52,7 +52,8 @@ $localGraphId = (int) db_fetch_cell_prepared('SELECT id FROM graph_local WHERE h
 if ($localGraphId === 0) {
 	$suggested = array();
 	$null      = array();
-	$localGraphId = (int) create_complete_graph_from_template($templateId, $hostId, $null, $suggested);
+	$created      = create_complete_graph_from_template($templateId, $hostId, $null, $suggested);
+	$localGraphId = is_array($created) ? (int) $created['local_graph_id'] : 0;
 }
 
 ob_end_clean();

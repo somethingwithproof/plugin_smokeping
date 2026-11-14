@@ -141,7 +141,7 @@ it('keeps lib classes away from request variables and globals', function () {
 });
 
 it('issues SQL only from repository and schema classes, through prepared helpers', function () {
-	$sql = ['Schema.php', 'TargetRepository.php', 'ObservationRepository.php', 'HealthRepository.php', 'CactiObjectRepository.php'];
+	$sql = ['Schema.php', 'TargetRepository.php', 'ObservationRepository.php', 'HealthRepository.php', 'CactiObjectRepository.php', 'ObjectRepository.php'];
 
 	foreach (smokeping_sources() as $file) {
 		$source = (string) file_get_contents(smokeping_root() . '/' . $file);

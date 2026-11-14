@@ -80,6 +80,35 @@ switch ($action) {
 		$result = plugin_smokeping_upgrade();
 
 		break;
+	case 'add_target':
+		// path:host:pings:step
+		list($path, $host, $pings, $step) = explode(':', $argument);
+		db_execute_prepared("INSERT INTO plugin_smokeping_target (poller_id, path, host, probe, step, pings, present, first_seen, last_seen) VALUES (1, ?, ?, 'FPing', ?, ?, 1, 1, 1) ON DUPLICATE KEY UPDATE pings = VALUES(pings), step = VALUES(step)", array($path, $host, (int) $step, (int) $pings));
+		$result = (int) db_fetch_cell_prepared('SELECT id FROM plugin_smokeping_target WHERE path = ?', array($path));
+
+		break;
+	case 'remove_devices':
+		// The Delete action of the device list with "delete all graphs and data sources" chosen.
+		include_once($config['base_path'] . '/lib/api_device.php');
+		include_once($config['base_path'] . '/lib/api_graph.php');
+		include_once($config['base_path'] . '/lib/api_data_source.php');
+		include_once($config['base_path'] . '/lib/utility.php');
+		api_device_remove_multi(array_map('intval', explode(',', $argument)), 2);
+
+		break;
+	case 'queue_purge':
+		// What rrdcleaner.php inserts when an administrator selects an unused file: path relative to rra_path.
+		list($file, $action) = explode('|', $argument);
+		db_execute_prepared('INSERT INTO data_source_purge_action (local_data_id, name, action) VALUES (0, ?, ?) ON DUPLICATE KEY UPDATE action = VALUES(action)', array($file, (int) $action));
+
+		break;
+	case 'render':
+		include_once($config['base_path'] . '/lib/rrd.php');
+		$image  = rrdtool_function_graph((int) $argument, 0, array('graph_start' => time() - 7200, 'graph_end' => time(), 'output_flag' => RRDTOOL_OUTPUT_STDOUT));
+		// Cacti renders PNG or SVG according to the graph's image format; either is an image.
+		$result = is_string($image) && (strncmp($image, "\x89PNG", 4) === 0 || strpos($image, '<svg') !== false) ? 'image' : 'error';
+
+		break;
 	case 'forget_templates':
 		db_execute("DELETE FROM settings WHERE name = 'smokeping_templates_version'");
 

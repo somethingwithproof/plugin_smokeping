@@ -25,12 +25,13 @@
 const SMOKEPING_TABLES = [
 	'plugin_smokeping_health',
 	'plugin_smokeping_mapping',
+	'plugin_smokeping_object',
 	'plugin_smokeping_observation',
 	'plugin_smokeping_relink',
 	'plugin_smokeping_target',
 ];
 
-const SMOKEPING_HOOKS = ['config_arrays', 'config_settings', 'draw_navigation_text', 'poller_bottom'];
+const SMOKEPING_HOOKS = ['config_arrays', 'config_settings', 'data_source_remove', 'device_remove', 'draw_navigation_text', 'poller_bottom'];
 
 beforeEach(function () {
 	lifecycle('reset');
@@ -45,7 +46,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 
 	expect($state['plugin']['status'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual('0.1')
-		->and($state['schema'])->toEqual('1')
+		->and($state['schema'])->toEqual('2')
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tracked'])->toBe(SMOKEPING_TABLES)
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
@@ -143,7 +144,7 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tables']['plugin_smokeping_target'])->toBe(1)
-		->and($state['schema'])->toEqual('1')
+		->and($state['schema'])->toEqual('2')
 		->and($state['plugin']['version'])->toEqual('0.1');
 });
 

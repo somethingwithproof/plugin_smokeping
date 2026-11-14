@@ -34,13 +34,15 @@ namespace Cacti\Smokeping;
  * whether the tables exist.
  */
 final class Schema {
-	public const VERSION = 1;
+	public const VERSION = 2;
 
 	public const HOOKS = [
 		'config_arrays'        => 'smokeping_config_arrays',
 		'config_settings'      => 'smokeping_config_settings',
 		'draw_navigation_text' => 'smokeping_draw_navigation_text',
 		'poller_bottom'        => 'smokeping_poller_bottom',
+		'data_source_remove'   => 'smokeping_data_source_remove',
+		'device_remove'        => 'smokeping_device_remove',
 	];
 
 	private const PLUGIN  = 'smokeping';
@@ -175,6 +177,25 @@ final class Schema {
 				],
 				'primary' => 'target_id',
 				'keys'    => [['name' => 'host_id', 'columns' => ['host_id']]],
+			],
+			// Smoke data sources and graphs created for targets. The removal hooks
+			// read it to find which doomed data sources are the plugin's.
+			'plugin_smokeping_object' => $innodb + [
+				'comment' => 'Cacti data sources and graphs created for SmokePing targets',
+				'columns' => [
+					['name' => 'id', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'auto_increment' => true],
+					['name' => 'target_id', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false],
+					['name' => 'location', 'type' => 'varchar(64)', 'NULL' => false, 'default' => ''],
+					['name' => 'host_id', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false],
+					['name' => 'local_data_id', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false],
+					['name' => 'local_graph_id', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false],
+					['name' => 'rrd_path', 'type' => 'varchar(512)', 'NULL' => false, 'default' => ''],
+					['name' => 'state', 'type' => 'varchar(16)', 'NULL' => false, 'default' => 'active'],
+					['name' => 'created_at', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'],
+				],
+				'primary'     => 'id',
+				'unique_keys' => [['name' => 'local_data_id', 'columns' => ['local_data_id']]],
+				'keys'        => [['name' => 'target_location', 'columns' => ['target_id', 'location', 'state']], ['name' => 'host_id', 'columns' => ['host_id']]],
 			],
 			// A disappeared path and a new path with the same host and probe.
 			'plugin_smokeping_relink' => $innodb + [

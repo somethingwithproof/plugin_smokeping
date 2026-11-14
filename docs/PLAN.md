@@ -116,12 +116,28 @@ Each row is a milestone 1 test, because a change in any of them changes the desi
 | Fact | Consequence | Source |
 |---|---|---|
 | At 1.2.31, `get_data_source_path()` uses an absolute `data_source_path` unchanged. On `1.2.x` since eef6bb07e (GHSA-9qff, 2026-09-24) and on `develop`, `data_source_path_within_rra()` replaces any path outside `rra_path`, or through a symbolic link, with the generated path. A read-only bind mount at `<rra_path>/smokeping` passes (tested 2026-11-13). Data templates allow the "None" input method. | Smoke data sources use `<path_rra>/smokeping/...` through a read-only mount ([ADR 0007](decisions/0007-read-only-mount-under-rra-path.md)). Cacti never polls or writes them. | `lib/functions.php`, `data_templates.php` |
-| `poller_maintenance.php` purges or archives RRD files queued when a data source is deleted or chosen on the RRD cleaner page. On failure it logs a warning and drops the queue entry. The RRD cleaner walks `rra_path` recursively. | Paths under the mount are purge targets. The read-only mount is the protection; the plugin's hooks remove queued entries so the warnings never appear. Unmapped SmokePing RRDs show as unused on the RRD cleaner page. | `poller_maintenance.php` (`remove_files`), `rrdcleaner.php`, `lib/api_data_source.php` |
+| `poller_maintenance.php` purges or archives RRD files queued when a data source is deleted or chosen on the RRD cleaner page. On failure it logs a warning and drops the queue entry. The RRD cleaner walks `rra_path` recursively. | Paths under the mount are purge targets. The read-only mount is the protection. Cacti queues the purge row after the `data_source_remove` and `device_remove` hooks run, so the plugin's hooks replace the path of its data sources with one that names no file, and a sweep at `poller_bottom` removes rows queued by other routes. Unmapped SmokePing RRDs show as unused on the RRD cleaner page. | `poller_maintenance.php` (`remove_files`), `rrdcleaner.php`, `lib/api_data_source.php` |
 | With `storage_location` set to an RRDproxy, RRD paths resolve on the proxy host. | SmokePing paths do not exist there; the plugin refuses to create smoke data sources in that mode. | `lib/rrd.php`, `poller_maintenance.php` |
 | Thold receives values through the `poller_output` hook. | Only polled data sources reach Thold. "None" data sources never do. | plugin_thold `setup.php` |
 | On a remote data collector, CLI processes use the local database by default; web requests use the main database. When the main database is unreachable, the connection mode is `offline`; it is `recovery` while the local `poller_output_boost` table still holds rows to replay. | Remote CLI jobs must be explicit about which database they write and must work in both offline and recovery modes. | `include/global.php` |
 | The `remote_agent` hook dispatches unknown actions to plugins; callers are authorized by matching their address to an enabled poller's hostname. | The main server can call plugin actions on a remote collector with Cacti's existing authorization. The authorization is address-based, not cryptographic. | `remote_agent.php` |
 | `call_remote_data_collector()` accepts only relative URLs and uses the configured http or https scheme. | Plugin actions are plain relative requests. | `lib/functions.php` |
+
+**Confirmed live in milestone 3** (Cacti 1.2.31 and the `1.2.x` branch at e2d5c2589, which reports 1.2.32; PHP 8.2; `tests/run-objects-e2e.sh`):
+
+| Fact | Result | Evidence |
+|---|---|---|
+| A graph renders from a "None" input data source at `<path_rra>/smokeping/...` | Yes on both. On `1.2.x`, `get_data_source_path()` returns the mount path unchanged, which `SmokeProvisioner` checks before it reports success. | `graph-renders`, `data-source-path` |
+| The poller and boost ignore it | Yes. Input method None creates no `poller_item` rows. | `not-polled` |
+| Cacti's purge reaches the mount path | Yes, as designed. With the plugin disabled and a writable mount, deleting the device and running `poller_maintenance.php --force` deleted the RRD. A read-only mount alone kept it byte-identical. | `control-files-lost-method1`, `readonly-mount-alone-protects-method1` |
+| `data_source_remove` and `device_remove` run before the purge row is queued | Yes, so the hooks disarm the path instead of deleting a row. With the hooks active, a writable mount lost no file under deletion with delete or archive. | `files-unchanged-method1`, `files-unchanged-method3` |
+| The RRD cleaner page can queue a SmokePing file | Yes. On a read-only mount the delete failed and left the file. On a writable mount it deleted the file. | `rrdcleaner-queued-file-unchanged`, `rrdcleaner-on-writable-mount-is-unprotected` |
+| rrdcheck leaves RRD files unchanged | Yes (`poller_rrdcheck.php --force`). | `rrdcheck-unchanged` |
+| `create_complete_graph_from_template()` reuses a device's data source for a data template | Yes, unless the suggested values differ. A different `data_source_path` creates a second data source, which is how an archived data source sits beside the live one. | `relink-both-graphable` |
+| `1.2.x` refuses a graph template export without `<inputs>` | Yes: "Graph template import refused invalid input relationships" (`lib/graph_template_input.php`). The shipped templates carry one graph template input. | `tests/Integration/LifecycleTest.php` on `1.2.x` |
+| `create_complete_graph_from_template()` returns an array, not a graph id | Yes: `['local_graph_id' => ..., 'local_data_id' => [...]]`. | `lib/template.php` |
+
+Still to verify (milestone 3 stopped before them): Thold receives script-server values through `poller_output`; remote collector offline and recovery modes; `remote_agent` authorization.
 
 **Maint and servcheck**
 
@@ -202,7 +218,7 @@ Devices created by the plugin appear in device lists and in plugins such as moni
 **Protecting SmokePing's files.**
 
 - SmokePing's `datadir` is mounted read-only at `<rra_path>/smokeping` ([ADR 0007](decisions/0007-read-only-mount-under-rra-path.md)). Cacti's purge and RRD cleaner reach these paths, and the read-only mount makes every write, rename, and delete fail. The install guide documents the mount, and the health page reports an error when the mount path is missing, outside `rra_path`, reached through a symbolic link, or writable.
-- The plugin's `device_remove` and `data_source_remove` hooks remove any queued purge entries under the mount path before Cacti's maintenance runs, as a second layer.
+- The plugin's `device_remove` and `data_source_remove` hooks cannot delete a queued purge entry, because Cacti queues it after the hooks run (`lib/api_data_source.php`). They replace the path of the plugin's data sources with `<path_rra>/smokeping-removed/<id>.rrd`, which names no file, so the row Cacti queues cannot reach a SmokePing RRD. A sweep at `poller_bottom` on poller 1 also removes queued rows under the mount, such as those the RRD cleaner page creates. This is a second layer; the read-only mount is the first, and the only one that protects against an administrator queueing a file by hand on a writable mount.
 - A release test deletes a plugin-created device with "delete data sources" selected and confirms the SmokePing RRD is unchanged.
 - When `storage_location` points at an RRDproxy, the plugin creates summary data sources only and says why.
 

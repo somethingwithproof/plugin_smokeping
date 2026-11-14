@@ -45,6 +45,12 @@ final class TargetRepository {
 		return $this->targets($rows);
 	}
 
+	public function find(int $pollerId, string $path): ?Target {
+		$row = db_fetch_row_prepared('SELECT * FROM plugin_smokeping_target WHERE poller_id = ? AND path = ?', [$pollerId, $path], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? Target::fromRow($row) : null;
+	}
+
 	/**
 	 * Targets the reader should read: present in the last inventory and enabled.
 	 *

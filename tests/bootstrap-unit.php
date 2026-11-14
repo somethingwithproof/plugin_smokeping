@@ -74,6 +74,19 @@ if (!function_exists('read_config_option')) {
 	}
 }
 
+// The purge sweep reads the purge queue; unit tests have no database.
+if (!function_exists('db_fetch_cell_prepared')) {
+	function db_fetch_cell_prepared($sql, $params = [], $col_name = '', $log = true, $db_conn = false, $log_function = null) {
+		return 0;
+	}
+}
+
+if (!function_exists('db_execute_prepared')) {
+	function db_execute_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
+		return true;
+	}
+}
+
 $GLOBALS['__smokeping_exec'] = [];
 
 if (!function_exists('exec_background')) {

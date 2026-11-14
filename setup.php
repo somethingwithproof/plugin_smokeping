@@ -263,11 +263,63 @@ function smokeping_draw_navigation_text($nav) {
 	return array_merge($nav, \Cacti\Smokeping\Pages::navigation());
 }
 
+/**
+ * data_source_remove hook. Cacti queues the RRD purge after this runs, so the
+ * hook disarms the plugin's data sources instead of deleting a queue row.
+ *
+ * @param mixed $localDataIds
+ * @return mixed
+ */
+function smokeping_data_source_remove($localDataIds) {
+	if (smokeping_boot() && is_array($localDataIds)) {
+		smokeping_purge_guard()->dataSourcesRemoving(smokeping_int_list($localDataIds));
+	}
+
+	return $localDataIds;
+}
+
+/**
+ * device_remove hook: the devices' plugin data sources and mappings.
+ *
+ * @param mixed $hostIds
+ * @return mixed
+ */
+function smokeping_device_remove($hostIds) {
+	if (smokeping_boot() && is_array($hostIds)) {
+		smokeping_purge_guard()->devicesRemoving(smokeping_int_list($hostIds));
+	}
+
+	return $hostIds;
+}
+
+/**
+ * @param array<array-key, mixed> $values
+ * @return list<int>
+ */
+function smokeping_int_list(array $values): array {
+	$ints = [];
+
+	foreach ($values as $value) {
+		$ints[] = (int) (is_scalar($value) ? $value : 0);
+	}
+
+	return $ints;
+}
+
+function smokeping_purge_guard(): \Cacti\Smokeping\PurgeGuard {
+	return new \Cacti\Smokeping\PurgeGuard(new \Cacti\Smokeping\ObjectRepository(false), new \Cacti\Smokeping\CactiObjectRepository(false));
+}
+
 function smokeping_poller_bottom(): void {
 	global $config;
 
 	if (!smokeping_boot()) {
 		return;
+	}
+
+	// Cacti's purge queue lives in the main database, which poller 1 owns.
+	if ((int) $config['poller_id'] === 1) {
+		smokeping_purge_guard()->sweep(smokeping_settings()->mountPath, $config['rra_path']);
 	}
 
 	if (!function_exists('exec_background')) {

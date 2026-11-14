@@ -348,6 +348,49 @@ msgstr ""
 msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
 msgstr ""
 
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr ""
+
 #: lib/ViewPage.php
 msgid "SmokePing Targets"
 msgstr ""

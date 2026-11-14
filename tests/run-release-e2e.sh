@@ -16,6 +16,7 @@ REF=${2:-HEAD}
 CACTI_CORE=${CACTI_CORE:-$PLUGIN/../plugin-test-ws/cores/1.2.31}
 DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
 SP_DB_NAME=${SP_DB_NAME:-smokeping_m4rel}
+. "$HERE/e2e-env.sh"
 
 fail=0
 result() { echo "RESULT $1 $2${3:+ ($3)}"; [ "$1" = PASS ] || [ "$1" = INFO ] || fail=1; }
@@ -44,6 +45,8 @@ done
 grep -Eq '^(tests|\.github|tools)/|phpunit|phpstan|CONTRIBUTING|CODE_OF_CONDUCT|build_gettext|\.git' "$WORK/files.txt" && result FAIL archive-excludes-dev-files "$(grep -E '^(tests|\.github|tools)/|phpunit|phpstan|CONTRIBUTING|CODE_OF_CONDUCT|build_gettext|\.git' "$WORK/files.txt" | head -3 | tr '\n' ' ')" || result PASS archive-excludes-dev-files "no tests, CI, tooling, or contributor files"
 
 # The entry points Cacti includes before the PHP check parse on PHP 8.0.
+# Pull first, so the pull's progress is not read as lint output.
+docker pull -q php:8.0-cli >/dev/null
 lint=$(docker run --rm -v "$WORK/unpacked/smokeping":/p:ro -w /p php:8.0-cli sh -c 'for f in setup.php include/autoload.php *.php cli/*.php scripts/*.php; do php -l "$f" | grep -v "^No syntax"; done; echo done' 2>&1)
 [ "$lint" = done ] && result PASS archive-entry-points-lint-php80 "setup.php, page scripts, cli, scripts" || result FAIL archive-entry-points-lint-php80 "$lint"
 
@@ -55,9 +58,9 @@ sh "$HERE/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
 
 PRELUDE='ini=$(php -r "echo PHP_CONFIG_FILE_PATH;")/php.ini; [ -f "$ini" ] || { cp "$(dirname "$ini")/php.ini-production" "$ini" 2>/dev/null || touch "$ini"; printf "date.timezone=UTC\nmemory_limit=512M\n" >> "$ini"; };'
 
-docker run --rm --network cpt --env-file "$DB_ENV" -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEST_DATABASE=disposable \
-	-v "$CACTI_CORE":/core:ro -v "$WORK/dist":/dist:ro -v "$PLUGIN/tests/release-e2e.sh":/release-e2e.sh:ro -w / spm2-e2e \
-	sh -c "$PRELUDE sh /release-e2e.sh" 2>&1 | grep -E '^RESULT' > "$WORK/inside.txt" || fail=1
+e2e_docker -e SP_DB_NAME="$SP_DB_NAME" \
+	-v "$CACTI_CORE":/core:ro -v "$WORK/dist":/dist:ro -v "$PLUGIN/tests/release-e2e.sh":/release-e2e.sh:ro -w / "$E2E_IMAGE" \
+	sh -c "$PRELUDE sh /release-e2e.sh" 2>&1 | e2e_check "$WORK/log-release.txt" > "$WORK/inside.txt" || fail=1
 
 cat "$WORK/inside.txt"
 grep -q '^RESULT FAIL' "$WORK/inside.txt" && fail=1

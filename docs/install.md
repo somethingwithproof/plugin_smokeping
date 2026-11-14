@@ -47,6 +47,8 @@ dnf install -y smokeping
 
 Configure SmokePing as usual and start it with `systemctl enable --now smokeping`. The data directory is `/var/lib/smokeping` on Debian, Ubuntu, and Alpine and `/var/lib/smokeping/rrd` on EL and Fedora. Below, `DATADIR` is that directory (the `datadir` of the `*** Database ***` section of SmokePing's configuration) and `RRA` is Cacti's RRA path (Console > Configuration > Settings > Paths, "RRA Path"; `/var/www/html/cacti/rra` in the examples).
 
+**What else is in the data directory.** Debian's packaging keeps the slaves' caches in `DATADIR/__cgi/<section>/` (SmokePing's `dyndir`) and does not create the section directories itself, so a slave that has not reported yet leaves `__cgi/<section>/` empty or missing; Alpine keeps its image cache in `DATADIR/images`, and SmokePing's sorter caches are in `DATADIR/__sortercache`. The plugin ignores all of them: it never lists the data directory, and reads only the RRD files that SmokePing's configuration says exist (`<section>/<target>.rrd`, and `<target>~<slave>.rrd` for each slave), so neither these directories nor an RRD file that no target owns (for example `Local/LocalMachine.rrd`) is read, listed, or reported as an error. This was checked against a Debian 13 master with two slaves ([testing](testing.md#the-live-suite)).
+
 ## 2. Let the Cacti poller read SmokePing
 
 On the packaged distributions the RRD files are world-readable and every directory above them is world-traversable, so the poller user needs **no group membership** to read them. The configuration file is world-readable on Debian, Ubuntu, and Alpine and `0640 root:apache` on EL and Fedora, where only `apache` (and root) can read it.

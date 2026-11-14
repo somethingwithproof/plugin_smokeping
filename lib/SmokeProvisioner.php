@@ -38,6 +38,7 @@ final class SmokeProvisioner {
 		private readonly ObjectRepository $objects,
 		private readonly CactiObjectRepository $cacti,
 		private readonly Clock $clock,
+		private readonly ?RrdReader $rrd = null,
 	) {
 	}
 
@@ -347,8 +348,50 @@ final class SmokeProvisioner {
 
 		// Named for the target, not the device (see provisionSummary()).
 		$this->retitle($localGraphId, $title !== $target->displayName() ? $title : $this->title($title, 'SmokePing', $location));
+		$this->scale($localGraphId, $relative);
 
 		return ProvisionResult::created($localDataId, $localGraphId);
+	}
+
+	/**
+	 * Size a smoke graph's upper limit from its file (see GraphScale). Returns
+	 * the limit set, or null when the graph keeps its limit: no rrdtool, no
+	 * median in the window, or a file rrdtool cannot read. Sizing never fails
+	 * provisioning.
+	 */
+	public function scale(int $localGraphId, string $relativePath): ?string {
+		if ($this->rrd === null || $relativePath === '') {
+			return null;
+		}
+
+		try {
+			$limit = GraphScale::upperLimit($this->rrd->maxMedian(rtrim($this->rraPath, '/') . '/' . $relativePath, GraphScale::WINDOW));
+		} catch (\RuntimeException $e) {
+			Log::warning(sprintf('Could not size the smoke graph %d from %s: %s', $localGraphId, $relativePath, $e->getMessage()));
+
+			return null;
+		}
+
+		if ($limit !== null) {
+			$this->cacti->setGraphUpperLimit($localGraphId, $limit);
+		}
+
+		return $limit;
+	}
+
+	/**
+	 * Size every smoke graph, live and archived.
+	 *
+	 * @return array<int, string|null> graph id => the limit set, or null when it kept its limit
+	 */
+	public function scaleAll(): array {
+		$limits = [];
+
+		foreach ($this->objects->smokeGraphs() as $graph) {
+			$limits[$graph['local_graph_id']] = $this->scale($graph['local_graph_id'], $graph['rrd_path']);
+		}
+
+		return $limits;
 	}
 
 	private function retitle(int $localGraphId, string $title): void {

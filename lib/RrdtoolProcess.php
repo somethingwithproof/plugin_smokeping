@@ -38,17 +38,38 @@ final class RrdtoolProcess implements RrdReader {
 	}
 
 	public function lastUpdate(string $file): ?RrdLastUpdate {
-		// rrdtool's pipe mode splits arguments on whitespace, and the paths come
-		// from validated tree paths under the configured mount.
-		if (preg_match('/[\s"\'\\\\]/', $file) === 1) {
-			throw new \RuntimeException(sprintf('Refusing RRD path with whitespace or quotes: %s', $file));
-		}
+		$this->checkPath($file);
 
 		if (!is_file($file)) {
 			return null;
 		}
 
 		return RrdLastUpdate::parse($this->execute('lastupdate ' . $file));
+	}
+
+	public function maxMedian(string $file, int $seconds): ?float {
+		$this->checkPath($file);
+
+		// A DEF separates its fields with colons.
+		if (str_contains($file, ':')) {
+			throw new \RuntimeException(sprintf('Refusing RRD path with a colon: %s', $file));
+		}
+
+		if (!is_file($file)) {
+			return null;
+		}
+
+		return GraphScale::parseMaximum($this->execute(sprintf('graph /dev/null --start -%d --end now DEF:m=%s:median:AVERAGE VDEF:x=m,MAXIMUM PRINT:x:%%le', $seconds, $file)));
+	}
+
+	/**
+	 * rrdtool's pipe mode splits arguments on whitespace, and the paths come
+	 * from validated tree paths under the configured mount.
+	 */
+	private function checkPath(string $file): void {
+		if (preg_match('/[\s"\'\\\\]/', $file) === 1) {
+			throw new \RuntimeException(sprintf('Refusing RRD path with whitespace or quotes: %s', $file));
+		}
 	}
 
 	public function close(): void {

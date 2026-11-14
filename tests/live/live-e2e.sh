@@ -120,6 +120,10 @@ if [ "$PHASE" = main ]; then
 	row=$(cell "SELECT title_cache FROM graph_templates_graph g JOIN plugin_smokeping_object o ON o.local_graph_id = g.local_graph_id JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path = 'Asia/Singapore' AND o.location = '' AND o.state = 'active'")
 	[ "$row" = "Singapore - SmokePing" ] && result PASS graph-titled-for-target "$row" || result FAIL graph-titled-for-target "$row"
 
+	# ---- Scale: every smoke graph sized from its file, as SmokePing sizes its graphs.
+	row=$(php $P/tests/bin/scale-check.php | tail -1)
+	case "$row" in "sized 21 kept 0 wrong 0") result PASS graphs-sized-from-data "$row";; *) result FAIL graphs-sized-from-data "$row: $(php $P/tests/bin/scale-check.php | tr '\n' '|')";; esac
+
 	# ---- Tree: branches by section, each device under its sections.
 	branches=$(q "SELECT i.title FROM graph_tree_items i JOIN graph_tree t ON t.id = i.graph_tree_id WHERE t.name = 'SmokePing' AND i.host_id = 0 ORDER BY i.title" | rowsof | tr '\n' ' ')
 	[ "$branches" = "Asia Europe Faults Oceania Web " ] && result PASS tree-branches-by-section "branches: $branches" || result FAIL tree-branches-by-section "$branches"

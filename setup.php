@@ -393,7 +393,7 @@ function smokeping_import_service(bool $webUser = false): \Somethingwithproof\Sm
 	$objects     = new \Somethingwithproof\Smokeping\ObjectRepository(false);
 	$settings    = smokeping_settings();
 	$rrdProxy    = read_config_option('storage_location') != 0;
-	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner($settings, $config['rra_path'], $config['library_path'], $rrdProxy, $objects, $cacti, new \Somethingwithproof\Smokeping\SystemClock());
+	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner($settings, $config['rra_path'], $config['library_path'], $rrdProxy, $objects, $cacti, new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
 	$repository  = new \Somethingwithproof\Smokeping\ConfigRepository(false, $config['rra_path']);
 
 	return new \Somethingwithproof\Smokeping\SmokepingImportService(
@@ -418,9 +418,19 @@ function smokeping_target_actions(): \Somethingwithproof\Smokeping\TargetActions
 	$objects = new \Somethingwithproof\Smokeping\ObjectRepository(false);
 	$clock   = new \Somethingwithproof\Smokeping\SystemClock();
 
-	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, $objects, $cacti, $clock);
+	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, $objects, $cacti, $clock, smokeping_rrd_reader());
 
 	return new \Somethingwithproof\Smokeping\TargetActions($provisioner, new \Somethingwithproof\Smokeping\TargetRepository(false), $objects, $cacti, $config['library_path'], $clock);
+}
+
+/**
+ * rrdtool for sizing smoke graphs, or null when Cacti has no rrdtool binary
+ * configured; the graphs then keep the template's upper limit.
+ */
+function smokeping_rrd_reader(): ?\Somethingwithproof\Smokeping\RrdReader {
+	$rrdtool = (string) read_config_option('path_rrdtool');
+
+	return $rrdtool !== '' && is_executable($rrdtool) ? new \Somethingwithproof\Smokeping\RrdtoolProcess($rrdtool) : null;
 }
 
 function smokeping_device_actions(): \Somethingwithproof\Smokeping\DeviceActions {

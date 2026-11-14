@@ -1,13 +1,21 @@
-<h1 align="center">
-	<picture>
-		<source media="(prefers-color-scheme: dark)" srcset="docs/images/logo_dark.png">
-		<img src="docs/images/logo.png" width="360" alt="SmokePing Cacti Plugin: a cactus wearing a badge with a SmokePing graph">
-	</picture>
-</h1>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo_dark.png">
+    <img src="docs/images/logo.png" width="200" height="200" alt="SmokePing Cacti Plugin: a cactus wearing a badge with a SmokePing graph">
+  </picture>
+</p>
 
-# plugin_smokeping
+# SmokePing plugin for Cacti
 
-A Cacti 1.2 plugin that brings SmokePing latency and loss measurements into Cacti as ordinary devices, data sources, and graphs. Smoke graphs then sit next to the device they belong to, under Cacti's permissions, and Thold and Maint can alert on and suppress them.
+[![CI](https://github.com/somethingwithproof/plugin_smokeping/actions/workflows/plugin-ci-workflow.yml/badge.svg)](https://github.com/somethingwithproof/plugin_smokeping/actions/workflows/plugin-ci-workflow.yml)
+[![License: GPL-2.0-or-later](https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg)](LICENSE)
+![PHP >= 8.2](https://img.shields.io/badge/php-%3E%3D8.2-777bb4.svg)
+![Cacti >= 1.2.31](https://img.shields.io/badge/cacti-%3E%3D1.2.31-2e7d32.svg)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=somethingwithproof_plugin_smokeping&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=somethingwithproof_plugin_smokeping)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=somethingwithproof_plugin_smokeping&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=somethingwithproof_plugin_smokeping)
+![SmokePing: read-only](https://img.shields.io/badge/smokeping-read--only-6b7280.svg)
+
+A Cacti 1.2 plugin that brings SmokePing latency and loss measurements into Cacti as ordinary devices, data sources, and graphs. Smoke graphs then sit next to the device they belong to, under Cacti's permissions, and Thold and Maint can alert on and suppress them. It is an independent implementation for Cacti and is not part of, or endorsed by, [SmokePing](https://oss.oetiker.ch/smokeping/), whose original authors are Tobias Oetiker and Niko Tyni. The plugin neither includes nor runs SmokePing's code: it reads the configuration and RRD files that SmokePing writes, and its graph templates are built to draw the same series as SmokePing's own graphs.
 
 > **Status: observe mode, release candidate.** The plugin reads SmokePing's configuration and RRD files, shows their state, creates Cacti devices, data sources, and graphs for them, and feeds Thold and Maint. It writes nothing to SmokePing. Managed mode (the plugin writing SmokePing configuration) and remote collectors are later phases and are not in this release. See [docs/install.md](docs/install.md) to start.
 

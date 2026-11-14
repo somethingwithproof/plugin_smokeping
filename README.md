@@ -11,6 +11,14 @@ A Cacti 1.2 plugin that brings SmokePing latency and loss measurements into Cact
 
 > **Status: observe mode, release candidate.** The plugin reads SmokePing's configuration and RRD files, shows their state, creates Cacti devices, data sources, and graphs for them, and feeds Thold and Maint. It writes nothing to SmokePing. Managed mode (the plugin writing SmokePing configuration) and remote collectors are later phases and are not in this release. See [docs/install.md](docs/install.md) to start.
 
+## Screenshots
+
+Imported from a live SmokePing 2.8.2 network into Cacti 1.2.31, last 12 hours. Each target's device has a smoke graph for the master and one for each slave (`lon1`, `sgp1`), filed under its SmokePing section in the graph tree.
+
+![Cacti tree view of the Bangalore target: smoke graphs from the master and the lon1 and sgp1 slaves](docs/images/screenshot-tree-asia.png)
+
+![Cacti tree view of the London target: the lon1 slave in the same region shows microsecond latency with visible smoke](docs/images/screenshot-tree-europe.png)
+
 ## Why
 
 SmokePing measures latency distribution and packet loss well, and its smoke graphs show variation that an average-only graph hides. Run alongside Cacti, it leaves three gaps:

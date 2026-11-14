@@ -243,7 +243,11 @@ export_body=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar --data-urlencode "__
 check config-export-yaml "a POST with a token downloads YAML" sh -c 'echo "$1" | grep -q "^schema_version: 1$" && echo "$1" | grep -q "Perm/a"' x "$export_body"
 export_xml=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=xml" "$BASE/$CONF")
 check config-export-xml "a POST with a token downloads XML" sh -c 'echo "$1" | grep -q "<smokeping-config schema_version=\"1\">"' x "$export_xml"
-check config-export-needs-token "a POST without a token is turned away" sh -c '! curl -s -b "$1" --data "action=export&format=yaml" "$2" | grep -q "^schema_version"' x "$WORK/admin.jar" "$BASE/$CONF"
+# A refused post regenerates the session id, and from 1.2.32 deletes the old
+# session; keep the jar current, as a browser keeps its cookie, so the
+# administrator stays logged in for the checks that follow.
+check config-export-needs-token "a POST without a token is turned away" sh -c '! curl -s -b "$1" -c "$1" --data "action=export&format=yaml" "$2" | grep -q "^schema_version"' x "$WORK/admin.jar" "$BASE/$CONF"
+check config-export-refusal-keeps-session "the administrator is still logged in after the refused post" sh -c '! echo "$1" | grep -q "<title>Login to Cacti"' x "$(get admin $CONF)"
 check config-export-get-ignored "a GET with action=export shows the page, not a download" sh -c '! echo "$1" | grep -q "^schema_version"' x "$(get admin "$CONF?action=export&format=yaml")"
 
 # An administrator whose device permissions are limited holds the realm and is still refused: the

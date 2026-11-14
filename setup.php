@@ -128,7 +128,7 @@ function plugin_smokeping_install(): void {
 		return;
 	}
 
-	plugin_smokeping_upgrade();
+	plugin_smokeping_upgrade(true);
 }
 
 function plugin_smokeping_check_config(): bool {
@@ -146,8 +146,13 @@ function plugin_smokeping_check_config(): bool {
  * hook do. Fresh installs take the same path as upgrades. The version stored
  * in plugin_config changes only after every migration has succeeded, so an
  * interrupted run is finished by the next one.
+ *
+ * A failed template import does not block the plugin and is not retried on
+ * every request: it is recorded for the health page, and retried only on
+ * install, when the plugin or template version changes, or when $retryTemplates
+ * is set by an administrator's explicit action.
  */
-function plugin_smokeping_upgrade(): bool {
+function plugin_smokeping_upgrade(bool $retryTemplates = false): bool {
 	global $config;
 
 	if (!smokeping_boot()) {
@@ -158,7 +163,9 @@ function plugin_smokeping_upgrade(): bool {
 	$schema    = new \Cacti\Smokeping\Schema(false);
 	$templates = new \Cacti\Smokeping\TemplateInstaller(__DIR__ . '/templates/smokeping-templates.xml', $config['library_path'], new \Cacti\Smokeping\CactiObjectRepository(false));
 
-	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered() && $templates->isCurrent()) {
+	$retry = $retryTemplates || $templates->mayRetry($info['version']);
+
+	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered() && ($templates->isCurrent() || !$retry)) {
 		return true;
 	}
 
@@ -168,10 +175,11 @@ function plugin_smokeping_upgrade(): bool {
 
 	smokeping_setup_hooks();
 
-	// Templates are imported last: a failed import leaves the version unrecorded,
-	// so the next request or upgrade retries it.
-	if (!$templates->install()) {
-		return false;
+	// Templates are imported last. A failure is recorded and logged once, and
+	// the plugin still records its version so the next request does not
+	// repeat the import.
+	if (!$templates->isCurrent() && $retry) {
+		$templates->install($info['version']);
 	}
 
 	$schema->recordPluginVersion($info['version'], $info['author'], $info['homepage']);

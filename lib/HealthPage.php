@@ -30,6 +30,7 @@ final class HealthPage {
 		private readonly MountCheck $mount,
 		private readonly HealthRepository $health,
 		private readonly TargetRepository $targets,
+		private readonly TemplateInstaller $templates,
 	) {
 	}
 
@@ -45,6 +46,7 @@ final class HealthPage {
 
 		$findings = array_merge(
 			$this->checks->check($health, $phpBinary),
+			[HealthCheck::templates($this->templates->present(), $this->templates->failure())],
 			$this->mount->check($settings->mountPath, $rraPath, $expected)
 		);
 
@@ -54,5 +56,7 @@ final class HealthPage {
 			array_map(fn (Finding $f) => [$f->check, Html::level($f->level), $f->message], $findings),
 			''
 		);
+
+		print '<form method="post" action="smokeping_health.php"><input type="hidden" name="action" value="retry_templates"><input type="submit" class="ui-button ui-corner-all ui-widget" value="' . html_escape(__('Retry Template Import', 'smokeping')) . '"></form>';
 	}
 }

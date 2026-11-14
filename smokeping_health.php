@@ -34,11 +34,27 @@ $smokeping_settings  = smokeping_settings();
 $smokeping_clock     = new \Cacti\Smokeping\SystemClock();
 $smokeping_mountinfo = is_readable('/proc/self/mountinfo') ? (string) file_get_contents('/proc/self/mountinfo') : '';
 
+$smokeping_templates = new \Cacti\Smokeping\TemplateInstaller(__DIR__ . '/templates/smokeping-templates.xml', $config['library_path'], new \Cacti\Smokeping\CactiObjectRepository(false));
+
+// An administrator's explicit retry of the template import. POST only: csrf-magic
+// has already validated the token by the time this page script runs.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && get_nfilter_request_var('action') === 'retry_templates') {
+	if (plugin_smokeping_upgrade(true) && $smokeping_templates->present()) {
+		raise_message('smokeping_templates', __('The SmokePing templates are imported.', 'smokeping'), MESSAGE_LEVEL_INFO);
+	} else {
+		raise_message('smokeping_templates', __('The SmokePing templates failed to import. See the health table.', 'smokeping'), MESSAGE_LEVEL_ERROR);
+	}
+
+	header('Location: smokeping_health.php');
+	exit;
+}
+
 $smokeping_page = new \Cacti\Smokeping\HealthPage(
 	new \Cacti\Smokeping\HealthCheck($smokeping_clock, max(60, (int) read_config_option('poller_interval'))),
 	new \Cacti\Smokeping\MountCheck($smokeping_mountinfo),
 	new \Cacti\Smokeping\HealthRepository(false),
-	new \Cacti\Smokeping\TargetRepository(false)
+	new \Cacti\Smokeping\TargetRepository(false),
+	$smokeping_templates
 );
 
 top_header();

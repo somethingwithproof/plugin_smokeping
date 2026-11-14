@@ -45,6 +45,18 @@ final class HealthCheck {
 		];
 	}
 
+	public static function templates(bool $present, ?TemplateFailure $failure): Finding {
+		if ($failure !== null) {
+			return new Finding('templates', HealthLevel::Error, sprintf(__('The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause.', 'smokeping'), $failure->message));
+		}
+
+		if (!$present) {
+			return new Finding('templates', HealthLevel::Warning, __('The SmokePing templates are not imported. Use Retry Template Import.', 'smokeping'));
+		}
+
+		return new Finding('templates', HealthLevel::Ok, __('The SmokePing templates are imported.', 'smokeping'));
+	}
+
 	public static function phpBinary(string $phpBinary): Finding {
 		if ($phpBinary === '' || !is_file($phpBinary) || !is_executable($phpBinary)) {
 			return new Finding('php_binary', HealthLevel::Error, __('The PHP binary path setting is empty or not an executable file, so the reader cannot start.', 'smokeping'));

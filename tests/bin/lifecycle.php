@@ -109,6 +109,23 @@ switch ($action) {
 		$result = is_string($image) && (strncmp($image, "\x89PNG", 4) === 0 || strpos($image, '<svg') !== false) ? 'image' : 'error';
 
 		break;
+	case 'hide_templates':
+	case 'show_templates':
+		$from = $config['base_path'] . '/plugins/smokeping/templates/smokeping-templates.xml';
+		$to   = $from . '.hidden';
+
+		if ($action === 'hide_templates') {
+			rename($from, $to);
+		} elseif (is_file($to)) {
+			rename($to, $from);
+		}
+
+		break;
+	case 'retry_templates':
+		include_once($config['base_path'] . '/plugins/smokeping/setup.php');
+		$result = plugin_smokeping_upgrade(true);
+
+		break;
 	case 'forget_templates':
 		db_execute("DELETE FROM settings WHERE name = 'smokeping_templates_version'");
 
@@ -118,7 +135,7 @@ switch ($action) {
 		db_execute("DELETE FROM host_template_graph WHERE host_template_id IN (SELECT id FROM host_template WHERE name = 'SmokePing Target')");
 		db_execute("DELETE FROM host_template WHERE name = 'SmokePing Target'");
 		db_execute("DELETE FROM graph_templates WHERE name LIKE 'SmokePing Smoke%'");
-		db_execute("DELETE FROM settings WHERE name = 'smokeping_templates_version'");
+		db_execute("DELETE FROM settings WHERE name IN ('smokeping_templates_version', 'smokeping_templates_failure')");
 
 		break;
 	case 'set_version':
@@ -187,5 +204,7 @@ print json_encode(array(
 		'items' => (int) db_fetch_cell("SELECT COUNT(*) FROM graph_templates_item gti INNER JOIN graph_templates gt ON gt.id = gti.graph_template_id WHERE gt.name LIKE 'SmokePing Smoke (%' AND gti.local_graph_id = 0"),
 		'linked' => (int) db_fetch_cell("SELECT COUNT(*) FROM host_template_graph htg INNER JOIN host_template ht ON ht.id = htg.host_template_id WHERE ht.name = 'SmokePing Target'"),
 		'version' => db_fetch_cell("SELECT value FROM settings WHERE name = 'smokeping_templates_version'"),
+		'failure' => db_fetch_cell("SELECT value FROM settings WHERE name = 'smokeping_templates_failure'"),
+		'import_errors' => is_file($config['base_path'] . '/log/cacti.log') ? substr_count((string) file_get_contents($config['base_path'] . '/log/cacti.log'), 'SmokePing templates') + substr_count((string) file_get_contents($config['base_path'] . '/log/cacti.log'), 'The template file') : 0,
 	),
 ), JSON_PRETTY_PRINT) . PHP_EOL;

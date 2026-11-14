@@ -40,6 +40,8 @@ final class TemplateInstaller {
 
 	public const SETTING = 'smokeping_templates_version';
 
+	public const FAILURE_SETTING = 'smokeping_templates_failure';
+
 	public const DEVICE_TEMPLATE = 'SmokePing Target';
 
 	/** Ping counts that have a smoke template. */
@@ -60,16 +62,51 @@ final class TemplateInstaller {
 		return (int) read_config_option(self::SETTING) === self::VERSION;
 	}
 
+	public function failure(): ?TemplateFailure {
+		return TemplateFailure::fromSetting((string) read_config_option(self::FAILURE_SETTING));
+	}
+
 	/**
+	 * Whether an upgrade or request may start an import: not when this plugin
+	 * version already failed to import this template file. Installing and the
+	 * administrator's retry bypass the check by calling install() directly.
+	 */
+	public function mayRetry(string $pluginVersion): bool {
+		$failure = $this->failure();
+
+		return $failure === null || !$failure->blocks($pluginVersion, self::VERSION);
+	}
+
+	/**
+	 * Import once. A failure is logged once and recorded for the health page;
+	 * success clears any recorded failure.
+	 *
 	 * @return bool true when every template object was imported
 	 */
-	public function install(): bool {
+	public function install(string $pluginVersion): bool {
+		$error = $this->import();
+
+		if ($error !== null) {
+			Log::error($error);
+			set_config_option(self::FAILURE_SETTING, (new TemplateFailure($pluginVersion, self::VERSION, time(), $error))->toSetting());
+
+			return false;
+		}
+
+		set_config_option(self::SETTING, (string) self::VERSION);
+		set_config_option(self::FAILURE_SETTING, '');
+
+		return true;
+	}
+
+	/**
+	 * @return string|null the reason the import failed, or null when it succeeded
+	 */
+	private function import(): ?string {
 		$xml = is_readable($this->file) ? file_get_contents($this->file) : false;
 
 		if (!is_string($xml) || $xml === '') {
-			Log::error('The template file ' . $this->file . ' is missing or empty');
-
-			return false;
+			return 'The template file ' . $this->file . ' is missing or empty';
 		}
 
 		include_once($this->coreLibrary . '/import.php');
@@ -77,9 +114,7 @@ final class TemplateInstaller {
 		$result = import_xml_data($xml, false, $this->objects->defaultProfileId());
 
 		if (!is_array($result) || $result === []) {
-			Log::error('Importing the SmokePing templates returned nothing');
-
-			return false;
+			return 'Importing the SmokePing templates returned nothing';
 		}
 
 		$failed = 0;
@@ -97,20 +132,14 @@ final class TemplateInstaller {
 		}
 
 		if ($failed > 0) {
-			Log::error(sprintf('%d SmokePing template objects failed to import', $failed));
-
-			return false;
+			return sprintf('%d SmokePing template objects failed to import', $failed);
 		}
 
 		if (!$this->present()) {
-			Log::error('The SmokePing templates are missing after import');
-
-			return false;
+			return 'The SmokePing templates are missing after import';
 		}
 
-		set_config_option(self::SETTING, (string) self::VERSION);
-
-		return true;
+		return null;
 	}
 
 	/**

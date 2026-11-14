@@ -37,6 +37,10 @@ beforeEach(function () {
 	lifecycle('reset');
 });
 
+afterEach(function () {
+	lifecycle('show_templates');
+});
+
 afterAll(function () {
 	lifecycle('reset');
 });
@@ -117,6 +121,52 @@ it('imports the templates once, and install, upgrade, and re-import leave one co
 	// Re-importing with nothing forgotten changes nothing either.
 	$third = lifecycle('upgrade');
 	expect($third['templates'])->toBe($first['templates']);
+});
+
+it('records a failed template import once instead of retrying it on every request', function () {
+	lifecycle('remove_templates');
+	lifecycle('hide_templates');
+
+	$first = lifecycle('install');
+	$errors = $first['templates']['import_errors'];
+
+	expect($first['templates']['host'])->toBe(0)
+		->and(json_decode($first['templates']['failure'], true)['message'])->toContain('missing or empty')
+		->and($first['plugin']['version'])->toEqual('0.1');
+
+	// Many later requests neither retry nor log again.
+	for ($i = 0; $i < 5; $i++) {
+		$run = lifecycle('upgrade');
+	}
+
+	expect($run['result'])->toBeTrue()
+		->and($run['templates']['import_errors'])->toBe($errors);
+
+	// The file is back, but the same plugin version does not retry by itself.
+	lifecycle('show_templates');
+	$still = lifecycle('upgrade');
+	expect($still['templates']['host'])->toBe(0);
+
+	// A different plugin version retries.
+	$failure = json_decode($still['templates']['failure'], true);
+	$failure['plugin'] = '0.0';
+	lifecycle('set_setting', 'smokeping_templates_failure=' . json_encode($failure));
+	$upgraded = lifecycle('upgrade');
+	expect($upgraded['templates']['host'])->toBe(1)
+		->and($upgraded['templates']['failure'])->toBe('');
+});
+
+it('retries a failed template import on an explicit request and clears the record', function () {
+	lifecycle('remove_templates');
+	lifecycle('hide_templates');
+
+	lifecycle('install');
+	lifecycle('show_templates');
+
+	$retried = lifecycle('retry_templates');
+
+	expect($retried['templates']['host'])->toBe(1)
+		->and($retried['templates']['failure'])->toBe('');
 });
 
 it('keeps the imported templates through uninstall and restores them when an operator removed them', function () {

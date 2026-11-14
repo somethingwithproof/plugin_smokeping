@@ -45,6 +45,6 @@ for dir in $made; do
 	rmdir "$dir" 2>/dev/null || true
 done
 
-rm -rf "$FX"
+e2e_rm "$FX"
 
 exit $status

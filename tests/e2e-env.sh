@@ -55,6 +55,15 @@ e2e_docker() {
 	docker run --rm --network "$E2E_NETWORK" --env-file "$DB_ENV" -e SP_DB_HOST="$E2E_DB_HOST" -e SMOKEPING_TEST_DATABASE=disposable "$@"
 }
 
+# e2e_rm <path>...: rm -rf, and for what a container created as root and the
+# calling user may not delete (on Linux), the same from a container.
+e2e_rm() {
+	for p in "$@"; do
+		rm -rf "$p" 2>/dev/null && continue
+		docker run --rm -v "$(dirname "$p")":/e2e-rm "$E2E_IMAGE" rm -rf "/e2e-rm/$(basename "$p")"
+	done
+}
+
 # e2e_check <log>: reads a container's output. Saves all of it to <log>, shows
 # the lines that match RESULT_FILTER (default: the RESULT lines), and fails
 # unless there is at least one RESULT line and none is a FAIL.

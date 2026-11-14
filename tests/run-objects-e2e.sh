@@ -46,7 +46,7 @@ for variant in "ro guard" "rw guard" "ro noguard" "rw noguard"; do
 	mode=$1
 	guard=$2
 	fx="$WORK/fx-$mode-$guard"
-	rm -rf "$fx" "$WORK/outside"
+	e2e_rm "$fx" "$WORK/outside"
 	mkdir -p "$fx" "$WORK/outside"
 
 	# Fixtures: targets with RRDs, a file that is a symlink out of the mount,

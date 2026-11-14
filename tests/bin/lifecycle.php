@@ -100,6 +100,13 @@ switch ($action) {
 		$result = $ids;
 
 		break;
+	case 'make_device':
+		// host name|description: a plain device with exactly this identity, as a restore recreates one.
+		list($hostname, $description) = explode('|', $argument, 2);
+		include_once($config['base_path'] . '/lib/api_device.php');
+		$result = (int) api_device_save(0, 0, $description, $hostname, '', 0, '', '', 161, 500, '', AVAIL_NONE, 0, 23, 400, 1, '', 'MD5', '', 'DES', '', '', 5, 1, 1);
+
+		break;
 	case 'update_target':
 		// path|column|value for the few text columns a test needs to make hostile.
 		list($path, $column, $value) = explode('|', $argument, 3);

@@ -116,6 +116,10 @@ X
 is_graph() { sh "$WORK/graph_ok.sh" "$WORK/$1.jar" "$BASE/$2"; }
 not_graph() { ! is_graph "$@"; }
 has() { grep -q -- "$1"; }
+# The session's CSRF token from the page script block, which every page has; a
+# page without a form has no hidden token field, and a post without a valid
+# token is turned away before the plugin's code runs.
+csrf() { get "$1" "$2" | sed -n "s/.*var csrfMagicToken='\([^']*\)'.*/\1/p" | head -1; }
 
 for u in admin restricted scoped revoked broad norealm; do login $u; done
 title() { get "$1" index.php | grep -o '<title>[^<]*</title>' | head -1; }
@@ -159,9 +163,10 @@ provision_on() { $L map_target "$1|$2" >/dev/null; php $P/cli/smokeping.php prov
 provision_on Perm/ro "$dev_a"
 provision_on Perm/rn "$dev_b"
 bad=$($L propose_relink "Perm/ro|Perm/rn" | php -r '$r = json_decode(stream_get_contents(STDIN), true); echo $r["result"];')
-token=$(get restricted $INV | grep -o "name='__csrf_magic' value=\"[^\"]*\"" | head -1 | sed 's/.*value="//;s/"$//')
+token=$(csrf restricted $INV)
 check restricted-relink-screen-refused "the confirm screen is not offered for a target on another device" sh -c '! echo "$1" | grep -q "Confirm Re-link"' x "$(get restricted "$INV?action=relink&id=$bad")"
 curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=relink_confirm&id=$bad" "$BASE/$INV"
+check restricted-relink-post-reached-page "the page answered the post with its own refusal, not a CSRF failure" sh -c 'echo "$1" | grep -q "proposal is not open" && ! echo "$1" | grep -q "CSRF"' x "$(get restricted $INV)"
 row=$(q "SELECT (SELECT status FROM plugin_smokeping_relink WHERE id = $bad) AS s, (SELECT host_id FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id WHERE t.path = 'Perm/ro') AS a, (SELECT host_id FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id WHERE t.path = 'Perm/rn') AS b" | jcell)
 [ "$row" = "proposed $dev_a $dev_b" ] && result PASS restricted-relink-onto-other-device-refused "proposal still open; Perm/ro stays on device $dev_a and Perm/rn on device $dev_b" || result FAIL restricted-relink-onto-other-device-refused "$row"
 
@@ -185,7 +190,7 @@ check scoped-data-source-page-denied "no console access" sh -c '! echo "$1" | gr
 check scoped-other-data-source-page-denied "data source $b_ds" sh -c '! echo "$1" | grep -q "Perm/b"' x "$(get scoped "data_sources.php?action=ds_edit&id=$b_ds")"
 
 # A scoped user cannot add targets or run the device action.
-token=$(get scoped $VIEW | grep -o "name='__csrf_magic' value=\"[^\"]*\"" | head -1 | sed 's/.*value="//;s/"$//')
+token=$(csrf scoped $VIEW)
 u_id=$(q "SELECT id FROM plugin_smokeping_target WHERE path = 'Perm/u'" | jcell)
 curl -s -b $WORK/scoped.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=add_confirm&id=$u_id&mode=create" "$BASE/$INV"
 curl -s -b $WORK/scoped.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=actions&drp_action=smokeping_add&selected_items=$(php -r 'echo urlencode(serialize(array("'"$dev_b"'")));')" "$BASE/host.php"

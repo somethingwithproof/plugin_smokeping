@@ -340,10 +340,30 @@ function smokeping_purge_guard(): \Cacti\Smokeping\PurgeGuard {
 	return new \Cacti\Smokeping\PurgeGuard(new \Cacti\Smokeping\ObjectRepository(false), new \Cacti\Smokeping\CactiObjectRepository(false));
 }
 
-function smokeping_config_service(): \Cacti\Smokeping\ConfigService {
+/**
+ * The configuration export and import. With $webUser the service also checks,
+ * on every call, that the acting user may see every device; the command line
+ * acts as the system and is unrestricted.
+ */
+function smokeping_config_service(bool $webUser = false): \Cacti\Smokeping\ConfigService {
 	global $config;
 
-	return new \Cacti\Smokeping\ConfigService(new \Cacti\Smokeping\ConfigRepository(false, $config['rra_path']));
+	$repository = new \Cacti\Smokeping\ConfigRepository(false, $config['rra_path']);
+
+	return new \Cacti\Smokeping\ConfigService($repository, $webUser ? static function () use ($repository): bool {
+		return smokeping_user_sees_every_device($repository);
+	} : null);
+}
+
+/**
+ * Whether the user's device permissions cover every device: only when
+ * get_allowed_devices() returns every device Cacti lists. A user limited to
+ * some devices, however many, is not unrestricted.
+ */
+function smokeping_user_sees_every_device(\Cacti\Smokeping\ConfigRepository $repository): bool {
+	$allowed = get_allowed_devices();
+
+	return is_array($allowed) && count($allowed) === $repository->deviceCount();
 }
 
 function smokeping_target_actions(): \Cacti\Smokeping\TargetActions {

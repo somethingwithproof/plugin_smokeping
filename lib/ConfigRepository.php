@@ -61,6 +61,14 @@ final class ConfigRepository {
 	}
 
 	/**
+	 * Devices Cacti lists, which is what get_allowed_devices() returns for a
+	 * user with unrestricted device access.
+	 */
+	public function deviceCount(): int {
+		return (int) db_fetch_cell_prepared("SELECT COUNT(*) FROM host WHERE id > 0 AND deleted = ''", [], '', true, $this->connection);
+	}
+
+	/**
 	 * Write a plan in one transaction. Nothing changes when any statement
 	 * fails. The plan is applied as decided; the caller has already compared
 	 * its id with the administrator's confirmation. Creates no data source,

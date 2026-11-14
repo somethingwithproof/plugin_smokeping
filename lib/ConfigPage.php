@@ -37,6 +37,14 @@ final class ConfigPage {
 		return [ConfigCodec::YAML => __('YAML (default)', 'smokeping'), ConfigCodec::XML => __('XML', 'smokeping')];
 	}
 
+	public static function refused(): void {
+		html_start_box(html_escape(__('SmokePing Configuration', 'smokeping')), '100%', '', '3', 'center', '');
+
+		print '<tr><td class="textArea">' . html_escape(__('Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices.', 'smokeping')) . '</td></tr>';
+
+		html_end_box(false);
+	}
+
 	public static function main(): void {
 		html_start_box(html_escape(__('Export the SmokePing Configuration', 'smokeping')), '100%', '', '3', 'center', '');
 		form_start('smokeping_config.php', 'smokeping_export');

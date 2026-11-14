@@ -410,3 +410,19 @@ it('treats the backup directory as a reference-only setting', function () {
 	expect(Cacti\Smokeping\ConfigSchema::isReferenceOnly('smokeping_backup_dir'))->toBeTrue()
 		->and(Cacti\Smokeping\Settings::fromRow(['smokeping_backup_dir' => '/srv/backups/'], '/r')->backupDir)->toBe('/srv/backups');
 });
+
+it('refuses export to a user who cannot see every device, and names no device', function () {
+	$repository = new Cacti\Smokeping\ConfigRepository(false, '/var/www/cacti/rra');
+	$refused    = new Cacti\Smokeping\ConfigService($repository, fn () => false);
+
+	try {
+		$refused->export('yaml');
+		$message = '';
+	} catch (ConfigException $e) {
+		$message = $e->getMessage();
+	}
+
+	expect($message)->toContain('do not cover every device')
+		->and((new Cacti\Smokeping\ConfigService($repository, fn () => true))->export('yaml'))->toStartWith('schema_version: 1')
+		->and((new Cacti\Smokeping\ConfigService($repository))->export('yaml'))->toStartWith('schema_version: 1');
+});

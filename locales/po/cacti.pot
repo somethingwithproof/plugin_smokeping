@@ -29,6 +29,14 @@ msgstr ""
 msgid "YAML (default)"
 msgstr ""
 
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr ""
+
 #: lib/ConfigPage.php
 msgid "Export the SmokePing Configuration"
 msgstr ""
@@ -440,10 +448,6 @@ msgstr ""
 
 #: lib/Pages.php
 msgid "SmokePing Health"
-msgstr ""
-
-#: lib/Pages.php
-msgid "SmokePing Configuration"
 msgstr ""
 
 #: lib/RelinkGuard.php

@@ -30,7 +30,17 @@ if (!smokeping_page_start()) {
 	exit;
 }
 
-$smokeping_service = smokeping_config_service();
+// The export and the import cover every target and mapping with the names of
+// their devices, so a user must hold the SmokePing Admin realm (checked by
+// auth.php) and be able to see every device. The page names no device.
+if (!smokeping_user_sees_every_device(new \Cacti\Smokeping\ConfigRepository(false, $config['rra_path']))) {
+	top_header();
+	\Cacti\Smokeping\ConfigPage::refused();
+	bottom_footer();
+	exit;
+}
+
+$smokeping_service = smokeping_config_service(true);
 $smokeping_post    = $_SERVER['REQUEST_METHOD'] === 'POST';
 
 /* ================= input validation ================= */
@@ -47,7 +57,14 @@ $smokeping_user = isset($_SESSION['sess_user_id']) && is_numeric($_SESSION['sess
 
 // Changes and the download need a posted form; csrf-magic has already checked its token.
 if ($smokeping_action === 'export') {
-	$smokeping_text = $smokeping_service->export($smokeping_format);
+	try {
+		$smokeping_text = $smokeping_service->export($smokeping_format);
+	} catch (\Cacti\Smokeping\ConfigException $smokeping_error) {
+		top_header();
+		\Cacti\Smokeping\ConfigPage::refused();
+		bottom_footer();
+		exit;
+	}
 
 	header('Content-Type: ' . ($smokeping_format === 'xml' ? 'application/xml' : 'application/yaml') . '; charset=UTF-8');
 	header('Content-Disposition: attachment; filename="smokeping-config.' . $smokeping_format . '"');

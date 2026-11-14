@@ -246,6 +246,16 @@ check config-export-xml "a POST with a token downloads XML" sh -c 'echo "$1" | g
 check config-export-needs-token "a POST without a token is turned away" sh -c '! curl -s -b "$1" --data "action=export&format=yaml" "$2" | grep -q "^schema_version"' x "$WORK/admin.jar" "$BASE/$CONF"
 check config-export-get-ignored "a GET with action=export shows the page, not a download" sh -c '! echo "$1" | grep -q "^schema_version"' x "$(get admin "$CONF?action=export&format=yaml")"
 
+# An administrator whose device permissions are limited holds the realm and is still refused: the
+# export and the import cover every target and every mapping with the names of its devices.
+body=$(get restricted $CONF)
+check config-page-refused-restricted-admin "no forms, no device named" sh -c '! echo "$1" | grep -q "Import a SmokePing Configuration\|Export the SmokePing" && echo "$1" | grep -q "do not cover every device" && ! echo "$1" | grep -q "Perm/\|a.example\|b.example"' x "$body"
+token=$(csrf restricted $INV)
+export_r=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=yaml" "$BASE/$CONF")
+check config-export-refused-restricted-admin "a POST to export returns no configuration" sh -c '! echo "$1" | grep -q "schema_version\|Perm/\|hostname" && echo "$1" | grep -q "do not cover every device"' x "$export_r"
+export_rx=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=xml" "$BASE/$CONF")
+check config-export-xml-refused-restricted-admin "xml too" sh -c '! echo "$1" | grep -q "smokeping-config\|Perm/"' x "$export_rx"
+
 printf 'schema_version: 1\ntargets:\n  - path: Conf/new\n    host: conf.example\n' > $WORK/conf-new.yaml
 n0=$(q "SELECT COUNT(*) FROM plugin_smokeping_target" | jcell)
 # A scoped user's check and apply reach no code: the realm is missing.

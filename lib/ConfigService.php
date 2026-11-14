@@ -29,10 +29,27 @@ namespace Cacti\Smokeping;
  * the admin page both go through this class, so they decide the same way.
  */
 final class ConfigService {
-	public function __construct(private readonly ConfigRepository $repository) {
+	/**
+	 * @param \Closure|null $unrestricted whether the acting user may see every
+	 *                                    device; null for the command line, which acts as the system
+	 */
+	public function __construct(private readonly ConfigRepository $repository, private readonly ?\Closure $unrestricted = null) {
+	}
+
+	/**
+	 * The file and its plan cover every target and every mapping, with the
+	 * names of the devices they point at, so a user who cannot see every
+	 * device must not read or change them. The message names no device.
+	 */
+	private function requireUnrestricted(): void {
+		if ($this->unrestricted !== null && ($this->unrestricted)() !== true) {
+			throw new ConfigException('Your device permissions do not cover every device, so you cannot use the SmokePing configuration export or import.');
+		}
 	}
 
 	public function export(string $format): string {
+		$this->requireUnrestricted();
+
 		return ConfigCodec::write($format, ConfigPlanner::export($this->repository->state()));
 	}
 
@@ -65,7 +82,7 @@ final class ConfigService {
 				self::guardDirectory($directory);
 			}
 
-			$text = $this->export(ConfigCodec::YAML);
+			$text = ConfigCodec::write(ConfigCodec::YAML, ConfigPlanner::export($this->repository->state()));
 			$file = $directory . '/smokeping-config-' . gmdate('Ymd-His', $now) . '-' . bin2hex(random_bytes(8)) . '.yaml';
 
 			$previous = umask(0077);

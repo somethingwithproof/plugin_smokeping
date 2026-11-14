@@ -184,10 +184,18 @@ final class TargetActions {
 		$skipped = [];
 		$hostId  = $this->targets->mappedHost($oldId);
 
-		$refusal = RelinkGuard::refusal($hostId, $this->targets->mappedHost($newId), $old->pollerId, $new->pollerId, $readerPollerId);
+		$refusal = RelinkGuard::refusal($hostId, $this->targets->mappedHost($newId), $old->pollerId, $new->pollerId, $readerPollerId, $this->objects->hostsOf($oldId));
 
 		if ($refusal !== null) {
 			return new ActionOutcome($subject, $hostId, [], [$refusal]);
+		}
+
+		// Claim the new target for the device before any data source moves, so
+		// a concurrent mapping of it to another device cannot leave this
+		// device graphing that device's file. Mapping never replaces another
+		// device's mapping; the old mapping is dropped only once all succeeds.
+		if ($hostId > 0 && !$this->objects->mapTarget($newId, $hostId, $userId, $this->clock->now())) {
+			return new ActionOutcome($subject, $hostId, [], [__('the new target is mapped to another device', 'smokeping')]);
 		}
 
 		foreach ($old->locations() as $location) {
@@ -215,12 +223,6 @@ final class TargetActions {
 		}
 
 		if ($hostId > 0) {
-			// Map the new target first, without replacing a mapping: if it is no
-			// longer free the old mapping stays and the proposal stays open.
-			if (!$this->objects->mapTarget($newId, $hostId, $userId, $this->clock->now())) {
-				return new ActionOutcome($subject, $hostId, $done, [__('the new target is mapped to another device', 'smokeping')]);
-			}
-
 			$this->targets->unmap($oldId);
 			$done[] = __('device %d is mapped to the new target', $hostId, 'smokeping');
 		}

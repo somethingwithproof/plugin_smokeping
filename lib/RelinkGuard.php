@@ -35,15 +35,26 @@ namespace Cacti\Smokeping;
  */
 final class RelinkGuard {
 	/**
+	 * @param list<int> $objectHosts devices that hold the old target's data sources
+	 *
 	 * @return string|null the reason the re-link is refused, or null when it may go ahead
 	 */
-	public static function refusal(int $oldHost, int $newHost, int $oldPoller, int $newPoller, int $readerPoller): ?string {
+	public static function refusal(int $oldHost, int $newHost, int $oldPoller, int $newPoller, int $readerPoller, array $objectHosts = []): ?string {
 		if ($oldPoller !== $readerPoller || $newPoller !== $readerPoller) {
 			return __('both targets must be on the poller that runs the reader', 'smokeping');
 		}
 
 		if ($newHost > 0 && $newHost !== $oldHost) {
 			return __('the new target is already mapped to device %d', $newHost, 'smokeping');
+		}
+
+		// Device permission is checked against the old target's mapping, so
+		// data sources on any other device (possible after `provision
+		// --device=N` without a mapping) would move unchecked.
+		foreach ($objectHosts as $objectHost) {
+			if ($objectHost > 0 && $objectHost !== $oldHost) {
+				return __('the old target has data sources on device %d, which it is not mapped to', $objectHost, 'smokeping');
+			}
 		}
 
 		return null;

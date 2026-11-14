@@ -47,4 +47,16 @@ describe('RelinkGuard', function () {
 		'new elsewhere' => [1, 2],
 		'both elsewhere' => [3, 3],
 	]);
+
+	it('refuses when the old target has data sources on a device it is not mapped to', function (int $oldHost, array $objectHosts) {
+		expect(RelinkGuard::refusal($oldHost, 0, 1, 1, 1, $objectHosts))->toContain('not mapped to');
+	})->with([
+		'unmapped, objects on B' => [0, [9]],
+		'mapped to A, objects on A and B' => [5, [5, 9]],
+	]);
+
+	it('allows data sources on the mapped device only', function () {
+		expect(RelinkGuard::refusal(5, 0, 1, 1, 1, [5]))->toBeNull()
+			->and(RelinkGuard::refusal(0, 0, 1, 1, 1, []))->toBeNull();
+	});
 });

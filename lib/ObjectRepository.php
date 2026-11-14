@@ -46,6 +46,17 @@ final class ObjectRepository {
 	}
 
 	/**
+	 * Devices that hold any data source of a target.
+	 *
+	 * @return list<int>
+	 */
+	public function hostsOf(int $targetId): array {
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT DISTINCT host_id FROM plugin_smokeping_object WHERE target_id = ?', [$targetId], true, $this->connection));
+
+		return array_map(static fn (array $row): int => Row::int($row, 'host_id'), $rows);
+	}
+
+	/**
 	 * @return array{local_data_id: int, local_graph_id: int}|null
 	 */
 	public function active(int $targetId, string $location): ?array {

@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Cacti 1.0.0-rc.1\n"
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
 "Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"

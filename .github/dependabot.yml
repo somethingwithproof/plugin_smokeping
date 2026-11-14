@@ -1,0 +1,37 @@
+# Weekly updates of the GitHub Actions the workflows use, which are pinned by
+# commit SHA with a version comment, and of the pinned base image of the
+# end-to-end test image. The plugin has no Composer runtime dependencies, and
+# the test harness's lock lives in Cacti core (see the CI workflow), so there is
+# no Composer ecosystem to update here.
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "build(deps)"
+    labels:
+      - dependencies
+
+  - package-ecosystem: docker
+    directory: /tests/docker
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      test-image:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "build(deps)"
+    labels:
+      - dependencies

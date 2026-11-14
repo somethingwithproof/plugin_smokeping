@@ -158,6 +158,16 @@ switch ($action) {
 		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_mapping');
 
 		break;
+	case 'fail_observation_writes':
+		// A trigger that refuses every write to the observation cache, as a full disk would.
+		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_observation');
+		db_execute("CREATE TRIGGER smokeping_test_refuse_observation BEFORE INSERT ON plugin_smokeping_observation FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'refused by test'");
+
+		break;
+	case 'allow_observation_writes':
+		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_observation');
+
+		break;
 	case 'queue_purge':
 		// What rrdcleaner.php inserts when an administrator selects an unused file: path relative to rra_path.
 		list($file, $action) = explode('|', $argument);

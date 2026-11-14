@@ -22,6 +22,7 @@ WORK=$(cd "${1:?usage: run.sh <work-dir>}" 2>/dev/null && pwd || { mkdir -p "$1"
 CACTI_CORE=${CACTI_CORE:-$PLUGIN/../plugin-test-ws/cores/1.2.31}
 DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
 SP_DB_NAME=${SP_DB_NAME:-smokeping_m3}
+. "$PLUGIN/tests/e2e-env.sh"
 
 # The database is created and loaded when it is missing.
 sh "$PLUGIN/tests/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
@@ -29,8 +30,8 @@ sh "$PLUGIN/tests/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
 mkdir -p "$WORK/fx" "$WORK/cacti" "$WORK/cacti-legacy"
 
 cacti() {
-	docker run --rm --network cpt --env-file "$DB_ENV" -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEST_DATABASE=disposable -e SMOKEPING_TEMPLATE_SUFFIX \
-		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$WORK/fx":/cacti/rra/smokeping -v "$WORK":/work -w /cacti spm2-e2e sh -c "$*"
+	e2e_docker -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEMPLATE_SUFFIX \
+		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$WORK/fx":/cacti/rra/smokeping -v "$WORK":/work -w /cacti "$E2E_IMAGE" sh -c "$*"
 }
 
 # Fixtures, ranges, templates, and the Cacti argument lists.

@@ -28,7 +28,7 @@ sh tests/run-alert-e2e.sh <work-dir>        # stopped collector and maintenance,
 sh tests/integ.sh ...                       # see tests/Integration for the upgrade scenarios
 ```
 
-The failure script needs the `cpt` network with MariaDB, the `spm2-e2e` image, and a Cacti 1.2.31 tree, like the other runners. It prints one `RESULT` line per check and exits non-zero on any failure.
+The failure script needs a Docker network with MariaDB (`cpt` by default), the `spm2-e2e` image (`tests/docker/Dockerfile`), and a Cacti 1.2.31 tree, like the other runners; [testing](testing.md#the-end-to-end-runners) lists the variables that change them. It prints one `RESULT` line per check and exits non-zero on any failure.
 
 ## What these do not cover
 

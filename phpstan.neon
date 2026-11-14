@@ -1,0 +1,21 @@
+# Static analysis of the plugin classes against a Cacti core checkout.
+#   CACTI_PATH=/path/to/cacti phpstan analyse -c phpstan.neon
+# Core is scanned for symbols only.
+parameters:
+    level: 9
+    phpVersion: 80200
+    paths:
+        - lib
+        - setup.php
+    scanDirectories:
+        - %env.CACTI_PATH%/lib
+        - %env.CACTI_PATH%/include
+    bootstrapFiles:
+        - tests/phpstan-bootstrap.php
+    excludePaths:
+        analyseAndScan:
+            - %env.CACTI_PATH%/include/vendor/*
+            - %env.CACTI_PATH%/include/fa/*
+            - %env.CACTI_PATH%/include/js/*
+            - %env.CACTI_PATH%/include/themes/*
+    treatPhpDocTypesAsCertain: false

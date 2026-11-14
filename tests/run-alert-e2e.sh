@@ -25,12 +25,16 @@ for p in thold maint; do
 	(cd "$PLUGIN_SOURCE/$p" && tar --exclude=.git --exclude=tests --exclude=.github -cf - .) | (cd "$WORK/plugins/$p" && tar -xf -)
 done
 
-rm -rf "$WORK/fx-alert"
-mkdir -p "$WORK/fx-alert"
+# A fresh directory name each run: Docker Desktop can serve stale entries for a
+# directory that was just removed and recreated under the same name, which made
+# the fixture files fail to appear.
+rm -rf "$WORK"/fx-alert-*
+FX="$WORK/fx-alert-$$"
+mkdir -p "$FX"
 
 PRELUDE='ini=$(php -r "echo PHP_CONFIG_FILE_PATH;")/php.ini; [ -f "$ini" ] || { cp "$(dirname "$ini")/php.ini-production" "$ini" 2>/dev/null || touch "$ini"; printf "date.timezone=UTC\nmemory_limit=512M\n" >> "$ini"; };'
 
 docker run --rm --network cpt --env-file "$DB_ENV" -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEST_DATABASE=disposable \
 	-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$WORK/plugins/thold":/cacti/plugins/thold \
-	-v "$WORK/plugins/maint":/cacti/plugins/maint -v "$WORK/fx-alert":/cacti/rra/smokeping -w /cacti spm2-e2e \
+	-v "$WORK/plugins/maint":/cacti/plugins/maint -v "$FX":/cacti/rra/smokeping -w /cacti spm2-e2e \
 	sh -c "$PRELUDE sh plugins/smokeping/tests/alert-e2e.sh" 2>&1 | grep -E "${RESULT_FILTER:-^(RESULT|LOG|DUMP)}"

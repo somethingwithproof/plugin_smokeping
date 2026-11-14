@@ -82,7 +82,7 @@ final class SmokeProvisioner {
 		}
 
 		if (!in_array($target->pings, TemplateInstaller::PINGS, true)) {
-			return sprintf(__('The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only.', 'smokeping'), $target->pings);
+			return __('The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only.', $target->pings, 'smokeping');
 		}
 
 		if ($this->rrdProxy) {
@@ -131,7 +131,7 @@ final class SmokeProvisioner {
 		$poller = $this->cacti->devicePoller($hostId);
 
 		if ($poller !== $this->settings->pollerId) {
-			return sprintf(__('The device is polled by poller %1$d, but the reader that fills the summary values runs on poller %2$d. Assign the device to poller %2$d.', 'smokeping'), $poller, $this->settings->pollerId);
+			return __('The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d.', $poller, $this->settings->pollerId, $this->settings->pollerId, 'smokeping');
 		}
 
 		if ($this->cacti->graphTemplateId(TemplateInstaller::SUMMARY_TEMPLATE) === 0) {
@@ -258,11 +258,11 @@ final class SmokeProvisioner {
 		$root = realpath($this->settings->mountPath);
 
 		if ($real === false || $root === false || !is_file($real)) {
-			return ProvisionResult::skipped(sprintf(__('The RRD file %s is not visible through the SmokePing mount.', 'smokeping'), $file));
+			return ProvisionResult::skipped(__('The RRD file %s is not visible through the SmokePing mount.', $file, 'smokeping'));
 		}
 
 		if (!str_starts_with($real, $root . '/')) {
-			return ProvisionResult::skipped(sprintf(__('The RRD file %s resolves outside the SmokePing mount.', 'smokeping'), $file));
+			return ProvisionResult::skipped(__('The RRD file %s resolves outside the SmokePing mount.', $file, 'smokeping'));
 		}
 
 		return $this->relativePathOf($path, $location);

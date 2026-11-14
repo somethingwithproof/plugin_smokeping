@@ -70,6 +70,59 @@ final class CactiObjectRepository {
 		return (int) db_fetch_cell_prepared('SELECT id FROM data_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * @param list<int> $hostIds
+	 * @return array<int, array{description: string, hostname: string, poller_id: int}>
+	 */
+	public function devices(array $hostIds): array {
+		$hostIds = array_values(array_unique(array_filter(array_map('intval', $hostIds), fn (int $id) => $id > 0)));
+
+		if ($hostIds === []) {
+			return [];
+		}
+
+		$placeholders = implode(', ', array_fill(0, count($hostIds), '?'));
+		$rows         = Row::rows(db_fetch_assoc_prepared("SELECT id, description, hostname, poller_id FROM host WHERE id IN ($placeholders)", $hostIds, true, $this->connection));
+		$devices      = [];
+
+		foreach ($rows as $row) {
+			$devices[Row::int($row, 'id')] = ['description' => Row::string($row, 'description'), 'hostname' => Row::string($row, 'hostname'), 'poller_id' => Row::int($row, 'poller_id')];
+		}
+
+		return $devices;
+	}
+
+	/**
+	 * Point a summary data source at another series, the value of its input field.
+	 */
+	public function setSummarySeries(int $localDataId, string $series): void {
+		db_execute_prepared("UPDATE data_input_data AS v
+			INNER JOIN data_template_data AS d ON d.id = v.data_template_data_id
+			INNER JOIN data_input_fields AS f ON f.id = v.data_input_field_id
+			SET v.value = ?
+			WHERE d.local_data_id = ? AND f.data_name = 'series' AND f.input_output = 'in'", [$series, $localDataId], true, $this->connection);
+	}
+
+	/**
+	 * Descriptions of the devices that have a summary data source but are
+	 * polled by a poller other than the reader's, whose cache they cannot see.
+	 *
+	 * @return list<string>
+	 */
+	public function summaryDevicesOffPoller(int $pollerId): array {
+		$rows = Row::rows(db_fetch_assoc_prepared("SELECT DISTINCT h.description
+			FROM plugin_smokeping_object AS o
+			INNER JOIN host AS h ON h.id = o.host_id
+			WHERE o.state = 'summary' AND h.poller_id <> ?
+			ORDER BY h.description", [$pollerId], true, $this->connection));
+
+		return array_values(array_map(fn (array $row) => Row::string($row, 'description'), $rows));
+	}
+
+	public function deviceOfGraph(int $localGraphId): int {
+		return (int) db_fetch_cell_prepared('SELECT host_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
+	}
+
 	public function devicePoller(int $hostId): int {
 		return (int) db_fetch_cell_prepared('SELECT poller_id FROM host WHERE id = ?', [$hostId], '', true, $this->connection);
 	}

@@ -63,6 +63,17 @@ final class ObjectRepository {
 		return is_array($row) && $row !== [] ? ['local_data_id' => Row::int($row, 'local_data_id'), 'local_graph_id' => Row::int($row, 'local_graph_id')] : null;
 	}
 
+	/**
+	 * The summary data sources of a target, one per location.
+	 *
+	 * @return list<array{location: string, local_data_id: int}>
+	 */
+	public function summariesOf(int $targetId): array {
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT location, local_data_id FROM plugin_smokeping_object WHERE target_id = ? AND state = ? ORDER BY location', [$targetId, self::SUMMARY], true, $this->connection));
+
+		return array_values(array_map(fn (array $row) => ['location' => Row::string($row, 'location'), 'local_data_id' => Row::int($row, 'local_data_id')], $rows));
+	}
+
 	public function add(int $targetId, string $location, int $hostId, int $localDataId, int $localGraphId, string $rrdPath, string $state, int $now): void {
 		db_execute_prepared('INSERT INTO plugin_smokeping_object (target_id, location, host_id, local_data_id, local_graph_id, rrd_path, state, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [$targetId, $location, $hostId, $localDataId, $localGraphId, $rrdPath, $state, $now], true, $this->connection);
 	}

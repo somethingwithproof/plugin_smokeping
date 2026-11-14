@@ -37,12 +37,18 @@ final class Schema {
 	public const VERSION = 2;
 
 	public const HOOKS = [
-		'config_arrays'        => 'smokeping_config_arrays',
-		'config_settings'      => 'smokeping_config_settings',
-		'draw_navigation_text' => 'smokeping_draw_navigation_text',
-		'poller_bottom'        => 'smokeping_poller_bottom',
-		'data_source_remove'   => 'smokeping_data_source_remove',
-		'device_remove'        => 'smokeping_device_remove',
+		'config_arrays'            => 'smokeping_config_arrays',
+		'config_settings'          => 'smokeping_config_settings',
+		'draw_navigation_text'     => 'smokeping_draw_navigation_text',
+		'poller_bottom'            => 'smokeping_poller_bottom',
+		'data_source_remove'       => 'smokeping_data_source_remove',
+		'device_remove'            => 'smokeping_device_remove',
+		'device_action_array'      => 'smokeping_device_action_array',
+		'device_action_prepare'    => 'smokeping_device_action_prepare',
+		'device_action_execute'    => 'smokeping_device_action_execute',
+		'api_device_save'          => 'smokeping_api_device_save',
+		'graph_buttons'            => 'smokeping_graph_buttons',
+		'graph_buttons_thumbnails' => 'smokeping_graph_buttons',
 	];
 
 	private const PLUGIN  = 'smokeping';

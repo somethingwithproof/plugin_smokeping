@@ -51,6 +51,78 @@ final class TargetRepository {
 		return is_array($row) && $row !== [] ? Target::fromRow($row) : null;
 	}
 
+	public function byId(int $id): ?Target {
+		$row = db_fetch_row_prepared('SELECT * FROM plugin_smokeping_target WHERE id = ?', [$id], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? Target::fromRow($row) : null;
+	}
+
+	/**
+	 * Present, unmapped targets whose SmokePing host equals one of these
+	 * device host names, compared without regard to case. One query serves a
+	 * whole bulk action.
+	 *
+	 * @param list<string> $hostnames
+	 * @return array<string, list<Target>> lower case host name => targets
+	 */
+	public function unmappedByHost(int $pollerId, array $hostnames): array {
+		$hostnames = array_values(array_unique(array_filter(array_map(fn (string $h) => strtolower(trim($h)), $hostnames), fn (string $h) => $h !== '')));
+
+		if ($hostnames === []) {
+			return [];
+		}
+
+		$placeholders = implode(', ', array_fill(0, count($hostnames), '?'));
+
+		$rows = Row::rows(db_fetch_assoc_prepared("SELECT t.* FROM plugin_smokeping_target AS t
+			LEFT JOIN plugin_smokeping_mapping AS m ON m.target_id = t.id
+			WHERE t.poller_id = ? AND t.present = 1 AND m.target_id IS NULL AND LOWER(t.host) IN ($placeholders)
+			ORDER BY t.path", array_merge([$pollerId], $hostnames), true, $this->connection));
+
+		$found = [];
+
+		foreach ($this->targets($rows) as $target) {
+			$found[strtolower($target->host)][] = $target;
+		}
+
+		return $found;
+	}
+
+	/**
+	 * Whether any present target is mapped to the device.
+	 */
+	public function deviceHasTargets(int $hostId): bool {
+		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM plugin_smokeping_mapping WHERE host_id = ?', [$hostId], '', true, $this->connection) > 0;
+	}
+
+	public function mappedHost(int $targetId): int {
+		return (int) db_fetch_cell_prepared('SELECT host_id FROM plugin_smokeping_mapping WHERE target_id = ?', [$targetId], '', true, $this->connection);
+	}
+
+	public function unmap(int $targetId): void {
+		db_execute_prepared('DELETE FROM plugin_smokeping_mapping WHERE target_id = ?', [$targetId], true, $this->connection);
+	}
+
+	/**
+	 * @return array{old: Target, new: Target}|null the targets of an open proposal
+	 */
+	public function openProposal(int $id): ?array {
+		$row = db_fetch_row_prepared("SELECT old_target_id, new_target_id FROM plugin_smokeping_relink WHERE id = ? AND status = 'proposed'", [$id], true, $this->connection);
+
+		if (!is_array($row) || $row === []) {
+			return null;
+		}
+
+		$old = $this->byId(Row::int($row, 'old_target_id'));
+		$new = $this->byId(Row::int($row, 'new_target_id'));
+
+		return $old === null || $new === null ? null : ['old' => $old, 'new' => $new];
+	}
+
+	public function decideProposal(int $id, string $status, int $userId, int $now): void {
+		db_execute_prepared("UPDATE plugin_smokeping_relink SET status = ?, decided_at = ?, decided_by = ? WHERE id = ? AND status = 'proposed'", [$status, $now, $userId, $id], true, $this->connection);
+	}
+
 	/**
 	 * Targets the reader should read: present in the last inventory and enabled.
 	 *
@@ -109,10 +181,10 @@ final class TargetRepository {
 	}
 
 	/**
-	 * @return list<array{id: int, old_path: string, new_path: string, host: string, probe: string, proposed_at: int}>
+	 * @return list<array{id: int, old_id: int, old_path: string, new_path: string, host: string, probe: string, proposed_at: int}>
 	 */
 	public function openRelinkProposals(): array {
-		$rows = Row::rows(db_fetch_assoc_prepared("SELECT r.id, o.path AS old_path, n.path AS new_path, n.host, n.probe, r.proposed_at
+		$rows = Row::rows(db_fetch_assoc_prepared("SELECT r.id, r.old_target_id, o.path AS old_path, n.path AS new_path, n.host, n.probe, r.proposed_at
 			FROM plugin_smokeping_relink AS r
 			INNER JOIN plugin_smokeping_target AS o ON o.id = r.old_target_id
 			INNER JOIN plugin_smokeping_target AS n ON n.id = r.new_target_id
@@ -124,6 +196,7 @@ final class TargetRepository {
 		foreach ($rows as $row) {
 			$proposals[] = [
 				'id'          => Row::int($row, 'id'),
+				'old_id'      => Row::int($row, 'old_target_id'),
 				'old_path'    => Row::string($row, 'old_path'),
 				'new_path'    => Row::string($row, 'new_path'),
 				'host'        => Row::string($row, 'host'),

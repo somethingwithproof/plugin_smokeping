@@ -54,7 +54,8 @@ $smokeping_page = new \Cacti\Smokeping\HealthPage(
 	new \Cacti\Smokeping\MountCheck($smokeping_mountinfo),
 	new \Cacti\Smokeping\HealthRepository(false),
 	new \Cacti\Smokeping\TargetRepository(false),
-	$smokeping_templates
+	$smokeping_templates,
+	new \Cacti\Smokeping\CactiObjectRepository(false)
 );
 
 top_header();

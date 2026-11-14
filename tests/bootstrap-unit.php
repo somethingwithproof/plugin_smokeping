@@ -39,16 +39,19 @@ if (!defined('POLLER_VERBOSITY_MEDIUM')) {
 $GLOBALS['__smokeping_log'] = [];
 
 if (!function_exists('__')) {
-	// Core's __() treats a trailing registered text domain as the domain and
-	// passes the remaining arguments to sprintf().
+	// Core's __() (include/global_languages.php) passes every argument to
+	// sprintf(), the trailing text domain included, when the text has a
+	// placeholder. A placeholder therefore takes the domain unless the caller
+	// supplied values before it: __('%d s', $n, 'smokeping'), never
+	// sprintf(__('%d s', 'smokeping'), $n).
 	function __() {
 		$args = func_get_args();
 
-		if (count($args) > 1 && $args[count($args) - 1] === 'smokeping') {
-			array_pop($args);
+		if (count($args) === 1 || preg_match('/%(%|c|[-0-9.]*[bdeEfFgGhHosuxX])/', $args[0]) !== 1) {
+			return $args[0];
 		}
 
-		return count($args) > 1 ? vsprintf(array_shift($args), $args) : $args[0];
+		return call_user_func_array('sprintf', $args);
 	}
 }
 

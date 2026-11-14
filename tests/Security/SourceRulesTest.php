@@ -199,3 +199,26 @@ it('ships a translation template containing every plugin string', function () {
 		expect($pot)->toContain('msgid "' . $msgid . '"');
 	}
 });
+
+it('formats translated strings with __() itself, never sprintf(__())', function () {
+	// Core's __() hands the text domain to sprintf(), so a placeholder in
+	// sprintf(__("%d", "smokeping"), $n) takes "smokeping" and prints 0 or the
+	// domain. The values go inside the call: __("%d", $n, "smokeping").
+	foreach (smokeping_sources() as $file) {
+		expect((string) file_get_contents(smokeping_root() . '/' . $file))->not->toContain('sprintf(__(', $file);
+	}
+});
+
+it('uses plain placeholders in translated strings, because core\'s __() does not format positional ones', function () {
+	// __() only formats a string that has %d, %s, and the like. A string with
+	// only %1$d placeholders comes back raw.
+	foreach (smokeping_sources() as $file) {
+		$source = (string) file_get_contents(smokeping_root() . '/' . $file);
+
+		preg_match_all("/__\\('((?:[^'\\\\]|\\\\.)*)'/", $source, $texts);
+
+		foreach ($texts[1] as $text) {
+			expect($text)->not->toMatch('/%[0-9]+\$/', $file);
+		}
+	}
+});

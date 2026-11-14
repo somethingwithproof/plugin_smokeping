@@ -87,6 +87,45 @@ switch ($action) {
 		$result = (int) db_fetch_cell_prepared('SELECT id FROM plugin_smokeping_target WHERE path = ?', array($path));
 
 		break;
+	case 'make_devices':
+		// count:prefix. Plain devices (no template) with host names <prefix><n>.example, for bulk checks.
+		list($count, $prefix) = explode(':', $argument);
+		include_once($config['base_path'] . '/lib/api_device.php');
+		$ids = array();
+
+		for ($n = 1; $n <= (int) $count; $n++) {
+			$ids[] = (int) api_device_save(0, 0, $prefix . $n, $prefix . $n . '.example', '', 0, '', '', 161, 500, '', AVAIL_NONE, 0, 23, 400, 1, '', 'MD5', '', 'DES', '', '', 5, 1, 1);
+		}
+
+		$result = $ids;
+
+		break;
+	case 'update_target':
+		// path|column|value for the few text columns a test needs to make hostile.
+		list($path, $column, $value) = explode('|', $argument, 3);
+
+		if (!in_array($column, array('title', 'menu', 'host'), true)) {
+			fwrite(STDERR, "Unsupported column\n");
+			exit(2);
+		}
+
+		db_execute_prepared("UPDATE plugin_smokeping_target SET `$column` = ? WHERE path = ?", array($value, $path));
+
+		break;
+	case 'propose_relink':
+		// old path|new path, as an inventory import proposes after a rename.
+		list($old, $new) = explode('|', $argument);
+		db_execute_prepared("INSERT IGNORE INTO plugin_smokeping_relink (old_target_id, new_target_id, status, proposed_at) SELECT o.id, n.id, 'proposed', 1 FROM plugin_smokeping_target o, plugin_smokeping_target n WHERE o.path = ? AND n.path = ?", array($old, $new));
+		db_execute_prepared('UPDATE plugin_smokeping_target SET present = 0 WHERE path = ?', array($old));
+		$result = (int) db_fetch_cell("SELECT MAX(id) FROM plugin_smokeping_relink");
+
+		break;
+	case 'revoke_device':
+		// user|device: what an administrator does in User Management.
+		list($user, $device) = explode('|', $argument);
+		db_execute_prepared('DELETE p FROM user_auth_perms p INNER JOIN user_auth u ON u.id = p.user_id WHERE u.username = ? AND p.type = 3 AND p.item_id = ?', array($user, (int) $device));
+
+		break;
 	case 'remove_devices':
 		// The Delete action of the device list with "delete all graphs and data sources" chosen.
 		include_once($config['base_path'] . '/lib/api_device.php');

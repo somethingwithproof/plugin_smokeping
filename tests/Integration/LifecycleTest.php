@@ -31,7 +31,7 @@ const SMOKEPING_TABLES = [
 	'plugin_smokeping_target',
 ];
 
-const SMOKEPING_HOOKS = ['config_arrays', 'config_settings', 'data_source_remove', 'device_remove', 'draw_navigation_text', 'poller_bottom'];
+const SMOKEPING_HOOKS = ['api_device_save', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom'];
 
 beforeEach(function () {
 	lifecycle('reset');

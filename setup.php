@@ -318,6 +318,154 @@ function smokeping_purge_guard(): \Cacti\Smokeping\PurgeGuard {
 	return new \Cacti\Smokeping\PurgeGuard(new \Cacti\Smokeping\ObjectRepository(false), new \Cacti\Smokeping\CactiObjectRepository(false));
 }
 
+function smokeping_target_actions(): \Cacti\Smokeping\TargetActions {
+	global $config;
+
+	$cacti   = new \Cacti\Smokeping\CactiObjectRepository(false);
+	$objects = new \Cacti\Smokeping\ObjectRepository(false);
+	$clock   = new \Cacti\Smokeping\SystemClock();
+
+	$provisioner = new \Cacti\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, $objects, $cacti, $clock);
+
+	return new \Cacti\Smokeping\TargetActions($provisioner, new \Cacti\Smokeping\TargetRepository(false), $objects, $cacti, $config['library_path'], $clock);
+}
+
+function smokeping_device_actions(): \Cacti\Smokeping\DeviceActions {
+	return new \Cacti\Smokeping\DeviceActions(smokeping_target_actions(), new \Cacti\Smokeping\TargetRepository(false), new \Cacti\Smokeping\CactiObjectRepository(false));
+}
+
+/**
+ * Whether the user may administer SmokePing targets. Cacti keeps a disabled
+ * plugin's realms registered, so the plugin must also be enabled.
+ */
+function smokeping_user_is_admin(): bool {
+	return smokeping_boot() && api_plugin_is_enabled('smokeping') && api_plugin_user_realm_auth('smokeping_inventory.php');
+}
+
+/**
+ * device_action_array hook: the bulk "Add SmokePing Targets" action, offered
+ * only to users with the SmokePing admin realm.
+ *
+ * @param mixed $actions
+ * @return mixed
+ */
+function smokeping_device_action_array($actions) {
+	if (is_array($actions) && smokeping_user_is_admin()) {
+		return \Cacti\Smokeping\DeviceActions::register($actions);
+	}
+
+	return $actions;
+}
+
+/**
+ * device_action_prepare hook: the confirm screen of the bulk action.
+ *
+ * @param mixed $save
+ * @return mixed
+ */
+function smokeping_device_action_prepare($save) {
+	if (!is_array($save) || ($save['drp_action'] ?? '') !== 'smokeping_add' || !smokeping_boot()) {
+		return $save;
+	}
+
+	if (!smokeping_user_is_admin()) {
+		print '<tr><td class="textArea">' . html_escape(__('You do not have permission to add SmokePing targets.', 'smokeping')) . '</td></tr>';
+
+		return $save;
+	}
+
+	$hostIds = is_array($save['host_array'] ?? null) ? smokeping_int_list($save['host_array']) : [];
+
+	smokeping_device_actions()->preview($hostIds, smokeping_settings()->pollerId);
+
+	return $save;
+}
+
+/**
+ * device_action_execute hook: run the bulk action once the operator confirmed.
+ * Devices the user may not see are skipped, however they got into the request.
+ *
+ * @param mixed $action
+ * @return mixed
+ */
+function smokeping_device_action_execute($action) {
+	if ($action !== 'smokeping_add' || !smokeping_boot()) {
+		return $action;
+	}
+
+	if (!smokeping_user_is_admin()) {
+		raise_message('smokeping_add', __('You do not have permission to add SmokePing targets.', 'smokeping'), MESSAGE_LEVEL_ERROR);
+
+		return $action;
+	}
+
+	$selected = sanitize_unserialize_selected_items(get_nfilter_request_var('selected_items'));
+	$allowed  = [];
+
+	if (is_array($selected)) {
+		foreach (smokeping_int_list($selected) as $hostId) {
+			if (is_device_allowed($hostId)) {
+				$allowed[] = $hostId;
+			}
+		}
+	}
+
+	$userId   = isset($_SESSION['sess_user_id']) && is_numeric($_SESSION['sess_user_id']) ? (int) $_SESSION['sess_user_id'] : 0;
+	$outcomes = smokeping_device_actions()->execute($allowed, smokeping_settings()->pollerId, $userId);
+
+	raise_message('smokeping_add', implode('<br>', array_map('html_escape', \Cacti\Smokeping\DeviceActions::summary($outcomes))), MESSAGE_LEVEL_INFO);
+
+	return $action;
+}
+
+/**
+ * api_device_save hook: warn when a device with SmokePing targets is saved on
+ * a poller that does not run the reader. The save goes ahead.
+ *
+ * @param mixed $save
+ * @return mixed
+ */
+function smokeping_api_device_save($save) {
+	if (!is_array($save) || !smokeping_boot()) {
+		return $save;
+	}
+
+	$warning = (new \Cacti\Smokeping\DeviceSaveCheck(new \Cacti\Smokeping\TargetRepository(false)))->warning($save, smokeping_settings()->pollerId);
+
+	if ($warning !== null) {
+		cacti_log('WARNING: ' . $warning, false, 'SMOKEPING');
+		raise_message('smokeping_device_poller', $warning, MESSAGE_LEVEL_WARN);
+	}
+
+	return $save;
+}
+
+/**
+ * graph_buttons hook: a link from a graph of a device with SmokePing targets
+ * to the SmokePing page filtered to that device.
+ *
+ * @param mixed $data
+ * @return mixed
+ */
+function smokeping_graph_buttons($data) {
+	global $config;
+
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping') || !api_plugin_user_realm_auth('smokeping.php')) {
+		return $data;
+	}
+
+	$payload = is_array($data) && isset($data[1]) && is_array($data[1]) ? $data[1] : [];
+	$graphId = isset($payload['local_graph_id']) && is_numeric($payload['local_graph_id']) ? (int) $payload['local_graph_id'] : 0;
+	$links   = new \Cacti\Smokeping\GraphLinks(new \Cacti\Smokeping\TargetRepository(false), new \Cacti\Smokeping\CactiObjectRepository(false));
+	$hostId  = $links->deviceFor($graphId);
+
+	if ($hostId > 0) {
+		print \Cacti\Smokeping\GraphLinks::html($config['url_path'], $hostId);
+	}
+
+	return $data;
+}
+
 /**
  * The summary data source's answer for one series, read from the reader's
  * cache with the settings of this poller.

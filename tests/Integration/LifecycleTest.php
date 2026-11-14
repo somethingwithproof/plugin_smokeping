@@ -22,6 +22,9 @@
  +-------------------------------------------------------------------------+
 */
 
+// The version INFO declares, which Cacti records as the installed version.
+define('SMOKEPING_VERSION', (string) (parse_ini_file(dirname(__DIR__, 2) . '/INFO', true)['info']['version'] ?? ''));
+
 const SMOKEPING_TABLES = [
 	'plugin_smokeping_health',
 	'plugin_smokeping_mapping',
@@ -49,7 +52,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 	$state = lifecycle('install');
 
 	expect($state['plugin']['status'])->toEqual('4')
-		->and($state['plugin']['version'])->toEqual('0.1')
+		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION)
 		->and($state['schema'])->toEqual('2')
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tracked'])->toBe(SMOKEPING_TABLES)
@@ -84,7 +87,7 @@ it('upgrades from an older recorded version and is idempotent on repeated runs',
 
 	$first = lifecycle('upgrade');
 	expect($first['result'])->toBeTrue()
-		->and($first['plugin']['version'])->toEqual('0.1');
+		->and($first['plugin']['version'])->toEqual(SMOKEPING_VERSION);
 
 	$second = lifecycle('upgrade');
 	$third  = lifecycle('upgrade');
@@ -132,7 +135,7 @@ it('records a failed template import once instead of retrying it on every reques
 
 	expect($first['templates']['host'])->toBe(0)
 		->and(json_decode($first['templates']['failure'], true)['message'])->toContain('missing or empty')
-		->and($first['plugin']['version'])->toEqual('0.1');
+		->and($first['plugin']['version'])->toEqual(SMOKEPING_VERSION);
 
 	// Many later requests neither retry nor log again.
 	for ($i = 0; $i < 5; $i++) {
@@ -195,7 +198,7 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tables']['plugin_smokeping_target'])->toBe(1)
 		->and($state['schema'])->toEqual('2')
-		->and($state['plugin']['version'])->toEqual('0.1');
+		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION);
 });
 
 it('refuses a schema newer than the code and leaves the recorded version alone', function () {

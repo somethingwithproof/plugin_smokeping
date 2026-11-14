@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Cacti 0.1\n"
+"Project-Id-Version: Cacti 1.0.0-rc.1\n"
 "Report-Msgid-Bugs-To: developers@cacti.net\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Cacti Developers <developers@cacti.net>\n"

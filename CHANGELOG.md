@@ -9,7 +9,7 @@ First release candidate of observe mode (phase 1). The plugin reads SmokePing's 
 ### Added
 
 - Plugin lifecycle with a PHP 8.2 guard that leaves Cacti running on older PHP, tracked tables, hooks, two realms (SmokePing View and SmokePing Admin), and settings (#25).
-- Inventory of SmokePing targets through SmokePing's own parser, an observation cache read from the RRD files by a reader process on the poller (#29), and a health page (#32).
+- Inventory of SmokePing targets read by the plugin's PHP parser of SmokePing's configuration, checked against SmokePing 2.7.3, 2.8.2 and 2.9.0 by a differential test (decision 0009), an observation cache read from the RRD files by a reader process on the poller (#29), and a health page (#32).
 - Cacti graph templates that draw SmokePing's smoke graph from its RRD files, compared against SmokePing's own graph definition (#17).
 - Provisioning of devices, summary data sources, and smoke graphs for targets, one at a time or in bulk, with re-link proposals for renamed targets (#35, #36).
 - A read-only mount of SmokePing's data directory inside Cacti's RRA path, checked by the health page, and a purge guard that keeps Cacti's cleanup away from SmokePing's files (decision 0007, #37).
@@ -21,6 +21,7 @@ First release candidate of observe mode (phase 1). The plugin reads SmokePing's 
 ### Changed
 
 - The version is semantic and recorded in `INFO` (#44).
+- The plugin runs no Perl. The Perl Binary and SmokePing Perl Library Directory settings are removed, and the upgrade deletes them; an rc.1 configuration export that lists them still imports (#29).
 
 ### Not included
 

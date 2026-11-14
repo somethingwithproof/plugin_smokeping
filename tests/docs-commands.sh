@@ -87,7 +87,6 @@ chmod 644 "$DATADIR/Europe/paris.rrd"
 # 2. The poller user.
 id "$POLLER_USER" >/dev/null 2>&1 || useradd -r -M -s /sbin/nologin "$POLLER_USER"
 run poller-access 'datadir listable'
-run poller-group
 
 # 3. Option A: fstab.
 cp /etc/fstab /tmp/fstab.orig 2>/dev/null || : > /tmp/fstab.orig

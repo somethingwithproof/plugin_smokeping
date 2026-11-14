@@ -8,7 +8,7 @@ This guide takes a Cacti 1.2 host and a SmokePing install from nothing to graphs
 |---|---|---|
 | Cacti | 1.2.31 and the current 1.2.x branch (1.2.32 changes how data source paths are checked; see the mount below) | 1.2.31 release and a 1.2.32 development copy |
 | PHP | 8.2 or later. On PHP 8.0 and 8.1 the plugin refuses to install and Cacti keeps working | 8.2.35 for the integration and end-to-end runs; 8.0 syntax lint of the entry points |
-| SmokePing | 2.9.0, 2.8.2, and 2.7.3 (Ubuntu 22.04 only, until 2027-06-01) | 2.8.2 (Debian 13), 2.9.0 (Alpine 3.24, Fedora 44, EL 9 EPEL) for the inventory; all three for graph fidelity |
+| SmokePing | 2.9.0, 2.8.2, and 2.7.3 (Ubuntu 22.04 only, until 2027-06-01) | All three for the configuration parser, compared with SmokePing's own on 2.7.3 (Ubuntu 22.04), 2.8.2 (Debian 13), and 2.9.0 (Fedora 45); all three for graph fidelity |
 | rrdtool | The version Cacti uses; the reader runs `path_rrdtool` | 1.7.2 |
 | Thold, Maint | No change needed | the versions in the plugin workspace |
 | Series count | See [performance](performance.md) for the measured and the supported number | |
@@ -19,11 +19,10 @@ A "series" is one target at one measurement location (the master or a slave). Di
 
 SmokePing writes RRD files. Cacti graphs them and the plugin reads their latest values, and neither writes them. Cacti 1.2.32 and later refuse a data source path outside Cacti's RRA directory, so the plugin points Cacti at SmokePing's data directory through a **read-only mount inside Cacti's RRA path**, by default `<rra_path>/smokeping` ([decision 0007](decisions/0007-read-only-mount-under-rra-path.md)). The mount is also the main protection for SmokePing's files: Cacti's own cleanup cannot delete or rename through it.
 
-The Cacti poller that runs the plugin's reader must be able to read three things on the SmokePing host:
+The Cacti poller that runs the plugin's reader must be able to read two things on the SmokePing host:
 
-1. SmokePing's configuration file (`/etc/smokeping/config`), which the inventory reads with SmokePing's own parser.
-2. SmokePing's Perl library (`Smokeping.pm`), because that parser is part of it.
-3. SmokePing's data directory, through the mount.
+1. SmokePing's configuration file (`/etc/smokeping/config`) and the files it includes, which the plugin reads with its own PHP parser of SmokePing's format. Included files must be in the configuration file's directory or below it; the plugin refuses any other include. The plugin runs no Perl and does not need SmokePing's Perl library.
+2. SmokePing's data directory, through the mount.
 
 When SmokePing and Cacti are on different hosts, share the data directory read-only (NFS) and mount it on the host that runs the SmokePing poller; see [operations](operations.md#topologies). SmokePing on a Cacti remote data collector is a later phase and is not supported by this release.
 
@@ -61,16 +60,7 @@ runuser -u "$POLLER_USER" -- test -r /etc/smokeping/config && echo "config reada
 runuser -u "$POLLER_USER" -- ls "$DATADIR" > /dev/null && echo "datadir listable"
 ```
 
-Each line must print. If your SmokePing runs with tighter permissions (for example `datadir` as `0750 smokeping:smokeping`), give the poller user read access with a group, not with a mode change on SmokePing's files:
-
-<!-- verify:poller-group -->
-```sh
-GROUP=$(stat -c %G "$DATADIR")
-usermod -aG "$GROUP" "$POLLER_USER"
-id "$POLLER_USER"
-```
-
-The group is the one that owns SmokePing's data directory: `smokeping` on Debian, Ubuntu, and Alpine, `apache` on EL and Fedora (which have no `smokeping` group). Restart the web server and whatever runs Cacti's poller (cron needs no restart; `php-fpm` and `httpd` do) so the new group applies. The configuration file on EL and Fedora is `0640 root:apache`, so a poller that runs as any user other than `apache` needs the `apache` group for it too. Never make SmokePing's files writable by Cacti's user.
+Each line must print, and with the packaged permissions they do: the plugin needs no group membership and no other setup on the SmokePing host. A line fails only when SmokePing's permissions are tighter than the package's (for example `datadir` as `0750 smokeping:smokeping`), or when the poller runs as a user other than `apache` on EL and Fedora, where the configuration file is `0640 root:apache`. Then give that one user read access, for example with an ACL (`setfacl -R -m u:$POLLER_USER:rX` on the configuration directory and `DATADIR`), and never make SmokePing's files writable by Cacti's user.
 
 ## 3. Mount the data directory read-only inside Cacti's RRA path
 
@@ -152,11 +142,10 @@ Open **Console > Configuration > Settings > SmokePing** and check:
 |---|---|
 | SmokePing Poller | The Cacti poller that runs on, or shares a filesystem with, SmokePing. Only this poller reads SmokePing data. |
 | SmokePing Configuration File | `/etc/smokeping/config` unless you moved it |
-| Perl Binary and Perl Library Directory | The interpreter and the directory holding `Smokeping.pm`. Leave the library blank to search the packaged locations (`/usr/share/smokeping`, and Perl's default path on Debian). |
 | SmokePing Data Directory | `DATADIR`, as SmokePing sees it |
 | Cacti Mount of the Data Directory | The mount point from step 3; the default is `<rra_path>/smokeping` |
 
-Then open **SmokePing Health**. After the next poller cycle every row should be OK: the PHP binary, the reader, the inventory, the mount, and the templates. To run the first inventory and reader at once instead of waiting for the poller:
+Then open **SmokePing Health** on the server of the SmokePing poller. The configuration row reads the file at once and shows the number of targets, or the first error with its file and line. After the next poller cycle every row should be OK: the PHP binary, the configuration, the reader, the inventory, the mount, and the templates. To run the first inventory and reader at once instead of waiting for the poller:
 
 ```sh
 sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
@@ -166,19 +155,18 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 
 ## Containers
 
-Run the reader where it can see all three things from the start of this guide.
+Run the reader where it can see both things from the start of this guide.
 
-- **Cacti in a container, SmokePing on the host.** Mount the data directory read-only at the RRA path, and the configuration and library read-only too:
+- **Cacti in a container, SmokePing on the host.** Mount the data directory read-only at the RRA path, and the configuration directory read-only too:
 
   ```sh
   docker run -d --name cacti \
     -v /var/lib/smokeping:/var/www/html/rra/smokeping:ro \
     -v /etc/smokeping:/etc/smokeping:ro \
-    -v /usr/share/smokeping:/usr/share/smokeping:ro \
     my-cacti-image
   ```
 
-  Replace the mounts' left-hand sides with the host's `DATADIR`, and set the plugin's Perl Library Directory to `/usr/share/smokeping` on EL, Fedora, and Alpine hosts (Debian and Ubuntu keep `Smokeping.pm` in Perl's default path, `/usr/share/perl5`; mount that directory or install the `smokeping` package in the image instead). The image also needs `perl` and the modules SmokePing's parser loads, which the `smokeping` package pulls in. The container's PHP must be 8.2 or later. The `:ro` on the mount is what the Health page checks; a mount without it is reported as an error.
+  Replace the data mount's left-hand side with the host's `DATADIR`. The image needs nothing from SmokePing: no Perl and no `smokeping` package. The container's PHP must be 8.2 or later. The `:ro` on the mount is what the Health page checks; a mount without it is reported as an error.
 - **Docker Compose.** The same, as `volumes:` entries with `read_only: true` and `type: bind`:
 
   ```yaml

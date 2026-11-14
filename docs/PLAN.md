@@ -172,7 +172,7 @@ flowchart TB
     end
     subgraph Poller["Cacti poller next to SmokePing: main server or remote collector"]
         PB[poller_bottom] --> RJ[poller_smokeping.php reader]
-        RJ --> INV[Inventory script using SmokePing parser]
+        RJ --> INV[PHP parser of SmokePing's configuration]
         RJ --> PIPE[Cacti rrdtool pipe]
         SS[Script server input] --> CACHE[(Observation cache)]
         RJ --> CACHE
@@ -200,7 +200,7 @@ SmokePing always runs on, or shares a filesystem with, a Cacti poller: the main 
 | Plugin pages | Inventory, mapping, health, revisions | Cacti page framework, csrf-magic, realms | Show cached data with its age; never block on SmokePing |
 | Cacti graphs | Smoke graphs and summary graphs | Graph templates shipped as template XML | Standard Cacti behavior for a missing or unreadable RRD |
 | Reader (`poller_smokeping.php`) | Run inventory, read `lastupdate` and bounded fetches through one rrdtool pipe, update cache and health | `poller_bottom`, `exec_background()`, `register_process_start()`, filtered by `poller_id` | Single instance per poller; time budget per run; resumes next cycle |
-| Inventory script | Emit target path, `host`, `probe`, `menu`, `title`, `slaves`, `step`, `pings` as JSON | Perl CLI using `Smokeping::get_parser()`, run by the reader | Parse failure leaves the previous inventory in place and raises a health error |
+| Configuration parser | Read target path, `host`, `probe`, `menu`, `title`, `slaves`, `step`, `pings` from SmokePing's configuration | PHP (`SmokepingConfigParser`), in the reader's process, checked against `Smokeping::get_parser()` by a differential test (decision 0009) | Parse failure leaves the previous inventory in place and raises a health error naming the file and line |
 | Script server input | Return `median`, loss percentage, and data age per target and location | Cacti script server | `U` for median and loss when stale; age always numeric |
 | Config writer (phase 2) | Write the managed include file, run `--check`, request reload, verify | Files only | Failed check or verification restores the previous file and requests reload again |
 | Path unit (phase 2) | Run the package's reload when a request file appears | systemd `.path` and `.service` units, installed by the administrator from shipped examples | Writes a result file the writer reads; no input from Cacti beyond the file's existence |
@@ -497,7 +497,7 @@ This repository holds the proposal and tracks its requirements as GitHub issues 
 - **Devices required.** Every target maps to a Cacti device, created from a marked template on confirmation.
 - **IDs never reused.** Managed section names are random, and apply refuses to reuse an existing RRD path.
 - **PHP guard added.** `setup.php` and shims parse on PHP 8.0 and refuse to run below 8.2, so a 1.2.31 site on an older PHP is not broken by the plugin.
-- **Inventory script.** A short Perl CLI using `Smokeping::get_parser()`, as `smokeinfo` does, instead of a service.
+- **Inventory script.** A short Perl CLI using `Smokeping::get_parser()`, as `smokeinfo` does, instead of a service. Superseded by decision 0009: a PHP parser, with the Perl script kept only as a test oracle.
 - **Managed probes narrowed** to ICMP and TCP because servcheck covers service checks.
 - **Reader uses Cacti's rrdtool pipe.** Cacti object row counts added to the performance section.
 - **Cacti idioms made explicit:** hook list, `config_settings`, `cacti_log()`, csrf-magic, two realms, text domain, template XML import, `varchar` enums, explicit database connections for remote code.

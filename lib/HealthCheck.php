@@ -40,12 +40,35 @@ final class HealthCheck {
 		];
 	}
 
+	public static function templates(bool $present, ?TemplateFailure $failure): Finding {
+		if ($failure !== null) {
+			return new Finding('templates', HealthLevel::Error, __('The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause.', $failure->message, 'smokeping'));
+		}
+
+		if (!$present) {
+			return new Finding('templates', HealthLevel::Warning, __('The SmokePing templates are not imported. Use Retry Template Import.', 'smokeping'));
+		}
+
+		return new Finding('templates', HealthLevel::Ok, __('The SmokePing templates are imported.', 'smokeping'));
+	}
+
+	/**
+	 * @param list<string> $devices devices with summary data sources polled by another poller
+	 */
+	public static function devicePollers(array $devices, int $readerPollerId): Finding {
+		if ($devices === []) {
+			return new Finding('device_pollers', HealthLevel::Ok, __('Every device with summary data sources is polled by the reader\'s poller.', 'smokeping'));
+		}
+
+		return new Finding('device_pollers', HealthLevel::Error, __('%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s', count($devices), $readerPollerId, implode(', ', array_slice($devices, 0, 5)), 'smokeping'));
+	}
+
 	public static function phpBinary(string $phpBinary): Finding {
 		if ($phpBinary === '' || !is_file($phpBinary) || !is_executable($phpBinary)) {
 			return new Finding('php_binary', HealthLevel::Error, __('The PHP binary path setting is empty or not an executable file, so the reader cannot start.', 'smokeping'));
 		}
 
-		return new Finding('php_binary', HealthLevel::Ok, sprintf(__('The reader starts with %s.', 'smokeping'), $phpBinary));
+		return new Finding('php_binary', HealthLevel::Ok, __('The reader starts with %s.', $phpBinary, 'smokeping'));
 	}
 
 	private function reader(Health $health): Finding {
@@ -56,21 +79,21 @@ final class HealthCheck {
 		$age = $this->clock->now() - $health->runFinished;
 
 		if ($age > 3 * $this->pollerInterval) {
-			return new Finding('reader', HealthLevel::Warning, sprintf(__('The last reader run finished %d seconds ago, more than three poller intervals.', 'smokeping'), $age));
+			return new Finding('reader', HealthLevel::Warning, __('The last reader run finished %d seconds ago, more than three poller intervals.', $age, 'smokeping'));
 		}
 
 		if ($health->budgetOverruns > 0) {
-			return new Finding('reader', HealthLevel::Warning, sprintf(__('The reader read %1$d of %2$d series in %3$.1f seconds and has exceeded its time budget %4$d times.', 'smokeping'), $health->seriesRead, $health->seriesTotal, $health->runDuration, $health->budgetOverruns));
+			return new Finding('reader', HealthLevel::Warning, __('The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times.', $health->seriesRead, $health->seriesTotal, $health->runDuration, $health->budgetOverruns, 'smokeping'));
 		}
 
-		return new Finding('reader', HealthLevel::Ok, sprintf(__('The reader read %1$d of %2$d series in %3$.1f seconds, %4$d seconds ago.', 'smokeping'), $health->seriesRead, $health->seriesTotal, $health->runDuration, $age));
+		return new Finding('reader', HealthLevel::Ok, __('The reader read %d of %d series in %.1f seconds, %d seconds ago.', $health->seriesRead, $health->seriesTotal, $health->runDuration, $age, 'smokeping'));
 	}
 
 	private function inventory(Health $health): Finding {
 		return match ($health->inventoryStatus) {
 			InventoryStatus::Never => new Finding('inventory', HealthLevel::Unknown, __('No inventory has been read on this poller.', 'smokeping')),
-			InventoryStatus::Error => new Finding('inventory', HealthLevel::Error, sprintf(__('The last inventory failed %1$d seconds ago and the previous one is still in use: %2$s', 'smokeping'), $this->clock->now() - $health->inventoryAt, $health->inventoryError)),
-			InventoryStatus::Ok    => new Finding('inventory', HealthLevel::Ok, sprintf(__('The inventory listed %1$d targets %2$d seconds ago.', 'smokeping'), $health->inventoryTargets, $this->clock->now() - $health->inventoryAt)),
+			InventoryStatus::Error => new Finding('inventory', HealthLevel::Error, __('The last inventory failed %d seconds ago and the previous one is still in use: %s', $this->clock->now() - $health->inventoryAt, $health->inventoryError, 'smokeping')),
+			InventoryStatus::Ok    => new Finding('inventory', HealthLevel::Ok, __('The inventory listed %d targets %d seconds ago.', $health->inventoryTargets, $this->clock->now() - $health->inventoryAt, 'smokeping')),
 		};
 	}
 }

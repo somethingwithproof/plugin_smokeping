@@ -175,3 +175,26 @@ describe('HealthCheck', function () {
 		expect(HealthCheck::phpBinary($binary)->level)->toBe(HealthLevel::Error);
 	})->with(['', '/nonexistent/php', __FILE__]);
 });
+
+describe('Template import failure', function () {
+	it('round-trips through its setting and blocks only the same plugin and template version', function () {
+		$failure = new Somethingwithproof\Smokeping\TemplateFailure('0.1', 1, 1700000000, 'broken');
+		$again   = Somethingwithproof\Smokeping\TemplateFailure::fromSetting($failure->toSetting());
+
+		expect($again)->toEqual($failure)
+			->and($again->blocks('0.1', 1))->toBeTrue()
+			->and($again->blocks('0.2', 1))->toBeFalse()
+			->and($again->blocks('0.1', 2))->toBeFalse()
+			->and(Somethingwithproof\Smokeping\TemplateFailure::fromSetting(''))->toBeNull()
+			->and(Somethingwithproof\Smokeping\TemplateFailure::fromSetting('not json'))->toBeNull();
+	});
+
+	it('reports a failure as an error with its reason, and a missing template as a warning', function () {
+		$failed = HealthCheck::templates(false, new Somethingwithproof\Smokeping\TemplateFailure('0.1', 1, 1, 'file missing'));
+
+		expect($failed->level)->toBe(HealthLevel::Error)
+			->and($failed->message)->toContain('file missing')
+			->and(HealthCheck::templates(false, null)->level)->toBe(HealthLevel::Warning)
+			->and(HealthCheck::templates(true, null)->level)->toBe(HealthLevel::Ok);
+	});
+});

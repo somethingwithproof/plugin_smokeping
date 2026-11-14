@@ -26,7 +26,7 @@ namespace Somethingwithproof\Smokeping;
 final class Html {
 	/**
 	 * @param list<string> $headers
-	 * @param list<list<string>> $rows already plain text; escaped here
+	 * @param list<list<string|RawHtml>> $rows plain text, escaped here, or RawHtml from link()
 	 */
 	public static function table(string $title, array $headers, array $rows, string $empty): void {
 		html_start_box(html_escape($title), '100%', '', '3', 'center', '');
@@ -47,13 +47,22 @@ final class Html {
 			print '<tr class="selectable tableRow">';
 
 			foreach ($row as $cell) {
-				print '<td>' . html_escape($cell) . '</td>';
+				print '<td>' . ($cell instanceof RawHtml ? $cell->html : html_escape($cell)) . '</td>';
 			}
 
 			print '</tr>';
 		}
 
 		html_end_box(false);
+	}
+
+	/**
+	 * A link to a page of this plugin; the text and every query value are escaped.
+	 *
+	 * @param array<string, int|string> $query
+	 */
+	public static function link(string $file, array $query, string $text): RawHtml {
+		return new RawHtml('<a class="linkEditMain" href="' . html_escape($file . '?' . http_build_query($query)) . '">' . html_escape($text) . '</a>');
 	}
 
 	public static function level(HealthLevel $level): string {
@@ -66,6 +75,6 @@ final class Html {
 	}
 
 	public static function age(?int $seconds): string {
-		return $seconds === null ? __('never', 'smokeping') : sprintf(__('%d s ago', 'smokeping'), $seconds);
+		return $seconds === null ? __('never', 'smokeping') : __('%d s ago', $seconds, 'smokeping');
 	}
 }

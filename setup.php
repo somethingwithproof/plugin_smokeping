@@ -265,6 +265,10 @@ function smokeping_config_arrays(): void {
 		$menu[__('Management')]['plugins/smokeping/' . $file] = $title;
 	}
 
+	foreach (\Cacti\Smokeping\Pages::importMenu() as $file => $title) {
+		$menu[__('Import/Export')]['plugins/smokeping/' . $file] = $title;
+	}
+
 	if (in_array(get_current_page(), \Cacti\Smokeping\Pages::upgradeTriggers(), true)) {
 		plugin_smokeping_upgrade();
 	}
@@ -364,6 +368,35 @@ function smokeping_user_sees_every_device(\Cacti\Smokeping\ConfigRepository $rep
 	$allowed = get_allowed_devices();
 
 	return is_array($allowed) && count($allowed) === $repository->deviceCount();
+}
+
+/**
+ * The import of an existing SmokePing configuration. With $webUser the
+ * service checks, on every call, that the acting user may see every device.
+ */
+function smokeping_import_service(bool $webUser = false): \Cacti\Smokeping\SmokepingImportService {
+	global $config;
+
+	$cacti       = new \Cacti\Smokeping\CactiObjectRepository(false);
+	$objects     = new \Cacti\Smokeping\ObjectRepository(false);
+	$settings    = smokeping_settings();
+	$rrdProxy    = read_config_option('storage_location') != 0;
+	$provisioner = new \Cacti\Smokeping\SmokeProvisioner($settings, $config['rra_path'], $config['library_path'], $rrdProxy, $objects, $cacti, new \Cacti\Smokeping\SystemClock());
+	$repository  = new \Cacti\Smokeping\ConfigRepository(false, $config['rra_path']);
+
+	return new \Cacti\Smokeping\SmokepingImportService(
+		$settings,
+		new \Cacti\Smokeping\SmokepingImportRepository(false),
+		new \Cacti\Smokeping\TargetRepository(false),
+		smokeping_target_actions(),
+		$provisioner,
+		$cacti,
+		$config['library_path'],
+		$rrdProxy,
+		$webUser ? static function () use ($repository): bool {
+			return smokeping_user_sees_every_device($repository);
+		} : null
+	);
 }
 
 function smokeping_target_actions(): \Cacti\Smokeping\TargetActions {

@@ -32,7 +32,8 @@ namespace Cacti\Smokeping;
  */
 final class Pages {
 	public const VIEW  = 'smokeping.php';
-	public const ADMIN  = ['smokeping_inventory.php', 'smokeping_health.php', 'smokeping_config.php'];
+	public const IMPORT = 'smokeping_import.php';
+	public const ADMIN  = ['smokeping_inventory.php', 'smokeping_health.php', 'smokeping_config.php', self::IMPORT];
 
 	/**
 	 * @return list<array{name: string, files: list<string>}>
@@ -64,6 +65,15 @@ final class Pages {
 	}
 
 	/**
+	 * Entries for Console > Import/Export, where Cacti lists its own imports.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function importMenu(): array {
+		return [self::IMPORT => __('Import SmokePing Configuration', 'smokeping')];
+	}
+
+	/**
 	 * Pages whose load re-checks the schema, matching how maintained plugins
 	 * apply upgrades in a core that never calls plugin_*_upgrade() itself.
 	 *
@@ -79,7 +89,7 @@ final class Pages {
 	public static function navigation(): array {
 		$nav = [];
 
-		foreach (self::menu() as $file => $title) {
+		foreach (array_merge(self::menu(), self::importMenu()) as $file => $title) {
 			$nav[$file . ':'] = [
 				'title'   => $title,
 				'mapping' => 'index.php:',

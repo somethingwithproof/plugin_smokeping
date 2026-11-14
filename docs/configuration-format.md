@@ -25,16 +25,18 @@ An import only adds and updates. It never deletes a target, never moves a mappin
 schema_version: 1            # required; a higher number is refused
 
 settings:                    # optional; any subset of the settings below
-  smokeping_config_file: /etc/smokeping/config
-  smokeping_perl_binary: /usr/bin/perl
-  smokeping_lib_dir: ''
-  smokeping_datadir: /var/lib/smokeping
-  smokeping_mount_path: /var/www/html/cacti/rra/smokeping   # omitted from exports while it is the default
   smokeping_poller_id: 1
   smokeping_reader_budget: 120
   smokeping_inventory_interval: 300
   smokeping_freshness_allowance: 60
   smokeping_uninstall_keep_tables: false
+
+reference_settings:          # optional; shown for reference, never imported
+  smokeping_config_file: /etc/smokeping/config
+  smokeping_perl_binary: /usr/bin/perl
+  smokeping_lib_dir: ''
+  smokeping_datadir: /var/lib/smokeping
+  smokeping_mount_path: /var/www/html/cacti/rra/smokeping   # omitted from exports while it is the default
 
 targets:                     # optional
   - path: Europe/Paris       # required; the SmokePing tree path
@@ -66,7 +68,9 @@ Reserved keys. `managed_targets` and `probe_profiles` are reserved for a later r
 
 Updates. For a target already present, an import changes only `host`, `probe`, `menu`, `title`, `slaves`, `nomasterpoll`, `step`, `pings`, and `admin_state`. SmokePing's configuration stays the source for the first six fields: the next inventory run restores them, so use an import to restore `admin_state` and to seed a fresh installation, not to edit targets.
 
-Settings values must be the stated type. Paths must be absolute (`smokeping_lib_dir` may be empty). Text may not contain control characters.
+Settings values must be the stated type. Text may not contain control characters.
+
+Reference-only settings. A setting that names a file, a directory, or a program (every one under `reference_settings` above) is never written by an import: a file must not be able to change which interpreter the reader runs or where the plugin reads. The schema marks these by their type, and a file that puts one under `settings` is refused. Under `reference_settings` they are checked for form (an absolute path, or empty where allowed), compared with the installation, and listed in the plan as `not applied, change on the Settings page` when they differ. Change them on the Settings page.
 
 ## XML
 
@@ -77,6 +81,9 @@ Settings values must be the stated type. Paths must be absolute (`smokeping_lib_
     <setting name="smokeping_poller_id">1</setting>
     <setting name="smokeping_uninstall_keep_tables">false</setting>
   </settings>
+  <reference_settings>
+    <setting name="smokeping_datadir">/var/lib/smokeping</setting>
+  </reference_settings>
   <targets>
     <target path="Europe/Paris" poller_id="1" host="paris.example.net" probe="FPing"
             title="Paris: gateway" nomasterpoll="false" step="300" pings="20"

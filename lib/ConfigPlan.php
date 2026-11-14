@@ -37,6 +37,7 @@ final readonly class ConfigPlan {
 	 * @param list<array{target: Target, fields: array<string, array{from: string|int|bool, to: string|int|bool}>}> $targetChanges
 	 * @param list<array{poller_id: int, path: string, host_id: int, hostname: string, description: string}> $mappingAdds
 	 * @param list<string> $errors
+	 * @param list<array{name: string, from: string|int|bool|null, to: string|int|bool}> $notApplied reference-only settings whose file value differs; never written
 	 */
 	public function __construct(
 		public array $settings,
@@ -45,6 +46,7 @@ final readonly class ConfigPlan {
 		public array $mappingAdds,
 		public int $unchanged,
 		public array $errors,
+		public array $notApplied = [],
 	) {
 	}
 
@@ -100,6 +102,10 @@ final readonly class ConfigPlan {
 
 		foreach ($this->mappingAdds as $mapping) {
 			$lines[] = sprintf('add    mapping %s on poller %d -> device %d (%s, %s)', $mapping['path'], $mapping['poller_id'], $mapping['host_id'], self::show($mapping['hostname']), self::show($mapping['description']));
+		}
+
+		foreach ($this->notApplied as $change) {
+			$lines[] = sprintf('not applied, change on the Settings page: %s: %s -> %s', $change['name'], self::show($change['from']), self::show($change['to']));
 		}
 
 		$lines[] = sprintf('%d unchanged', $this->unchanged);

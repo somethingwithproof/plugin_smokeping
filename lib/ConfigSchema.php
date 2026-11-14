@@ -41,6 +41,17 @@ final class ConfigSchema {
 	public const MAX_ERRORS = 50;
 
 	/**
+	 * A setting that names a file, a directory, or a program is reference
+	 * only: a file can show it, but an import never writes it. Letting a file
+	 * set the interpreter the reader runs, or where the plugin reads and writes,
+	 * would turn an import into a way to run code or reach files, so the
+	 * property follows from the setting's type, not from a list a caller keeps.
+	 */
+	public static function isReferenceOnly(string $name): bool {
+		return in_array(self::SETTINGS[$name][0] ?? '', ['path', 'optional_path'], true);
+	}
+
+	/**
 	 * Type, and for ints the lowest accepted value, of each setting.
 	 *
 	 * @var array<string, array{0: string, 1?: int}>
@@ -119,7 +130,7 @@ final class ConfigSchema {
 
 			if (in_array($key, self::RESERVED, true)) {
 				$this->error($key, 'is reserved for managed mode, which this version does not support; remove it');
-			} elseif (!in_array($key, ['schema_version', 'settings', 'targets', 'mappings'], true)) {
+			} elseif (!in_array($key, ['schema_version', 'settings', 'reference_settings', 'targets', 'mappings'], true)) {
 				$this->error($key, 'is not a known key');
 			}
 		}
@@ -134,22 +145,25 @@ final class ConfigSchema {
 			$this->error('schema_version', 'must be 1 or higher');
 		}
 
-		$settings = $this->settings($data['settings'] ?? null);
-		$targets  = $this->targets($data['targets'] ?? null);
+		$settings  = $this->settings($data['settings'] ?? null, false);
+		$reference = $this->settings($data['reference_settings'] ?? null, true);
+		$targets   = $this->targets($data['targets'] ?? null);
 
-		return new ConfigDocument($settings, $targets, $this->mappings($data['mappings'] ?? null));
+		return new ConfigDocument($settings, $targets, $this->mappings($data['mappings'] ?? null), $reference);
 	}
 
 	/**
 	 * @return array<string, string|int|bool>
 	 */
-	private function settings(mixed $value): array {
+	private function settings(mixed $value, bool $reference): array {
+		$section = $reference ? 'reference_settings' : 'settings';
+
 		if ($value === null) {
 			return [];
 		}
 
 		if (!is_array($value) || ($value !== [] && array_is_list($value))) {
-			$this->error('settings', 'must be a map of setting names to values');
+			$this->error($section, 'must be a map of setting names to values');
 
 			return [];
 		}
@@ -158,11 +172,17 @@ final class ConfigSchema {
 
 		foreach ($value as $name => $raw) {
 			$name = (string) $name;
-			$path = 'settings/' . $name;
+			$path = $section . '/' . $name;
 			$spec = self::SETTINGS[$name] ?? null;
 
 			if ($spec === null) {
 				$this->error($path, 'is not a known setting');
+
+				continue;
+			}
+
+			if (self::isReferenceOnly($name) !== $reference) {
+				$this->error($path, $reference ? 'is not a reference-only setting; put it under settings' : 'is reference only and is never imported; change it on the Settings page, and keep it under reference_settings');
 
 				continue;
 			}

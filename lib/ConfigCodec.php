@@ -110,6 +110,11 @@ final class ConfigCodec {
 			$data['settings'] = $document->settings;
 		}
 
+		// Shown for reference; an import reports a difference and writes nothing.
+		if ($document->reference !== []) {
+			$data['reference_settings'] = $document->reference;
+		}
+
 		$targets = [];
 
 		foreach ($document->targets as $target) {

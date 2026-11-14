@@ -70,6 +70,11 @@ final class ConfigRepository {
 
 		try {
 			foreach ($plan->settings as $change) {
+				// Never write a setting that names a path or program, whatever the plan holds.
+				if (ConfigSchema::isReferenceOnly($change['name'])) {
+					throw new \RuntimeException(sprintf('The setting %s is reference only', $change['name']));
+				}
+
 				$value = $change['to'];
 
 				$this->execute('REPLACE INTO settings (name, value) VALUES (?, ?)', [$change['name'], is_bool($value) ? ($value ? 'on' : '') : (string) $value]);

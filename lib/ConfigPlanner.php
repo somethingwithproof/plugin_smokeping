@@ -38,10 +38,23 @@ final class ConfigPlanner {
 	private const UPDATABLE = ['host', 'probe', 'menu', 'title', 'slaves', 'nomasterpoll', 'step', 'pings', 'admin_state'];
 
 	public static function plan(ConfigDocument $document, ConfigState $state): ConfigPlan {
-		$errors  = [];
-		$changes = [];
+		$errors     = [];
+		$changes    = [];
+		$notApplied = [];
+
+		// Reference-only settings are compared so the plan can say they differ,
+		// and are never part of what an apply writes.
+		foreach ($document->reference as $name => $value) {
+			if (($state->settings[$name] ?? null) !== $value) {
+				$notApplied[] = ['name' => $name, 'from' => $state->settings[$name] ?? null, 'to' => $value];
+			}
+		}
 
 		foreach ($document->settings as $name => $value) {
+			if (ConfigSchema::isReferenceOnly($name)) {
+				continue;
+			}
+
 			$current = $state->settings[$name] ?? null;
 
 			if ($current === $value) {
@@ -130,7 +143,7 @@ final class ConfigPlanner {
 			}
 		}
 
-		return new ConfigPlan($changes, $adds, $updates, $mappingAdds, $unchanged, $errors);
+		return new ConfigPlan($changes, $adds, $updates, $mappingAdds, $unchanged, $errors, $notApplied);
 	}
 
 	/**
@@ -140,10 +153,15 @@ final class ConfigPlanner {
 	 * that host.
 	 */
 	public static function export(ConfigState $state): ConfigDocument {
-		$settings = $state->settings;
+		$settings  = [];
+		$reference = [];
 
-		if (($settings['smokeping_mount_path'] ?? null) === $state->defaultMountPath) {
-			unset($settings['smokeping_mount_path']);
+		foreach ($state->settings as $name => $value) {
+			if (!ConfigSchema::isReferenceOnly($name)) {
+				$settings[$name] = $value;
+			} elseif (!($name === 'smokeping_mount_path' && $value === $state->defaultMountPath)) {
+				$reference[$name] = $value;
+			}
 		}
 
 		$targets = array_values($state->targets);
@@ -160,6 +178,6 @@ final class ConfigPlanner {
 			}
 		}
 
-		return new ConfigDocument($settings, $targets, $mappings);
+		return new ConfigDocument($settings, $targets, $mappings, $reference);
 	}
 }

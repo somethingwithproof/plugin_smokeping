@@ -109,17 +109,19 @@ final class ConfigXml {
 		$dom->appendChild($root);
 		$root->setAttribute('schema_version', (string) self::scalar($data['schema_version'] ?? ConfigDocument::VERSION));
 
-		$settings = $data['settings'] ?? [];
+		foreach (['settings', 'reference_settings'] as $section) {
+			$settings = $data[$section] ?? [];
 
-		if (is_array($settings) && $settings !== []) {
-			$parent = $root->appendChild($dom->createElement('settings'));
+			if (is_array($settings) && $settings !== []) {
+				$parent = $root->appendChild($dom->createElement($section));
 
-			foreach ($settings as $name => $value) {
-				$element = $dom->createElement('setting');
+				foreach ($settings as $name => $value) {
+					$element = $dom->createElement('setting');
 
-				$element->setAttribute('name', (string) $name);
-				$element->appendChild($dom->createTextNode(self::scalar($value)));
-				$parent?->appendChild($element);
+					$element->setAttribute('name', (string) $name);
+					$element->appendChild($dom->createTextNode(self::scalar($value)));
+					$parent?->appendChild($element);
+				}
 			}
 		}
 
@@ -241,7 +243,7 @@ final class ConfigXml {
 			$this->lines[$name] = $child->getLineNo();
 
 			$data[$name] = match ($name) {
-				'settings' => $this->settings($child),
+				'settings', 'reference_settings' => $this->settings($child, $name),
 				'targets'  => $this->targets($child),
 				'mappings' => $this->mappings($child),
 				// Anything else, managed_targets and probe_profiles included, reaches
@@ -256,7 +258,7 @@ final class ConfigXml {
 	/**
 	 * @return array<string, int|bool|string>
 	 */
-	private function settings(\DOMElement $parent): array {
+	private function settings(\DOMElement $parent, string $section): array {
 		$settings = [];
 
 		foreach ($this->elements($parent) as $element) {
@@ -268,7 +270,7 @@ final class ConfigXml {
 				throw new ConfigException(sprintf('The setting "%s" appears twice', $name), $element->getLineNo());
 			}
 
-			$this->lines['settings/' . $name] = $element->getLineNo();
+			$this->lines[$section . '/' . $name] = $element->getLineNo();
 			$settings[$name]                  = ConfigSchema::coerce(ConfigSchema::SETTINGS[$name][0] ?? 'string', $this->leafText($element));
 		}
 

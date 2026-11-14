@@ -43,13 +43,14 @@ function smokeping_target(string $path, array $over = []): Target {
 
 function smokeping_document(): ConfigDocument {
 	return new ConfigDocument(
-		['smokeping_config_file' => '/etc/smokeping/config', 'smokeping_poller_id' => 1, 'smokeping_reader_budget' => 90, 'smokeping_uninstall_keep_tables' => true, 'smokeping_lib_dir' => ''],
+		['smokeping_poller_id' => 1, 'smokeping_reader_budget' => 90, 'smokeping_uninstall_keep_tables' => true],
 		[
 			smokeping_target('Europe/Paris', ['title' => 'Paris: the "gateway" #1', 'menu' => 'yes', 'slaves' => ['site-b', 'a.b']]),
 			smokeping_target('Europe/Rome', ['host' => 'rome.example.net', 'state' => AdminState::Disabled, 'present' => false, 'nomaster' => true, 'slaves' => ['site-b']]),
 			smokeping_target('Other/x', ['poller' => 2, 'title' => '007']),
 		],
-		[new ConfigMapping(1, TargetPath::fromString('Europe/Paris'), 'paris.example.net', "Paris GW & 'co' <1>")]
+		[new ConfigMapping(1, TargetPath::fromString('Europe/Paris'), 'paris.example.net', "Paris GW & 'co' <1>")],
+		['smokeping_config_file' => '/etc/smokeping/config', 'smokeping_lib_dir' => '']
 	);
 }
 
@@ -111,7 +112,7 @@ it('reports every schema problem, with the line of each', function () {
 	  smokeping_poller_id: 0
 	  smokeping_nonsense: 1
 	  smokeping_uninstall_keep_tables: 'on'
-	  smokeping_datadir: relative/path
+	  smokeping_datadir: /var/lib/smokeping
 	targets:
 	  - path: Europe/Paris
 	    step: -1
@@ -133,7 +134,7 @@ it('reports every schema problem, with the line of each', function () {
 	expect($errors)->toContain('line 3: settings/smokeping_poller_id must be a whole number from 1 to 2147483647')
 		->and($joined)->toContain('line 4: settings/smokeping_nonsense is not a known setting')
 		->and($joined)->toContain('line 5: settings/smokeping_uninstall_keep_tables must be true or false')
-		->and($joined)->toContain('line 6: settings/smokeping_datadir must be an absolute path')
+		->and($joined)->toContain('line 6: settings/smokeping_datadir is reference only and is never imported')
 		->and($joined)->toContain('line 9: targets/0/step must be a whole number from 0 to 604800')
 		->and($joined)->toContain('line 10: targets/0/mode managed targets are not supported')
 		->and($joined)->toContain('line 11: targets/0/admin_state must be enabled, disabled, or archived')
@@ -295,7 +296,7 @@ it('exports without the default mount path, and with mappings by device name', f
 
 	$custom = ConfigPlanner::export(smokeping_state(['settings' => ['smokeping_mount_path' => '/data/rra/sp']]));
 
-	expect($custom->settings['smokeping_mount_path'])->toBe('/data/rra/sp');
+	expect($custom->reference['smokeping_mount_path'])->toBe('/data/rra/sp')->and($custom->settings)->not->toHaveKey('smokeping_mount_path');
 });
 
 it('accepts the examples in docs/configuration-format.md', function () {
@@ -311,3 +312,38 @@ it('accepts the examples in docs/configuration-format.md', function () {
 			->and($parsed->mappings[0]->hostname)->toBe('paris-gw.example.net');
 	}
 });
+
+it('treats every path or program setting as reference only, from the schema and not from a list', function () {
+	$paths = ['smokeping_config_file', 'smokeping_perl_binary', 'smokeping_lib_dir', 'smokeping_datadir', 'smokeping_mount_path'];
+
+	foreach (Cacti\Smokeping\ConfigSchema::SETTINGS as $name => $spec) {
+		expect(Cacti\Smokeping\ConfigSchema::isReferenceOnly($name))->toBe(in_array($spec[0], ['path', 'optional_path'], true), $name);
+	}
+
+	foreach ($paths as $name) {
+		expect(Cacti\Smokeping\ConfigSchema::isReferenceOnly($name))->toBeTrue($name)
+			->and(implode(' ', smokeping_config_errors('yaml', "schema_version: 1\nsettings:\n  $name: /tmp/x\n")))->toContain('is reference only and is never imported');
+	}
+
+	expect(Cacti\Smokeping\ConfigSchema::isReferenceOnly('smokeping_reader_budget'))->toBeFalse()
+		->and(implode(' ', smokeping_config_errors('yaml', "schema_version: 1\nreference_settings:\n  smokeping_reader_budget: 5\n")))->toContain('not a reference-only setting')
+		->and(implode(' ', smokeping_config_errors('xml', '<smokeping-config schema_version="1"><settings><setting name="smokeping_perl_binary">/tmp/x</setting></settings></smokeping-config>')))->toContain('is reference only');
+});
+
+it('reports a differing reference setting as not applied and plans no write for it', function () {
+	$document = new ConfigDocument([], [], [], ['smokeping_perl_binary' => '/tmp/evil', 'smokeping_datadir' => '/var/lib/smokeping']);
+	$state    = smokeping_state(['settings' => ['smokeping_poller_id' => 1, 'smokeping_perl_binary' => '/usr/bin/perl', 'smokeping_datadir' => '/var/lib/smokeping']]);
+	$plan     = ConfigPlanner::plan($document, $state);
+
+	expect($plan->settings)->toBe([])
+		->and($plan->isEmpty())->toBeTrue()
+		->and($plan->notApplied)->toBe([['name' => 'smokeping_perl_binary', 'from' => '/usr/bin/perl', 'to' => '/tmp/evil']])
+		->and($plan->lines())->toContain('not applied, change on the Settings page: smokeping_perl_binary: "/usr/bin/perl" -> "/tmp/evil"');
+});
+
+it('writes reference settings in their own section in both formats and reads them back', function (string $format) {
+	$text = ConfigCodec::write($format, smokeping_document());
+
+	expect($text)->toContain('reference_settings')
+		->and(ConfigCodec::parse($format, $text)->reference)->toBe(['smokeping_config_file' => '/etc/smokeping/config', 'smokeping_lib_dir' => '']);
+})->with(['yaml', 'xml']);

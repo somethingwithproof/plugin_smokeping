@@ -38,11 +38,13 @@ final readonly class ConfigDocument {
 	 * @param array<string, string|int|bool> $settings
 	 * @param list<Target> $targets
 	 * @param list<ConfigMapping> $mappings
+	 * @param array<string, string|int|bool> $reference settings that name a path or program: shown in a file, never imported
 	 */
 	public function __construct(
 		public array $settings,
 		public array $targets,
 		public array $mappings,
+		public array $reference = [],
 	) {
 	}
 }

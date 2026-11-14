@@ -30,6 +30,8 @@ final class HealthPage {
 		private readonly MountCheck $mount,
 		private readonly HealthRepository $health,
 		private readonly TargetRepository $targets,
+		private readonly TemplateInstaller $templates,
+		private readonly CactiObjectRepository $cacti,
 	) {
 	}
 
@@ -45,14 +47,18 @@ final class HealthPage {
 
 		$findings = array_merge(
 			$this->checks->check($health, $phpBinary),
+			[HealthCheck::templates($this->templates->present(), $this->templates->failure())],
+			[HealthCheck::devicePollers($this->cacti->summaryDevicesOffPoller($settings->pollerId), $settings->pollerId)],
 			$this->mount->check($settings->mountPath, $rraPath, $expected)
 		);
 
 		Html::table(
-			sprintf(__('SmokePing Health for Poller %d', 'smokeping'), $settings->pollerId),
+			__('SmokePing Health for Poller %d', $settings->pollerId, 'smokeping'),
 			[__('Check', 'smokeping'), __('Status', 'smokeping'), __('Detail', 'smokeping')],
 			array_map(fn (Finding $f) => [$f->check, Html::level($f->level), $f->message], $findings),
 			''
 		);
+
+		print '<form method="post" action="smokeping_health.php"><input type="hidden" name="action" value="retry_templates"><input type="submit" class="ui-button ui-corner-all ui-widget" value="' . html_escape(__('Retry Template Import', 'smokeping')) . '"></form>';
 	}
 }

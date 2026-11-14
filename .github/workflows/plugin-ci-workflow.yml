@@ -69,7 +69,7 @@ jobs:
       run: |
         set -euo pipefail
         php -v
-        for f in *.php include/*.php; do
+        for f in *.php include/*.php scripts/*.php cli/*.php; do
           php -l "$f"
         done
 

@@ -16,8 +16,66 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr ""
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr ""
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr ""
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr ""
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr ""
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr ""
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr ""
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr ""
+
 #: lib/HealthCheck.php
 msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr ""
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
 msgstr ""
 
 #: lib/HealthCheck.php
@@ -40,12 +98,12 @@ msgstr ""
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The reader read %1$d of %2$d series in %3$.1f seconds and has exceeded its time budget %4$d times."
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
 msgstr ""
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The reader read %1$d of %2$d series in %3$.1f seconds, %4$d seconds ago."
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
 msgstr ""
 
 #: lib/HealthCheck.php
@@ -54,12 +112,12 @@ msgstr ""
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The last inventory failed %1$d seconds ago and the previous one is still in use: %2$s"
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
 msgstr ""
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The inventory listed %1$d targets %2$d seconds ago."
+msgid "The inventory listed %d targets %d seconds ago."
 msgstr ""
 
 #: lib/HealthPage.php
@@ -77,6 +135,10 @@ msgstr ""
 
 #: lib/HealthPage.php
 msgid "Status"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
 msgstr ""
 
 #: lib/Html.php
@@ -104,6 +166,62 @@ msgstr ""
 msgid "never"
 msgstr ""
 
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr ""
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Cancel"
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr ""
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr ""
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr ""
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr ""
+
 #: lib/InventoryPage.php
 msgid "Gone"
 msgstr ""
@@ -113,16 +231,19 @@ msgid "Present"
 msgstr ""
 
 #: lib/InventoryPage.php
-#, php-format
-msgid "Device %d"
+msgid "Unmapped"
 msgstr ""
 
 #: lib/InventoryPage.php
-msgid "Unmapped"
+msgid "Add to Cacti"
 msgstr ""
 
 #: lib/InventoryPage.php lib/Pages.php
 msgid "SmokePing Inventory"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Action"
 msgstr ""
 
 #: lib/InventoryPage.php
@@ -162,6 +283,10 @@ msgid "No targets have been imported on this poller."
 msgstr ""
 
 #: lib/InventoryPage.php
+msgid "Review"
+msgstr ""
+
+#: lib/InventoryPage.php
 msgid "Re-link Proposals"
 msgstr ""
 
@@ -194,7 +319,7 @@ msgstr ""
 
 #: lib/MountCheck.php
 #, php-format
-msgid "The SmokePing mount %1$s is not inside the Cacti RRA path %2$s."
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
 msgstr ""
 
 #: lib/MountCheck.php
@@ -223,7 +348,7 @@ msgstr ""
 
 #: lib/MountCheck.php
 #, php-format
-msgid "%1$s is on the writable mount %2$s. Mount SmokePing's data directory read-only."
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
 msgstr ""
 
 #: lib/MountCheck.php
@@ -237,7 +362,7 @@ msgstr ""
 
 #: lib/MountCheck.php
 #, php-format
-msgid "%1$d of %2$d expected RRD files are not visible through the mount, for example %3$s."
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
 msgstr ""
 
 #: lib/Pages.php
@@ -254,6 +379,20 @@ msgstr ""
 
 #: lib/Pages.php
 msgid "SmokePing Health"
+msgstr ""
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr ""
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr ""
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
 msgstr ""
 
 #: lib/Settings.php
@@ -348,6 +487,159 @@ msgstr ""
 msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
 msgstr ""
 
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr ""
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr ""
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr ""
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr ""
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr ""
+
+#: lib/TargetActions.php
+msgid "master"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr ""
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr ""
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr ""
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr ""
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr ""
+
 #: lib/ViewPage.php
 msgid "SmokePing Targets"
 msgstr ""
@@ -412,4 +704,28 @@ msgstr ""
 
 #: setup.php
 msgid "Management"
+msgstr ""
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr ""
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr ""
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr ""
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr ""
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr ""
+
+#: smokeping_inventory.php
+msgid "None"
 msgstr ""

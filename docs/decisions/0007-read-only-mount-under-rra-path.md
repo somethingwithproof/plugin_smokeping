@@ -14,7 +14,7 @@ SmokePing's `datadir` is mounted read-only inside Cacti's `rra_path`, by default
 
 ## Consequences
 
-- The read-only mount replaces file permissions as the primary protection for SmokePing's files. Cacti's purge reaches these paths, because they are now inside `rra_path`; `unlink` and archive `rename` fail, Cacti logs a warning, and the queue entry is dropped. The plugin's `device_remove` and `data_source_remove` hooks still remove queued entries under the mount, so the warnings do not appear.
+- The read-only mount replaces file permissions as the primary protection for SmokePing's files. Cacti's purge reaches these paths, because they are now inside `rra_path`; `unlink` and archive `rename` fail, Cacti logs a warning, and the queue entry is dropped. Cacti queues the purge row after the plugin's `device_remove` and `data_source_remove` hooks run, so the hooks cannot delete it; they replace the path of the plugin's data sources with one that names no file, and the row Cacti then queues points nowhere, so the warnings do not appear. A sweep removes rows queued by other routes.
 - The health page checks that the mount path exists, lies inside `rra_path` with no symbolic link segment, and is mounted read-only (from `/proc/self/mountinfo`). A symlink or a writable mount is an error, not a warning.
 - Cacti's RRD cleaner walks `rra_path` recursively, so SmokePing RRDs with no Cacti data source, including slave `target~slave.rrd` files, are listed as unused. Deleting them from that page fails against the read-only mount. The install guide says so.
 - Installation needs root once, to add the mount (an `/etc/fstab` line or a systemd `.mount` unit). The install guide ships both.

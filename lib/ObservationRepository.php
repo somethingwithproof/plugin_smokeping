@@ -89,4 +89,23 @@ final class ObservationRepository {
 
 		return $observations;
 	}
+
+	/**
+	 * One cache row with the time the target was first seen, for the summary
+	 * script. A primary key lookup and a primary key join.
+	 *
+	 * @return array{observation: Observation, firstSeen: int}|null
+	 */
+	public function latest(int $targetId, string $location): ?array {
+		$row = db_fetch_row_prepared('SELECT o.*, t.first_seen
+			FROM plugin_smokeping_observation AS o
+			INNER JOIN plugin_smokeping_target AS t ON t.id = o.target_id
+			WHERE o.target_id = ? AND o.location = ?', [$targetId, $location], true, $this->connection);
+
+		if (!is_array($row) || $row === []) {
+			return null;
+		}
+
+		return ['observation' => Observation::fromRow($row), 'firstSeen' => Row::int($row, 'first_seen', 0, 0)];
+	}
 }

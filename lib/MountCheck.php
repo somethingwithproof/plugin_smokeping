@@ -56,14 +56,14 @@ final class MountCheck {
 		}
 
 		if (!is_dir($mountPath)) {
-			return [new Finding('mount', HealthLevel::Error, sprintf(__('The SmokePing mount %s does not exist. Mount SmokePing\'s data directory there read-only.', 'smokeping'), $mountPath))];
+			return [new Finding('mount', HealthLevel::Error, __('The SmokePing mount %s does not exist. Mount SmokePing\'s data directory there read-only.', $mountPath, 'smokeping'))];
 		}
 
-		$findings[] = new Finding('mount', HealthLevel::Ok, sprintf(__('%s is inside the RRA path and not reached through a symlink.', 'smokeping'), $mountPath));
+		$findings[] = new Finding('mount', HealthLevel::Ok, __('%s is inside the RRA path and not reached through a symlink.', $mountPath, 'smokeping'));
 		$findings[] = $this->readOnly($mountPath);
 
 		if (is_writable($mountPath)) {
-			$findings[] = new Finding('writable', HealthLevel::Error, sprintf(__('The Cacti user can write to %s. SmokePing\'s RRD files must be read-only to Cacti.', 'smokeping'), $mountPath));
+			$findings[] = new Finding('writable', HealthLevel::Error, __('The Cacti user can write to %s. SmokePing\'s RRD files must be read-only to Cacti.', $mountPath, 'smokeping'));
 		}
 
 		$findings[] = self::visibility($expectedFiles);
@@ -82,26 +82,26 @@ final class MountCheck {
 		$base = rtrim($rraPath, '/');
 
 		if ($path === '' || str_contains($path, "\0") || !str_starts_with($path, $base . '/')) {
-			return sprintf(__('The SmokePing mount %1$s is not inside the Cacti RRA path %2$s.', 'smokeping'), $path, $base);
+			return __('The SmokePing mount %s is not inside the Cacti RRA path %s.', $path, $base, 'smokeping');
 		}
 
 		$baseReal = realpath($base);
 
 		if ($baseReal === false) {
-			return sprintf(__('The Cacti RRA path %s does not exist.', 'smokeping'), $base);
+			return __('The Cacti RRA path %s does not exist.', $base, 'smokeping');
 		}
 
 		$walk = $baseReal;
 
 		foreach (explode('/', substr($path, strlen($base) + 1)) as $segment) {
 			if ($segment === '' || $segment === '.' || $segment === '..') {
-				return sprintf(__('The SmokePing mount %s contains an empty, "." or ".." segment.', 'smokeping'), $path);
+				return __('The SmokePing mount %s contains an empty, "." or ".." segment.', $path, 'smokeping');
 			}
 
 			$walk .= '/' . $segment;
 
 			if (is_link($walk)) {
-				return sprintf(__('The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead.', 'smokeping'), $path);
+				return __('The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead.', $path, 'smokeping');
 			}
 		}
 
@@ -121,10 +121,10 @@ final class MountCheck {
 		}
 
 		if ($entry['readonly']) {
-			return new Finding('readonly', HealthLevel::Ok, sprintf(__('%s is on a read-only mount.', 'smokeping'), $entry['mountpoint']));
+			return new Finding('readonly', HealthLevel::Ok, __('%s is on a read-only mount.', $entry['mountpoint'], 'smokeping'));
 		}
 
-		return new Finding('readonly', HealthLevel::Error, sprintf(__('%1$s is on the writable mount %2$s. Mount SmokePing\'s data directory read-only.', 'smokeping'), $mountPath, $entry['mountpoint']));
+		return new Finding('readonly', HealthLevel::Error, __('%s is on the writable mount %s. Mount SmokePing\'s data directory read-only.', $mountPath, $entry['mountpoint'], 'smokeping'));
 	}
 
 	/**
@@ -175,9 +175,9 @@ final class MountCheck {
 		$missing = array_values(array_filter($expectedFiles, fn (string $file) => !is_file($file)));
 
 		if ($missing === []) {
-			return new Finding('visible', HealthLevel::Ok, sprintf(__('All %d expected RRD files are visible through the mount.', 'smokeping'), count($expectedFiles)));
+			return new Finding('visible', HealthLevel::Ok, __('All %d expected RRD files are visible through the mount.', count($expectedFiles), 'smokeping'));
 		}
 
-		return new Finding('visible', HealthLevel::Warning, sprintf(__('%1$d of %2$d expected RRD files are not visible through the mount, for example %3$s.', 'smokeping'), count($missing), count($expectedFiles), implode(', ', array_slice($missing, 0, 3))));
+		return new Finding('visible', HealthLevel::Warning, __('%d of %d expected RRD files are not visible through the mount, for example %s.', count($missing), count($expectedFiles), implode(', ', array_slice($missing, 0, 3)), 'smokeping'));
 	}
 }

@@ -37,7 +37,6 @@ settings() {
 	$L set_setting "smokeping_mount_path=$MOUNT" >/dev/null
 	$L set_setting "smokeping_datadir=$MOUNT" >/dev/null
 	$L set_setting "smokeping_config_file=$CONF/config" >/dev/null
-	$L set_setting "smokeping_perl_binary=$(command -v perl)" >/dev/null
 }
 
 sums() { (cd "$MOUNT" && find . -type f -name '*.rrd' | sort | xargs sha256sum); }

@@ -178,13 +178,14 @@ restore xml "$W/a.xml" xml
 [ "$(rrds)" = "$rrd_before" ] && [ "$(find "$rra" -type f | sort | wc -l)" = "$files_before" ] && result PASS no-rrd-created-or-changed "$files_before files under rra, checksums unchanged, mount read-only" || result FAIL no-rrd-created-or-changed "files $files_before -> $(find "$rra" -type f | wc -l)"
 cell "SELECT COUNT(*) FROM data_local" | grep -q '^[0-9]*$' && [ "$(cell "SELECT COUNT(*) FROM plugin_smokeping_object")" = 0 ] && result PASS no-cacti-objects-created "no data source or graph rows from an import" || result FAIL no-cacti-objects-created "$(cell "SELECT COUNT(*) FROM plugin_smokeping_object")"
 
-# ---- Settings that name a path or a program are never written.
-printf 'schema_version: 1\nreference_settings:\n  smokeping_perl_binary: /tmp/not-perl\n  smokeping_datadir: /tmp/elsewhere\n  smokeping_config_file: /tmp/evil.conf\n' > "$W/ref.yaml"
+# ---- Settings that name a path are never written. The file is shaped like an
+# rc.1 export, whose reference settings still list the retired Perl settings.
+printf 'schema_version: 1\nreference_settings:\n  smokeping_perl_binary: /tmp/not-perl\n  smokeping_lib_dir: ""\n  smokeping_datadir: /tmp/elsewhere\n  smokeping_config_file: /tmp/evil.conf\n' > "$W/ref.yaml"
 out=$($CLI import --file="$W/ref.yaml" 2>&1); rc=$?
 plan=$(echo "$out" | sed -n 's/^Plan \([0-9a-f]*\): nothing to do.*/\1/p')
-echo "$out" | grep -q 'not applied, change on the Settings page: smokeping_perl_binary' && echo "$out" | grep -q 'not applied, change on the Settings page: smokeping_datadir' && [ $rc -eq 0 ] && result PASS reference-settings-reported "differences listed as not applied" || result FAIL reference-settings-reported "rc $rc: $out"
+echo "$out" | grep -q 'not applied, change on the Settings page: smokeping_config_file' && echo "$out" | grep -q 'not applied, change on the Settings page: smokeping_datadir' && ! echo "$out" | grep -q 'smokeping_perl_binary\|smokeping_lib_dir' && [ $rc -eq 0 ] && result PASS reference-settings-reported "differences listed as not applied; the retired Perl settings skipped" || result FAIL reference-settings-reported "rc $rc: $out"
 $CLI import --file="$W/ref.yaml" --apply --confirm="$plan" >/dev/null 2>&1
-[ "$(cell "SELECT COUNT(*) FROM settings WHERE name IN ('smokeping_perl_binary', 'smokeping_datadir', 'smokeping_config_file') AND value LIKE '/tmp/%'")" = 0 ] && result PASS reference-settings-never-written "no path or program setting changed, even when the plan is applied" || result FAIL reference-settings-never-written "a setting was written"
+[ "$(cell "SELECT COUNT(*) FROM settings WHERE name IN ('smokeping_perl_binary', 'smokeping_datadir', 'smokeping_config_file') AND value LIKE '/tmp/%'")" = 0 ] && result PASS reference-settings-never-written "no path setting changed, even when the plan is applied" || result FAIL reference-settings-never-written "a setting was written"
 
 # ---- Refusals write nothing and say why.
 t0=$(cell "SELECT COUNT(*) FROM plugin_smokeping_target")
@@ -218,9 +219,9 @@ refuse yaml-second-document yaml 'line 2: Only one document' "schema_version: 1
 ---
 schema_version: 1
 "
-refuse path-setting-under-settings yaml 'smokeping_perl_binary is reference only and is never imported' "schema_version: 1
+refuse path-setting-under-settings yaml 'smokeping_config_file is reference only and is never imported' "schema_version: 1
 settings:
-  smokeping_perl_binary: /tmp/not-perl
+  smokeping_config_file: /tmp/evil.conf
 "
 refuse unknown-device yaml 'no device has host name "ghost.example"' "schema_version: 1
 targets:
@@ -238,7 +239,7 @@ mappings:
       hostname: cfg2.example
       description: cfg2
 "
-refuse xml-doctype xml 'DOCTYPE' '<?xml version="1.0"?><!DOCTYPE c [<!ENTITY x SYSTEM "file:///etc/passwd">]><smokeping-config schema_version="1"><settings><setting name="smokeping_perl_binary">&x;</setting></settings></smokeping-config>'
+refuse xml-doctype xml 'DOCTYPE' '<?xml version="1.0"?><!DOCTYPE c [<!ENTITY x SYSTEM "file:///etc/passwd">]><smokeping-config schema_version="1"><settings><setting name="smokeping_config_file">&x;</setting></settings></smokeping-config>'
 refuse newer-schema yaml 'newer than this version understands' "schema_version: 2
 "
 head -c 9000000 /dev/zero | tr '\0' '#' > "$W/huge.yaml"

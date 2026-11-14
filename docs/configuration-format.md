@@ -33,8 +33,7 @@ settings:                    # optional; any subset of the settings below
 
 reference_settings:          # optional; shown for reference, never imported
   smokeping_config_file: /etc/smokeping/config
-  smokeping_perl_binary: /usr/bin/perl
-  smokeping_lib_dir: ''
+  smokeping_backup_dir: ''
   smokeping_datadir: /var/lib/smokeping
   smokeping_mount_path: /var/www/html/cacti/rra/smokeping   # omitted from exports while it is the default
 
@@ -70,7 +69,7 @@ Updates. For a target already present, an import changes only `host`, `probe`, `
 
 Settings values must be the stated type. Text may not contain control characters.
 
-Reference-only settings. A setting that names a file, a directory, or a program (every one under `reference_settings` above) is never written by an import: a file must not be able to change which interpreter the reader runs or where the plugin reads. The schema marks these by their type, and a file that puts one under `settings` is refused. Under `reference_settings` they are checked for form (an absolute path, or empty where allowed), compared with the installation, and listed in the plan as `not applied, change on the Settings page` when they differ. Change them on the Settings page.
+Reference-only settings. A setting that names a file or a directory (every one under `reference_settings` above) is never written by an import: a file must not be able to change where the plugin reads or writes. The schema marks these by their type, and a file that puts one under `settings` is refused. Under `reference_settings` they are checked for form (an absolute path, or empty where allowed), compared with the installation, and listed in the plan as `not applied, change on the Settings page` when they differ. Change them on the Settings page. Files exported by 1.0.0-rc.1 also list `smokeping_perl_binary` and `smokeping_lib_dir` there; those settings no longer exist, and an import skips them.
 
 ## XML
 

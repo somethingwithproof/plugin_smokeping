@@ -25,8 +25,8 @@
 #
 #   sh tools/make-release.sh [ref] [output-dir]
 #
-# The archive holds only what a site needs: the runtime PHP, Perl, and
-# template files, the translation template, and the documentation. It is built
+# The archive holds only what a site needs: the runtime PHP and template
+# files, the translation template, and the documentation. It is built
 # from the committed tree with `git archive`, never from the working directory,
 # so an untracked or modified file cannot enter it. The allowlist below is the
 # whole policy: a new top-level file or directory is left out until it is added
@@ -52,7 +52,7 @@ git show "$REF:CHANGELOG.md" | grep -Eq "^## \[$VERSION\]" || { echo "make-relea
 paths=$(
 	git ls-tree --name-only "$REF" | grep -E '^[A-Za-z0-9_]+\.php$'
 	for f in INFO LICENSE README.md CHANGELOG.md SECURITY.md; do git ls-tree --name-only "$REF" -- "$f"; done
-	for d in include lib cli scripts bin templates docs; do git ls-tree --name-only -d "$REF" -- "$d"; done
+	for d in include lib cli scripts templates docs; do git ls-tree --name-only -d "$REF" -- "$d"; done
 	git ls-tree --name-only "$REF" -- locales/index.php locales/po
 )
 

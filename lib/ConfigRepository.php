@@ -45,8 +45,6 @@ final class ConfigRepository {
 
 		$effective = [
 			'smokeping_config_file'           => $settings->configFile,
-			'smokeping_perl_binary'           => $settings->perlBinary,
-			'smokeping_lib_dir'               => $settings->libDir,
 			'smokeping_datadir'               => $settings->datadir,
 			'smokeping_backup_dir'            => $settings->backupDir,
 			'smokeping_mount_path'            => $settings->mountPath,

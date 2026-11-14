@@ -32,11 +32,11 @@ tar -tzf "$archive" | sed 's#^smokeping/##' | grep -v '/$' | sort > "$WORK/files
 tar -xzf "$archive" -C "$WORK/unpacked"
 
 # Only runtime files, the POT, and the documentation.
-unexpected=$(grep -Ev '^(INFO|LICENSE|README\.md|CHANGELOG\.md|SECURITY\.md|[A-Za-z0-9_]+\.php|include/.+|lib/[A-Za-z0-9]+\.php|cli/[a-z_]+\.php|scripts/[a-z_]+\.php|bin/[a-z-]+\.pl|templates/[a-z-]+\.xml|docs/.+\.md|docs/research/.+|locales/index\.php|locales/po/cacti\.pot)$' "$WORK/files.txt" || true)
+unexpected=$(grep -Ev '^(INFO|LICENSE|README\.md|CHANGELOG\.md|SECURITY\.md|[A-Za-z0-9_]+\.php|include/.+|lib/[A-Za-z0-9]+\.php|cli/[a-z_]+\.php|scripts/[a-z_]+\.php|templates/[a-z-]+\.xml|docs/.+\.md|docs/research/.+|locales/index\.php|locales/po/cacti\.pot)$' "$WORK/files.txt" || true)
 [ -z "$unexpected" ] && result PASS archive-only-runtime-pot-docs "$(wc -l < "$WORK/files.txt" | tr -d ' ') files, every one runtime, POT, or documentation" || result FAIL archive-only-runtime-pot-docs "$(echo "$unexpected" | head -5 | tr '\n' ' ')"
 
 missing=
-for f in INFO setup.php smokeping.php smokeping_config.php lib/YamlReader.php cli/smokeping.php scripts/ss_smokeping_summary.php bin/smokeping-inventory.pl templates/smokeping-templates.xml locales/po/cacti.pot docs/install.md docs/configuration-format.md CHANGELOG.md LICENSE; do
+for f in INFO setup.php smokeping.php smokeping_config.php lib/YamlReader.php cli/smokeping.php scripts/ss_smokeping_summary.php templates/smokeping-templates.xml locales/po/cacti.pot docs/install.md docs/configuration-format.md CHANGELOG.md LICENSE; do
 	grep -qx "$f" "$WORK/files.txt" || missing="$missing $f"
 done
 [ -z "$missing" ] && result PASS archive-has-runtime-files "entry points, lib, templates, POT, install guide, changelog, license" || result FAIL archive-has-runtime-files "missing:$missing"

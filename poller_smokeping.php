@@ -91,12 +91,7 @@ $smokeping_job = new \Cacti\Smokeping\ReaderJob(
 	new \Cacti\Smokeping\TargetRepository(false),
 	new \Cacti\Smokeping\ObservationRepository(false),
 	new \Cacti\Smokeping\HealthRepository(false),
-	new \Cacti\Smokeping\ScriptInventoryReader(
-		$smokeping_settings->perlBinary,
-		$config['base_path'] . '/plugins/smokeping/bin/smokeping-inventory.pl',
-		$smokeping_settings->configFile,
-		$smokeping_settings->libDir
-	),
+	new \Cacti\Smokeping\SmokepingConfigReader($smokeping_settings->configFile),
 	new \Cacti\Smokeping\RrdtoolProcess((string) read_config_option('path_rrdtool')),
 	new \Cacti\Smokeping\SystemClock()
 );

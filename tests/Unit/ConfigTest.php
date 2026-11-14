@@ -50,7 +50,7 @@ function smokeping_document(): ConfigDocument {
 			smokeping_target('Other/x', ['poller' => 2, 'title' => '007']),
 		],
 		[new ConfigMapping(1, TargetPath::fromString('Europe/Paris'), 'paris.example.net', "Paris GW & 'co' <1>")],
-		['smokeping_config_file' => '/etc/smokeping/config', 'smokeping_lib_dir' => '']
+		['smokeping_config_file' => '/etc/smokeping/config', 'smokeping_backup_dir' => '']
 	);
 }
 
@@ -166,11 +166,11 @@ it('refuses a missing or newer schema version', function () {
 it('does not read a file through an XML entity or a DOCTYPE', function (string $xml) {
 	expect(fn () => ConfigXml::parse($xml))->toThrow(ConfigException::class);
 })->with([
-	'external entity' => ['<?xml version="1.0"?><!DOCTYPE c [<!ENTITY x SYSTEM "file:///etc/passwd">]><smokeping-config schema_version="1"><settings><setting name="smokeping_perl_binary">&x;</setting></settings></smokeping-config>'],
+	'external entity' => ['<?xml version="1.0"?><!DOCTYPE c [<!ENTITY x SYSTEM "file:///etc/passwd">]><smokeping-config schema_version="1"><settings><setting name="smokeping_config_file">&x;</setting></settings></smokeping-config>'],
 	'parameter entity' => ['<?xml version="1.0"?><!DOCTYPE c [<!ENTITY % x SYSTEM "http://127.0.0.1/x.dtd">%x;]><smokeping-config schema_version="1"/>'],
-	'entity expansion' => ['<?xml version="1.0"?><!DOCTYPE c [<!ENTITY a "aaaaaaaaaa"><!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">]><smokeping-config schema_version="1"><settings><setting name="smokeping_perl_binary">&b;</setting></settings></smokeping-config>'],
+	'entity expansion' => ['<?xml version="1.0"?><!DOCTYPE c [<!ENTITY a "aaaaaaaaaa"><!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">]><smokeping-config schema_version="1"><settings><setting name="smokeping_config_file">&b;</setting></settings></smokeping-config>'],
 	'bare doctype' => ['<!doctype smokeping-config><smokeping-config schema_version="1"/>'],
-	'undefined entity' => ['<smokeping-config schema_version="1"><settings><setting name="smokeping_perl_binary">&x;</setting></settings></smokeping-config>'],
+	'undefined entity' => ['<smokeping-config schema_version="1"><settings><setting name="smokeping_config_file">&x;</setting></settings></smokeping-config>'],
 ]);
 
 it('refuses malformed, oversize, and unexpected XML', function (string $xml, string $fragment) {
@@ -181,7 +181,7 @@ it('refuses malformed, oversize, and unexpected XML', function (string $xml, str
 	'unknown child'   => ['<smokeping-config schema_version="1"><settings><thing/></settings></smokeping-config>', 'Expected <setting>'],
 	'bad attribute'   => ['<smokeping-config schema_version="1" x="1"/>', 'not allowed'],
 	'text in a list'  => ['<smokeping-config schema_version="1"><targets>text</targets></smokeping-config>', 'Unexpected text'],
-	'nested leaf'     => ['<smokeping-config schema_version="1"><settings><setting name="smokeping_perl_binary"><x/></setting></settings></smokeping-config>', 'cannot contain'],
+	'nested leaf'     => ['<smokeping-config schema_version="1"><settings><setting name="smokeping_config_file"><x/></setting></settings></smokeping-config>', 'cannot contain'],
 	'processing instruction' => ['<smokeping-config schema_version="1"><?php echo 1; ?></smokeping-config>', 'Only elements'],
 	'too big'         => ['<smokeping-config schema_version="1"><!--' . str_repeat('x', 5000) . '--></smokeping-config>', 'byte limit'],
 	'invalid utf-8'   => ["<smokeping-config schema_version=\"1\"><!--\xFF--></smokeping-config>", 'UTF-8'],
@@ -314,7 +314,7 @@ it('accepts the examples in docs/configuration-format.md', function () {
 });
 
 it('treats every path or program setting as reference only, from the schema and not from a list', function () {
-	$paths = ['smokeping_config_file', 'smokeping_perl_binary', 'smokeping_lib_dir', 'smokeping_datadir', 'smokeping_mount_path'];
+	$paths = ['smokeping_config_file', 'smokeping_datadir', 'smokeping_mount_path', 'smokeping_backup_dir'];
 
 	foreach (Cacti\Smokeping\ConfigSchema::SETTINGS as $name => $spec) {
 		expect(Cacti\Smokeping\ConfigSchema::isReferenceOnly($name))->toBe(in_array($spec[0], ['path', 'optional_path'], true), $name);
@@ -327,25 +327,32 @@ it('treats every path or program setting as reference only, from the schema and 
 
 	expect(Cacti\Smokeping\ConfigSchema::isReferenceOnly('smokeping_reader_budget'))->toBeFalse()
 		->and(implode(' ', smokeping_config_errors('yaml', "schema_version: 1\nreference_settings:\n  smokeping_reader_budget: 5\n")))->toContain('not a reference-only setting')
-		->and(implode(' ', smokeping_config_errors('xml', '<smokeping-config schema_version="1"><settings><setting name="smokeping_perl_binary">/tmp/x</setting></settings></smokeping-config>')))->toContain('is reference only');
+		->and(implode(' ', smokeping_config_errors('xml', '<smokeping-config schema_version="1"><settings><setting name="smokeping_config_file">/tmp/x</setting></settings></smokeping-config>')))->toContain('is reference only');
+});
+
+it('skips the retired Perl settings in the reference settings of an older export, and refuses them elsewhere', function () {
+	$old = ConfigCodec::parse('yaml', "schema_version: 1\nreference_settings:\n  smokeping_config_file: /etc/smokeping/config\n  smokeping_perl_binary: /usr/bin/perl\n  smokeping_lib_dir: ''\n");
+
+	expect($old->reference)->toBe(['smokeping_config_file' => '/etc/smokeping/config'])
+		->and(implode(' ', smokeping_config_errors('yaml', "schema_version: 1\nsettings:\n  smokeping_perl_binary: /usr/bin/perl\n")))->toContain('is not a known setting');
 });
 
 it('reports a differing reference setting as not applied and plans no write for it', function () {
-	$document = new ConfigDocument([], [], [], ['smokeping_perl_binary' => '/tmp/evil', 'smokeping_datadir' => '/var/lib/smokeping']);
-	$state    = smokeping_state(['settings' => ['smokeping_poller_id' => 1, 'smokeping_perl_binary' => '/usr/bin/perl', 'smokeping_datadir' => '/var/lib/smokeping']]);
+	$document = new ConfigDocument([], [], [], ['smokeping_config_file' => '/tmp/evil.conf', 'smokeping_datadir' => '/var/lib/smokeping']);
+	$state    = smokeping_state(['settings' => ['smokeping_poller_id' => 1, 'smokeping_config_file' => '/etc/smokeping/config', 'smokeping_datadir' => '/var/lib/smokeping']]);
 	$plan     = ConfigPlanner::plan($document, $state);
 
 	expect($plan->settings)->toBe([])
 		->and($plan->isEmpty())->toBeTrue()
-		->and($plan->notApplied)->toBe([['name' => 'smokeping_perl_binary', 'from' => '/usr/bin/perl', 'to' => '/tmp/evil']])
-		->and($plan->lines())->toContain('not applied, change on the Settings page: smokeping_perl_binary: "/usr/bin/perl" -> "/tmp/evil"');
+		->and($plan->notApplied)->toBe([['name' => 'smokeping_config_file', 'from' => '/etc/smokeping/config', 'to' => '/tmp/evil.conf']])
+		->and($plan->lines())->toContain('not applied, change on the Settings page: smokeping_config_file: "/etc/smokeping/config" -> "/tmp/evil.conf"');
 });
 
 it('writes reference settings in their own section in both formats and reads them back', function (string $format) {
 	$text = ConfigCodec::write($format, smokeping_document());
 
 	expect($text)->toContain('reference_settings')
-		->and(ConfigCodec::parse($format, $text)->reference)->toBe(['smokeping_config_file' => '/etc/smokeping/config', 'smokeping_lib_dir' => '']);
+		->and(ConfigCodec::parse($format, $text)->reference)->toBe(['smokeping_config_file' => '/etc/smokeping/config', 'smokeping_backup_dir' => '']);
 })->with(['yaml', 'xml']);
 
 function smokeping_backup_service(): Cacti\Smokeping\ConfigService {

@@ -53,7 +53,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 
 	expect($state['plugin']['status'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION)
-		->and($state['schema'])->toEqual('2')
+		->and($state['schema'])->toEqual('3')
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tracked'])->toBe(SMOKEPING_TABLES)
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
@@ -197,8 +197,23 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tables']['plugin_smokeping_target'])->toBe(1)
-		->and($state['schema'])->toEqual('2')
+		->and($state['schema'])->toEqual('3')
 		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION);
+});
+
+it('removes the Perl settings of schema 2 on upgrade and keeps the others', function () {
+	lifecycle('install');
+	lifecycle('set_setting', 'smokeping_perl_binary=/usr/bin/perl');
+	lifecycle('set_setting', 'smokeping_lib_dir=/usr/share/smokeping');
+	lifecycle('set_setting', 'smokeping_config_file=/etc/smokeping/config-kept');
+	lifecycle('set_schema', '2');
+
+	$state = lifecycle('upgrade');
+	$left  = lifecycle('query', "SELECT name FROM settings WHERE name IN ('smokeping_perl_binary', 'smokeping_lib_dir', 'smokeping_config_file') ORDER BY name");
+
+	expect($state['result'])->toBeTrue()
+		->and($state['schema'])->toEqual('3')
+		->and(array_column(array_filter($left, 'is_array'), 'name'))->toBe(['smokeping_config_file']);
 });
 
 it('refuses a schema newer than the code and leaves the recorded version alone', function () {

@@ -38,6 +38,13 @@ namespace Cacti\Smokeping;
 final class ConfigSchema {
 	public const RESERVED = ['managed_targets', 'probe_profiles'];
 
+	/**
+	 * Settings of earlier releases that no longer exist. A file exported by
+	 * such a release lists them under reference_settings, where they were
+	 * never imported; they are skipped there so the file still imports.
+	 */
+	public const RETIRED = ['smokeping_perl_binary', 'smokeping_lib_dir'];
+
 	public const MAX_ERRORS = 50;
 
 	/**
@@ -58,8 +65,6 @@ final class ConfigSchema {
 	 */
 	public const SETTINGS = [
 		'smokeping_config_file'          => ['path'],
-		'smokeping_perl_binary'          => ['path'],
-		'smokeping_lib_dir'              => ['optional_path'],
 		'smokeping_datadir'              => ['path'],
 		'smokeping_backup_dir'           => ['optional_path'],
 		'smokeping_mount_path'           => ['path'],
@@ -175,6 +180,10 @@ final class ConfigSchema {
 			$name = (string) $name;
 			$path = $section . '/' . $name;
 			$spec = self::SETTINGS[$name] ?? null;
+
+			if ($spec === null && $reference && in_array($name, self::RETIRED, true)) {
+				continue;
+			}
 
 			if ($spec === null) {
 				$this->error($path, 'is not a known setting');

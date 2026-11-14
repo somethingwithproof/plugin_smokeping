@@ -371,6 +371,16 @@ msgstr ""
 msgid "No re-link proposals."
 msgstr ""
 
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr ""
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr ""
+
 #: lib/MountCheck.php
 #, php-format
 msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."

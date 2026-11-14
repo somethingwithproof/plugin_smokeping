@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Unit suite. Needs no database or Cacti checkout: tests/bootstrap-unit.php
+ stubs the few Cacti helpers the classes call. Run it with the locked Pest
+ toolchain maintained plugins share (see .github/workflows/plugin-ci-workflow.yml).
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="tests/bootstrap-unit.php"
+         cacheResult="false"
+         colors="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnDeprecation="true">
+    <php>
+        <ini name="error_reporting" value="-1"/>
+    </php>
+    <testsuites>
+        <testsuite name="Plugin SmokePing">
+            <directory>tests/Security</directory>
+            <directory>tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>lib</directory>
+        </include>
+    </source>
+</phpunit>

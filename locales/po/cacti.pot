@@ -1,0 +1,415 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Thomas Vincent
+# This file is distributed under the same license as the smokeping package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Cacti 0.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: lib/HealthCheck.php
+msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %1$d of %2$d series in %3$.1f seconds and has exceeded its time budget %4$d times."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %1$d of %2$d series in %3$.1f seconds, %4$d seconds ago."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %1$d seconds ago and the previous one is still in use: %2$s"
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %1$d targets %2$d seconds ago."
+msgstr ""
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr ""
+
+#: lib/Html.php
+msgid "OK"
+msgstr ""
+
+#: lib/Html.php
+msgid "Warning"
+msgstr ""
+
+#: lib/Html.php
+msgid "Error"
+msgstr ""
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr ""
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr ""
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr ""
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "Device %d"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr ""
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %1$s is not inside the Cacti RRA path %2$s."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr ""
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%1$s is on the writable mount %2$s. Mount SmokePing's data directory read-only."
+msgstr ""
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr ""
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%1$d of %2$d expected RRD files are not visible through the mount, for example %3$s."
+msgstr ""
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr ""
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr ""
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr ""
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr ""
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr ""
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr ""
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr ""
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr ""
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file. The plugin only reads it, through SmokePing's own parser."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Perl Binary"
+msgstr ""
+
+#: lib/Settings.php
+msgid "The Perl interpreter that runs the inventory script."
+msgstr ""
+
+#: lib/Settings.php
+msgid "SmokePing Perl Library Directory"
+msgstr ""
+
+#: lib/Settings.php
+msgid "The directory holding Smokeping.pm. Leave blank to search the packaged locations."
+msgstr ""
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr ""
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr ""
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr ""
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Device"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Location"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Master"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr ""
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr ""
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr ""
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr ""
+
+#: setup.php
+msgid "Management"
+msgstr ""

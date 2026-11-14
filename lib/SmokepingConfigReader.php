@@ -52,4 +52,19 @@ final class SmokepingConfigReader implements InventoryReader {
 
 		return Inventory::fromDocument(SmokepingInventory::document($root), $pollerId);
 	}
+
+	/**
+	 * Read a configuration given as text, such as an uploaded file. It is read
+	 * on its own: an @include in it is refused, because the text has no
+	 * directory the included file could be resolved against.
+	 */
+	public static function fromText(string $text, string $name, int $pollerId): Inventory {
+		try {
+			$root = (new SmokepingConfigParser())->parseString($text, $name);
+		} catch (SmokepingConfigError $e) {
+			throw new InventoryError(mb_substr($e->getMessage(), 0, 900));
+		}
+
+		return Inventory::fromDocument(SmokepingInventory::document($root), $pollerId);
+	}
 }

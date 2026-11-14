@@ -12,7 +12,7 @@ The version is a semantic version in `INFO` (`version = 1.0.0-rc.1`). Cacti reco
 sh tools/make-release.sh [ref] [output-dir]      # defaults: HEAD and ./dist
 ```
 
-It writes `smokeping-<version>.tar.gz` and `SHA256SUMS`. The archive extracts to a single `smokeping/` directory, so it installs with `tar -xzf smokeping-<version>.tar.gz -C <cacti>/plugins`. It is built from the committed tree with `git archive`, so an untracked or modified file cannot enter it, and it is reproducible: two builds of one commit are byte for byte equal.
+It writes `smokeping-<version>.tar.gz` and `SHA256SUMS`. The archive extracts to a single `smokeping/` directory, so it installs with `tar -xzf smokeping-<version>.tar.gz -C <cacti>/plugins`. It is built from the committed tree with `git archive`, so an untracked or modified file cannot enter it, and it is reproducible: two builds of one commit on one platform are byte for byte equal (the tar inside is the same on every platform; GNU gzip and macOS gzip compress it differently, so compare a download with the published `SHA256SUMS`).
 
 It holds only what a site needs: the PHP entry points, `lib/`, `include/`, `cli/`, `scripts/`, `bin/`, `templates/`, `INFO`, `LICENSE`, `README.md`, `SECURITY.md`, `CHANGELOG.md`, the translation template `locales/po/cacti.pot` with `locales/index.php`, and `docs/`. Tests, CI files, `tools/`, the gettext build script, and contributor files are left out. A new top-level file is excluded until it is added to the allowlist in the script.
 

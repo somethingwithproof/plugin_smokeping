@@ -64,7 +64,7 @@ gh attestation verify smokeping-<version>.tar.gz --repo somethingwithproof/plugi
 tar -tzf smokeping-<version>.tar.gz | head
 ```
 
-`sha256sum --check` proves the archive is the one the workflow built. `gh attestation verify` proves the workflow of this repository, at the tagged commit, built it. The archive extracts to one `smokeping/` directory; `tar -xzf smokeping-<version>.tar.gz -C <cacti>/plugins` installs it.
+`sha256sum --check` proves the archive is the one the workflow built. Rebuilding it yourself with `tools/make-release.sh` gives the same tar on any platform, and the same `.tar.gz` bytes on any one platform, but GNU gzip and macOS gzip compress that tar differently, so compare a download with the published `SHA256SUMS`, not with a local build on another operating system. `gh attestation verify` proves the workflow of this repository, at the tagged commit, built it. The archive extracts to one `smokeping/` directory; `tar -xzf smokeping-<version>.tar.gz -C <cacti>/plugins` installs it.
 
 GitHub's own "Source code" archives of the tag hold the same files as the release archive (`export-ignore` in `.gitattributes`, kept in step by `tests/archive-policy-test.sh`), so either one installs.
 

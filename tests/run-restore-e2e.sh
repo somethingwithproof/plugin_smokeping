@@ -62,8 +62,9 @@ run smokeping_m4src "$R/src-data" "$R/src-config" ro source
 
 # The backups, taken as an operator would: the database, SmokePing's configuration, its data directory.
 e2e_docker -e DB=smokeping_m4src -v "$R/backup":/backup "$E2E_MARIADB_IMAGE" sh -c 'mariadb-dump -h "$SP_DB_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" --single-transaction "$DB" > /backup/cacti.sql'
-tar -czf "$R/backup/smokeping-config.tgz" -C "$R/src-config" .
-tar -czf "$R/backup/smokeping-datadir.tgz" -C "$R/src-data" .
+# As root, like an operator's backup: SmokePing's secrets file is mode 600
+# and belongs to the container's root, which a non-root host user cannot read.
+docker run --rm -v "$R":/r "$E2E_IMAGE" sh -c 'tar -czf /r/backup/smokeping-config.tgz -C /r/src-config . && tar -czf /r/backup/smokeping-datadir.tgz -C /r/src-data .'
 
 # Everything is lost: a fresh database, a fresh container, empty directories.
 e2e_docker -e DB=smokeping_m4dst -e RESTORE=1 -v "$R/backup":/backup:ro "$E2E_MARIADB_IMAGE" sh -c '

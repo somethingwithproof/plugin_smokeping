@@ -45,6 +45,8 @@ done
 grep -Eq '^(tests|\.github|tools)/|phpunit|phpstan|CONTRIBUTING|CODE_OF_CONDUCT|build_gettext|\.git' "$WORK/files.txt" && result FAIL archive-excludes-dev-files "$(grep -E '^(tests|\.github|tools)/|phpunit|phpstan|CONTRIBUTING|CODE_OF_CONDUCT|build_gettext|\.git' "$WORK/files.txt" | head -3 | tr '\n' ' ')" || result PASS archive-excludes-dev-files "no tests, CI, tooling, or contributor files"
 
 # The entry points Cacti includes before the PHP check parse on PHP 8.0.
+# Pull first, so the pull's progress is not read as lint output.
+docker pull -q php:8.0-cli >/dev/null
 lint=$(docker run --rm -v "$WORK/unpacked/smokeping":/p:ro -w /p php:8.0-cli sh -c 'for f in setup.php include/autoload.php *.php cli/*.php scripts/*.php; do php -l "$f" | grep -v "^No syntax"; done; echo done' 2>&1)
 [ "$lint" = done ] && result PASS archive-entry-points-lint-php80 "setup.php, page scripts, cli, scripts" || result FAIL archive-entry-points-lint-php80 "$lint"
 

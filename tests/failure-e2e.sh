@@ -118,13 +118,21 @@ while [ $i -lt 1500 ]; do specs="$specs Dup/t$i:300:20:normal"; i=$((i + 1)); do
 php $P/tests/bin/make-fixture-rrds.php "$M" $specs
 php -r 'chdir("/cacti"); include("./include/cli_check.php"); for ($i = 0; $i < 1500; $i++) { db_execute_prepared("INSERT INTO plugin_smokeping_target (poller_id, path, host, probe, step, pings, present, first_seen, last_seen) VALUES (1, ?, ?, \"FPing\", 300, 20, 1, 1, 1)", array("Dup/t$i", "dup.example")); }' >/dev/null 2>&1
 : > log/cacti.log
-php $P/poller_smokeping.php --force >/tmp/first.out 2>&1 &
+# A holder takes the reader's slot in Cacti's process table, as a running
+# reader does, and keeps it until released. Starting a real reader first and
+# the duplicate a moment later raced: on a fast host the first had finished.
+rm -f /tmp/release-reader
+php -r 'chdir("/cacti"); include("./include/cli_check.php"); include_once("./lib/poller.php"); if (!register_process_start("smokeping", "reader", 1, 600)) { exit(1); } while (!file_exists("/tmp/release-reader")) { usleep(100000); } unregister_process("smokeping", "reader", 1);' >/dev/null 2>&1 &
 first=$!
-sleep 0.4
+n=0
+until [ "$(cell "SELECT COUNT(*) FROM processes WHERE tasktype = 'smokeping' AND taskname = 'reader'")" = 1 ] || [ $n -ge 100 ]; do sleep 0.1; n=$((n + 1)); done
 php $P/poller_smokeping.php --force >/tmp/second.out 2>&1; rc2=$?
+held=$(cell "SELECT pid FROM processes WHERE tasktype = 'smokeping' AND taskname = 'reader'")
+touch /tmp/release-reader
 wait $first; rc1=$?
+php $P/poller_smokeping.php --force >/tmp/first.out 2>&1; rc3=$?
 runs=$(grep -c 'SMOKEPING STATS' log/cacti.log)
-grep -q 'A SmokePing reader is already running' log/cacti.log && [ $rc1 -eq 0 ] && [ $rc2 -eq 0 ] && result PASS duplicate-start-exits "the second start exited 0 and logged a note; the first finished" || result FAIL duplicate-start-exits "rc $rc1 $rc2; $(grep SMOKEPING log/cacti.log | tail -3)"
+grep -q 'A SmokePing reader is already running' log/cacti.log && [ "$held" = "$first" ] && [ $rc1 -eq 0 ] && [ $rc2 -eq 0 ] && [ $rc3 -eq 0 ] && result PASS duplicate-start-exits "the second start exited 0 and logged a note; the running reader kept its slot" || result FAIL duplicate-start-exits "rc $rc1 $rc2 $rc3, slot held by '$held' not $first; $(grep SMOKEPING log/cacti.log | tail -3)"
 [ "$runs" = 1 ] && [ "$(cell "SELECT COUNT(*) FROM plugin_smokeping_observation WHERE target_id IN (SELECT id FROM plugin_smokeping_target WHERE path LIKE 'Dup/%')")" = 1500 ] && result PASS duplicate-start-one-run "one run recorded, 1,500 cache rows, no duplicates" || result FAIL duplicate-start-one-run "runs $runs"
 
 # ---- Interrupted reader: killed in the middle of a run.

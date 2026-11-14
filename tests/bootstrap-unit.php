@@ -81,6 +81,12 @@ if (!function_exists('db_fetch_cell_prepared')) {
 	}
 }
 
+if (!function_exists('db_fetch_assoc_prepared')) {
+	function db_fetch_assoc_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
+		return [];
+	}
+}
+
 if (!function_exists('db_execute_prepared')) {
 	function db_execute_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
 		return true;

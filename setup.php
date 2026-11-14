@@ -319,7 +319,7 @@ function smokeping_poller_bottom(): void {
 
 	// Cacti's purge queue lives in the main database, which poller 1 owns.
 	if ((int) $config['poller_id'] === 1) {
-		smokeping_purge_guard()->sweep(smokeping_settings()->mountPath, $config['rra_path']);
+		smokeping_purge_guard()->sweep(smokeping_settings()->mountPath, $config['rra_path'], $config['base_path']);
 	}
 
 	if (!function_exists('exec_background')) {

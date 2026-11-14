@@ -73,30 +73,77 @@ final class PurgeGuard {
 	}
 
 	/**
-	 * Remove purge rows under the mount, however they were queued.
+	 * Remove purge rows under the mount, however they were queued or spelled.
 	 *
 	 * @return int rows that were queued
 	 */
-	public function sweep(string $mountPath, string $rraPath): int {
-		$base = rtrim($rraPath, '/') . '/';
+	public function sweep(string $mountPath, string $rraPath, string $cactiPath): int {
+		$ids = [];
 
-		if (!str_starts_with($mountPath, $base)) {
-			return 0;
+		foreach ($this->cacti->queuedPurges() as $row) {
+			if (self::isUnder(self::resolve($row['name'], $rraPath, $cactiPath), self::normalize($mountPath))) {
+				$ids[] = $row['id'];
+			}
 		}
 
-		$relative = trim(substr($mountPath, strlen($base)), '/');
-
-		if ($relative === '') {
-			return 0;
+		if ($ids !== []) {
+			$this->cacti->dropQueuedPurges($ids);
+			Log::warning(sprintf('Removed %d queued purge entries under the SmokePing mount %s', count($ids), $mountPath));
 		}
 
-		$queued = $this->cacti->queuedPurgesUnder($relative);
+		return count($ids);
+	}
 
-		if ($queued > 0) {
-			$this->cacti->dropQueuedPurgesUnder($relative);
-			Log::warning(sprintf('Removed %d queued purge entries under the SmokePing mount %s', $queued, $mountPath));
+	/**
+	 * The file a queue name means, as poller_maintenance.php remove_files()
+	 * reads it: <path_rra> and <path_cacti> are replaced, and a name that
+	 * is still unchanged is relative to rra_path.
+	 */
+	public static function resolve(string $name, string $rraPath, string $cactiPath): string {
+		$real = str_replace('<path_rra>', $rraPath, $name);
+		$real = str_replace('<path_cacti>', $cactiPath, $real);
+
+		if ($real === $name) {
+			// Core prefixes rra_path. An absolute name already under rra_path is
+			// kept as written as well: it is not what core would delete, but a
+			// later core could read it that way, and dropping it is harmless.
+			$absolute = self::normalize($name);
+
+			if (str_starts_with($name, '/') && str_starts_with($absolute, self::normalize($rraPath) . '/')) {
+				return $absolute;
+			}
+
+			$real = $rraPath . '/' . $name;
 		}
 
-		return $queued;
+		return self::normalize($real);
+	}
+
+	/**
+	 * Collapse repeated slashes and resolve "." and ".." without touching the
+	 * filesystem, the way the kernel would walk the same string.
+	 */
+	public static function normalize(string $path): string {
+		$parts = [];
+
+		foreach (explode('/', $path) as $part) {
+			if ($part === '' || $part === '.') {
+				continue;
+			}
+
+			if ($part === '..') {
+				array_pop($parts);
+
+				continue;
+			}
+
+			$parts[] = $part;
+		}
+
+		return '/' . implode('/', $parts);
+	}
+
+	public static function isUnder(string $file, string $directory): bool {
+		return $directory !== '/' && str_starts_with($file, $directory . '/');
 	}
 }

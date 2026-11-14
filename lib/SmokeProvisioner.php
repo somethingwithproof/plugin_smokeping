@@ -115,7 +115,7 @@ final class SmokeProvisioner {
 			return ProvisionResult::created($existing['local_data_id'], $existing['local_graph_id']);
 		}
 
-		return $this->create($target, $hostId, $location, $this->relativePathOf($target->path, $location), $target->displayName());
+		return $this->create($target, $hostId, $location, $target->displayName());
 	}
 
 	/**
@@ -139,12 +139,11 @@ final class SmokeProvisioner {
 			return $newRelative;
 		}
 
-		$oldRelative = $this->relativePathOf($old->path, $location);
 		$hostId      = $this->objects->hostOf($live['local_data_id']);
 
 		// The archive keeps the old file, so it must exist before the live
 		// data source leaves it.
-		$archive = $this->create($old, $hostId, $location, $oldRelative, $old->displayName() . ' (archived)', ObjectRepository::ARCHIVED);
+		$archive = $this->create($old, $hostId, $location, $old->displayName() . ' (archived)', ObjectRepository::ARCHIVED);
 
 		if (!$archive->created) {
 			return $archive;
@@ -190,12 +189,21 @@ final class SmokeProvisioner {
 		return substr($file, strlen(rtrim($this->rraPath, '/')) + 1);
 	}
 
-	private function create(Target $target, int $hostId, string $location, string $relative, string $title, string $state = ObjectRepository::ACTIVE): ProvisionResult {
+	private function create(Target $target, int $hostId, string $location, string $title, string $state = ObjectRepository::ACTIVE): ProvisionResult {
 		include_once($this->coreLibrary . '/template.php');
 		include_once($this->coreLibrary . '/functions.php');
 
 		if ($target->id === null) {
 			return ProvisionResult::skipped(__('The target has not been saved yet.', 'smokeping'));
+		}
+
+		// Every path that creates a smoke data source passes the same checks,
+		// including the archive of an old file: it must exist, lie under the
+		// mount, and be reached without a symlink.
+		$relative = $this->relativePath($target->path, $location);
+
+		if ($relative instanceof ProvisionResult) {
+			return $relative;
 		}
 
 		$templateId = $this->cacti->graphTemplateId(TemplateInstaller::graphTemplateName($target->pings));

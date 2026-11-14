@@ -132,17 +132,23 @@ final class CactiObjectRepository {
 	}
 
 	/**
-	 * Purge queue rows whose file is under a directory inside rra_path. The
-	 * queue stores the path relative to rra_path, or with the <path_rra>/
-	 * prefix.
+	 * Every queued purge row. The queue is small, and matching is done in PHP
+	 * because one file has many spellings.
 	 *
-	 * @param string $relativeDirectory directory relative to rra_path, no trailing slash
+	 * @return list<array{id: int, name: string}>
 	 */
-	public function queuedPurgesUnder(string $relativeDirectory): int {
-		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM data_source_purge_action WHERE LEFT(name, CHAR_LENGTH(?)) = ? OR LEFT(name, CHAR_LENGTH(?)) = ?', [$relativeDirectory . '/', $relativeDirectory . '/', '<path_rra>/' . $relativeDirectory . '/', '<path_rra>/' . $relativeDirectory . '/'], '', true, $this->connection);
+	public function queuedPurges(): array {
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT id, name FROM data_source_purge_action', [], true, $this->connection));
+
+		return array_values(array_map(fn (array $row) => ['id' => Row::int($row, 'id'), 'name' => Row::string($row, 'name')], $rows));
 	}
 
-	public function dropQueuedPurgesUnder(string $relativeDirectory): void {
-		db_execute_prepared('DELETE FROM data_source_purge_action WHERE LEFT(name, CHAR_LENGTH(?)) = ? OR LEFT(name, CHAR_LENGTH(?)) = ?', [$relativeDirectory . '/', $relativeDirectory . '/', '<path_rra>/' . $relativeDirectory . '/', '<path_rra>/' . $relativeDirectory . '/'], true, $this->connection);
+	/**
+	 * @param list<int> $ids
+	 */
+	public function dropQueuedPurges(array $ids): void {
+		foreach ($ids as $id) {
+			db_execute_prepared('DELETE FROM data_source_purge_action WHERE id = ?', [$id], true, $this->connection);
+		}
 	}
 }

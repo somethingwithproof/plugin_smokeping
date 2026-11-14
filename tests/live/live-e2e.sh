@@ -118,8 +118,10 @@ if [ "$PHASE" = main ]; then
 	# ---- Tree: branches by section, each device under its sections.
 	branches=$(q "SELECT i.title FROM graph_tree_items i JOIN graph_tree t ON t.id = i.graph_tree_id WHERE t.name = 'SmokePing' AND i.host_id = 0 ORDER BY i.title" | rowsof | tr '\n' ' ')
 	[ "$branches" = "Asia Europe Faults Oceania Web " ] && result PASS tree-branches-by-section "branches: $branches" || result FAIL tree-branches-by-section "$branches"
-	missing=$(cell "SELECT COUNT(*) FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id WHERE NOT EXISTS (SELECT 1 FROM graph_tree_items leaf JOIN graph_tree_items br ON br.id = leaf.parent JOIN graph_tree gt ON gt.id = leaf.graph_tree_id WHERE gt.name = 'SmokePing' AND leaf.host_id = m.host_id AND br.title = SUBSTRING_INDEX(t.path, '/', 1))")
-	[ "$missing" = 0 ] && result PASS tree-device-under-its-section "every device is under the branch of each of its targets' sections" || result FAIL tree-device-under-its-section "$missing target(s) have no device leaf under their section"
+	# Each device sits under the branch of the section of each of its targets.
+	want=$(q "SELECT DISTINCT m.host_id AS h, SUBSTRING_INDEX(t.path, '/', 1) AS s FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id ORDER BY h, s" | rowsof | tr '\n' ',')
+	have=$(q "SELECT DISTINCT leaf.host_id AS h, br.title AS s FROM graph_tree_items leaf JOIN graph_tree_items br ON br.id = leaf.parent JOIN graph_tree gt ON gt.id = leaf.graph_tree_id WHERE gt.name = 'SmokePing' AND leaf.host_id > 0 ORDER BY h, s" | rowsof | tr '\n' ',')
+	[ -n "$want" ] && [ "$want" = "$have" ] && result PASS tree-device-under-its-section "each device is under the branch of every section it has a target in (host id and section: $have)" || result FAIL tree-device-under-its-section "wanted $want, the tree has $have"
 
 	# ---- Thold on the always-lost target, and on London as the control.
 	unreach=$(cell "SELECT o.local_data_id FROM plugin_smokeping_object o JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path = 'Faults/Unreachable' AND o.location = '' AND o.state = 'summary'")
@@ -181,10 +183,12 @@ if [ "$PHASE" = main ]; then
 	graphs=$(q "SELECT local_graph_id FROM plugin_smokeping_object ORDER BY local_graph_id" | rowsof)
 	ok=0; bad=0; badlist=
 	for g in $graphs; do
-		curl -s -b "$jar" -o "$W/g.png" "$BASE/graph_image.php?local_graph_id=$g&graph_start=-10800&graph_end=0"
+		curl -s -b "$jar" -o "$W/g.png" "$BASE/graph_image.php?local_graph_id=$g&graph_start=-10800&graph_end=0&image_format=png"
 		size=$(wc -c < "$W/g.png" | tr -d ' ')
 		if [ "$size" -gt 2000 ] && [ "$(head -c 4 "$W/g.png" | tail -c 3)" = PNG ]; then ok=$((ok + 1)); else bad=$((bad + 1)); badlist="$badlist $g($size)"; fi
 	done
+	formats=$(cell "SELECT GROUP_CONCAT(DISTINCT image_format_id) FROM graph_templates_graph WHERE local_graph_id IN (SELECT local_graph_id FROM plugin_smokeping_object)")
+	result INFO graph-image-format "the graphs' own image_format_id is $formats (1 PNG, 3 SVG): graph_image.php answers in that format unless image_format=png is asked for, which is what is checked here"
 	[ "$bad" = 0 ] && [ "$ok" = 42 ] && result PASS graphs-render-png "all $ok graphs (21 smoke, 21 summary) render a non-empty PNG through graph_image.php" || result FAIL graphs-render-png "$ok rendered, $bad did not:$badlist"
 
 	curl -s -b "$jar" -c "$jar" "$BASE/plugins/smokeping/smokeping_health.php" > "$W/health.html"
@@ -231,11 +235,18 @@ if [ "$PHASE" = purge ]; then
 	php poller_maintenance.php --force >/dev/null 2>&1
 	[ "$left" = 0 ] && [ "$(sums)" = "$before" ] && result PASS purge-device-delete-byte-identical "London deleted with its data sources, $queued purge rows queued under the mount, poller_maintenance.php ran: every RRD byte-identical" || result FAIL purge-device-delete-byte-identical "left=$left, files $( [ "$(sums)" = "$before" ] && echo unchanged || echo changed)"
 
-	# The RRD cleaner: an administrator selects a file nobody owns, and one that is a target's.
-	$L queue_purge "smokeping/Local/LocalMachine.rrd|1" >/dev/null
-	$L queue_purge "smokeping/Europe/Frankfurt.rrd|1" >/dev/null
-	php poller_maintenance.php --force >/dev/null 2>&1
-	[ "$(sums)" = "$before" ] && [ -f "$MOUNT/Local/LocalMachine.rrd" ] && result PASS purge-rrdcleaner-selection-byte-identical "Local/LocalMachine.rrd and Europe/Frankfurt.rrd queued for deletion: both still there, every RRD byte-identical" || result FAIL purge-rrdcleaner-selection-byte-identical "files changed"
+	# The RRD cleaner: an administrator selects a file nobody owns and one that is a
+	# target's (the cleaner page's spelling: rra_path stripped, leading slash kept),
+	# and the next poller run, which starts poller_maintenance.php, sweeps them out
+	# of the queue first.
+	swept=$(grep -c 'queued purge entries under the SmokePing mount' log/cacti.log 2>/dev/null || true)
+	$L queue_purge "/smokeping/Local/LocalMachine.rrd|1" >/dev/null
+	$L queue_purge "/smokeping/Europe/Frankfurt.rrd|1" >/dev/null
+	php poller.php --force >/dev/null 2>&1
+	n=0; while grep -qs 'poller_mainten[a]nce' /proc/[0-9]*/cmdline && [ $n -lt 60 ]; do sleep 1; n=$((n + 1)); done
+	left=$(cell "SELECT COUNT(*) FROM data_source_purge_action WHERE name LIKE '%smokeping/%'")
+	swept=$(( $(grep -c 'queued purge entries under the SmokePing mount' log/cacti.log 2>/dev/null || true) - swept ))
+	[ "$(sums)" = "$before" ] && [ -f "$MOUNT/Local/LocalMachine.rrd" ] && [ "$left" = 0 ] && [ "$swept" -ge 1 ] && result PASS purge-rrdcleaner-selection-byte-identical "Local/LocalMachine.rrd and Europe/Frankfurt.rrd queued for deletion: swept from the queue before poller_maintenance.php ran, every RRD byte-identical" || result FAIL purge-rrdcleaner-selection-byte-identical "files $( [ "$(sums)" = "$before" ] && echo unchanged || echo changed), $left rows left, $swept sweeps"
 
 	# Control: without the plugin, the writable copy loses its files, so the checks above can fail.
 	frank=$(cell "SELECT m.host_id FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id WHERE t.path = 'Europe/Frankfurt'")

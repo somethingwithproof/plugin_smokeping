@@ -104,7 +104,7 @@ switch ($action) {
 		// path|column|value for the few text columns a test needs to make hostile.
 		list($path, $column, $value) = explode('|', $argument, 3);
 
-		if (!in_array($column, array('title', 'menu', 'host'), true)) {
+		if (!in_array($column, array('title', 'menu', 'host', 'admin_state', 'slaves'), true)) {
 			fwrite(STDERR, "Unsupported column\n");
 			exit(2);
 		}
@@ -139,6 +139,16 @@ switch ($action) {
 		include_once($config['base_path'] . '/lib/api_data_source.php');
 		include_once($config['base_path'] . '/lib/utility.php');
 		api_device_remove_multi(array_map('intval', explode(',', $argument)), 2);
+
+		break;
+	case 'fail_mapping_inserts':
+		// A trigger that refuses every mapping insert, to prove an import rolls back whole.
+		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_mapping');
+		db_execute("CREATE TRIGGER smokeping_test_refuse_mapping BEFORE INSERT ON plugin_smokeping_mapping FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'refused by test'");
+
+		break;
+	case 'allow_mapping_inserts':
+		db_execute('DROP TRIGGER IF EXISTS smokeping_test_refuse_mapping');
 
 		break;
 	case 'queue_purge':

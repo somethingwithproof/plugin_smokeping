@@ -392,7 +392,7 @@ Plugin tables hold inventory, mappings, profiles, revisions, audit records, obse
 
 The reader runs from `poller_bottom` through `exec_background()` as one `register_process_start()` process per poller, with a time budget. Runs are idempotent: an interrupted run leaves the cache consistent and the next run continues. All RRD reads in a run share one `rrdtool -` process, started with `proc_open()` because `rrd_init()` is write-only.
 
-Disabling the plugin stops jobs and leaves SmokePing files untouched. Uninstalling offers an export, asks whether to drop plugin tables, and asks whether to delete plugin-created devices; it never removes RRD files or the managed include file. Backup documentation covers the Cacti database, SmokePing's config including the include file, and `datadir`. A restore test is part of release qualification for each phase.
+Disabling the plugin stops jobs and leaves SmokePing files untouched. Uninstalling writes a YAML export of the plugin's configuration to `cache/smokeping/` first (Cacti's uninstall hook cannot prompt; [0008](decisions/0008-yaml-and-xml-configuration-files.md)), honors the keep-tables setting, and leaves plugin-created devices in place; it never removes RRD files or the managed include file. Backup documentation covers the Cacti database, SmokePing's config including the include file, and `datadir`. A restore test is part of release qualification for each phase.
 
 ## Performance
 

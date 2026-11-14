@@ -56,7 +56,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
 		->and($state['realms'])->toEqual([
 			'smokeping.php'                                => 'SmokePing View',
-			'smokeping_inventory.php,smokeping_health.php' => 'SmokePing Admin',
+			'smokeping_inventory.php,smokeping_health.php,smokeping_config.php' => 'SmokePing Admin',
 		])
 		->and($state['admin'])->toBe(2);
 

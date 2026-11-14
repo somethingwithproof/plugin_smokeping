@@ -214,11 +214,22 @@ function smokeping_setup_hooks(): void {
 /**
  * Uninstall never touches SmokePing's RRD files or configuration. Core drops
  * the tracked plugin tables afterwards unless the administrator chose to keep
- * them in the plugin settings.
+ * them in the plugin settings. Before that, the plugin's own configuration is
+ * exported to Cacti's cache directory as YAML, so settings, targets, and
+ * device mappings survive the table drop. A failed export is logged and does
+ * not stop the uninstall.
  */
 function plugin_smokeping_uninstall(): void {
+	global $config;
+
 	if (!smokeping_boot()) {
 		return;
+	}
+
+	$exported = smokeping_config_service()->exportToDirectory($config['base_path'] . '/cache/smokeping', time());
+
+	if ($exported !== null) {
+		cacti_log('NOTE: Uninstall exported the SmokePing configuration to ' . $exported, false, 'SMOKEPING');
 	}
 
 	$schema = new \Cacti\Smokeping\Schema(false);
@@ -316,6 +327,12 @@ function smokeping_int_list(array $values): array {
 
 function smokeping_purge_guard(): \Cacti\Smokeping\PurgeGuard {
 	return new \Cacti\Smokeping\PurgeGuard(new \Cacti\Smokeping\ObjectRepository(false), new \Cacti\Smokeping\CactiObjectRepository(false));
+}
+
+function smokeping_config_service(): \Cacti\Smokeping\ConfigService {
+	global $config;
+
+	return new \Cacti\Smokeping\ConfigService(new \Cacti\Smokeping\ConfigRepository(false, $config['rra_path']));
 }
 
 function smokeping_target_actions(): \Cacti\Smokeping\TargetActions {

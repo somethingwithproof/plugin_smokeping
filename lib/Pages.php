@@ -32,7 +32,7 @@ namespace Cacti\Smokeping;
  */
 final class Pages {
 	public const VIEW  = 'smokeping.php';
-	public const ADMIN  = ['smokeping_inventory.php', 'smokeping_health.php'];
+	public const ADMIN  = ['smokeping_inventory.php', 'smokeping_health.php', 'smokeping_config.php'];
 
 	/**
 	 * @return list<array{name: string, files: list<string>}>
@@ -59,6 +59,7 @@ final class Pages {
 			'smokeping.php'           => __('SmokePing', 'smokeping'),
 			'smokeping_inventory.php' => __('SmokePing Inventory', 'smokeping'),
 			'smokeping_health.php'    => __('SmokePing Health', 'smokeping'),
+			'smokeping_config.php'    => __('SmokePing Configuration', 'smokeping'),
 		];
 	}
 

@@ -136,9 +136,9 @@ HEALTH=plugins/smokeping/smokeping_health.php
 # ---- unauthenticated ----
 anon=$WORK/anon.jar; : > $anon
 leak=0
-for f in smokeping.php smokeping_inventory.php smokeping_health.php scripts/ss_smokeping_summary.php poller_smokeping.php cli/smokeping.php setup.php lib/Row.php include/autoload.php index.php; do
+for f in smokeping.php smokeping_inventory.php smokeping_health.php smokeping_config.php scripts/ss_smokeping_summary.php poller_smokeping.php cli/smokeping.php setup.php lib/Row.php include/autoload.php index.php; do
 	body=$(curl -s -b $anon "$BASE/plugins/smokeping/$f?series=1~")
-	if echo "$body" | grep -q 'Perm/\|median:\|SmokePing Targets\|SmokePing Inventory\|SmokePing Health'; then leak=1; echo "RESULT FAIL anonymous-$f ($(echo "$body" | head -c 80))"; fi
+	if echo "$body" | grep -q 'Perm/\|median:\|SmokePing Targets\|SmokePing Inventory\|SmokePing Health\|Import a SmokePing'; then leak=1; echo "RESULT FAIL anonymous-$f ($(echo "$body" | head -c 80))"; fi
 done
 [ $leak = 0 ] && result PASS anonymous-gets-nothing "every plugin file returns no SmokePing data without a login"
 
@@ -229,6 +229,42 @@ is_graph broad "graph_image.php?local_graph_id=$a_smoke&graph_start=-3600&graph_
 for page in $VIEW $INV $HEALTH; do
 	check "norealm-denied-$(basename $page .php)" "no SmokePing realm" sh -c '! echo "$1" | grep -q "Perm/a\|SmokePing Targets\|SmokePing Inventory\|SmokePing Health for"' x "$(get norealm $page)"
 done
+
+# ---- configuration page: admin realm only, posts only, confirmed in two steps ----
+CONF=plugins/smokeping/smokeping_config.php
+for u in scoped revoked broad norealm; do
+	check "config-page-denied-$u" "no SmokePing admin realm" sh -c '! echo "$1" | grep -q "Import a SmokePing Configuration\|Export the SmokePing"' x "$(get $u $CONF)"
+done
+check config-page-admin "export and import forms" sh -c 'echo "$1" | grep -q "Export the SmokePing Configuration" && echo "$1" | grep -q "Import a SmokePing Configuration"' x "$(get admin $CONF)"
+
+conf_token() { get "$1" "$CONF" | grep -o "name='__csrf_magic' value=\"[^\"]*\"" | head -1 | sed 's/.*value="//;s/"$//'; }
+token=$(conf_token admin)
+export_body=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=yaml" "$BASE/$CONF")
+check config-export-yaml "a POST with a token downloads YAML" sh -c 'echo "$1" | grep -q "^schema_version: 1$" && echo "$1" | grep -q "Perm/a"' x "$export_body"
+export_xml=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=xml" "$BASE/$CONF")
+check config-export-xml "a POST with a token downloads XML" sh -c 'echo "$1" | grep -q "<smokeping-config schema_version=\"1\">"' x "$export_xml"
+check config-export-needs-token "a POST without a token is turned away" sh -c '! curl -s -b "$1" --data "action=export&format=yaml" "$2" | grep -q "^schema_version"' x "$WORK/admin.jar" "$BASE/$CONF"
+check config-export-get-ignored "a GET with action=export shows the page, not a download" sh -c '! echo "$1" | grep -q "^schema_version"' x "$(get admin "$CONF?action=export&format=yaml")"
+
+printf 'schema_version: 1\ntargets:\n  - path: Conf/new\n    host: conf.example\n' > $WORK/conf-new.yaml
+n0=$(q "SELECT COUNT(*) FROM plugin_smokeping_target" | jcell)
+# A scoped user's check and apply reach no code: the realm is missing.
+token=$(conf_token scoped)
+curl -s -b $WORK/scoped.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
+token=$(conf_token admin)
+page=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-new.yaml" "$BASE/$CONF")
+plan=$(echo "$page" | sed -n 's/.*name="plan" value="\([0-9a-f]*\)".*/\1/p' | head -1)
+check config-check-shows-plan-writes-nothing "the plan lists the add and nothing is stored" sh -c 'echo "$1" | grep -q "add    target Conf/new" && [ "$2" = "$3" ]' x "$page" "$(q "SELECT COUNT(*) FROM plugin_smokeping_target" | jcell)" "$n0"
+token=$(conf_token admin)
+curl -s -b $WORK/admin.jar -c $WORK/admin.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
+[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/new'" | jcell)" = 0 ] && result PASS config-apply-wrong-plan-refused "a plan id that was not shown applies nothing" || result FAIL config-apply-wrong-plan-refused "target was added"
+# A refused apply consumes the checked import, so the administrator checks again before the real apply.
+token=$(conf_token admin)
+page=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-new.yaml" "$BASE/$CONF")
+plan=$(echo "$page" | sed -n 's/.*name="plan" value="\([0-9a-f]*\)".*/\1/p' | head -1)
+token=$(conf_token admin)
+curl -s -b $WORK/admin.jar -c $WORK/admin.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$plan" "$BASE/$CONF"
+[ -n "$plan" ] && [ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/new'" | jcell)" = 1 ] && result PASS config-apply-confirmed "the shown plan applied once confirmed" || result FAIL config-apply-confirmed "plan '$plan'"
 
 # ---- administrator workflows over HTTP ----
 admin_token() { get admin "$1" | grep -o "name='__csrf_magic' value=\"[^\"]*\"" | head -1 | sed 's/.*value="//;s/"$//'; }

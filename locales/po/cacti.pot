@@ -21,6 +21,71 @@ msgstr ""
 msgid "skipped, %s"
 msgstr ""
 
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Import Check"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Back"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr ""
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr ""
+
+#: lib/ConfigPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr ""
+
 #: lib/DeviceActions.php
 msgid "Add SmokePing Targets"
 msgstr ""
@@ -190,10 +255,6 @@ msgstr ""
 
 #: lib/InventoryForms.php
 msgid "Add"
-msgstr ""
-
-#: lib/InventoryForms.php
-msgid "Cancel"
 msgstr ""
 
 #: lib/InventoryForms.php
@@ -379,6 +440,10 @@ msgstr ""
 
 #: lib/Pages.php
 msgid "SmokePing Health"
+msgstr ""
+
+#: lib/Pages.php
+msgid "SmokePing Configuration"
 msgstr ""
 
 #: lib/RelinkGuard.php
@@ -708,6 +773,18 @@ msgstr ""
 
 #: setup.php
 msgid "You do not have permission to add SmokePing targets."
+msgstr ""
+
+#: smokeping_config.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr ""
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr ""
+
+#: smokeping_config.php
+msgid "The configuration was imported."
 msgstr ""
 
 #: smokeping_health.php

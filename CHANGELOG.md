@@ -15,12 +15,15 @@ First release candidate of observe mode (phase 1). The plugin reads SmokePing's 
 - A read-only mount of SmokePing's data directory inside Cacti's RRA path, checked by the health page, and a purge guard that keeps Cacti's cleanup away from SmokePing's files (decision 0007, #37).
 - Summary data sources polled from the reader's cache for Thold (#38), and end-to-end tests of Thold and Maint on SmokePing data (decision 0002, #39).
 - Export and import of the plugin's configuration as YAML (the default) or XML, from the command line and an admin page, with a confirmed plan and a transaction. An uninstall writes a YAML export first (decision 0008, #45).
+- Import of an existing SmokePing configuration under Console > Import/Export and with `cli/smokeping.php import-smokeping`: a preview of the sections, devices, graphs, summary-only targets, graph tree and load, then a confirmed, repeatable apply through Cacti's device, graph and tree functions (#35).
+- A SmokePing top tab for users with the SmokePing View realm (#26).
 - Install, operator, alerting, backup and restore, performance, and failure-qualification documentation (#43, #45, #42, #46).
 - A release archive script that builds from the committed tree and ships only runtime files, the translation template, and the documentation (#44).
 
 ### Changed
 
 - The version is semantic and recorded in `INFO` (#44).
+- The reader time budget, inventory interval and freshness allowance settings refuse values that are not whole numbers in range (#26).
 - The plugin runs no Perl. The Perl Binary and SmokePing Perl Library Directory settings are removed, and the upgrade deletes them; an rc.1 configuration export that lists them still imports (#29).
 
 ### Not included

@@ -48,7 +48,11 @@ row=$(cell "SELECT CONCAT(inventory_status, ' ', (SELECT COUNT(*) FROM plugin_sm
 [ "$row" = "error 8" ] && result PASS config-unreadable-keeps-inventory "inventory status error, all 8 targets still present" || result FAIL config-unreadable-keeps-inventory "$row"
 
 # ---- DNS failure: SmokePing's probes fail and it writes complete loss. The plugin reports loss, not staleness, and does no lookups.
-[ "$(answer Fail/dns '')" = "median:U loss_pct:100 age:$(answer Fail/dns '' | sed 's/.*age://')" ] && echo "$(answer Fail/dns '')" | grep -q 'loss_pct:100' && result PASS dns-failure-reads-complete-loss "$(answer Fail/dns '')" || result FAIL dns-failure-reads-complete-loss "$(answer Fail/dns '')"
+dns=$(answer Fail/dns '')
+case "$dns" in
+	"median:U loss_pct:100 age:"[0-9]*) result PASS dns-failure-reads-complete-loss "$dns" ;;
+	*) result FAIL dns-failure-reads-complete-loss "$dns" ;;
+esac
 cond=$(php -r 'chdir("/cacti"); include("./include/cli_check.php"); include_once("./plugins/smokeping/setup.php"); smokeping_boot();
 $o = (new Somethingwithproof\Smokeping\ObservationRepository(false))->forTargets(array((int) $argv[1]));
 $e = new Somethingwithproof\Smokeping\FreshnessEvaluator(new Somethingwithproof\Smokeping\SystemClock(), 60);

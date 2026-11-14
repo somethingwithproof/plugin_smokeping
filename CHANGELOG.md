@@ -2,6 +2,19 @@
 
 All notable changes to this plugin are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Each entry names the issues it closes or advances.
 
+## [Unreleased]
+
+### Added
+
+- Releases are made by pushing a `v<version>` tag: the workflow checks the tag against `INFO` and this changelog, runs the whole CI for the tagged commit, builds the archive, attests its provenance and publishes the GitHub Release with the changelog section as its notes. The procedure is in `docs/RELEASING.md`.
+- CI runs the end-to-end suites on Cacti 1.2.31 and 1.2.x against a MariaDB service container, the install guide's commands on Debian 13 and AlmaLinux 9, a workflow lint, and the release tools' tests. One job, `ci-ok`, needs them all. The test image is built from `tests/docker/Dockerfile`.
+- A live suite, `tests/live/run-live-e2e.sh`, runs the plugin against a real SmokePing network on the release host.
+
+### Changed
+
+- GitHub's automatic source archives hold the same files as the release archive: tests, tools and CI files are left out by `export-ignore`.
+- The end-to-end runners read the network, database host, image and credentials from the environment, and fail when a check fails.
+
 ## [1.0.0-rc.1] - Unreleased
 
 First release candidate of observe mode (phase 1). The plugin reads SmokePing's configuration and RRD files, shows their state, creates Cacti devices, data sources, and graphs for them, and feeds Thold and Maint. It never writes to SmokePing.
@@ -29,3 +42,6 @@ First release candidate of observe mode (phase 1). The plugin reads SmokePing's 
 ### Not included
 
 - Managed mode, where the plugin writes SmokePing's configuration, and SmokePing on Cacti remote data collectors. The configuration schema reserves the keys managed mode will use.
+
+[Unreleased]: https://github.com/somethingwithproof/plugin_smokeping/compare/v1.0.0-rc.1...HEAD
+[1.0.0-rc.1]: https://github.com/somethingwithproof/plugin_smokeping/releases/tag/v1.0.0-rc.1

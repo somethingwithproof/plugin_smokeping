@@ -17,6 +17,38 @@ The summary data source is polled by the poller that runs the reader. When an ex
 
 On the device list, select devices and choose **Add SmokePing Targets**. The confirm screen lists, for each device, the unmapped targets whose SmokePing `host` equals the device's host name (compared without regard to case), and how many match in all. Continue adds them. Devices with no match are reported and left alone, and no device is created. A hundred devices in one request took about 24 seconds in a local container; a very long selection stops starting new devices shortly before the request limit, and running the action again finishes it, because devices already added are skipped.
 
+## A whole SmokePing configuration
+
+**Console > Import/Export > Import SmokePing Configuration** brings an existing SmokePing installation into Cacti in one step. It needs the SmokePing Admin realm and device permissions that cover every device; mirroring into a graph tree also needs the Trees realm.
+
+Choose the input:
+
+- **The configured file** (the default): the SmokePing Configuration File setting, read on the server with every file it includes. An include must stay in that file's directory or below it.
+- **An uploaded file** of at most 4 MiB. It is read on its own, so `@include` is not allowed in it and is refused with its line number. Its targets are graphed from the RRD files the reader's poller sees, and the next inventory marks a target that poller's SmokePing does not have as absent.
+
+Then the options:
+
+| Option | Default | Meaning |
+|---|---|---|
+| Devices | One per SmokePing host | Targets that probe the same host share a device. One per target gives every target its own device, named by its title. |
+| Device Template | SmokePing Target | The template of devices the import creates. |
+| Poller | The reader's poller | Must be the poller that runs the reader; any other is refused, because summary data sources there get no data. |
+| Site | None | The site of new devices. |
+| Graph Tree | Do not mirror | An existing tree, or a new tree by name. Each SmokePing section becomes a branch, and each device a host entry under the branch of its targets. |
+
+**Preview** reads the configuration and writes nothing. It shows the SmokePing sections with a check box each (check sections and **Update Preview** to import only those targets), the devices to create or the existing devices to use, the graphs to create, the targets that get summary data only and why (pings other than 10, 20, or 30, or an RRDproxy), the tree branches and entries, and the estimated load, as the bulk action shows it. A device is reused when one on the chosen poller has the target's host name (and, with one device per target, its title as description); when two match, those targets are skipped and listed, and you map them on SmokePing Inventory. **Import** applies exactly the previewed plan through Cacti's device, graph, and tree functions. If the configuration or Cacti changed since the preview, nothing is written and you preview again.
+
+Running the import again creates nothing new: mapped targets keep their devices, existing graphs and tree entries are reused, and the result lists each target as already in Cacti. The import never writes SmokePing's files or the mount.
+
+The same import from the command line, with the same options:
+
+```sh
+php plugins/smokeping/cli/smokeping.php import-smokeping --dry-run --tree-name=SmokePing
+php plugins/smokeping/cli/smokeping.php import-smokeping --apply --confirm=PLAN --tree-name=SmokePing
+```
+
+`--file=PATH` reads another file on its own, as an upload. `--sections=Europe,Lab/Core`, `--device-per=target`, `--device-template=ID`, `--poller=ID`, `--site=ID`, and `--tree=ID` set the other options. The dry run prints the plan and its id; `--apply` needs that id, and it must still match.
+
 ## Re-linking a renamed target
 
 SmokePing names a target's file after its place in the configuration tree, so renaming or moving a node starts a new, empty file. When an import sees a path disappear and a new path with the same host and probe appear, it records a proposal and changes nothing. **Review** on the inventory page opens a confirm screen. Re-link moves the smoke graph and the summary data source to the new target, moves the device mapping with them, and keeps the old file's history readable in an archived graph. **Dismiss Proposal** closes it without a change.

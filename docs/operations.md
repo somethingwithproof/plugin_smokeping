@@ -10,6 +10,7 @@ How to read what the plugin shows, what each state means and what evidence it co
 | **SmokePing Inventory** | Admin | Every target SmokePing's configuration lists, mapped or not, and open re-link proposals |
 | **SmokePing Health** | Admin | The checks below, and a button to retry the template import |
 | **SmokePing Configuration** | Admin | Export and import of the plugin's configuration ([format](configuration-format.md)) |
+| **Import SmokePing Configuration** (under Import/Export) | Admin | Import of an existing SmokePing configuration into devices, graphs, and a graph tree ([how](provisioning.md#a-whole-smokeping-configuration)) |
 
 Smoke graphs and summary graphs are ordinary Cacti graphs, so Cacti's graph and device permissions govern them.
 

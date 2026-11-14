@@ -8,6 +8,7 @@
  *
  *   cli/smokeping.php provision <target path> [--device=ID] [--location=NAME]
  *   cli/smokeping.php relink <old target path> <new target path> [--location=NAME]
+ *   cli/smokeping.php size-graphs
  *   cli/smokeping.php export [--format=yaml|xml] [--file=PATH]
  *   cli/smokeping.php import --file=PATH [--format=yaml|xml] [--apply --confirm=PLAN]
  *   cli/smokeping.php import-smokeping [--dry-run | --apply --confirm=PLAN] [--file=PATH]
@@ -32,6 +33,11 @@
  * the smoke data source and graph when the target can have them. relink
  * moves the smoke data source to the new target and keeps the old file's
  * history in an archived data source and graph.
+ *
+ * size-graphs sets the upper limit of every smoke graph from its file, as
+ * SmokePing does: the largest median of the last day, times 1.2. Graphs are
+ * sized when they are created; run it again when latencies have changed. A
+ * graph with no median in the last day keeps its limit.
  */
 
 $dir = __DIR__;
@@ -52,6 +58,7 @@ smokeping_boot();
 
 $smokeping_usage = 'usage: cli/smokeping.php provision <target path> [--device=ID] [--location=NAME]' . PHP_EOL
 	. '       cli/smokeping.php relink <old target path> <new target path> [--location=NAME]' . PHP_EOL
+	. '       cli/smokeping.php size-graphs' . PHP_EOL
 	. '       cli/smokeping.php export [--format=yaml|xml] [--file=PATH]' . PHP_EOL
 	. '       cli/smokeping.php import --file=PATH [--format=yaml|xml] [--apply --confirm=PLAN]' . PHP_EOL
 	. '       cli/smokeping.php import-smokeping [--dry-run | --apply --confirm=PLAN] [--file=PATH] [--sections=A,B/C]' . PHP_EOL
@@ -276,6 +283,16 @@ if (in_array($smokeping_command, ['export', 'import'], true)) {
 	exit(smokeping_cli_config($smokeping_command, $smokeping_format, $smokeping_file, $smokeping_apply, $smokeping_confirm, $smokeping_paths, $smokeping_usage));
 }
 
+if ($smokeping_command === 'size-graphs' && $smokeping_paths === []) {
+	$smokeping_scaler = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
+
+	foreach ($smokeping_scaler->scaleAll() as $smokeping_graph => $smokeping_limit) {
+		print 'Graph ' . $smokeping_graph . ': ' . ($smokeping_limit === null ? 'kept its limit' : 'upper limit ' . $smokeping_limit) . PHP_EOL;
+	}
+
+	exit(0);
+}
+
 if (!in_array($smokeping_command, ['provision', 'relink'], true) || count($smokeping_paths) !== ($smokeping_command === 'relink' ? 2 : 1)) {
 	fwrite(STDERR, $smokeping_usage);
 	exit(1);
@@ -291,7 +308,8 @@ $smokeping_provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner(
 	read_config_option('storage_location') != 0,
 	new \Somethingwithproof\Smokeping\ObjectRepository(false),
 	new \Somethingwithproof\Smokeping\CactiObjectRepository(false),
-	new \Somethingwithproof\Smokeping\SystemClock()
+	new \Somethingwithproof\Smokeping\SystemClock(),
+	smokeping_rrd_reader()
 );
 
 $smokeping_found = [];

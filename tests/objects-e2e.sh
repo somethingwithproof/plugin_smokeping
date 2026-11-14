@@ -66,6 +66,12 @@ row=$(q "SELECT COUNT(*) FROM graph_local WHERE host_id = ${dev:-0} AND id NOT I
 row=$(q "SELECT title_cache FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
 [ "$row" = "Europe/paris - SmokePing" ] && result PASS graph-titled-for-target "$row" || result FAIL graph-titled-for-target "$row"
 
+# The upper limit is sized from the file, or the template's when the last day has no median.
+row=$(php $P/tests/bin/scale-check.php "${gr:-0}" | tail -1)
+case "$row" in "sized 1 kept 0 wrong 0"|"sized 0 kept 1 wrong 0") result PASS graph-sized-from-data "$row";; *) result FAIL graph-sized-from-data "$row: $(php $P/tests/bin/scale-check.php "${gr:-0}" | head -1)";; esac
+out=$(php $P/cli/smokeping.php size-graphs 2>&1); rc=$?
+[ $rc -eq 0 ] && echo "$out" | grep -q "^Graph ${gr:-0}: " && result PASS size-graphs-command "$(echo "$out" | grep "^Graph ${gr:-0}: ")" || result FAIL size-graphs-command "rc $rc: $out"
+
 row=$(q "SELECT availability_method FROM host WHERE id = ${dev:-0}" | jcell)
 [ "$row" = "0" ] && result PASS device-availability-none "availability_method=0" || result FAIL device-availability-none "$row"
 

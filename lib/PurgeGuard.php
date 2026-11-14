@@ -51,14 +51,15 @@ final class PurgeGuard {
 	public function dataSourcesRemoving(array $localDataIds): void {
 		$owned = $this->objects->owned($localDataIds);
 
-		if ($owned === []) {
-			return;
+		if ($owned !== []) {
+			$this->cacti->disarmPurge($owned);
+
+			Log::info(sprintf('Disarmed the purge of %d SmokePing data sources being removed', count($owned)));
 		}
 
-		$this->cacti->disarmPurge($owned);
-		$this->objects->forget($owned);
-
-		Log::info(sprintf('Disarmed the purge of %d SmokePing data sources being removed', count($owned)));
+		// Summary data sources have no SmokePing file, so Cacti may purge their
+		// own RRDs; only the plugin's record of them goes.
+		$this->objects->forget($localDataIds);
 	}
 
 	/**

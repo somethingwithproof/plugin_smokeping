@@ -36,6 +36,12 @@ final class ObjectRepository {
 	public const ACTIVE   = 'active';
 	public const ARCHIVED = 'archived';
 
+	/**
+	 * A polled summary data source. It has no SmokePing file, so the purge
+	 * protection leaves it to Cacti.
+	 */
+	public const SUMMARY  = 'summary';
+
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -44,6 +50,15 @@ final class ObjectRepository {
 	 */
 	public function active(int $targetId, string $location): ?array {
 		$row = db_fetch_row_prepared('SELECT local_data_id, local_graph_id FROM plugin_smokeping_object WHERE target_id = ? AND location = ? AND state = ?', [$targetId, $location, self::ACTIVE], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? ['local_data_id' => Row::int($row, 'local_data_id'), 'local_graph_id' => Row::int($row, 'local_graph_id')] : null;
+	}
+
+	/**
+	 * @return array{local_data_id: int, local_graph_id: int}|null
+	 */
+	public function summary(int $targetId, string $location): ?array {
+		$row = db_fetch_row_prepared('SELECT local_data_id, local_graph_id FROM plugin_smokeping_object WHERE target_id = ? AND location = ? AND state = ?', [$targetId, $location, self::SUMMARY], true, $this->connection);
 
 		return is_array($row) && $row !== [] ? ['local_data_id' => Row::int($row, 'local_data_id'), 'local_graph_id' => Row::int($row, 'local_graph_id')] : null;
 	}
@@ -74,7 +89,7 @@ final class ObjectRepository {
 		}
 
 		$placeholders = implode(', ', array_fill(0, count($localDataIds), '?'));
-		$rows         = Row::rows(db_fetch_assoc_prepared("SELECT local_data_id FROM plugin_smokeping_object WHERE local_data_id IN ($placeholders)", $localDataIds, true, $this->connection));
+		$rows         = Row::rows(db_fetch_assoc_prepared("SELECT local_data_id FROM plugin_smokeping_object WHERE local_data_id IN ($placeholders) AND state <> ?", array_merge($localDataIds, [self::SUMMARY]), true, $this->connection));
 
 		return array_values(array_map(fn (array $row) => Row::int($row, 'local_data_id'), $rows));
 	}
@@ -127,7 +142,7 @@ final class ObjectRepository {
 		}
 
 		$placeholders = implode(', ', array_fill(0, count($hostIds), '?'));
-		$rows         = Row::rows(db_fetch_assoc_prepared("SELECT local_data_id FROM plugin_smokeping_object WHERE host_id IN ($placeholders)", $hostIds, true, $this->connection));
+		$rows         = Row::rows(db_fetch_assoc_prepared("SELECT local_data_id FROM plugin_smokeping_object WHERE host_id IN ($placeholders) AND state <> ?", array_merge($hostIds, [self::SUMMARY]), true, $this->connection));
 
 		return array_values(array_map(fn (array $row) => Row::int($row, 'local_data_id'), $rows));
 	}

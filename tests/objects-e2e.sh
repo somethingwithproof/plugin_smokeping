@@ -51,6 +51,8 @@ out=$(php $P/cli/smokeping.php provision Europe/paris 2>&1)
 dev=$(echo "$out" | sed -n 's/^Created device \([0-9]*\)$/\1/p')
 ds=$(echo "$out" | sed -n 's/^Data source \([0-9]*\) graph \([0-9]*\)$/\1/p')
 gr=$(echo "$out" | sed -n 's/^Data source \([0-9]*\) graph \([0-9]*\)$/\2/p')
+sds=$(echo "$out" | sed -n 's/^Summary data source \([0-9]*\) graph \([0-9]*\)$/\1/p')
+sgr=$(echo "$out" | sed -n 's/^Summary data source \([0-9]*\) graph \([0-9]*\)$/\2/p')
 [ -n "$dev" ] && [ -n "$ds" ] && result PASS provision-paris "device $dev data source $ds graph $gr" || result FAIL provision-paris "$out"
 
 row=$(q "SELECT data_source_path, rrd_step, data_input_id FROM data_template_data WHERE local_data_id = ${ds:-0}" | jcell)
@@ -71,24 +73,32 @@ row=$(q "SELECT COUNT(*) FROM poller_item WHERE local_data_id = ${ds:-0}" | jcel
 
 # Provisioning again returns the same objects and creates nothing.
 again=$(php $P/cli/smokeping.php provision Europe/paris --device="${dev:-0}" 2>&1)
-[ "$again" = "Data source ${ds:-0} graph ${gr:-0}" ] && result PASS provision-idempotent "$again" || result FAIL provision-idempotent "$again"
+[ "$again" = "Summary data source ${sds:-0} graph ${sgr:-0}
+Data source ${ds:-0} graph ${gr:-0}" ] && result PASS provision-idempotent "$again" || result FAIL provision-idempotent "$again"
+
+# The summary data source: script server input, polled, one series per target location.
+row=$(q "SELECT d.data_input_id > 0 AS has_input, i.type_id, v.value FROM data_template_data d JOIN data_input i ON i.id = d.data_input_id JOIN data_input_data v ON v.data_template_data_id = d.id JOIN data_input_fields f ON f.id = v.data_input_field_id AND f.data_name = 'series' WHERE d.local_data_id = ${sds:-0}" | jcell)
+[ "$row" = "1 5 $(q "SELECT id FROM plugin_smokeping_target WHERE path = 'Europe/paris'" | php -r '$r = json_decode(stream_get_contents(STDIN), true); echo $r[0]["id"];')~" ] && result PASS summary-data-source "script server input, series $row" || result FAIL summary-data-source "$row"
+
+row=$(q "SELECT action, arg1 FROM poller_item WHERE local_data_id = ${sds:-0}" | jcell)
+case "$row" in "2 "*"/plugins/smokeping/scripts/ss_smokeping_summary.php ss_smokeping_summary '"*"~'") result PASS summary-polled "script server poller_item: $row";; *) result FAIL summary-polled "$row";; esac
 
 # 2. Unsupported pings, RRDproxy, traversal, missing file.
 out=$(php $P/cli/smokeping.php provision Europe/berlin 2>&1); rc=$?
-[ $rc -ne 0 ] && echo "$out" | grep -q 'only for 10, 20, and 30' && result PASS unsupported-pings "refused with a reason" || result FAIL unsupported-pings "$out"
+[ $rc -eq 0 ] && echo "$out" | grep -q 'only for 10, 20, and 30' && echo "$out" | grep -q '^Summary data source' && result PASS unsupported-pings "no smoke graph, with a reason; summary only" || result FAIL unsupported-pings "$out"
 
 $L set_setting "storage_location=1" >/dev/null
 out=$(php $P/cli/smokeping.php provision Europe/rome 2>&1); rc=$?
 $L set_setting "storage_location=0" >/dev/null
-[ $rc -ne 0 ] && echo "$out" | grep -q 'RRDproxy' && result PASS rrdproxy-no-smoke "refused with a reason" || result FAIL rrdproxy-no-smoke "$out"
+[ $rc -eq 0 ] && echo "$out" | grep -q 'RRDproxy' && echo "$out" | grep -q '^Summary data source' && result PASS rrdproxy-no-smoke "no smoke graph, with a reason; summary only" || result FAIL rrdproxy-no-smoke "$out"
 
 out=$(php $P/cli/smokeping.php provision Europe/escape 2>&1); rc=$?
-[ $rc -ne 0 ] && result PASS symlinked-file-refused "$(echo "$out" | head -1)" || result FAIL symlinked-file-refused "$out"
+echo "$out" | grep -q '^SKIPPED: ' && ! echo "$out" | grep -q '^Data source' && result PASS symlinked-file-refused "$(echo "$out" | grep '^SKIPPED: ' | head -1)" || result FAIL symlinked-file-refused "$out"
 
 out=$(php $P/cli/smokeping.php provision Europe/linkdir/x 2>&1); rc=$?
-[ $rc -ne 0 ] && result PASS symlinked-directory-refused "$(echo "$out" | head -1)" || result FAIL symlinked-directory-refused "$out"
+echo "$out" | grep -q '^SKIPPED: ' && ! echo "$out" | grep -q '^Data source' && result PASS symlinked-directory-refused "$(echo "$out" | grep '^SKIPPED: ' | head -1)" || result FAIL symlinked-directory-refused "$out"
 
-objects=$(q "SELECT id FROM plugin_smokeping_object" | jcount)
+objects=$(q "SELECT id FROM plugin_smokeping_object WHERE state IN ('active', 'archived')" | jcount)
 [ "$objects" = 1 ] && result PASS refused-targets-have-no-objects "1 object" || result FAIL refused-targets-have-no-objects "$objects objects"
 
 # 3. Re-link keeps both histories graphable.

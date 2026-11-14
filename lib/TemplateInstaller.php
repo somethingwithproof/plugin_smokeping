@@ -36,13 +36,17 @@ namespace Cacti\Smokeping;
  * upgrade re-imports only when the file changed.
  */
 final class TemplateInstaller {
-	public const VERSION = 1;
+	public const VERSION = 2;
 
 	public const SETTING = 'smokeping_templates_version';
 
 	public const FAILURE_SETTING = 'smokeping_templates_failure';
 
 	public const DEVICE_TEMPLATE = 'SmokePing Target';
+
+	public const SUMMARY_TEMPLATE = 'SmokePing Summary';
+
+	public const SUMMARY_INPUT = 'SmokePing Summary Script';
 
 	/** Ping counts that have a smoke template. */
 	public const PINGS = [10, 20, 30];
@@ -109,6 +113,8 @@ final class TemplateInstaller {
 			return 'The template file ' . $this->file . ' is missing or empty';
 		}
 
+		// Importing a data input method replicates it to remote collectors.
+		include_once($this->coreLibrary . '/utility.php');
 		include_once($this->coreLibrary . '/import.php');
 
 		$result = import_xml_data($xml, false, $this->objects->defaultProfileId());
@@ -143,10 +149,15 @@ final class TemplateInstaller {
 	}
 
 	/**
-	 * True when the device template and every smoke graph template exist.
+	 * True when the device template, every smoke graph template, and the summary
+	 * templates exist.
 	 */
 	public function present(): bool {
 		if ($this->objects->deviceTemplateCount(self::DEVICE_TEMPLATE) !== 1) {
+			return false;
+		}
+
+		if ($this->objects->graphTemplateCount(self::SUMMARY_TEMPLATE) !== 1 || $this->objects->dataTemplateCount(self::SUMMARY_TEMPLATE) !== 1 || $this->objects->dataInputCount(self::SUMMARY_INPUT) !== 1) {
 			return false;
 		}
 

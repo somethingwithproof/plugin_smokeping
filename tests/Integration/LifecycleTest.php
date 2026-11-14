@@ -109,8 +109,8 @@ it('imports the templates once, and install, upgrade, and re-import leave one co
 	expect($first['templates']['host'])->toBe(1)
 		->and($first['templates']['graph'])->toBe(3)
 		->and($first['templates']['data'])->toBe(3)
-		->and($first['templates']['linked'])->toBe(3)
-		->and($first['templates']['version'])->toEqual('1');
+		->and($first['templates']['linked'])->toBe(4)
+		->and($first['templates']['version'])->toEqual('2');
 
 	$upgraded = lifecycle('forget_templates');
 	$again    = lifecycle('upgrade');

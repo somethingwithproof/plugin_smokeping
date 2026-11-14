@@ -51,6 +51,29 @@ final class CactiObjectRepository {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM graph_templates WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	public function dataTemplateCount(string $name): int {
+		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM data_template WHERE name = ?', [$name], '', true, $this->connection);
+	}
+
+	public function dataInputCount(string $name): int {
+		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM data_input WHERE name = ?', [$name], '', true, $this->connection);
+	}
+
+	/**
+	 * The input field of a data input method, by its data name.
+	 */
+	public function dataInputFieldId(string $dataInputName, string $dataName): int {
+		return (int) db_fetch_cell_prepared("SELECT f.id FROM data_input_fields AS f INNER JOIN data_input AS i ON i.id = f.data_input_id WHERE i.name = ? AND f.data_name = ? AND f.input_output = 'in'", [$dataInputName, $dataName], '', true, $this->connection);
+	}
+
+	public function dataTemplateId(string $name): int {
+		return (int) db_fetch_cell_prepared('SELECT id FROM data_template WHERE name = ?', [$name], '', true, $this->connection);
+	}
+
+	public function devicePoller(int $hostId): int {
+		return (int) db_fetch_cell_prepared('SELECT poller_id FROM host WHERE id = ?', [$hostId], '', true, $this->connection);
+	}
+
 	public function graphTemplateId(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM graph_templates WHERE name = ?', [$name], '', true, $this->connection);
 	}

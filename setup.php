@@ -318,6 +318,17 @@ function smokeping_purge_guard(): \Cacti\Smokeping\PurgeGuard {
 	return new \Cacti\Smokeping\PurgeGuard(new \Cacti\Smokeping\ObjectRepository(false), new \Cacti\Smokeping\CactiObjectRepository(false));
 }
 
+/**
+ * The summary data source's answer for one series, read from the reader's
+ * cache with the settings of this poller.
+ */
+function smokeping_summary_answer(string $series): string {
+	$clock      = new \Cacti\Smokeping\SystemClock();
+	$calculator = new \Cacti\Smokeping\SummaryCalculator(new \Cacti\Smokeping\FreshnessEvaluator($clock, smokeping_settings()->freshnessAllowance), $clock);
+
+	return (new \Cacti\Smokeping\SummaryScript(new \Cacti\Smokeping\ObservationRepository(false), $calculator))->run($series);
+}
+
 function smokeping_poller_bottom(): void {
 	global $config;
 

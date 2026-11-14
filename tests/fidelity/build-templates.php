@@ -370,6 +370,141 @@ foreach (array(false, true) as $legacy) {
 }
 }
 
+/* ---- summary data input, data template, and graph template ---- */
+
+$inputName = 'SmokePing Summary Script';
+$inputId   = sp_save('data_input', array(
+	'hash'         => sp_hash('data_input', $inputName),
+	'name'         => $inputName,
+	'input_string' => '<path_cacti>/plugins/smokeping/scripts/ss_smokeping_summary.php ss_smokeping_summary <series>',
+	'type_id'      => DATA_INPUT_TYPE_PHP_SCRIPT_SERVER,
+));
+
+$field = static function (string $dataName, string $friendly, string $inOut, int $sequence) use ($inputId, $inputName): int {
+	return sp_save('data_input_fields', array(
+		'hash'           => sp_hash('data_input_field', "$inputName:$dataName"),
+		'data_input_id'  => $inputId,
+		'name'           => $friendly,
+		'data_name'      => $dataName,
+		'input_output'   => $inOut,
+		'update_rra'     => $inOut === 'out' ? 'on' : '',
+		'sequence'       => $sequence,
+		'type_code'      => '',
+		'regexp_match'   => '',
+		'allow_nulls'    => '',
+	));
+};
+
+$fieldSeries = $field('series', 'Series (target id~location)', 'in', 0);
+$fieldOut    = array(
+	'median'   => $field('median', 'Median RTT (ms)', 'out', 1),
+	'loss_pct' => $field('loss_pct', 'Packet Loss (%)', 'out', 2),
+	'age'      => $field('age', 'Age of the Last Update (s)', 'out', 3),
+);
+
+$dtName = 'SmokePing Summary';
+$dtId   = sp_save('data_template', array('hash' => sp_hash('data_template', $dtName), 'name' => $dtName));
+$dtdId  = (int) db_fetch_cell_prepared('SELECT id FROM data_template_data WHERE data_template_id = ? AND local_data_id = 0', array($dtId));
+$dtdId  = (int) sql_save(array(
+	'id'                          => $dtdId,
+	'data_template_id'            => $dtId,
+	'local_data_id'               => 0,
+	'local_data_template_data_id' => 0,
+	'data_input_id'               => $inputId,
+	'name'                        => '|host_description| - SmokePing Summary',
+	'active'                      => 'on',
+	'rrd_step'                    => 300,
+	'data_source_profile_id'      => 1,
+), 'data_template_data');
+
+// The series is set per data source, so the template leaves it to the plugin.
+db_execute_prepared('REPLACE INTO data_input_data (data_input_field_id, data_template_data_id, t_value, value) VALUES (?, ?, ?, ?)', array($fieldSeries, $dtdId, 'on', ''));
+
+$sumDs = array();
+
+foreach (array('median' => array('0', 'U'), 'loss_pct' => array('0', '100'), 'age' => array('0', 'U')) as $name => $range) {
+	$sumDs[$name] = sp_save('data_template_rrd', array(
+		'hash'                => sp_hash('data_template_item', "$dtName:$name"),
+		'data_template_id'    => $dtId,
+		'local_data_id'       => 0,
+		'rrd_minimum'         => $range[0],
+		'rrd_maximum'         => $range[1],
+		'rrd_heartbeat'       => 600,
+		'data_source_type_id' => 1,
+		'data_source_name'    => $name,
+		'data_input_field_id' => $fieldOut[$name],
+	));
+}
+
+$gtName = 'SmokePing Summary';
+$gtId   = sp_save('graph_templates', array('hash' => sp_hash('graph_template', $gtName), 'name' => $gtName));
+$gtgId  = (int) db_fetch_cell_prepared('SELECT id FROM graph_templates_graph WHERE graph_template_id = ? AND local_graph_id = 0', array($gtId));
+
+sql_save(array(
+	'id'                            => $gtgId,
+	'graph_template_id'             => $gtId,
+	'local_graph_id'                => 0,
+	'local_graph_template_graph_id' => 0,
+	'image_format_id'               => 1,
+	't_title'                       => '',
+	'title'                         => '|host_description| - SmokePing Summary',
+	'height'                        => 120,
+	'width'                         => 600,
+	'upper_limit'                   => '100',
+	'lower_limit'                   => '0',
+	'vertical_label'                => 'ms, %',
+	'auto_scale'                    => 'on',
+	'auto_scale_opts'               => 2,
+	'auto_scale_rigid'              => '',
+	'base_value'                    => 1000,
+), 'graph_templates_graph');
+
+db_execute_prepared('DELETE FROM graph_templates_item WHERE graph_template_id = ? AND local_graph_id = 0', array($gtId));
+
+$sequence = 0;
+$medianLine = 0;
+
+$addSummary = static function (array $item) use (&$sequence, $gtId, $gtName): int {
+	$sequence++;
+
+	return sp_save('graph_templates_item', $item + array(
+		'hash'                      => sp_hash('graph_template_item', "$gtName:$sequence"),
+		'graph_template_id'         => $gtId,
+		'local_graph_id'            => 0,
+		'task_item_id'              => 0,
+		'color_id'                  => 0,
+		'alpha'                     => 'FF',
+		'graph_type_id'             => GRAPH_ITEM_TYPE_COMMENT,
+		'cdef_id'                   => 0,
+		'consolidation_function_id' => 1,
+		'text_format'               => '',
+		'value'                     => '',
+		'hard_return'               => '',
+		'gprint_id'                 => 0,
+		'sequence'                  => $sequence,
+	));
+};
+
+$gprintAge  = sp_gprint('SmokePing age', '%.0lf s');
+$medianLine = $addSummary(array('task_item_id' => $sumDs['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_LINE1, 'color_id' => sp_color(SP_MEDIAN_COLOR), 'text_format' => 'median rtt (ms)'));
+$addSummary(array('task_item_id' => $sumDs['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_LAST, 'text_format' => ' now', 'gprint_id' => sp_gprint('SmokePing median ms', '%.1lf'), 'hard_return' => 'on'));
+$addSummary(array('task_item_id' => $sumDs['loss_pct'], 'graph_type_id' => GRAPH_ITEM_TYPE_LINE1, 'color_id' => sp_color('FF0000'), 'text_format' => 'packet loss (%)'));
+$addSummary(array('task_item_id' => $sumDs['loss_pct'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_LAST, 'text_format' => ' now', 'gprint_id' => $gprintLoss, 'hard_return' => 'on'));
+$addSummary(array('task_item_id' => $sumDs['age'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_LAST, 'text_format' => 'age of the last update', 'gprint_id' => $gprintAge, 'hard_return' => 'on'));
+
+$inputSum = sp_save('graph_template_input', array(
+	'hash'              => sp_hash('graph_template_input', "$gtName:median color"),
+	'graph_template_id' => $gtId,
+	'name'              => 'Median Color',
+	'description'       => 'The color of the median line',
+	'column_name'       => 'color_id',
+));
+
+db_execute_prepared('DELETE FROM graph_template_input_defs WHERE graph_template_input_id = ?', array($inputSum));
+db_execute_prepared('INSERT INTO graph_template_input_defs (graph_template_input_id, graph_template_item_id) VALUES (?, ?)', array($inputSum, $medianLine));
+
+$exports[] = $gtId;
+
 /* ---- device template ---- */
 
 $htId = sp_save('host_template', array('hash' => sp_hash('host_template', 'SmokePing Target'), 'name' => 'SmokePing Target'));

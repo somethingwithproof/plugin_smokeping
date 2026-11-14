@@ -2,7 +2,7 @@
 	<hash_0201031b95bb649e1af132abd2578f2fad7707>
 		<name>SmokePing Target</name>
 		<class></class>
-		<graph_templates>hash_000103b5c5ecf305a732e7fab5c46c943f16a5|hash_00010397ed24bdbc23972c14029cdb23b47c76|hash_0001034bdf1dfd706dcf98785edcbfe5a69d20</graph_templates>
+		<graph_templates>hash_000103b5c5ecf305a732e7fab5c46c943f16a5|hash_00010397ed24bdbc23972c14029cdb23b47c76|hash_0001034bdf1dfd706dcf98785edcbfe5a69d20|hash_000103d8a3145aa70f31bafba729463ea931cc</graph_templates>
 		<data_queries></data_queries>
 	</hash_0201031b95bb649e1af132abd2578f2fad7707>
 	<hash_000103b5c5ecf305a732e7fab5c46c943f16a5>
@@ -2915,6 +2915,178 @@
 			</hash_09010300b424e6a2a12e05c4e4526e19e210bc>
 		</inputs>
 	</hash_0001034bdf1dfd706dcf98785edcbfe5a69d20>
+	<hash_000103d8a3145aa70f31bafba729463ea931cc>
+		<name>SmokePing Summary</name>
+		<multiple></multiple>
+		<test_source></test_source>
+		<graph>
+			<t_title></t_title>
+			<title>|host_description| - SmokePing Summary</title>
+			<t_vertical_label></t_vertical_label>
+			<vertical_label>ms, %</vertical_label>
+			<t_image_format_id></t_image_format_id>
+			<image_format_id>1</image_format_id>
+			<t_height></t_height>
+			<height>120</height>
+			<t_width></t_width>
+			<width>600</width>
+			<t_base_value></t_base_value>
+			<base_value>1000</base_value>
+			<t_slope_mode></t_slope_mode>
+			<slope_mode>on</slope_mode>
+			<t_auto_scale></t_auto_scale>
+			<auto_scale>on</auto_scale>
+			<t_auto_scale_opts></t_auto_scale_opts>
+			<auto_scale_opts>2</auto_scale_opts>
+			<t_auto_scale_log></t_auto_scale_log>
+			<auto_scale_log></auto_scale_log>
+			<t_scale_log_units></t_scale_log_units>
+			<scale_log_units></scale_log_units>
+			<t_auto_scale_rigid></t_auto_scale_rigid>
+			<auto_scale_rigid></auto_scale_rigid>
+			<t_upper_limit></t_upper_limit>
+			<upper_limit>100</upper_limit>
+			<t_lower_limit></t_lower_limit>
+			<lower_limit>0</lower_limit>
+			<t_unit_value></t_unit_value>
+			<unit_value></unit_value>
+			<t_unit_exponent_value></t_unit_exponent_value>
+			<unit_exponent_value></unit_exponent_value>
+			<t_unit_length></t_unit_length>
+			<unit_length></unit_length>
+			<t_no_gridfit></t_no_gridfit>
+			<no_gridfit></no_gridfit>
+			<t_alt_y_grid></t_alt_y_grid>
+			<alt_y_grid></alt_y_grid>
+			<t_right_axis></t_right_axis>
+			<right_axis></right_axis>
+			<t_right_axis_label></t_right_axis_label>
+			<right_axis_label></right_axis_label>
+			<t_right_axis_format></t_right_axis_format>
+			<right_axis_format></right_axis_format>
+			<t_right_axis_formatter></t_right_axis_formatter>
+			<right_axis_formatter></right_axis_formatter>
+			<t_left_axis_formatter></t_left_axis_formatter>
+			<left_axis_formatter></left_axis_formatter>
+			<t_auto_padding></t_auto_padding>
+			<auto_padding></auto_padding>
+			<t_dynamic_labels></t_dynamic_labels>
+			<dynamic_labels></dynamic_labels>
+			<t_force_rules_legend></t_force_rules_legend>
+			<force_rules_legend></force_rules_legend>
+			<t_tab_width></t_tab_width>
+			<tab_width>30</tab_width>
+			<t_legend_position></t_legend_position>
+			<legend_position></legend_position>
+			<t_legend_direction></t_legend_direction>
+			<legend_direction></legend_direction>
+		</graph>
+		<items>
+			<hash_1001032ff41808648ac703f66335aea4f23ba3>
+				<graph_type_id>4</graph_type_id>
+				<task_item_id>hash_080103d66b606b6959b151bc7c0b955b491468</task_item_id>
+				<color_id>202020</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>0</gprint_id>
+				<textalign></textalign>
+				<text_format>median rtt (ms)</text_format>
+				<hard_return></hard_return>
+				<line_width>0.00</line_width>
+				<dashes></dashes>
+				<dash_offset></dash_offset>
+				<sequence>1</sequence>
+			</hash_1001032ff41808648ac703f66335aea4f23ba3>
+			<hash_10010356f7d1cf025ef5f18925d60d5189361a>
+				<graph_type_id>11</graph_type_id>
+				<task_item_id>hash_080103d66b606b6959b151bc7c0b955b491468</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_0601036d43bdf6ccac3118a1dfb0bd6cef13fa</gprint_id>
+				<textalign></textalign>
+				<text_format> now</text_format>
+				<hard_return>on</hard_return>
+				<line_width>0.00</line_width>
+				<dashes></dashes>
+				<dash_offset></dash_offset>
+				<sequence>2</sequence>
+			</hash_10010356f7d1cf025ef5f18925d60d5189361a>
+			<hash_100103aa563b294e20c3e7af723cd482c73caf>
+				<graph_type_id>4</graph_type_id>
+				<task_item_id>hash_0801032b6693b5cac6f63175c9b6fe194d3ba8</task_item_id>
+				<color_id>FF0000</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>0</gprint_id>
+				<textalign></textalign>
+				<text_format>packet loss (%)</text_format>
+				<hard_return></hard_return>
+				<line_width>0.00</line_width>
+				<dashes></dashes>
+				<dash_offset></dash_offset>
+				<sequence>3</sequence>
+			</hash_100103aa563b294e20c3e7af723cd482c73caf>
+			<hash_100103183be459f1ee7ed97b4f47340a1a1dbd>
+				<graph_type_id>11</graph_type_id>
+				<task_item_id>hash_0801032b6693b5cac6f63175c9b6fe194d3ba8</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103d7ab8657f67d45658bc5fd21d86ca71a</gprint_id>
+				<textalign></textalign>
+				<text_format> now</text_format>
+				<hard_return>on</hard_return>
+				<line_width>0.00</line_width>
+				<dashes></dashes>
+				<dash_offset></dash_offset>
+				<sequence>4</sequence>
+			</hash_100103183be459f1ee7ed97b4f47340a1a1dbd>
+			<hash_1001038bf24cee0c9713533b3c56aec3a42995>
+				<graph_type_id>11</graph_type_id>
+				<task_item_id>hash_0801039b84bd3b7fe48a5d21409fc7ff22010c</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_06010318e876560f53eb64029f515c9ce4075e</gprint_id>
+				<textalign></textalign>
+				<text_format>age of the last update</text_format>
+				<hard_return>on</hard_return>
+				<line_width>0.00</line_width>
+				<dashes></dashes>
+				<dash_offset></dash_offset>
+				<sequence>5</sequence>
+			</hash_1001038bf24cee0c9713533b3c56aec3a42995>
+		</items>
+		<inputs>
+			<hash_090103e9b556ce7153236172c57bb5bc9af8d8>
+				<name>Median Color</name>
+				<description>The color of the median line</description>
+				<column_name>color_id</column_name>
+				<items>hash_0001032ff41808648ac703f66335aea4f23ba3</items>
+			</hash_090103e9b556ce7153236172c57bb5bc9af8d8>
+		</inputs>
+	</hash_000103d8a3145aa70f31bafba729463ea931cc>
 	<hash_010103d33587feb439c83cc019c523da237224>
 		<name>SmokePing Smoke (10 pings)</name>
 		<ds>
@@ -3521,6 +3693,53 @@
 		<data>
 		</data>
 	</hash_010103768ffe6fd19c1a6a9ab3e9cbe1a168c6>
+	<hash_0101033f6f4bb07027d058f5be1045916cdb49>
+		<name>SmokePing Summary</name>
+		<ds>
+			<name>|host_description| - SmokePing Summary</name>
+			<data_source_path></data_source_path>
+			<data_input_id>hash_0301036f38cc8a0389d8893f6f84a570e99dcd</data_input_id>
+			<t_data_source_profile_id></t_data_source_profile_id>
+			<data_source_profile_id>hash_200103d62c52891f4f9688729a5bc9fad91b18</data_source_profile_id>
+			<t_rrd_step></t_rrd_step>
+			<rrd_step>300</rrd_step>
+			<t_active></t_active>
+			<active>on</active>
+		</ds>
+		<items>
+			<hash_080103d66b606b6959b151bc7c0b955b491468>
+				<data_source_name>median</data_source_name>
+				<rrd_minimum>0</rrd_minimum>
+				<rrd_maximum>U</rrd_maximum>
+				<data_source_type_id>1</data_source_type_id>
+				<rrd_heartbeat>600</rrd_heartbeat>
+				<data_input_field_id>hash_07010364eec8c24763a3a13fc4ed99cc8836a5</data_input_field_id>
+			</hash_080103d66b606b6959b151bc7c0b955b491468>
+			<hash_0801032b6693b5cac6f63175c9b6fe194d3ba8>
+				<data_source_name>loss_pct</data_source_name>
+				<rrd_minimum>0</rrd_minimum>
+				<rrd_maximum>100</rrd_maximum>
+				<data_source_type_id>1</data_source_type_id>
+				<rrd_heartbeat>600</rrd_heartbeat>
+				<data_input_field_id>hash_070103336dd3c5486f7077b36af40a7fd53dbc</data_input_field_id>
+			</hash_0801032b6693b5cac6f63175c9b6fe194d3ba8>
+			<hash_0801039b84bd3b7fe48a5d21409fc7ff22010c>
+				<data_source_name>age</data_source_name>
+				<rrd_minimum>0</rrd_minimum>
+				<rrd_maximum>U</rrd_maximum>
+				<data_source_type_id>1</data_source_type_id>
+				<rrd_heartbeat>600</rrd_heartbeat>
+				<data_input_field_id>hash_07010337562a980fd1649c2cf715fb2153ef90</data_input_field_id>
+			</hash_0801039b84bd3b7fe48a5d21409fc7ff22010c>
+		</items>
+		<data>
+			<item_000>
+				<data_input_field_id>hash_07010389ab50a5ad4cfe363fd745cd07119149</data_input_field_id>
+				<t_value>on</t_value>
+				<value></value>
+			</item_000>
+		</data>
+	</hash_0101033f6f4bb07027d058f5be1045916cdb49>
 	<hash_0501033cffa146165278b71bcd08f7249d7581>
 		<name>SmokePing smoke clip</name>
 		<items>
@@ -4594,4 +4813,55 @@
 		<name>SmokePing loss</name>
 		<gprint_text>%.2lf %%</gprint_text>
 	</hash_060103d7ab8657f67d45658bc5fd21d86ca71a>
+	<hash_06010318e876560f53eb64029f515c9ce4075e>
+		<name>SmokePing age</name>
+		<gprint_text>%.0lf s</gprint_text>
+	</hash_06010318e876560f53eb64029f515c9ce4075e>
+	<hash_0601036d43bdf6ccac3118a1dfb0bd6cef13fa>
+		<name>SmokePing median ms</name>
+		<gprint_text>%.1lf</gprint_text>
+	</hash_0601036d43bdf6ccac3118a1dfb0bd6cef13fa>
+	<hash_0301036f38cc8a0389d8893f6f84a570e99dcd>
+		<name>SmokePing Summary Script</name>
+		<type_id>5</type_id>
+		<input_string>PHBhdGhfY2FjdGk+L3BsdWdpbnMvc21va2VwaW5nL3NjcmlwdHMvc3Nfc21va2VwaW5nX3N1bW1hcnkucGhwIHNzX3Ntb2tlcGluZ19zdW1tYXJ5IDxzZXJpZXM+</input_string>
+		<fields>
+			<hash_07010389ab50a5ad4cfe363fd745cd07119149>
+				<name>Series (target id~location)</name>
+				<update_rra></update_rra>
+				<regexp_match></regexp_match>
+				<allow_nulls></allow_nulls>
+				<type_code></type_code>
+				<input_output>in</input_output>
+				<data_name>series</data_name>
+			</hash_07010389ab50a5ad4cfe363fd745cd07119149>
+			<hash_07010364eec8c24763a3a13fc4ed99cc8836a5>
+				<name>Median RTT (ms)</name>
+				<update_rra>on</update_rra>
+				<regexp_match></regexp_match>
+				<allow_nulls></allow_nulls>
+				<type_code></type_code>
+				<input_output>out</input_output>
+				<data_name>median</data_name>
+			</hash_07010364eec8c24763a3a13fc4ed99cc8836a5>
+			<hash_070103336dd3c5486f7077b36af40a7fd53dbc>
+				<name>Packet Loss (%)</name>
+				<update_rra>on</update_rra>
+				<regexp_match></regexp_match>
+				<allow_nulls></allow_nulls>
+				<type_code></type_code>
+				<input_output>out</input_output>
+				<data_name>loss_pct</data_name>
+			</hash_070103336dd3c5486f7077b36af40a7fd53dbc>
+			<hash_07010337562a980fd1649c2cf715fb2153ef90>
+				<name>Age of the Last Update (s)</name>
+				<update_rra>on</update_rra>
+				<regexp_match></regexp_match>
+				<allow_nulls></allow_nulls>
+				<type_code></type_code>
+				<input_output>out</input_output>
+				<data_name>age</data_name>
+			</hash_07010337562a980fd1649c2cf715fb2153ef90>
+		</fields>
+	</hash_0301036f38cc8a0389d8893f6f84a570e99dcd>
 </cacti>

@@ -119,6 +119,91 @@ final class SmokeProvisioner {
 	}
 
 	/**
+	 * Why this target location cannot get a summary data source on this
+	 * device, or null when it can. The script reads the cache of the poller
+	 * next to SmokePing, so the device must be polled by that poller.
+	 */
+	public function summaryRefusal(Target $target, int $hostId): ?string {
+		if ($target->id === null) {
+			return __('The target has not been saved yet.', 'smokeping');
+		}
+
+		$poller = $this->cacti->devicePoller($hostId);
+
+		if ($poller !== $this->settings->pollerId) {
+			return sprintf(__('The device is polled by poller %1$d, but the reader that fills the summary values runs on poller %2$d. Assign the device to poller %2$d.', 'smokeping'), $poller, $this->settings->pollerId);
+		}
+
+		if ($this->cacti->graphTemplateId(TemplateInstaller::SUMMARY_TEMPLATE) === 0) {
+			return __('The summary graph template is not installed.', 'smokeping');
+		}
+
+		return null;
+	}
+
+	/**
+	 * Create the polled summary data source and graph for one target location.
+	 * Repeating the call returns the existing one.
+	 */
+	public function provisionSummary(Target $target, int $hostId, string $location = ''): ProvisionResult {
+		$reason = $this->summaryRefusal($target, $hostId);
+
+		if ($reason !== null || $target->id === null) {
+			return ProvisionResult::skipped($reason ?? '');
+		}
+
+		$existing = $this->objects->summary($target->id->value, $location);
+
+		if ($existing !== null) {
+			return ProvisionResult::created($existing['local_data_id'], $existing['local_graph_id']);
+		}
+
+		include_once($this->coreLibrary . '/template.php');
+		include_once($this->coreLibrary . '/utility.php');
+
+		$templateId     = $this->cacti->graphTemplateId(TemplateInstaller::SUMMARY_TEMPLATE);
+		$dataTemplateId = $this->cacti->dataTemplateOfGraphTemplate($templateId);
+		$fieldId        = $this->cacti->dataInputFieldId(TemplateInstaller::SUMMARY_INPUT, 'series');
+
+		if ($dataTemplateId === 0 || $fieldId === 0) {
+			return ProvisionResult::skipped(__('The summary data template is not installed.', 'smokeping'));
+		}
+
+		$series    = SummaryScript::series($target->id->value, $location);
+		$suggested = [$templateId => ['custom_data' => [$dataTemplateId => [$fieldId => $series]]]];
+		$none      = [];
+		$created   = create_complete_graph_from_template($templateId, $hostId, $none, $suggested);
+
+		$localGraphId = is_array($created) && is_numeric($created['local_graph_id'] ?? null) ? (int) $created['local_graph_id'] : 0;
+		$sources      = $localGraphId > 0 ? $this->cacti->dataSourcesOfGraph($localGraphId) : [];
+
+		if (count($sources) !== 1) {
+			Log::error(sprintf('Creating the summary graph for %s produced %d data sources', $target->path->value, count($sources)));
+
+			return ProvisionResult::skipped(__('Cacti did not create the summary graph.', 'smokeping'));
+		}
+
+		$this->objects->add($target->id->value, $location, $hostId, $sources[0], $localGraphId, '', ObjectRepository::SUMMARY, $this->clock->now());
+
+		// Fills the poller cache from the series just stored, so the next poll runs the script.
+		push_out_host($hostId, $sources[0]);
+
+		if ($location !== '') {
+			$this->retitle($localGraphId, $this->title($target->displayName(), 'SmokePing Summary', $location));
+		}
+
+		return ProvisionResult::created($sources[0], $localGraphId);
+	}
+
+	/**
+	 * Graph title: the location is named for slave locations, so two graphs of
+	 * one target are told apart.
+	 */
+	public function title(string $name, string $kind, string $location): string {
+		return $location === '' ? $name . ' - ' . $kind : sprintf('%s - %s (%s)', $name, $kind, $location);
+	}
+
+	/**
 	 * Re-link: the target's smoke data source moves to the new target's file,
 	 * and an archived data source and graph keep the old file's history.
 	 */
@@ -248,10 +333,21 @@ final class SmokeProvisioner {
 		$this->objects->add($target->id->value, $location, $hostId, $localDataId, $localGraphId, $relative, $state, $this->clock->now());
 
 		if ($title !== $target->displayName()) {
-			$this->cacti->setGraphTitle($localGraphId, $title);
+			$this->retitle($localGraphId, $title);
+		} elseif ($location !== '') {
+			$this->retitle($localGraphId, $this->title($title, 'SmokePing', $location));
 		}
 
 		return ProvisionResult::created($localDataId, $localGraphId);
+	}
+
+	private function retitle(int $localGraphId, string $title): void {
+		include_once($this->coreLibrary . '/variables.php');
+
+		$this->cacti->setGraphTitle($localGraphId, $title);
+
+		// Graph lists read the cached title.
+		update_graph_title_cache($localGraphId);
 	}
 
 	private function remove(int $localDataId, int $localGraphId): void {

@@ -30,7 +30,8 @@
  *   cli/smokeping.php relink <old target path> <new target path> [--location=NAME]
  *
  * provision creates a "SmokePing Target" device when --device is not given,
- * maps the target to it, and creates the smoke data source and graph. relink
+ * maps the target to it, and creates the summary data source and graph, and
+ * the smoke data source and graph when the target can have them. relink
  * moves the smoke data source to the new target and keeps the old file's
  * history in an archived data source and graph.
  */
@@ -106,12 +107,7 @@ foreach ($smokeping_paths as $smokeping_path) {
 if ($smokeping_command === 'relink') {
 	$smokeping_result = $smokeping_provisioner->relink($smokeping_found[0], $smokeping_found[1], $smokeping_location);
 } else {
-	$smokeping_refusal = $smokeping_provisioner->refusal($smokeping_found[0], $smokeping_location);
-
-	if ($smokeping_refusal !== null) {
-		fwrite(STDERR, 'SKIPPED: ' . $smokeping_refusal . PHP_EOL);
-		exit(1);
-	}
+	$smokeping_smoke_reason = $smokeping_provisioner->refusal($smokeping_found[0], $smokeping_location);
 
 	if ($smokeping_device === 0) {
 		$smokeping_device = $smokeping_provisioner->createDevice($smokeping_found[0]);
@@ -122,6 +118,21 @@ if ($smokeping_command === 'relink') {
 		}
 
 		print 'Created device ' . $smokeping_device . PHP_EOL;
+	}
+
+	$smokeping_summary = $smokeping_provisioner->provisionSummary($smokeping_found[0], $smokeping_device, $smokeping_location);
+
+	if ($smokeping_summary->created) {
+		print 'Summary data source ' . $smokeping_summary->localDataId . ' graph ' . $smokeping_summary->localGraphId . PHP_EOL;
+	} else {
+		fwrite(STDERR, 'SKIPPED summary: ' . $smokeping_summary->reason . PHP_EOL);
+	}
+
+	if ($smokeping_smoke_reason !== null) {
+		// The device and summary stay: a target that cannot have a smoke graph
+		// still has summary data.
+		fwrite(STDERR, 'SKIPPED: ' . $smokeping_smoke_reason . PHP_EOL);
+		exit($smokeping_summary->created ? 0 : 1);
 	}
 
 	$smokeping_result = $smokeping_provisioner->provision($smokeping_found[0], $smokeping_device, $smokeping_location);

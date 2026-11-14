@@ -19,16 +19,19 @@ if (!defined('POLLER_VERBOSITY_MEDIUM')) {
 $GLOBALS['__smokeping_log'] = [];
 
 if (!function_exists('__')) {
-	// Core's __() treats a trailing registered text domain as the domain and
-	// passes the remaining arguments to sprintf().
+	// Core's __() (include/global_languages.php) passes every argument to
+	// sprintf(), the trailing text domain included, when the text has a
+	// placeholder. A placeholder therefore takes the domain unless the caller
+	// supplied values before it: __('%d s', $n, 'smokeping'), never
+	// sprintf(__('%d s', 'smokeping'), $n).
 	function __() {
 		$args = func_get_args();
 
-		if (count($args) > 1 && $args[count($args) - 1] === 'smokeping') {
-			array_pop($args);
+		if (count($args) === 1 || preg_match('/%(%|c|[-0-9.]*[bdeEfFgGhHosuxX])/', $args[0]) !== 1) {
+			return $args[0];
 		}
 
-		return count($args) > 1 ? vsprintf(array_shift($args), $args) : $args[0];
+		return call_user_func_array('sprintf', $args);
 	}
 }
 
@@ -51,6 +54,32 @@ $GLOBALS['__smokeping_options'] = [];
 if (!function_exists('read_config_option')) {
 	function read_config_option($config_name, $force = false) {
 		return $GLOBALS['__smokeping_options'][$config_name] ?? '';
+	}
+}
+
+// The purge sweep reads the purge queue; unit tests have no database. A test
+// fills $GLOBALS['__smokeping_purge_queue'] with queue rows and reads the
+// statements the code ran from $GLOBALS['__smokeping_db_exec'].
+$GLOBALS['__smokeping_purge_queue'] = [];
+$GLOBALS['__smokeping_db_exec']     = [];
+
+if (!function_exists('db_fetch_cell_prepared')) {
+	function db_fetch_cell_prepared($sql, $params = [], $col_name = '', $log = true, $db_conn = false, $log_function = null) {
+		return 0;
+	}
+}
+
+if (!function_exists('db_fetch_assoc_prepared')) {
+	function db_fetch_assoc_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
+		return str_contains($sql, 'data_source_purge_action') ? $GLOBALS['__smokeping_purge_queue'] : [];
+	}
+}
+
+if (!function_exists('db_execute_prepared')) {
+	function db_execute_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
+		$GLOBALS['__smokeping_db_exec'][] = ['sql' => $sql, 'params' => $params];
+
+		return true;
 	}
 }
 

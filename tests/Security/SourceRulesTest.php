@@ -121,7 +121,7 @@ it('keeps lib classes away from request variables and globals', function () {
 });
 
 it('issues SQL only from repository and schema classes, through prepared helpers', function () {
-	$sql = ['Schema.php', 'TargetRepository.php', 'ObservationRepository.php', 'HealthRepository.php'];
+	$sql = ['Schema.php', 'TargetRepository.php', 'ObservationRepository.php', 'HealthRepository.php', 'CactiObjectRepository.php', 'ObjectRepository.php'];
 
 	foreach (smokeping_sources() as $file) {
 		$source = (string) file_get_contents(smokeping_root() . '/' . $file);
@@ -177,5 +177,28 @@ it('ships a translation template containing every plugin string', function () {
 
 	foreach (['SmokePing View', 'SmokePing Admin', 'The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled.'] as $msgid) {
 		expect($pot)->toContain('msgid "' . $msgid . '"');
+	}
+});
+
+it('formats translated strings with __() itself, never sprintf(__())', function () {
+	// Core's __() hands the text domain to sprintf(), so a placeholder in
+	// sprintf(__("%d", "smokeping"), $n) takes "smokeping" and prints 0 or the
+	// domain. The values go inside the call: __("%d", $n, "smokeping").
+	foreach (smokeping_sources() as $file) {
+		expect((string) file_get_contents(smokeping_root() . '/' . $file))->not->toContain('sprintf(__(', $file);
+	}
+});
+
+it('uses plain placeholders in translated strings, because core\'s __() does not format positional ones', function () {
+	// __() only formats a string that has %d, %s, and the like. A string with
+	// only %1$d placeholders comes back raw.
+	foreach (smokeping_sources() as $file) {
+		$source = (string) file_get_contents(smokeping_root() . '/' . $file);
+
+		preg_match_all("/__\\('((?:[^'\\\\]|\\\\.)*)'/", $source, $texts);
+
+		foreach ($texts[1] as $text) {
+			expect($text)->not->toMatch('/%[0-9]+\$/', $file);
+		}
 	}
 });

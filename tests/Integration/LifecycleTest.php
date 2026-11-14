@@ -5,15 +5,20 @@
 const SMOKEPING_TABLES = [
 	'plugin_smokeping_health',
 	'plugin_smokeping_mapping',
+	'plugin_smokeping_object',
 	'plugin_smokeping_observation',
 	'plugin_smokeping_relink',
 	'plugin_smokeping_target',
 ];
 
-const SMOKEPING_HOOKS = ['config_arrays', 'config_settings', 'draw_navigation_text', 'poller_bottom'];
+const SMOKEPING_HOOKS = ['api_device_save', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top'];
 
 beforeEach(function () {
 	lifecycle('reset');
+});
+
+afterEach(function () {
+	lifecycle('show_templates');
 });
 
 afterAll(function () {
@@ -25,7 +30,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 
 	expect($state['plugin']['status'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual('0.1')
-		->and($state['schema'])->toEqual('1')
+		->and($state['schema'])->toEqual('2')
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tracked'])->toBe(SMOKEPING_TABLES)
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
@@ -75,6 +80,87 @@ it('upgrades from an older recorded version and is idempotent on repeated runs',
 	expect($first['tables']['plugin_smokeping_target'])->toBe(1);
 });
 
+it('imports the templates once, and install, upgrade, and re-import leave one copy of each', function () {
+	lifecycle('remove_templates');
+
+	$first = lifecycle('install');
+
+	// One device template; a graph and a data template for each of 10, 20, and 30 pings.
+	expect($first['templates']['host'])->toBe(1)
+		->and($first['templates']['graph'])->toBe(3)
+		->and($first['templates']['data'])->toBe(3)
+		->and($first['templates']['linked'])->toBe(4)
+		->and($first['templates']['version'])->toEqual('2');
+
+	$upgraded = lifecycle('forget_templates');
+	$again    = lifecycle('upgrade');
+
+	expect($again['result'])->toBeTrue()
+		->and($again['templates'])->toBe($first['templates']);
+
+	// Re-importing with nothing forgotten changes nothing either.
+	$third = lifecycle('upgrade');
+	expect($third['templates'])->toBe($first['templates']);
+});
+
+it('records a failed template import once instead of retrying it on every request', function () {
+	lifecycle('remove_templates');
+	lifecycle('hide_templates');
+
+	$first = lifecycle('install');
+	$errors = $first['templates']['import_errors'];
+
+	expect($first['templates']['host'])->toBe(0)
+		->and(json_decode($first['templates']['failure'], true)['message'])->toContain('missing or empty')
+		->and($first['plugin']['version'])->toEqual('0.1');
+
+	// Many later requests neither retry nor log again.
+	for ($i = 0; $i < 5; $i++) {
+		$run = lifecycle('upgrade');
+	}
+
+	expect($run['result'])->toBeTrue()
+		->and($run['templates']['import_errors'])->toBe($errors);
+
+	// The file is back, but the same plugin version does not retry by itself.
+	lifecycle('show_templates');
+	$still = lifecycle('upgrade');
+	expect($still['templates']['host'])->toBe(0);
+
+	// A different plugin version retries.
+	$failure = json_decode($still['templates']['failure'], true);
+	$failure['plugin'] = '0.0';
+	lifecycle('set_setting', 'smokeping_templates_failure=' . json_encode($failure));
+	$upgraded = lifecycle('upgrade');
+	expect($upgraded['templates']['host'])->toBe(1)
+		->and($upgraded['templates']['failure'])->toBe('');
+});
+
+it('retries a failed template import on an explicit request and clears the record', function () {
+	lifecycle('remove_templates');
+	lifecycle('hide_templates');
+
+	lifecycle('install');
+	lifecycle('show_templates');
+
+	$retried = lifecycle('retry_templates');
+
+	expect($retried['templates']['host'])->toBe(1)
+		->and($retried['templates']['failure'])->toBe('');
+});
+
+it('keeps the imported templates through uninstall and restores them when an operator removed them', function () {
+	$installed = lifecycle('install');
+	$after     = lifecycle('uninstall');
+
+	expect($after['templates']['graph'])->toBe(3);
+
+	lifecycle('remove_templates');
+	$state = lifecycle('install');
+
+	expect($state['templates'])->toBe($installed['templates']);
+});
+
 it('finishes an upgrade that was interrupted after creating only some tables', function () {
 	lifecycle('install');
 	lifecycle('seed');
@@ -88,7 +174,7 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tables']['plugin_smokeping_target'])->toBe(1)
-		->and($state['schema'])->toEqual('1')
+		->and($state['schema'])->toEqual('2')
 		->and($state['plugin']['version'])->toEqual('0.1');
 });
 

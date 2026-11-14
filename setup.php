@@ -108,7 +108,7 @@ function plugin_smokeping_install(): void {
 		return;
 	}
 
-	plugin_smokeping_upgrade();
+	plugin_smokeping_upgrade(true);
 }
 
 function plugin_smokeping_check_config(): bool {
@@ -126,16 +126,26 @@ function plugin_smokeping_check_config(): bool {
  * hook do. Fresh installs take the same path as upgrades. The version stored
  * in plugin_config changes only after every migration has succeeded, so an
  * interrupted run is finished by the next one.
+ *
+ * A failed template import does not block the plugin and is not retried on
+ * every request: it is recorded for the health page, and retried only on
+ * install, when the plugin or template version changes, or when $retryTemplates
+ * is set by an administrator's explicit action.
  */
-function plugin_smokeping_upgrade(): bool {
+function plugin_smokeping_upgrade(bool $retryTemplates = false): bool {
+	global $config;
+
 	if (!smokeping_boot()) {
 		return false;
 	}
 
-	$info   = plugin_smokeping_version();
-	$schema = new \Somethingwithproof\Smokeping\Schema(false);
+	$info      = plugin_smokeping_version();
+	$schema    = new \Somethingwithproof\Smokeping\Schema(false);
+	$templates = new \Somethingwithproof\Smokeping\TemplateInstaller(__DIR__ . '/templates/smokeping-templates.xml', $config['library_path'], new \Somethingwithproof\Smokeping\CactiObjectRepository(false));
 
-	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered()) {
+	$retry = $retryTemplates || $templates->mayRetry($info['version']);
+
+	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered() && ($templates->isCurrent() || !$retry)) {
 		return true;
 	}
 
@@ -144,6 +154,13 @@ function plugin_smokeping_upgrade(): bool {
 	}
 
 	smokeping_setup_hooks();
+
+	// Templates are imported last. A failure is recorded and logged once, and
+	// the plugin still records its version so the next request does not
+	// repeat the import.
+	if (!$templates->isCurrent() && $retry) {
+		$templates->install($info['version']);
+	}
 
 	$schema->recordPluginVersion($info['version'], $info['author'], $info['homepage']);
 
@@ -232,6 +249,232 @@ function smokeping_draw_navigation_text($nav) {
 	}
 
 	return array_merge($nav, \Somethingwithproof\Smokeping\Pages::navigation());
+}
+
+/**
+ * data_source_remove hook. Cacti queues the RRD purge after this runs, so the
+ * hook disarms the plugin's data sources instead of deleting a queue row.
+ *
+ * @param mixed $localDataIds
+ * @return mixed
+ */
+function smokeping_data_source_remove($localDataIds) {
+	if (smokeping_boot() && is_array($localDataIds)) {
+		smokeping_purge_guard()->dataSourcesRemoving(smokeping_int_list($localDataIds));
+	}
+
+	return $localDataIds;
+}
+
+/**
+ * device_remove hook: the devices' plugin data sources and mappings.
+ *
+ * @param mixed $hostIds
+ * @return mixed
+ */
+function smokeping_device_remove($hostIds) {
+	if (smokeping_boot() && is_array($hostIds)) {
+		smokeping_purge_guard()->devicesRemoving(smokeping_int_list($hostIds));
+	}
+
+	return $hostIds;
+}
+
+/**
+ * @param array<array-key, mixed> $values
+ * @return list<int>
+ */
+function smokeping_int_list(array $values): array {
+	$ints = [];
+
+	foreach ($values as $value) {
+		$ints[] = (int) (is_scalar($value) ? $value : 0);
+	}
+
+	return $ints;
+}
+
+function smokeping_purge_guard(): \Somethingwithproof\Smokeping\PurgeGuard {
+	return new \Somethingwithproof\Smokeping\PurgeGuard(new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false));
+}
+
+function smokeping_target_actions(): \Somethingwithproof\Smokeping\TargetActions {
+	global $config;
+
+	$cacti   = new \Somethingwithproof\Smokeping\CactiObjectRepository(false);
+	$objects = new \Somethingwithproof\Smokeping\ObjectRepository(false);
+	$clock   = new \Somethingwithproof\Smokeping\SystemClock();
+
+	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, $objects, $cacti, $clock);
+
+	return new \Somethingwithproof\Smokeping\TargetActions($provisioner, new \Somethingwithproof\Smokeping\TargetRepository(false), $objects, $cacti, $config['library_path'], $clock);
+}
+
+function smokeping_device_actions(): \Somethingwithproof\Smokeping\DeviceActions {
+	return new \Somethingwithproof\Smokeping\DeviceActions(smokeping_target_actions(), new \Somethingwithproof\Smokeping\TargetRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false));
+}
+
+/**
+ * Whether the user may administer SmokePing targets. Cacti keeps a disabled
+ * plugin's realms registered, so the plugin must also be enabled.
+ */
+function smokeping_user_is_admin(): bool {
+	return smokeping_boot() && api_plugin_is_enabled('smokeping') && api_plugin_user_realm_auth('smokeping_inventory.php');
+}
+
+/**
+ * device_action_array hook: the bulk "Add SmokePing Targets" action, offered
+ * only to users with the SmokePing admin realm.
+ *
+ * @param mixed $actions
+ * @return mixed
+ */
+function smokeping_device_action_array($actions) {
+	if (is_array($actions) && smokeping_user_is_admin()) {
+		return \Somethingwithproof\Smokeping\DeviceActions::register($actions);
+	}
+
+	return $actions;
+}
+
+/**
+ * device_action_prepare hook: the confirm screen of the bulk action.
+ *
+ * @param mixed $save
+ * @return mixed
+ */
+function smokeping_device_action_prepare($save) {
+	if (!is_array($save) || ($save['drp_action'] ?? '') !== 'smokeping_add' || !smokeping_boot()) {
+		return $save;
+	}
+
+	if (!smokeping_user_is_admin()) {
+		print '<tr><td class="textArea">' . html_escape(__('You do not have permission to add SmokePing targets.', 'smokeping')) . '</td></tr>';
+
+		return $save;
+	}
+
+	$hostIds = is_array($save['host_array'] ?? null) ? smokeping_int_list($save['host_array']) : [];
+
+	smokeping_device_actions()->preview($hostIds, smokeping_settings()->pollerId);
+
+	return $save;
+}
+
+/**
+ * device_action_execute hook: run the bulk action once the operator confirmed.
+ * Devices the user may not see are skipped, however they got into the request.
+ *
+ * @param mixed $action
+ * @return mixed
+ */
+function smokeping_device_action_execute($action) {
+	if ($action !== 'smokeping_add' || !smokeping_boot()) {
+		return $action;
+	}
+
+	if (!smokeping_user_is_admin()) {
+		raise_message('smokeping_add', __('You do not have permission to add SmokePing targets.', 'smokeping'), MESSAGE_LEVEL_ERROR);
+
+		return $action;
+	}
+
+	$selected = sanitize_unserialize_selected_items(get_nfilter_request_var('selected_items'));
+	$allowed  = [];
+
+	if (is_array($selected)) {
+		foreach (smokeping_int_list($selected) as $hostId) {
+			if (is_device_allowed($hostId)) {
+				$allowed[] = $hostId;
+			}
+		}
+	}
+
+	$userId   = isset($_SESSION['sess_user_id']) && is_numeric($_SESSION['sess_user_id']) ? (int) $_SESSION['sess_user_id'] : 0;
+	$outcomes = smokeping_device_actions()->execute($allowed, smokeping_settings()->pollerId, $userId);
+
+	raise_message('smokeping_add', implode('<br>', array_map('html_escape', \Somethingwithproof\Smokeping\DeviceActions::summary($outcomes))), MESSAGE_LEVEL_INFO);
+
+	return $action;
+}
+
+/**
+ * api_device_save hook: warn when a device with SmokePing targets is saved on
+ * a poller that does not run the reader. The save goes ahead.
+ *
+ * @param mixed $save
+ * @return mixed
+ */
+function smokeping_api_device_save($save) {
+	if (!is_array($save) || !smokeping_boot()) {
+		return $save;
+	}
+
+	$warning = (new \Somethingwithproof\Smokeping\DeviceSaveCheck(new \Somethingwithproof\Smokeping\TargetRepository(false)))->warning($save, smokeping_settings()->pollerId);
+
+	if ($warning !== null) {
+		cacti_log('WARNING: ' . $warning, false, 'SMOKEPING');
+		raise_message('smokeping_device_poller', $warning, MESSAGE_LEVEL_WARN);
+	}
+
+	return $save;
+}
+
+/**
+ * graph_buttons hook: a link from a graph of a device with SmokePing targets
+ * to the SmokePing page filtered to that device.
+ *
+ * @param mixed $data
+ * @return mixed
+ */
+function smokeping_graph_buttons($data) {
+	global $config;
+
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping') || !api_plugin_user_realm_auth('smokeping.php')) {
+		return $data;
+	}
+
+	$payload = is_array($data) && isset($data[1]) && is_array($data[1]) ? $data[1] : [];
+	$graphId = isset($payload['local_graph_id']) && is_numeric($payload['local_graph_id']) ? (int) $payload['local_graph_id'] : 0;
+	$links   = new \Somethingwithproof\Smokeping\GraphLinks(new \Somethingwithproof\Smokeping\TargetRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false));
+	$hostId  = $links->deviceFor($graphId);
+
+	if ($hostId > 0) {
+		print \Somethingwithproof\Smokeping\GraphLinks::html($config['url_path'], $hostId);
+	}
+
+	return $data;
+}
+
+/**
+ * The summary data source's answer for one series, read from the reader's
+ * cache with the settings of this poller.
+ */
+function smokeping_summary_answer(string $series): string {
+	$clock      = new \Somethingwithproof\Smokeping\SystemClock();
+	$calculator = new \Somethingwithproof\Smokeping\SummaryCalculator(new \Somethingwithproof\Smokeping\FreshnessEvaluator($clock, smokeping_settings()->freshnessAllowance), $clock);
+
+	return (new \Somethingwithproof\Smokeping\SummaryScript(new \Somethingwithproof\Smokeping\ObservationRepository(false), $calculator))->run($series);
+}
+
+/**
+ * poller_top and poller_finishing hook: remove queued purge rows under the
+ * mount. poller.php starts poller_maintenance.php in the background before it
+ * runs the poller_bottom hooks, so a sweep there races the purge and loses
+ * whenever an earlier plugin's poller_bottom work takes a moment. poller_top
+ * runs before the purge on every poller run, and poller_finishing just before
+ * it once collection is done, which leaves only a row queued in the last
+ * instant before the purge to the read-only mount.
+ */
+function smokeping_purge_sweep(): void {
+	global $config;
+
+	// Cacti's purge queue lives in the main database, which poller 1 owns.
+	if (!smokeping_boot() || (int) $config['poller_id'] !== 1) {
+		return;
+	}
+
+	smokeping_purge_guard()->sweep(smokeping_settings()->mountPath, $config['rra_path'], $config['base_path']);
 }
 
 function smokeping_poller_bottom(): void {

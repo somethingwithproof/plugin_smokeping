@@ -124,6 +124,8 @@ final class ConfigService {
 	}
 
 	public function plan(ConfigDocument $document): ConfigPlan {
+		$this->requireUnrestricted();
+
 		return ConfigPlanner::plan($document, $this->repository->state($document->mappings));
 	}
 
@@ -134,6 +136,9 @@ final class ConfigService {
 	 * @return list<string> the reasons it was refused, empty when it was applied
 	 */
 	public function apply(ConfigDocument $document, string $confirmedPlanId, int $userId, int $now): array {
+		// The page checked already; an apply never trusts that it did.
+		$this->requireUnrestricted();
+
 		$plan = $this->plan($document);
 
 		if ($plan->hasErrors()) {

@@ -127,7 +127,7 @@ final class ConfigPlanner {
 			if (count($hosts) !== 1) {
 				$errors[] = count($hosts) === 0
 					? sprintf('mapping for target %s: no device has host name "%s" and description "%s"; create or rename the device first', $mapping->path->value, $mapping->hostname, $mapping->description)
-					: sprintf('mapping for target %s: %d devices have host name "%s" and description "%s" (ids %s); rename one so the name is unique', $mapping->path->value, count($hosts), $mapping->hostname, $mapping->description, implode(', ', $hosts));
+					: sprintf('mapping for target %s: more than one device has host name "%s" and description "%s"; rename one so the name is unique', $mapping->path->value, $mapping->hostname, $mapping->description);
 
 				continue;
 			}
@@ -139,7 +139,8 @@ final class ConfigPlanner {
 			} elseif ($current['host_id'] === $hosts[0]) {
 				$unchanged++;
 			} else {
-				$errors[] = sprintf('mapping for target %s: it is mapped to device %d (%s, %s); an import never moves a mapping, so re-link it on the Inventory page first', $mapping->path->value, $current['host_id'], $current['hostname'], $current['description']);
+				// Says nothing about the device it is mapped to: that device may be one the reader cannot see.
+				$errors[] = sprintf('mapping for target %s: it is already mapped to a different device; an import never moves a mapping, so re-link it on the Inventory page first', $mapping->path->value);
 			}
 		}
 

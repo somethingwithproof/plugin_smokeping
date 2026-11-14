@@ -256,6 +256,14 @@ check config-export-refused-restricted-admin "a POST to export returns no config
 export_rx=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=xml" "$BASE/$CONF")
 check config-export-xml-refused-restricted-admin "xml too" sh -c '! echo "$1" | grep -q "smokeping-config\|Perm/"' x "$export_rx"
 
+printf 'schema_version: 1\ntargets:\n  - path: Conf/restricted\n    host: restricted.example\n' > $WORK/conf-r.yaml
+token=$(csrf restricted $INV)
+page_r=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-r.yaml" "$BASE/$CONF")
+check config-plan-refused-restricted-admin "an upload to check returns no plan" sh -c '! echo "$1" | grep -q "add    target\|Apply Import\|Plan " && echo "$1" | grep -q "do not cover every device"' x "$page_r"
+token=$(csrf restricted $INV)
+curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
+[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/restricted'" | jcell)" = 0 ] && result PASS config-apply-refused-restricted-admin "an apply post changes nothing" || result FAIL config-apply-refused-restricted-admin "a target was added"
+
 printf 'schema_version: 1\ntargets:\n  - path: Conf/new\n    host: conf.example\n' > $WORK/conf-new.yaml
 n0=$(q "SELECT COUNT(*) FROM plugin_smokeping_target" | jcell)
 # A scoped user's check and apply reach no code: the realm is missing.

@@ -274,7 +274,7 @@ it('refuses mappings it cannot resolve or would have to move', function () {
 	$errors = implode("\n", ConfigPlanner::plan($document, smokeping_state())->errors);
 
 	expect($errors)->toContain('no device has host name "nobody.example.net"')
-		->and($errors)->toContain('2 devices have host name "dup.example.net" and description "D" (ids 50, 51)')
+		->and($errors)->toContain('more than one device has host name "dup.example.net" and description "D"; rename one so the name is unique')
 		->and($errors)->toContain('an import never moves a mapping')
 		->and($errors)->toContain('Missing/target on poller 1: no such target');
 });
@@ -425,4 +425,41 @@ it('refuses export to a user who cannot see every device, and names no device', 
 	expect($message)->toContain('do not cover every device')
 		->and((new Cacti\Smokeping\ConfigService($repository, fn () => true))->export('yaml'))->toStartWith('schema_version: 1')
 		->and((new Cacti\Smokeping\ConfigService($repository))->export('yaml'))->toStartWith('schema_version: 1');
+});
+
+it('keeps the identity of devices the file does not name out of plan errors', function () {
+	$mapping  = fn (string $host, string $description) => new ConfigMapping(1, TargetPath::fromString('Europe/Paris'), $host, $description);
+	$document = new ConfigDocument([], [], [$mapping('dup.example.net', 'D')]);
+	$moved    = new ConfigDocument([], [], [$mapping('rome.example.net', 'Rome GW')]);
+
+	$errors = implode("\n", array_merge(ConfigPlanner::plan($document, smokeping_state())->errors, ConfigPlanner::plan($moved, smokeping_state())->errors));
+
+	// The file's own names appear, as they are the file's text. Nothing from the installation does:
+	// not the ids, and not the host name or description of the device a target is mapped to.
+	expect($errors)->not->toMatch('/\b(40|41|50|51)\b/')
+		->and($errors)->not->toContain('paris.example.net')
+		->and($errors)->not->toContain('Paris GW');
+});
+
+it('refuses plan and apply to a user who cannot see every device, before reading anything', function () {
+	$service  = new Cacti\Smokeping\ConfigService(new Cacti\Smokeping\ConfigRepository(false, '/var/www/cacti/rra'), fn () => false);
+	$document = new ConfigDocument([], [], []);
+	$GLOBALS['__smokeping_db_exec'] = [];
+
+	expect(fn () => $service->plan($document))->toThrow(ConfigException::class, 'do not cover every device')
+		->and(fn () => $service->apply($document, '0000000000000000', 1, 1))->toThrow(ConfigException::class, 'do not cover every device')
+		->and($GLOBALS['__smokeping_db_exec'])->toBe([]);
+});
+
+it('revokes access between the check and the apply', function () {
+	$allowed  = true;
+	$service  = new Cacti\Smokeping\ConfigService(new Cacti\Smokeping\ConfigRepository(false, '/var/www/cacti/rra'), function () use (&$allowed) {
+		return $allowed;
+	});
+	$document = new ConfigDocument([], [], []);
+	$plan     = $service->plan($document);
+
+	$allowed = false;
+
+	expect(fn () => $service->apply($document, $plan->id(), 1, 1))->toThrow(ConfigException::class, 'do not cover every device');
 });

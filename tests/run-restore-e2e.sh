@@ -9,7 +9,7 @@
 #
 # Environment: CACTI_CORE, DB_ENV as for tests/run-objects-e2e.sh. Uses the
 # databases smokeping_m4src, smokeping_m4dst, and smokeping_m4yml, and drops
-# the last two before it starts.
+# and recreates each before use.
 set -eu
 
 HERE=$(cd "$(dirname "$0")" && pwd)

@@ -57,7 +57,7 @@ Summary data sources were a separate phase in revision 2. They need no Thold cha
 - Plugin lifecycle and hooks: `api_plugin_register_hook()`, `api_plugin_register_realm()`, tracked plugin tables ([lib/plugins.php](https://github.com/Cacti/cacti/blob/release/1.2.31/lib/plugins.php)).
 - Devices and permissions: `api_device_save()` (`lib/api_device.php`), `is_device_allowed()` and `get_allowed_devices()` (`lib/auth.php`).
 - Templates: `import_xml_data()` (`lib/import.php`).
-- RRD access: `rrd_init()` and `rrdtool_execute()` (`lib/rrd.php`).
+- RRD access: the `path_rrdtool` setting. `rrd_init()` in 1.2.31 opens a write-only pipe (`popen(..., 'w')`), so it cannot return `lastupdate` output; the reader runs `rrdtool -` itself through `proc_open()` with both pipes.
 - Background work: `exec_background()` and `register_process_start()` (`lib/poller.php`).
 - Remote collectors: `call_remote_data_collector()` (`lib/functions.php`) and the `remote_agent` hook (`remote_agent.php`).
 
@@ -84,11 +84,11 @@ Features from PHP 8.3 and later are not used: typed class constants, `#[\Overrid
 
 | SmokePing | Released | Status in matrix |
 |---|---|---|
-| 2.9.0 | 2025-02-19 | Required |
-| 2.8.2 | 2021-08-10 | Required |
-| 2.7.3 | 2018-12-20 | Required if a supported distribution still packages it |
+| 2.9.0 | 2025-02-19 | Required: EL 9 (EPEL), Fedora 43 to 45, Alpine 3.22 to 3.24 |
+| 2.8.2 | 2021-08-10 | Required: Debian 13, Ubuntu 24.04, 26.04, 26.10 |
+| 2.7.3 | 2018-12-20 | Required until 2027-06-01: Ubuntu 22.04 only |
 
-Release dates are from the [SmokePing releases page](https://github.com/oetiker/SmokePing/releases). Milestone 1 inventories the packaged version, service user, file layout, file modes, and reload mechanism on each distribution with full vendor support, and drops any line that no supported distribution ships.
+Release dates are from the [SmokePing releases page](https://github.com/oetiker/SmokePing/releases). The [distribution matrix](research/distribution-matrix/README.md) records the packaged version, service user, file layout, file modes, and reload mechanism on each distribution with full vendor support (observed 2026-11-13). EL 10 and openSUSE Leap 16.0 have no vendor package, so they are supported only to the extent a source install is, which the matrix does not cover.
 
 **Plugin metadata.** `INFO` declares `compat = 1.2.31` and `capabilities = online_view:1, online_mgmt:1, offline_view:0, offline_mgmt:0, remote_collect:1`, the same capability set servcheck and webseer declare.
 
@@ -109,14 +109,14 @@ Each row is a milestone 1 test, because a change in any of them changes the desi
 | Master/slave messages are signed with MD5 over the message and a shared secret; TLS is optional. | The plugin cannot strengthen this channel; it documents TLS. | Master/slave |
 | `Smokeping::get_parser()->parse($file)` parses a config outside the daemon; `smokeinfo` uses it. | Inventory can reuse SmokePing's parser from a short CLI script. No daemon is needed. | `lib/Smokeping/Info.pm` |
 | The config grammar supports `@include filename`. | A Cacti-owned file can hold managed targets. | Configuration |
-| `smokeping --config=x --check` validates a config; `--reload` reloads the running daemon. | Validation can run against a candidate without touching the live file. | [Command reference](https://oss.oetiker.ch/smokeping/doc/smokeping.en.html) |
+| `smokeping --config=x --check` validates a config; `--reload` reloads the running daemon. `--check` also tests the host: it fails when `piddir` or a referenced file such as `sendmail` is missing. `--reload` signals the PID in `piddir/smokeping.pid`, which the EL and Fedora units never write because they run `--nodaemon`. | Validation can run against a candidate without touching the live file, but a failing check may be an environment error. Reload goes through `systemctl reload`, not `--reload`. | [Command reference](https://oss.oetiker.ch/smokeping/doc/smokeping.en.html); [distribution matrix](research/distribution-matrix/README.md) |
 
 **Cacti core 1.2.31**
 
 | Fact | Consequence | Source |
 |---|---|---|
-| `get_data_source_path()` uses an absolute `data_source_path` unchanged, and data templates allow the "None" input method. | A Cacti data source can point at a SmokePing RRD without Cacti polling or writing it. | `lib/functions.php`, `data_templates.php` |
-| `poller_maintenance.php` purges or archives RRD files queued when a data source is deleted. For a path without `<path_rra>` it currently prepends `rra_path`, so an absolute SmokePing path misses. | That miss is an implementation accident and must not be relied on. File permissions are the real protection. | `poller_maintenance.php` |
+| At 1.2.31, `get_data_source_path()` uses an absolute `data_source_path` unchanged. On `1.2.x` since eef6bb07e (GHSA-9qff, 2026-09-24) and on `develop`, `data_source_path_within_rra()` replaces any path outside `rra_path`, or through a symbolic link, with the generated path. A read-only bind mount at `<rra_path>/smokeping` passes (tested 2026-11-13). Data templates allow the "None" input method. | Smoke data sources use `<path_rra>/smokeping/...` through a read-only mount ([ADR 0007](decisions/0007-read-only-mount-under-rra-path.md)). Cacti never polls or writes them. | `lib/functions.php`, `data_templates.php` |
+| `poller_maintenance.php` purges or archives RRD files queued when a data source is deleted or chosen on the RRD cleaner page. On failure it logs a warning and drops the queue entry. The RRD cleaner walks `rra_path` recursively. | Paths under the mount are purge targets. The read-only mount is the protection; the plugin's hooks remove queued entries so the warnings never appear. Unmapped SmokePing RRDs show as unused on the RRD cleaner page. | `poller_maintenance.php` (`remove_files`), `rrdcleaner.php`, `lib/api_data_source.php` |
 | With `storage_location` set to an RRDproxy, RRD paths resolve on the proxy host. | SmokePing paths do not exist there; the plugin refuses to create smoke data sources in that mode. | `lib/rrd.php`, `poller_maintenance.php` |
 | Thold receives values through the `poller_output` hook. | Only polled data sources reach Thold. "None" data sources never do. | plugin_thold `setup.php` |
 | On a remote data collector, CLI processes use the local database by default; web requests use the main database. When the main database is unreachable, the connection mode is `offline`; it is `recovery` while the local `poller_output_boost` table still holds rows to replay. | Remote CLI jobs must be explicit about which database they write and must work in both offline and recovery modes. | `include/global.php` |
@@ -158,7 +158,7 @@ flowchart TB
     end
     SLAVES[SmokePing slaves] --> D
     PIPE --> RRD
-    GR -->|reads absolute paths| RRD
+    GR -->|reads through ro mount under rra_path| RRD
     SS -->|poller_output| THOLD
     UI -->|remote hosts| RA
 ```
@@ -178,7 +178,7 @@ SmokePing always runs on, or shares a filesystem with, a Cacti poller: the main 
 
 ### Topologies
 
-1. **SmokePing on the Cacti main server** (phase 1). The poller user reads `datadir` through group membership.
+1. **SmokePing on the Cacti main server** (phase 1). The poller user reads `datadir` directly: packaged RRD files are `0644` in `0755` directories on every matrix distribution. Where an administrator has tightened those modes, group membership provides read access.
 2. **SmokePing datadir shared with the main server** (phase 1). `datadir` is mounted read-only on the main server. Milestone 1 measures NFS attribute caching delay, and the health page compares `lastupdate` with the clock.
 3. **SmokePing on a Cacti remote data collector** (phase 3). The collector runs the reader, inventory, script server input, and config writer. Summary values reach the main server through the normal poller output path. Smoke graphs need the RRD files readable on the main server, because Cacti renders graphs there. Without a shared filesystem, remote targets get summary graphs only. rrdcached is research.
 
@@ -191,7 +191,7 @@ Each SmokePing target and location becomes ordinary Cacti objects created throug
 | Object | Created from | Notes |
 |---|---|---|
 | Device | "SmokePing Target" device template, availability None, assigned to the poller next to SmokePing | Existing devices can be mapped instead; created only on operator confirmation |
-| Smoke data source | "SmokePing Smoke (N pings)" data template, input method None, absolute `data_source_path` to the SmokePing RRD | Never polled; Cacti only reads it |
+| Smoke data source | "SmokePing Smoke (N pings)" data template, input method None, `data_source_path` `<path_rra>/smokeping/<Section>/<target>.rrd` through the read-only mount | Never polled; Cacti only reads it |
 | Summary data source | "SmokePing Summary" data template using the script server input | Polled; reaches Thold through `poller_output` |
 | Graphs | "SmokePing Smoke (N pings)" and "SmokePing Summary" graph templates | Placed in graph trees and protected by graph permissions like any Cacti graph |
 
@@ -201,8 +201,8 @@ Devices created by the plugin appear in device lists and in plugins such as moni
 
 **Protecting SmokePing's files.**
 
-- The Cacti poller and web users get read-only access to SmokePing's `datadir`. They never get write access. This is the only reliable protection against Cacti's purge logic; it is documented in the install guide and checked by the health page, which warns if `datadir` is writable by the Cacti user.
-- The plugin's `device_remove` and `data_source_remove` hooks remove any queued purge entries whose path is under `datadir` before Cacti's maintenance runs, as a second layer.
+- SmokePing's `datadir` is mounted read-only at `<rra_path>/smokeping` ([ADR 0007](decisions/0007-read-only-mount-under-rra-path.md)). Cacti's purge and RRD cleaner reach these paths, and the read-only mount makes every write, rename, and delete fail. The install guide documents the mount, and the health page reports an error when the mount path is missing, outside `rra_path`, reached through a symbolic link, or writable.
+- The plugin's `device_remove` and `data_source_remove` hooks remove any queued purge entries under the mount path before Cacti's maintenance runs, as a second layer.
 - A release test deletes a plugin-created device with "delete data sources" selected and confirms the SmokePing RRD is unchanged.
 - When `storage_location` points at an RRDproxy, the plugin creates summary data sources only and says why.
 
@@ -288,14 +288,15 @@ Managed mode writes only the Cacti-owned include file. Hand-maintained targets a
 **File permissions.**
 
 - The include file and a sibling `requests/` directory are writable by a dedicated group that contains the Cacti poller user. Nothing else in SmokePing's configuration is writable by Cacti.
-- An administrator installs the shipped systemd examples: a `.path` unit with `PathExists=` on `requests/reload`, and a `.service` unit that runs the distribution's reload command, writes `requests/result`, and removes the request. The service takes no input from Cacti beyond the file's existence.
-- Milestone 1 records, per distribution, the daemon user, the reload command, and whether `--check` runs as the poller user, since it loads probe modules and may read files the poller user cannot.
+- An administrator installs the shipped systemd examples: a `.path` unit with `PathExists=` on `requests/reload`, and a `.service` unit that runs `systemctl reload smokeping.service`, writes `requests/result`, and removes the request. The service takes no input from Cacti beyond the file's existence.
+- The [distribution matrix](research/distribution-matrix/README.md) records the daemon user, reload mechanism, and `--check` behavior per distribution. Every packaged unit defines `ExecReload=/bin/kill -HUP $MAINPID`. `smokeping --reload` fails on EL 9 and Fedora because their units write no PID file. Alpine uses OpenRC, so the path-unit design does not apply there, and its packaged `reload` calls a binary path that does not exist.
+- `--check` runs as the packaged poller user (`www-data` on Debian and Ubuntu, `apache` on EL 9) on every matrix distribution. On EL 9 and Fedora the config is `0640 root:apache`, so a poller running as another user cannot read it.
 
 **Workflow.**
 
 1. Prepare a revision. Show affected targets, added packets per second, and added RRD updates per second.
 2. Validate fields and compare the revision's base hash with the include file on disk, to detect external edits.
-3. Write the candidate include file and a candidate main config to a private temporary directory, and run `smokeping --config=<candidate> --check`. Milestone 1 confirms how `@include` resolves relative paths, which decides how the candidate main config is built.
+3. Write the candidate include file and a candidate main config to a private temporary directory, and run `smokeping --config=<candidate> --check`. Run the same check against the live config first: if the baseline fails, the failure is environmental (missing `piddir`, missing `sendmail`) and the revision is not marked invalid. Milestone 1 confirms how `@include` resolves relative paths, which decides how the candidate main config is built.
 4. Replace the live include file atomically (write, fsync, rename) and create `requests/reload`.
 5. Verify: `requests/result` reports success, and each new target receives its first update within `2 × step`.
 6. On failure in step 4 or 5, restore the previous include file, request reload again, and record the failure on the revision.
@@ -359,7 +360,7 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. No ma
 
 Plugin tables hold inventory, mappings, profiles, revisions, audit records, observation cache, and health. They are created and upgraded with Cacti's tracked plugin table API, and the stored plugin version changes only after a migration succeeds. SmokePing stays the only writer of its RRD files.
 
-The reader runs from `poller_bottom` through `exec_background()` as one `register_process_start()` process per poller, with a time budget. Runs are idempotent: an interrupted run leaves the cache consistent and the next run continues. All RRD reads in a run share one rrdtool pipe from `rrd_init()`.
+The reader runs from `poller_bottom` through `exec_background()` as one `register_process_start()` process per poller, with a time budget. Runs are idempotent: an interrupted run leaves the cache consistent and the next run continues. All RRD reads in a run share one `rrdtool -` process, started with `proc_open()` because `rrd_init()` is write-only.
 
 Disabling the plugin stops jobs and leaves SmokePing files untouched. Uninstalling offers an export, asks whether to drop plugin tables, and asks whether to delete plugin-created devices; it never removes RRD files or the managed include file. Backup documentation covers the Cacti database, SmokePing's config including the include file, and `datadir`. A restore test is part of release qualification for each phase.
 
@@ -388,7 +389,7 @@ The setup screen shows packet rate, RRD update rate, and Cacti object count befo
 | Boundary | Control |
 |---|---|
 | Browser to Cacti | Cacti session, csrf-magic, plugin realms, device and graph permissions, prepared queries, contextual escaping |
-| Cacti to RRD files | Read-only group access; the health page warns if `datadir` is writable by Cacti; smoke data source paths derived from inventory and confirmed with `realpath()` under `datadir` |
+| Cacti to RRD files | Read-only mount at `<rra_path>/smokeping`; the health page reports an error if it is writable or reached through a symbolic link; smoke data source paths derived from inventory and confirmed with `realpath()` under the mount |
 | Cacti to SmokePing config (phase 2) | Write access to the include file and `requests/` only; no `sudo`; reload by a fixed systemd unit that takes no input |
 | Main server to remote collector (phase 3) | Cacti's `remote_agent` authorization and the configured https scheme; apply takes only a revision ID and reads content from the main database |
 | Slaves to master | SmokePing's protocol; TLS documented as required |
@@ -427,7 +428,7 @@ Phase 2 needs a security review covering the config writer, include file generat
 | Target-level maintenance | New Maint type with reason, ticket, owner, timezone fields; device-level only | After phase 1 | Maint maintainers |
 | Remote smoke graphs | Shared filesystem only (proposed); rrdcached; summary graphs only | Phase 3 | Milestone 1 rrdcached test |
 | Repository and name | `Cacti/plugin_smokeping`, or another name | Before any code is published | Cacti maintainers |
-| Test harness | Whatever maintained plugins use | Milestone 2 | Cacti maintainers |
+| Test harness | Whatever maintained plugins use. Milestone 2 uses Pest 3 from the locked shared plugin harness (`tests/tools/plugin-harness` in Cacti/cacti), as servcheck, webseer, monitor, and maint do, pending confirmation in #12 | Milestone 2 | Cacti maintainers |
 
 ## Risks
 
@@ -436,8 +437,8 @@ Phase 2 needs a security review covering the config writer, include file generat
 | Cacti graph templates cannot match SmokePing's smoke bands | Custom renderer and permission layer return | Fallback renderer limited to smoke graphs, with its own security review |
 | Cacti data source deletion purges a SmokePing RRD | Measurement history lost | Read-only file permissions, purge-queue hook, health warning, release test |
 | Object counts slow Cacti's own pages at 10,000 series | Poor experience for all Cacti users | Measure at milestone 3; document a supported series count |
-| `--check` cannot run as the poller user on some distributions | Managed mode validation fails | A second shipped systemd unit runs the check as the SmokePing user |
-| Packaged SmokePing reloads only as root | Reload needs privilege | The systemd unit provides it; the Cacti user never gains it |
+| `--check` cannot run as the poller user when the poller runs as a user outside the config's group (EL 9 and Fedora config is `0640 root:apache`) | Managed mode validation fails | A second shipped systemd unit runs the check as the SmokePing user |
+| Only root or the `smokeping` user can signal the daemon | Reload needs privilege | The systemd unit runs `systemctl reload`; the Cacti user never gains it |
 | Address-based `remote_agent` authorization | A host sharing a poller's address can call actions | https, restricted poller network, apply requires an approved revision in the main database |
 | Volunteer capacity | Later phases stall | Each phase ships on its own |
 

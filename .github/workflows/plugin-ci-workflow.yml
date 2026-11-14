@@ -1,0 +1,260 @@
+# +-------------------------------------------------------------------------+
+# | Copyright (C) 2004-2026 The Cacti Group                                 |
+# |                                                                         |
+# | This program is free software; you can redistribute it and/or           |
+# | modify it under the terms of the GNU General Public License             |
+# | as published by the Free Software Foundation; either version 2          |
+# | of the License, or (at your option) any later version.                  |
+# |                                                                         |
+# | This program is distributed in the hope that it will be useful,         |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of          |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           |
+# | GNU General Public License for more details.                            |
+# +-------------------------------------------------------------------------+
+# | Cacti: The Complete RRDtool-based Graphing Solution                     |
+# +-------------------------------------------------------------------------+
+# | This code is designed, written, and maintained by the Cacti Group. See  |
+# | about.php and/or the AUTHORS file for specific developer information.   |
+# +-------------------------------------------------------------------------+
+# | http://www.cacti.net/                                                   |
+# +-------------------------------------------------------------------------+
+
+# Follows the job layout of the maintained plugins (servcheck, webseer,
+# monitor): Cacti checked out with this plugin under plugins/, a MariaDB
+# service, Cacti installed from its CLI, the plugin installed with
+# plugin_manage.php, and Pest from the locked shared plugin harness. The test
+# harness choice is pending maintainers in #12; this matches what maintained
+# plugins use today.
+
+name: Plugin Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  # Every pull request, whatever its base: the milestones land as a stack in
+  # which each pull request targets the branch below it.
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Cacti includes setup.php and the page scripts on whatever PHP a 1.2.31
+  # site runs, so they must parse on PHP 8.0 even though the plugin refuses
+  # to run below 8.2.
+  entry-point-lint:
+    name: PHP 8.0 entry point lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Install PHP 8.0
+      uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+      with:
+        php-version: '8.0'
+        coverage: none
+
+    - name: Lint entry points
+      run: |
+        set -euo pipefail
+        php -v
+        for f in *.php include/*.php; do
+          php -l "$f"
+        done
+
+  integration-test:
+    name: PHP ${{ matrix.php }} on Cacti ${{ matrix.cacti }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4', '8.5']
+        cacti: ['release/1.2.31', '1.2.x']
+
+    services:
+      mariadb:
+        image: mariadb:11.8@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15
+        env:
+          MYSQL_ROOT_PASSWORD: cactiroot
+          MYSQL_DATABASE: cacti
+          MYSQL_USER: cactiuser
+          MYSQL_PASSWORD: cactiuser
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mariadb-admin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - name: Checkout Cacti
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+        repository: Cacti/cacti
+        ref: ${{ matrix.cacti }}
+        path: cacti
+
+    - name: Checkout smokeping plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+        path: cacti/plugins/smokeping
+
+    - name: Install PHP ${{ matrix.php }}
+      uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+      with:
+        php-version: ${{ matrix.php }}
+        tools: composer:2.10.3, phpstan:2.3.5
+        extensions: intl, mysql, gd, ldap, gmp, xml, curl, json, mbstring, snmp
+        ini-values: "post_max_size=256M, max_execution_time=60, date.timezone=America/New_York"
+        coverage: none
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        # Ubuntu 26.04's mysql client rejects the DELIMITER line at the top of
+        # Cacti's cacti.sql; MariaDB's client loads it.
+        sudo apt-get install -y rrdtool gettext mariadb-client
+
+    # Core's release archives exclude tests/, so fetch the shared harness lock
+    # at the same immutable revision the maintained plugins pin.
+    - name: Checkout shared CI tooling
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: Cacti/cacti
+        ref: f3ff777992875740e4665fedfe2eff8335f5b894
+        persist-credentials: false
+        path: ci-tools
+        sparse-checkout: |
+          tests/tools/plugin-harness
+
+    # The shared setup-plugin-dependencies action also runs composer install
+    # on the Cacti checkout, which needs a composer.lock that release/1.2.31
+    # does not ship. Both Cacti refs commit include/vendor, so only the Pest
+    # harness is installed here, from the same lock the action uses.
+    - name: Install the locked Pest harness
+      run: |
+        set -euo pipefail
+        harness="$RUNNER_TEMP/cacti-plugin-harness"
+        mkdir -p "$harness"
+        cp ci-tools/tests/tools/plugin-harness/composer.json ci-tools/tests/tools/plugin-harness/composer.lock "$harness/"
+        composer --working-dir="$harness" validate --strict
+        composer --working-dir="$harness" install --no-interaction --no-progress --prefer-dist
+        echo "CACTI_PEST_BIN=$harness/vendor/bin/pest" >> "$GITHUB_ENV"
+
+    - name: Initialize Cacti database
+      run: |
+        echo -e "[client]\nuser = root\npassword = cactiroot\nhost = 127.0.0.1\n" > ~/.my.cnf
+        chmod 600 ~/.my.cnf
+        mariadb -e "CREATE USER IF NOT EXISTS 'cactiuser'@'127.0.0.1' IDENTIFIED BY 'cactiuser';"
+        mariadb -e "GRANT ALL PRIVILEGES ON cacti.* TO 'cactiuser'@'127.0.0.1';"
+        mariadb -e "GRANT SELECT ON mysql.time_zone_name TO 'cactiuser'@'127.0.0.1';"
+        mariadb -e "FLUSH PRIVILEGES;"
+        mariadb cacti < cacti/cacti.sql
+        mariadb -e "INSERT INTO settings (name, value) VALUES ('path_php_binary', '$(command -v php)')" cacti
+
+    - name: Create Cacti config.php
+      run: |
+        sed -r "s/localhost/127.0.0.1/g" cacti/include/config.php.dist > cacti/include/config.php
+
+    - name: Install Cacti via CLI
+      working-directory: cacti
+      run: php cli/install_cacti.php --accept-eula --install --force
+
+    - name: Run unit tests
+      working-directory: cacti/plugins/smokeping
+      run: '"$CACTI_PEST_BIN" --configuration=phpunit.xml'
+
+    # Installs, upgrades, and uninstalls the plugin through Cacti's own
+    # plugin API, so it runs before the plugin is installed for the poller.
+    - name: Run lifecycle and realm integration tests
+      working-directory: cacti/plugins/smokeping
+      env:
+        CACTI_PATH: ${{ github.workspace }}/cacti
+        SMOKEPING_TEST_DATABASE: disposable
+      run: '"$CACTI_PEST_BIN" --configuration=phpunit-integration.xml'
+
+    # The integration tests provoke refusals that the plugin logs as errors,
+    # such as a schema downgrade. Keep their log apart so the error check
+    # below covers the install and the poller run.
+    - name: Set the integration tests' log aside
+      if: always()
+      run: |
+        if [ -f cacti/log/cacti.log ]; then
+          mv cacti/log/cacti.log cacti/log/integration.log
+        fi
+
+    - name: Install and enable the plugin
+      working-directory: cacti
+      run: php cli/plugin_manage.php --plugin=smokeping --install --enable
+
+    # Against the minimum supported release only: the 1.2.x branch's
+    # docblocks give PDO connections as resources and mistype some
+    # parameters, which PHPStan reports at every call site.
+    - name: Run PHPStan
+      if: matrix.cacti == 'release/1.2.31'
+      working-directory: cacti/plugins/smokeping
+      env:
+        CACTI_PATH: ${{ github.workspace }}/cacti
+      run: phpstan analyse -c phpstan.neon --no-progress
+
+    - name: Verify translation template
+      working-directory: cacti/plugins/smokeping
+      run: sh locales/build_gettext.sh --check
+
+    - name: Run Cacti poller
+      working-directory: cacti
+      run: |
+        php poller.php --poller=1 --force --debug
+        grep -q "SYSTEM STATS" log/cacti.log
+
+    - name: Check Cacti log for errors
+      if: always()
+      run: |
+        if [ -f cacti/log/integration.log ]; then
+          echo "== integration tests (not checked)"
+          cat cacti/log/integration.log
+        fi
+        if [ -f cacti/log/cacti.log ]; then
+          echo "== install and poller run"
+          cat cacti/log/cacti.log
+          if grep -E "FATAL:|ERROR:|WARNING:" cacti/log/cacti.log; then
+            exit 1
+          fi
+        fi
+
+  # The inventory script must work with the SmokePing each distribution
+  # ships, run as an unprivileged user.
+  inventory:
+    name: Inventory on ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['debian:13', 'alpine:3.24', 'fedora:44']
+
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Run the inventory script against packaged SmokePing
+      run: docker run --rm -v "$PWD:/plugin:ro" "${{ matrix.image }}" sh /plugin/tests/inventory.sh

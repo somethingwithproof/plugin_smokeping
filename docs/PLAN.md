@@ -190,7 +190,7 @@ Each SmokePing target and location becomes ordinary Cacti objects created throug
 
 | Object | Created from | Notes |
 |---|---|---|
-| Device | "SmokePing Target" device template, availability None, assigned to the poller next to SmokePing | Existing devices can be mapped instead; created only on operator confirmation |
+| Device | "SmokePing Target" device template; the plugin sets availability None (Cacti 1.2.31 keeps availability on the device, not the template) when it creates the device, assigned to the poller next to SmokePing | Existing devices can be mapped instead; created only on operator confirmation |
 | Smoke data source | "SmokePing Smoke (N pings)" data template, input method None, `data_source_path` `<path_rra>/smokeping/<Section>/<target>.rrd` through the read-only mount | Never polled; Cacti only reads it |
 | Summary data source | "SmokePing Summary" data template using the script server input | Polled; reaches Thold through `poller_output` |
 | Graphs | "SmokePing Smoke (N pings)" and "SmokePing Summary" graph templates | Placed in graph trees and protected by graph permissions like any Cacti graph |
@@ -245,7 +245,7 @@ Calculation rules for the templates:
 - Label any percentile precisely. A percentile of interval medians is not a percentile of all packets.
 - Call RTT spread "variation". The `pingN` values are sorted, so they cannot support a packet-order metric such as RFC 3550 jitter.
 
-**Fidelity check.** For each SmokePing version in the matrix, a fixture RRD with known values is graphed by SmokePing's CGI and by the Cacti template. The `rrdtool xport` output of each definition must match for median, loss, and every smoke band. Pixel comparison is not used, because fonts and rrdtool versions differ.
+**Fidelity check.** Confirmed 2026-11-13 ([results](research/graph-fidelity.md)): the template's series equal SmokePing's on 2.7.3, 2.8.2, and 2.9.0, with the limits listed there (explicit upper limit, graph item order, 2.7.3 loss levels). The method: for each SmokePing version in the matrix, a fixture RRD with known values is graphed by SmokePing's CGI and by the Cacti template. The `rrdtool xport` output of each definition must match for median, loss, and every smoke band. Pixel comparison is not used, because fonts and rrdtool versions differ.
 
 **Fallback.** If milestone 1 shows Cacti graph templates cannot reproduce the smoke bands exactly, the plugin adds its own renderer for smoke graphs only. That renderer accepts a target ID, location, and time range; never accepts paths, rrdtool expressions, or URLs; checks permissions on every request; and caches images outside the web root. This is a contingency, not the plan.
 

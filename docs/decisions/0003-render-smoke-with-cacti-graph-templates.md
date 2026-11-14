@@ -1,6 +1,6 @@
 # 0003. Render smoke graphs with Cacti graph templates over SmokePing's RRD files
 
-Status: Accepted, pending fidelity evidence from milestone 1 (2026-11-13). Path mechanism amended by [0007](0007-read-only-mount-under-rra-path.md): absolute paths stop working on Cacti 1.2.x after GHSA-9qff.
+Status: Accepted; fidelity confirmed by [graph-fidelity.md](../research/graph-fidelity.md) (2026-11-13). Path mechanism amended by [0007](0007-read-only-mount-under-rra-path.md): absolute paths stop working on Cacti 1.2.x after GHSA-9qff.
 
 ## Context
 

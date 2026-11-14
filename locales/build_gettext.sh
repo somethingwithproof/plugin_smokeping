@@ -3,9 +3,13 @@
 # SPDX-FileCopyrightText: 2026 Thomas Vincent
 #
 # Regenerate locales/po/cacti.pot from every PHP file at depth 2 or less, the
-# scan the Cacti plugin gettext builds use. With --check, fail instead when
-# the committed template is out of date. Per-language catalogs are managed
-# through Weblate and are not touched here.
+# scan the Cacti plugin gettext builds use, merge it into each catalog
+# locales/po/<locale>.po, and compile each catalog to
+# locales/LC_MESSAGES/<locale>.mo, where Cacti loads plugin translations.
+#
+# With --check, change nothing and fail when the template is out of date, a
+# catalog misses or has a fuzzy entry, a format string does not match, or a
+# compiled catalog differs from its source.
 
 set -eu
 
@@ -44,8 +48,41 @@ if [ "${1:-}" = "--check" ]; then
 
 	rm -f "$tmp"
 	echo "$POT is up to date"
-	exit 0
+
+	command -v msgunfmt >/dev/null 2>&1 || { echo "ERROR: Unable to locate msgunfmt (install GNU gettext)" >&2; exit 1; }
+	rc=0
+
+	for po in locales/po/*.po; do
+		[ -f "$po" ] || continue
+		locale=$(basename "$po" .po)
+		mo=locales/LC_MESSAGES/$locale.mo
+
+		# Every template entry translated, none fuzzy, formats intact.
+		msgfmt --check -o /dev/null "$po" || { echo "ERROR: $po does not compile" >&2; rc=1; continue; }
+		msgcmp "$po" "$POT" || { echo "ERROR: $po misses entries of $POT; run locales/build_gettext.sh" >&2; rc=1; }
+		[ -z "$(msgattrib --only-fuzzy --no-obsolete "$po")" ] || { echo "ERROR: $po has fuzzy entries" >&2; rc=1; }
+		[ -z "$(msgattrib --untranslated --no-obsolete "$po")" ] || { echo "ERROR: $po has untranslated entries" >&2; rc=1; }
+
+		# The compiled catalog holds the same messages as its source; compared
+		# decompiled, because gettext versions lay the binary out differently.
+		if [ ! -f "$mo" ] || [ "$(msgunfmt "$mo")" != "$(msgfmt -o - "$po" | msgunfmt)" ]; then
+			echo "ERROR: $mo is missing or out of date; run locales/build_gettext.sh" >&2
+			rc=1
+		fi
+	done
+
+	[ $rc -eq 0 ] && echo "catalogs are complete and compiled"
+	exit $rc
 fi
 
 generate "$POT"
 echo "Updated $POT"
+
+mkdir -p locales/LC_MESSAGES
+
+for po in locales/po/*.po; do
+	[ -f "$po" ] || continue
+	msgmerge --quiet --update --no-wrap --backup=none "$po" "$POT"
+	msgfmt -o "locales/LC_MESSAGES/$(basename "$po" .po).mo" "$po"
+	echo "Compiled $po"
+done

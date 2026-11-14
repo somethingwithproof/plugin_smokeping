@@ -155,6 +155,10 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 
 **SmokePing Inventory** now lists every SmokePing target. Nothing is graphed yet; see [provisioning](provisioning.md) to add targets to Cacti.
 
+## Languages
+
+The plugin ships translations into Spanish (Spain, `es-ES`), French (`fr-FR`), German (`de-DE`), Simplified Chinese (`zh-CN`) and Japanese (`ja-JP`). Cacti shows them once language support is on (Configuration > Settings > General > Language Support) and a user picks the language. A Latin American Spanish catalog (`es-419`) ships as well, but Cacti 1.2 has no Latin American Spanish locale to select, so it takes effect only when Cacti adds one; until then, choose Spanish (`es-ES`).
+
 ## Containers
 
 Run the reader where it can see both things from the start of this guide.

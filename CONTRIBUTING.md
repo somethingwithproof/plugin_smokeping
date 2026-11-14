@@ -56,6 +56,10 @@ Milestones match the plan. Each has an epic issue whose sub-issues are the miles
 - Keep pull requests to one issue where practical. Pull requests are squash-merged.
 - Code, when it exists, follows Cacti conventions: tabs, single quotes, short array syntax, prepared queries, the `smokeping` text domain for strings, and PHPStan at `phpVersion` 8.2.
 
+## Translations
+
+Messages are marked with `__('...', 'smokeping')`. `locales/build_gettext.sh` regenerates the template `locales/po/cacti.pot`, merges it into each catalog `locales/po/<locale>.po`, and compiles `locales/LC_MESSAGES/<locale>.mo`; commit all three. CI runs `locales/build_gettext.sh --check`, which fails when a catalog misses or has a fuzzy entry, a placeholder differs, or a compiled file is out of date. A changed message therefore needs its translations updated in the same pull request. A new language is a new `<locale>.po` named as Cacti names its locales (for example `pt-BR`).
+
 ## Conduct
 
 This project follows the [Code of Conduct](CODE_OF_CONDUCT.md).

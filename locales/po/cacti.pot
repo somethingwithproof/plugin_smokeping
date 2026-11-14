@@ -152,6 +152,26 @@ msgid "%d devices have summary data sources but are not polled by poller %d, whi
 msgstr ""
 
 #: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr ""
+
+#: lib/HealthCheck.php
 msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
 msgstr ""
 
@@ -491,23 +511,7 @@ msgid "SmokePing Configuration File"
 msgstr ""
 
 #: lib/Settings.php
-msgid "The main SmokePing configuration file. The plugin only reads it, through SmokePing's own parser."
-msgstr ""
-
-#: lib/Settings.php
-msgid "Perl Binary"
-msgstr ""
-
-#: lib/Settings.php
-msgid "The Perl interpreter that runs the inventory script."
-msgstr ""
-
-#: lib/Settings.php
-msgid "SmokePing Perl Library Directory"
-msgstr ""
-
-#: lib/Settings.php
-msgid "The directory holding Smokeping.pm. Leave blank to search the packaged locations."
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
 msgstr ""
 
 #: lib/Settings.php

@@ -40,6 +40,8 @@ final class Schema {
 		'config_arrays'            => 'smokeping_config_arrays',
 		'config_settings'          => 'smokeping_config_settings',
 		'draw_navigation_text'     => 'smokeping_draw_navigation_text',
+		'poller_top'               => 'smokeping_purge_sweep',
+		'poller_finishing'         => 'smokeping_purge_sweep',
 		'poller_bottom'            => 'smokeping_poller_bottom',
 		'data_source_remove'       => 'smokeping_data_source_remove',
 		'device_remove'            => 'smokeping_device_remove',

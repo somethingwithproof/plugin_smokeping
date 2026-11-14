@@ -2,7 +2,8 @@
 # Host-side runner for tests/objects-e2e.sh: builds SmokePing fixture
 # directories, then runs the end-to-end script in a Cacti 1.2.31 container
 # four times: the mount read-only and writable, each with the plugin and with
-# it disabled before the deletion (the control).
+# it disabled before the deletion (the control). tests/slowplugin is mounted
+# as a plugin whose slow poller_bottom hook runs before this one.
 #
 #   sh tests/run-objects-e2e.sh <work-dir>
 #
@@ -24,7 +25,7 @@ PRELUDE='ini=$(php -r "echo PHP_CONFIG_FILE_PATH;")/php.ini; [ -f "$ini" ] || { 
 
 run() {
 	docker run --rm --network cpt --env-file "$DB_ENV" -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEST_DATABASE=disposable \
-		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping "$@"
+		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$PLUGIN/tests/slowplugin":/cacti/plugins/slowplugin:ro "$@"
 }
 
 status=0

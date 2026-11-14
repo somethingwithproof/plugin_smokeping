@@ -477,16 +477,31 @@ function smokeping_summary_answer(string $series): string {
 	return (new \Cacti\Smokeping\SummaryScript(new \Cacti\Smokeping\ObservationRepository(false), $calculator))->run($series);
 }
 
+/**
+ * poller_top and poller_finishing hook: remove queued purge rows under the
+ * mount. poller.php starts poller_maintenance.php in the background before it
+ * runs the poller_bottom hooks, so a sweep there races the purge and loses
+ * whenever an earlier plugin's poller_bottom work takes a moment. poller_top
+ * runs before the purge on every poller run, and poller_finishing just before
+ * it once collection is done, which leaves only a row queued in the last
+ * instant before the purge to the read-only mount.
+ */
+function smokeping_purge_sweep(): void {
+	global $config;
+
+	// Cacti's purge queue lives in the main database, which poller 1 owns.
+	if (!smokeping_boot() || (int) $config['poller_id'] !== 1) {
+		return;
+	}
+
+	smokeping_purge_guard()->sweep(smokeping_settings()->mountPath, $config['rra_path'], $config['base_path']);
+}
+
 function smokeping_poller_bottom(): void {
 	global $config;
 
 	if (!smokeping_boot()) {
 		return;
-	}
-
-	// Cacti's purge queue lives in the main database, which poller 1 owns.
-	if ((int) $config['poller_id'] === 1) {
-		smokeping_purge_guard()->sweep(smokeping_settings()->mountPath, $config['rra_path'], $config['base_path']);
 	}
 
 	if (!function_exists('exec_background')) {

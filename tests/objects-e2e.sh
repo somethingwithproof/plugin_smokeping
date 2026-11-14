@@ -157,6 +157,30 @@ else
 	[ "$(sums)" != "$before" ] && result PASS rrdcleaner-on-writable-mount-is-unprotected "writable mount: the file was deleted, which is why the mount must be read-only" || result INFO rrdcleaner-on-writable-mount-is-unprotected "file survived"
 fi
 
+# 5b. The purge in a real poller run. poller.php starts poller_maintenance.php
+# in the background before the poller_bottom hooks; with a slow plugin ordered
+# first (tests/slowplugin), a sweep must not depend on winning that race.
+if [ "$GUARD" = guard ] && [ -f plugins/slowplugin/setup.php ]; then
+	php -r 'include("./include/cli_check.php");
+		db_execute("DELETE FROM plugin_config WHERE directory = \"slowplugin\""); db_execute("DELETE FROM plugin_hooks WHERE name = \"slowplugin\"");
+		db_execute("INSERT INTO plugin_config (directory, name, status, author, webpage, version) VALUES (\"slowplugin\", \"slowplugin\", 1, \"\", \"\", \"1.0\")");
+		db_execute_prepared("UPDATE plugin_config SET id = ? WHERE directory = \"smokeping\"", array(db_fetch_cell("SELECT MAX(id) FROM plugin_config") + 1));
+		db_execute("INSERT INTO plugin_hooks (name, hook, file, `function`, status) VALUES (\"slowplugin\", \"poller_bottom\", \"setup.php\", \"slowplugin_poller_bottom\", 1)");' >/dev/null 2>&1
+	$L set_setting "path_php_binary=$(command -v php)" >/dev/null
+	$L set_setting "poller_enabled=on" >/dev/null
+	$L set_setting "rrd_autoclean_method=1" >/dev/null
+	before3=$(sums)
+	swept=$(grep -c 'queued purge entries under the SmokePing mount' log/cacti.log 2>/dev/null || true)
+	# The RRD cleaner page's spelling: rra_path stripped, leading slash kept.
+	$L queue_purge "/smokeping/Europe/berlin.rrd|1" >/dev/null
+	php poller.php --force >/dev/null 2>&1
+	n=0; while grep -qs 'poller_mainten[a]nce' /proc/[0-9]*/cmdline && [ $n -lt 30 ]; do sleep 1; n=$((n + 1)); done
+	left=$(q "SELECT COUNT(*) FROM data_source_purge_action WHERE name LIKE '%smokeping/%'" | jcell)
+	swept=$(( $(grep -c 'queued purge entries under the SmokePing mount' log/cacti.log 2>/dev/null || true) - swept ))
+	[ "$(sums)" = "$before3" ] && [ "$left" = 0 ] && [ "$swept" -ge 1 ] && result PASS poller-run-sweeps-before-purge "a row queued before the run was swept before poller_maintenance.php reached it; every RRD byte-identical" || result FAIL poller-run-sweeps-before-purge "files $( [ "$(sums)" = "$before3" ] && echo unchanged || echo changed), $left rows left, $swept sweeps"
+	php -r 'include("./include/cli_check.php"); db_execute("DELETE FROM plugin_hooks WHERE name = \"slowplugin\""); db_execute("DELETE FROM plugin_config WHERE directory = \"slowplugin\"");' >/dev/null 2>&1
+fi
+
 # 6. rrdcheck reads RRDs and writes nothing.
 $L set_setting "rrdcheck_enable=on" >/dev/null
 before2=$(sums)

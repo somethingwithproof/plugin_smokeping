@@ -30,7 +30,14 @@ for d in rra/smokeping cache/smokeping; do
 	[ -e "$CACTI_CORE/$d" ] || made="$made $CACTI_CORE/$d"
 done
 
-sh "$HERE/ensure-db.sh" smokeping_m4src "$CACTI_CORE" "$DB_ENV"
+# Every database this runner uses starts from this core's cacti.sql, whatever an
+# earlier run left in it.
+fresh_db() { # fresh_db <smokeping_ database>
+	docker run --rm --network cpt --env-file "$DB_ENV" -e DB="$1" mariadb:10.11 sh -c 'mariadb -h cpt-db -uroot -p"$MARIADB_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS \`$DB\`"' >/dev/null
+	sh "$HERE/ensure-db.sh" "$1" "$CACTI_CORE" "$DB_ENV"
+}
+
+fresh_db smokeping_m4src
 
 # SmokePing's side: its configuration and files, and RRD files in its data directory.
 docker run --rm -v "$PLUGIN":/p:ro -v "$R/src-config":/c -v "$R/src-data":/d spm2-e2e sh -c '
@@ -70,8 +77,9 @@ docker run --rm -v "$PLUGIN":/p:ro -v "$R/new-data":/d spm2-e2e php /p/tests/bin
 run smokeping_m4dst "$R/new-data" "$R/new-config" ro restore
 
 # Restore from the YAML export alone: a fresh Cacti database, nothing from the old database.
-sh "$HERE/ensure-db.sh" smokeping_m4yml "$CACTI_CORE" "$DB_ENV"
-docker run --rm --network cpt --env-file "$DB_ENV" -e DB=smokeping_m4yml mariadb:10.11 sh -c 'mariadb -h cpt-db -uroot -p"$MARIADB_ROOT_PASSWORD" -N -e "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = \"$DB\" AND TABLE_NAME LIKE \"plugin_smokeping_%\"" | grep -qx 0 || mariadb -h cpt-db -uroot -p"$MARIADB_ROOT_PASSWORD" -e "DROP DATABASE $DB; CREATE DATABASE $DB; GRANT ALL ON $DB.* TO \`$MARIADB_USER\`@\`%\`"' >/dev/null 2>&1 || true
+# It is dropped first, so ensure-db.sh loads this core's cacti.sql into it even
+# when an earlier run, possibly on another core, left the plugin installed.
+fresh_db smokeping_m4yml
 rm -rf "$R/yaml-data"; mkdir -p "$R/yaml-data"; tar -xzf "$R/backup/smokeping-datadir.tgz" -C "$R/yaml-data"
 run smokeping_m4yml "$R/yaml-data" "$R/new-config" ro yaml
 

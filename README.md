@@ -1,3 +1,10 @@
+<h1 align="center">
+	<picture>
+		<source media="(prefers-color-scheme: dark)" srcset="docs/images/logo_dark.png">
+		<img src="docs/images/logo.png" width="360" alt="SmokePing Cacti Plugin: a cactus wearing a badge with a SmokePing graph">
+	</picture>
+</h1>
+
 # plugin_smokeping
 
 A Cacti 1.2 plugin that brings SmokePing latency and loss measurements into Cacti as ordinary devices, data sources, and graphs. Smoke graphs then sit next to the device they belong to, under Cacti's permissions, and Thold and Maint can alert on and suppress them.

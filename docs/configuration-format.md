@@ -17,7 +17,7 @@ php plugins/smokeping/cli/smokeping.php import --file=smokeping-config.yaml --ap
 
 The same actions are on **Management > SmokePing Configuration** (SmokePing Admin realm): download an export, then choose a file to check, review the listed changes, and apply.
 
-An import only adds and updates. It never deletes a target, never moves a mapping to another device (re-link on the Inventory page), never creates a data source, graph, or RRD file, and never reads or writes SmokePing's data directory. The uninstall writes a YAML export to `cache/smokeping/` in the Cacti directory.
+An import only adds and updates. It never deletes a target, never moves a mapping to another device (re-link on the Inventory page), never creates a data source, graph, or RRD file, and never reads or writes SmokePing's data directory. The uninstall writes a YAML export of the configuration to the **Backup Directory** setting, or when that is blank to `cache/smokeping/` in the Cacti directory. The file has a random name and mode `0600`, and the default directory holds a deny-all `.htaccess` and an `index.php` that serves nothing. A Backup Directory that does not exist or is not writable means no export is written (the plugin does not fall back to the default), and the uninstall goes ahead and reports where the file went, or that none was written. Choose a directory outside the web root.
 
 ## Schema version 1
 

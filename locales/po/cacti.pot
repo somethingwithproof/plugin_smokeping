@@ -552,6 +552,14 @@ msgstr ""
 msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
 msgstr ""
 
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr ""
+
 #: lib/SmokeProvisioner.php
 msgid "The target has not been saved yet."
 msgstr ""
@@ -765,6 +773,15 @@ msgstr ""
 #: setup.php
 #, php-format
 msgid "The SmokePing plugin requires PHP %s or later."
+msgstr ""
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr ""
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
 msgstr ""
 
 #: setup.php

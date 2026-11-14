@@ -45,6 +45,7 @@ final readonly class Settings {
 		'smokeping_inventory_interval',
 		'smokeping_freshness_allowance',
 		'smokeping_uninstall_keep_tables',
+		'smokeping_backup_dir',
 	];
 
 	public function __construct(
@@ -58,6 +59,7 @@ final readonly class Settings {
 		public int $inventoryInterval,
 		public int $freshnessAllowance,
 		public bool $keepTablesOnUninstall,
+		public string $backupDir = '',
 	) {
 	}
 
@@ -86,6 +88,7 @@ final readonly class Settings {
 			inventoryInterval: Row::int($row, 'smokeping_inventory_interval', 300, 0),
 			freshnessAllowance: Row::int($row, 'smokeping_freshness_allowance', 60, 0),
 			keepTablesOnUninstall: Row::bool($row, 'smokeping_uninstall_keep_tables'),
+			backupDir: rtrim(Row::string($row, 'smokeping_backup_dir'), '/'),
 		);
 	}
 
@@ -188,6 +191,14 @@ final readonly class Settings {
 				'description'   => __('When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way.', 'smokeping'),
 				'method'        => 'checkbox',
 				'default'       => '',
+			],
+			'smokeping_backup_dir' => [
+				'friendly_name' => __('Backup Directory', 'smokeping'),
+				'description'   => __('Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written.', 'smokeping'),
+				'method'        => 'textbox',
+				'default'       => '',
+				'max_length'    => '255',
+				'size'          => '60',
 			],
 		];
 	}

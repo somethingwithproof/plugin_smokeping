@@ -61,6 +61,7 @@ final class ConfigSchema {
 		'smokeping_perl_binary'          => ['path'],
 		'smokeping_lib_dir'              => ['optional_path'],
 		'smokeping_datadir'              => ['path'],
+		'smokeping_backup_dir'           => ['optional_path'],
 		'smokeping_mount_path'           => ['path'],
 		'smokeping_poller_id'            => ['int', 1],
 		'smokeping_reader_budget'        => ['int', 1],

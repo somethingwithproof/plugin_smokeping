@@ -226,10 +226,21 @@ function plugin_smokeping_uninstall(): void {
 		return;
 	}
 
-	$exported = smokeping_config_service()->exportToDirectory($config['base_path'] . '/cache/smokeping', time());
+	$exported = smokeping_config_service()->writeBackup($config['base_path'] . '/cache/smokeping', smokeping_settings()->backupDir, time());
 
 	if ($exported !== null) {
+		$message = __('The SmokePing configuration was exported to %s', $exported, 'smokeping');
+
 		cacti_log('NOTE: Uninstall exported the SmokePing configuration to ' . $exported, false, 'SMOKEPING');
+	} else {
+		$message = __('The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead.', 'smokeping');
+	}
+
+	// Tell the administrator where it went, on the page that ran the uninstall or on the console.
+	if (PHP_SAPI === 'cli') {
+		fwrite(STDERR, $message . PHP_EOL);
+	} elseif (function_exists('raise_message')) {
+		raise_message('smokeping_export', html_escape($message), $exported !== null ? MESSAGE_LEVEL_INFO : MESSAGE_LEVEL_WARN);
 	}
 
 	$schema = new \Cacti\Smokeping\Schema(false);

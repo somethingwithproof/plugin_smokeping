@@ -48,6 +48,7 @@ final class ConfigRepository {
 			'smokeping_perl_binary'           => $settings->perlBinary,
 			'smokeping_lib_dir'               => $settings->libDir,
 			'smokeping_datadir'               => $settings->datadir,
+			'smokeping_backup_dir'            => $settings->backupDir,
 			'smokeping_mount_path'            => $settings->mountPath,
 			'smokeping_poller_id'             => $settings->pollerId,
 			'smokeping_reader_budget'         => $settings->readerBudget,

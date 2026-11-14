@@ -347,3 +347,66 @@ it('writes reference settings in their own section in both formats and reads the
 	expect($text)->toContain('reference_settings')
 		->and(ConfigCodec::parse($format, $text)->reference)->toBe(['smokeping_config_file' => '/etc/smokeping/config', 'smokeping_lib_dir' => '']);
 })->with(['yaml', 'xml']);
+
+function smokeping_backup_service(): Cacti\Smokeping\ConfigService {
+	return new Cacti\Smokeping\ConfigService(new Cacti\Smokeping\ConfigRepository(false, '/var/www/cacti/rra'));
+}
+
+function smokeping_tmp_dir(): string {
+	$dir = sys_get_temp_dir() . '/smokeping-backup-' . bin2hex(random_bytes(4));
+
+	mkdir($dir, 0700);
+
+	return $dir;
+}
+
+it('writes the backup under a random name, mode 0600, in a directory a web server will not serve', function () {
+	$base    = smokeping_tmp_dir();
+	$default = $base . '/cache/smokeping';
+	$service = smokeping_backup_service();
+
+	$first  = $service->writeBackup($default, '', 1700000000);
+	$second = $service->writeBackup($default, '', 1700000000);
+
+	expect($first)->toMatch('#/smokeping-config-20231114-221320-[0-9a-f]{16}\.yaml$#')
+		->and($second)->not->toBe($first)
+		->and(substr(sprintf('%o', fileperms((string) $first)), -4))->toBe('0600')
+		->and((string) file_get_contents((string) $first))->toStartWith('schema_version: 1')
+		->and((string) file_get_contents($default . '/.htaccess'))->toContain('Require all denied')->toContain('Deny from all')
+		->and((string) file_get_contents($default . '/index.php'))->toContain('http_response_code(403)')->not->toContain('header(');
+});
+
+it('writes to the configured backup directory and nowhere else', function () {
+	$base   = smokeping_tmp_dir();
+	$custom = $base . '/backups';
+
+	mkdir($custom);
+
+	$path = smokeping_backup_service()->writeBackup($base . '/cache/smokeping', $custom . '/', 1700000000);
+
+	expect(dirname((string) $path))->toBe($custom)
+		->and(is_dir($base . '/cache'))->toBeFalse()
+		->and(file_exists($custom . '/.htaccess'))->toBeFalse();
+});
+
+it('writes nothing, and logs it, when the configured backup directory is unusable', function () {
+	$base                      = smokeping_tmp_dir();
+	$GLOBALS['__smokeping_log'] = [];
+
+	touch($base . '/a-file');
+
+	foreach ([$base . '/missing', $base . '/a-file'] as $custom) {
+		expect(smokeping_backup_service()->writeBackup($base . '/cache/smokeping', $custom, 1700000000))->toBeNull();
+	}
+
+	$messages = implode("\n", array_column($GLOBALS['__smokeping_log'], 'message'));
+
+	expect(is_dir($base . '/cache'))->toBeFalse()
+		->and(glob($base . '/*.yaml'))->toBe([])
+		->and($messages)->toContain('is not a writable directory; no export was written');
+});
+
+it('treats the backup directory as a reference-only setting', function () {
+	expect(Cacti\Smokeping\ConfigSchema::isReferenceOnly('smokeping_backup_dir'))->toBeTrue()
+		->and(Cacti\Smokeping\Settings::fromRow(['smokeping_backup_dir' => '/srv/backups/'], '/r')->backupDir)->toBe('/srv/backups');
+});

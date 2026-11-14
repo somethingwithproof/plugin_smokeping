@@ -37,22 +37,43 @@ final class ConfigService {
 	}
 
 	/**
-	 * Write an export under $directory and return its path, or null when it
-	 * could not be written. Used when the plugin is uninstalled; a failure is
-	 * logged and never blocks the uninstall. The file is readable by its owner
-	 * only.
+	 * Write a YAML export of the configuration and return its path, or null
+	 * when nothing was written. Used by the uninstall; a failure is logged and
+	 * never blocks it.
+	 *
+	 * With a backup directory configured, the file goes there and nowhere else:
+	 * a directory that is missing or not writable means no export, never a quiet
+	 * fall back to the default, which the administrator did not choose. Without
+	 * one, the file goes to $defaultDir, which is under the web root, so the
+	 * directory gets a deny-all .htaccess and an index.php that serves nothing,
+	 * and is created only when both can be written. The file has a random name
+	 * and is readable by its owner only.
 	 */
-	public function exportToDirectory(string $directory, int $now): ?string {
+	public function writeBackup(string $defaultDir, string $customDir, int $now): ?string {
 		try {
-			$text = $this->export(ConfigCodec::YAML);
+			$custom = rtrim(trim($customDir), '/');
 
-			if (!is_dir($directory) && !mkdir($directory, 0750, true) && !is_dir($directory)) {
-				throw new ConfigException(sprintf('Cannot create %s', $directory));
+			if ($custom !== '') {
+				if (!is_dir($custom) || !is_writable($custom)) {
+					throw new ConfigException(sprintf('The backup directory %s is not a writable directory; no export was written', $custom));
+				}
+
+				$directory = $custom;
+			} else {
+				$directory = rtrim($defaultDir, '/');
+
+				self::guardDirectory($directory);
 			}
 
-			$file = rtrim($directory, '/') . '/smokeping-config-' . gmdate('Ymd-His', $now) . '.yaml';
+			$text = $this->export(ConfigCodec::YAML);
+			$file = $directory . '/smokeping-config-' . gmdate('Ymd-His', $now) . '-' . bin2hex(random_bytes(8)) . '.yaml';
 
-			if (file_put_contents($file, $text, LOCK_EX) === false || !chmod($file, 0600)) {
+			$previous = umask(0077);
+			$handle   = @fopen($file, 'x');
+
+			umask($previous);
+
+			if ($handle === false || fwrite($handle, $text) === false || !fclose($handle) || !chmod($file, 0600)) {
 				throw new ConfigException(sprintf('Cannot write %s', $file));
 			}
 
@@ -61,6 +82,27 @@ final class ConfigService {
 			Log::error('The configuration export was not written: ' . $e->getMessage());
 
 			return null;
+		}
+	}
+
+	/**
+	 * Create the default backup directory with the files that keep a web
+	 * server from serving it. Refuses unless both exist afterwards.
+	 */
+	private static function guardDirectory(string $directory): void {
+		if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
+			throw new ConfigException(sprintf('Cannot create %s', $directory));
+		}
+
+		$guards = [
+			'.htaccess' => "# Configuration exports: no access from the web.\n<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n\tOrder deny,allow\n\tDeny from all\n</IfModule>\n",
+			'index.php' => "<?php\nhttp_response_code(403);\nexit;\n",
+		];
+
+		foreach ($guards as $name => $content) {
+			if ((!is_file($directory . '/' . $name) || file_get_contents($directory . '/' . $name) !== $content) && file_put_contents($directory . '/' . $name, $content) === false) {
+				throw new ConfigException(sprintf('Cannot write %s/%s', $directory, $name));
+			}
 		}
 	}
 

@@ -99,6 +99,25 @@ else
 	result FAIL uninstall-exports-configuration "before $before after $after last=$last"
 fi
 
+# The default directory is guarded, and the file name is not predictable.
+if [ -f "$cache/.htaccess" ] && grep -q 'Require all denied' "$cache/.htaccess" && [ -f "$cache/index.php" ] && ! grep -q 'Location' "$cache/index.php" && echo "$last" | grep -Eq 'smokeping-config-[0-9]{8}-[0-9]{6}-[0-9a-f]{16}\.yaml$'; then
+	result PASS uninstall-export-directory-guarded "deny-all .htaccess, an index.php that serves nothing, a random file name"
+else
+	result FAIL uninstall-export-directory-guarded "$(ls -a "$cache")"
+fi
+
+# A configured backup directory is used instead; an unusable one means no export at all.
+mkdir -p "$W/bk"
+$L reset >/dev/null; $L install >/dev/null; $L enable >/dev/null
+$L set_setting "smokeping_backup_dir=$W/bk" >/dev/null
+n_cache=$(ls "$cache" | wc -l)
+$L reset >/dev/null
+[ "$(ls "$W/bk" | grep -c '^smokeping-config-.*\.yaml$')" = 1 ] && [ "$(ls "$cache" | wc -l)" = "$n_cache" ] && result PASS uninstall-export-to-backup-directory "written to the configured directory only" || result FAIL uninstall-export-to-backup-directory "$(ls "$W/bk") / $(ls "$cache")"
+$L install >/dev/null; $L enable >/dev/null
+$L set_setting "smokeping_backup_dir=$W/no-such-dir" >/dev/null
+$L reset >/dev/null
+[ "$(ls "$cache" | wc -l)" = "$n_cache" ] && [ "$(ls "$W/bk" | wc -l)" = 1 ] && ! [ -e "$W/no-such-dir" ] && grep -q 'is not a writable directory; no export was written' log/cacti.log && result PASS uninstall-export-fails-closed "an unusable backup directory writes nothing and does not fall back" || result FAIL uninstall-export-fails-closed "$(ls "$cache")"
+
 # ---- Restore onto a fresh install whose devices have new ids.
 restore() {
 	fmt=$1

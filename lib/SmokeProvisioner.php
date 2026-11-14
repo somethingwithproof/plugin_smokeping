@@ -291,7 +291,16 @@ final class SmokeProvisioner {
 		// for the same device and another file gets a data source of its own,
 		// and the path and step are set by Cacti's own suggested-values step.
 		$dataTemplateId = $this->cacti->dataTemplateOfGraphTemplate($templateId);
-		$suggested      = [$templateId => ['data_template' => [$dataTemplateId => ['data_source_path' => '<path_rra>/' . $relative, 'rrd_step' => $target->step]]]];
+		$dataSource     = ['data_source_path' => '<path_rra>/' . $relative, 'rrd_step' => $target->step];
+
+		// An archive has the same file as the live data source it is made
+		// beside, so the path alone would let Cacti reuse the live one; its
+		// own name makes the suggested values differ.
+		if ($state === ObjectRepository::ARCHIVED) {
+			$dataSource['name'] = '|host_description| - SmokePing (archived)';
+		}
+
+		$suggested      = [$templateId => ['data_template' => [$dataTemplateId => $dataSource]]];
 		$none           = [];
 		$created      = create_complete_graph_from_template($templateId, $hostId, $none, $suggested);
 		$localGraphId = is_array($created) && is_numeric($created['local_graph_id'] ?? null) ? (int) $created['local_graph_id'] : 0;

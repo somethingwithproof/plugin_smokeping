@@ -1,0 +1,5 @@
+*** Slaves ***
+secrets=/etc/smokeping/smokeping_secrets
++boston
+display_name=Boston
+color=0000ff

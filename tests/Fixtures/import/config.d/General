@@ -1,0 +1,13 @@
+*** General ***
+
+owner    = Import Test
+contact  = import@example.net
+mailhost = localhost
+cgiurl   = http://localhost/cgi-bin/smokeping.cgi
+imgcache = /var/cache/smokeping/images
+imgurl   = ../smokeping/images
+datadir  = /var/lib/smokeping
+piddir   = /var/run/smokeping
+smokemail = /etc/smokeping/smokemail
+tmail    = /etc/smokeping/tmail
+syslogfacility = local0

@@ -50,7 +50,7 @@ for kv in "path_rrdtool=$(command -v rrdtool)" "path_php_binary=$(command -v php
 done
 
 bulk=100
-specs="Perm/a:300:20:normal Perm/b:300:20:normal Perm/u:300:20:normal Perm/xss:300:20:normal Perm/old:300:20:normal Perm/new:300:20:normal Perm/ro:300:20:normal Perm/rn:300:20:normal Perm/plain:300:20:normal"
+specs="Perm/a:300:20:normal Perm/b:300:20:normal Perm/u:300:20:normal Perm/xss:300:20:normal Perm/old:300:20:normal Perm/new:300:20:normal Perm/ro:300:20:normal Perm/rn:300:20:normal Perm/plain:300:20:normal Imp/web/one:300:20:normal Imp/web/two:300:10:normal"
 n=1
 while [ $n -le $bulk ]; do specs="$specs Bulk/dev$n:300:20:normal"; n=$((n + 1)); done
 php $P/tests/bin/make-fixture-rrds.php $FXDIR $specs
@@ -287,6 +287,63 @@ plan=$(echo "$page" | sed -n 's/.*name="plan" value="\([0-9a-f]*\)".*/\1/p' | he
 token=$(conf_token admin)
 curl -s -b $WORK/admin.jar -c $WORK/admin.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$plan" "$BASE/$CONF"
 [ -n "$plan" ] && [ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/new'" | jcell)" = 1 ] && result PASS config-apply-confirmed "the shown plan applied once confirmed" || result FAIL config-apply-confirmed "plan '$plan'"
+
+# ---- import of a SmokePing configuration: admin realm and every device, posts only, two steps ----
+IMP=plugins/smokeping/smokeping_import.php
+for u in scoped revoked broad norealm; do
+	check "import-page-denied-$u" "no SmokePing admin realm" sh -c '! echo "$1" | grep -q "Preview reads the configuration"' x "$(get $u $IMP)"
+done
+body=$(get admin $IMP)
+check import-page-admin "the options form, and the entry under Import/Export" sh -c 'echo "$1" | grep -q "Preview reads the configuration" && echo "$1" | grep -q "plugins/smokeping/smokeping_import.php"' x "$body"
+body=$(get restricted $IMP)
+check import-page-refused-restricted-admin "no form, no device named" sh -c '! echo "$1" | grep -q "Preview reads the configuration" && echo "$1" | grep -q "do not cover every device"' x "$body"
+
+# What an earlier run imported: the plugin's tables were reset, Cacti's were not.
+old=$(q "SELECT id FROM host WHERE hostname = 'imp.example'" | ids_of)
+[ -n "$old" ] && $L remove_devices "$old" >/dev/null 2>&1
+php -r 'chdir("/cacti"); include("./include/cli_check.php"); foreach (db_fetch_assoc("SELECT id FROM graph_tree WHERE name = \"SmokePing Web\"") as $t) { db_execute_prepared("DELETE FROM graph_tree_items WHERE graph_tree_id = ?", array($t["id"])); db_execute_prepared("DELETE FROM graph_tree WHERE id = ?", array($t["id"])); }'
+
+imp_conf() {
+	printf '*** General ***\nowner = o\ncontact = o@example.net\ncgiurl = http://localhost/\nimgcache = /c\nimgurl = c\ndatadir = /var/lib/smokeping\npiddir = /run\nsmokemail = /m\n'
+	printf '*** Database ***\nstep = 300\npings = 20\n*** Presentation ***\ntemplate = /t\n+ overview\nwidth = 600\nheight = 50\n+ detail\nwidth = 600\nheight = 200\n'
+	printf '*** Probes ***\n+ FPing\nbinary = /usr/bin/fping\n++ FPing20\n++ FPing10\npings = 10\n*** Targets ***\nprobe = FPing20\nmenu = Top\ntitle = Top\n'
+	printf '+ Imp\nmenu = Imp\ntitle = Imp\n++ web\nmenu = Web\ntitle = Web\n+++ one\nhost = imp.example\n+++ two\nprobe = FPing10\nhost = imp.example\n%s' "${1:-}"
+}
+imp_conf > $WORK/imp.conf
+imp_conf '@include more.conf
+' > $WORK/imp-include.conf
+imp_rows() { q "SELECT (SELECT COUNT(*) FROM plugin_smokeping_target WHERE path LIKE 'Imp/%') AS t, (SELECT COUNT(*) FROM host WHERE hostname = 'imp.example') AS h, (SELECT COUNT(*) FROM plugin_smokeping_object o JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path LIKE 'Imp/%') AS o, (SELECT COUNT(*) FROM graph_tree WHERE name = 'SmokePing Web') AS tree" | jcell; }
+imp_preview() { # imp_preview <user> <file> -> the preview page
+	token=$(csrf "$1" $IMP)
+	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -F "__csrf_magic=$token" -F action=preview -F source=upload -F device_per=host -F poller=1 -F site=0 -F tree=-1 -F "tree_name=SmokePing Web" -F "smokeping_file=@$2" "$BASE/$IMP"
+}
+imp_apply() { # imp_apply <user> <plan> [no-token]
+	token=$(csrf "$1" $IMP)
+	[ "${3:-}" = no-token ] && token=
+	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$2&source=upload&device_per=host&poller=1&site=0&tree=-1" --data-urlencode "tree_name=SmokePing Web" "$BASE/$IMP"
+}
+
+page=$(imp_preview admin $WORK/imp.conf)
+plan=$(echo "$page" | sed -n 's/.*name=.plan. value=.\([0-9a-f]\{16\}\).*/\1/p' | head -1)
+check import-preview-writes-nothing "the preview lists one device and four graphs and stores nothing" sh -c 'echo "$1" | grep -q "Devices: 1 to create" && echo "$1" | grep -q "Graphs: 4 to create" && echo "$1" | grep -q "SmokePing Sections" && [ -n "$2" ] && [ "$3" = "0 0 0 0" ]' x "$page" "$plan" "$(imp_rows)"
+page=$(imp_preview admin $WORK/imp-include.conf)
+check import-upload-refuses-include "an uploaded @include is refused with its line" sh -c 'echo "$1" | grep -q "@include is not allowed here: an uploaded file is read on its own"' x "$page"
+page=$(imp_preview restricted $WORK/imp.conf)
+check import-preview-refused-restricted-admin "no plan for a limited administrator" sh -c '! echo "$1" | grep -q "Devices: \|imp.example" && echo "$1" | grep -q "do not cover every device"' x "$page"
+
+page=$(imp_preview admin $WORK/imp.conf)
+plan=$(echo "$page" | sed -n 's/.*name=.plan. value=.\([0-9a-f]\{16\}\).*/\1/p' | head -1)
+imp_apply admin "$plan" no-token
+imp_apply admin 0000000000000000
+imp_apply scoped "$plan"
+imp_apply restricted "$plan"
+[ "$(imp_rows)" = "0 0 0 0" ] && result PASS import-apply-refusals "no token, a plan never shown, no realm, and limited devices all write nothing" || result FAIL import-apply-refusals "$(imp_rows)"
+page=$(imp_preview admin $WORK/imp.conf)
+plan=$(echo "$page" | sed -n 's/.*name=.plan. value=.\([0-9a-f]\{16\}\).*/\1/p' | head -1)
+imp_apply admin "$plan"
+[ -n "$plan" ] && [ "$(imp_rows)" = "2 1 4 1" ] && result PASS import-apply-confirmed "two targets on one device, four graphs, the new tree" || result FAIL import-apply-confirmed "plan '$plan': $(imp_rows)"
+page=$(imp_preview admin $WORK/imp.conf)
+check import-rerun-nothing-to-do "a second preview creates nothing" sh -c 'echo "$1" | grep -q "Devices: 0 to create, 0 existing to use, 1 already mapped" && echo "$1" | grep -q "Graphs: 0 to create, 4 already exist"' x "$page"
 
 # ---- administrator workflows over HTTP ----
 admin_token() { get admin "$1" | grep -o "name='__csrf_magic' value=\"[^\"]*\"" | head -1 | sed 's/.*value="//;s/"$//'; }

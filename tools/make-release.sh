@@ -46,8 +46,8 @@ git show "$REF:CHANGELOG.md" | grep -Eq "^## \[$VERSION\]" || { echo "make-relea
 # Top-level runtime files (every PHP entry point), documents, and directories.
 paths=$(
 	git ls-tree --name-only "$REF" | grep -E '^[A-Za-z0-9_]+\.php$'
-	for f in INFO LICENSE README.md CHANGELOG.md SECURITY.md; do git ls-tree --name-only "$REF" -- "$f"; done
-	for d in include lib cli scripts templates images docs; do git ls-tree --name-only -d "$REF" -- "$d"; done
+	for f in INFO LICENSE REUSE.toml README.md CHANGELOG.md SECURITY.md; do git ls-tree --name-only "$REF" -- "$f"; done
+	for d in include lib cli scripts templates images docs LICENSES; do git ls-tree --name-only -d "$REF" -- "$d"; done
 	git ls-tree --name-only "$REF" -- locales/index.php locales/po locales/LC_MESSAGES
 )
 

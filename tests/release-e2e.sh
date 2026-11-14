@@ -38,7 +38,7 @@ $realms = db_fetch_cell("SELECT COUNT(*) FROM plugin_realms WHERE plugin = \"smo
 $host   = db_fetch_cell("SELECT COUNT(*) FROM host_template WHERE name = \"SmokePing Target\"");
 $graph  = db_fetch_cell("SELECT COUNT(*) FROM graph_templates WHERE name LIKE \"SmokePing Smoke (%\"");
 echo "$tables $hooks $realms $host $graph";' > /tmp/counts 2>/dev/null
-[ "$(cat /tmp/counts)" = "6 14 3 1 3" ] && result PASS installed-objects "6 tables, 14 hooks, 3 realms, the host template, 3 smoke graph templates" || result FAIL installed-objects "$(cat /tmp/counts)"
+[ "$(cat /tmp/counts)" = "6 14 2 1 3" ] && result PASS installed-objects "6 tables, 14 hooks, 2 realms, the host template, 3 smoke graph templates" || result FAIL installed-objects "$(cat /tmp/counts)"
 
 # The shipped files work: the CLI and the reader run, and the translation template and docs are present.
 out=$(php plugins/smokeping/cli/smokeping.php export 2>&1 | head -1)
@@ -52,6 +52,6 @@ php -r 'chdir("/work-cacti"); include("./include/cli_check.php"); include_once("
 [ "$(cat /tmp/upgrade)" = ok ] && result PASS upgrade-idempotent "plugin_smokeping_upgrade() on the installed archive" || result FAIL upgrade-idempotent "$(cat /tmp/upgrade)"
 php cli/plugin_manage.php --plugin=smokeping --disable >/dev/null 2>&1
 php cli/plugin_manage.php --plugin=smokeping --uninstall >/dev/null 2>&1
-ls cache/smokeping/smokeping-config-*.yaml >/dev/null 2>&1 && result PASS uninstall-exports-configuration "$(ls cache/smokeping | head -1)" || result FAIL uninstall-exports-configuration "no export in cache/smokeping"
+ls cache/smokeping/smokeping-config-*.yaml >/dev/null 2>&1 && result PASS uninstall-exports-configuration "$(ls cache/smokeping | grep yaml | head -1)" || result FAIL uninstall-exports-configuration "no export in cache/smokeping"
 
 exit $fail

@@ -170,6 +170,16 @@ check restricted-relink-post-reached-page "the page answered the post with its o
 row=$(q "SELECT (SELECT status FROM plugin_smokeping_relink WHERE id = $bad) AS s, (SELECT host_id FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id WHERE t.path = 'Perm/ro') AS a, (SELECT host_id FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id WHERE t.path = 'Perm/rn') AS b" | jcell)
 [ "$row" = "proposed $dev_a $dev_b" ] && result PASS restricted-relink-onto-other-device-refused "proposal still open; Perm/ro stays on device $dev_a and Perm/rn on device $dev_b" || result FAIL restricted-relink-onto-other-device-refused "$row"
 
+# The add screen and its action, opened by id for a target mapped to a device the user may not see.
+b_id=$(q "SELECT id FROM plugin_smokeping_target WHERE path = 'Perm/b'" | jcell)
+check restricted-add-screen-other-device "no add screen for Perm/b, mapped to device $dev_b" sh -c '! echo "$1" | grep -q "Perm/b\|b\.example"' x "$(get restricted "$INV?action=add&id=$b_id")"
+token=$(csrf restricted $INV)
+curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=add_confirm&id=$b_id&mode=map&host_id=$dev_a" "$BASE/$INV"
+body=$(get restricted $INV)
+row=$(q "SELECT (SELECT host_id FROM plugin_smokeping_mapping WHERE target_id = $b_id) AS m, (SELECT COUNT(*) FROM plugin_smokeping_object WHERE target_id = $b_id AND host_id <> $dev_b) AS o" | jcell)
+# The page's own refusal message shows the post got past the CSRF check; it names neither the target nor its device.
+[ "$row" = "$dev_b 0" ] && echo "$body" | grep -q "Choose a target on this poller" && ! echo "$body" | grep -q "Perm\\\\/b\|Perm/b\|device $dev_b" && result PASS restricted-add-other-device-refused "refused by the page: mapping and objects unchanged, and the message names neither the target nor its device" || result FAIL restricted-add-other-device-refused "$row; $(echo "$body" | grep -o 'sessionMessage=.\{0,160\}')"
+
 # ---- scoped user (device A and the hostile device) ----
 body=$(get scoped $VIEW)
 check scoped-sees-own-device "Perm/a" sh -c 'echo "$1" | grep -q "Perm/a"' x "$body"

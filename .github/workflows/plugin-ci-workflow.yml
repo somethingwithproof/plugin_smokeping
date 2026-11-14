@@ -458,14 +458,14 @@ jobs:
 
     - name: Run tests/run-${{ matrix.runner }}-e2e.sh
       env:
-        RUNNER_NAME: ${{ matrix.runner }}
+        E2E_SUITE: ${{ matrix.runner }}
         PLUGIN_SOURCE: ${{ github.workspace }}/plugin-source
         E2E_NETWORK: ${{ job.services.mariadb.network }}
       run: |
         set -euo pipefail
         E2E_WORK="$RUNNER_TEMP/e2e"
         mkdir -p "$E2E_WORK"
-        sh "plugin/tests/run-$RUNNER_NAME-e2e.sh" "$E2E_WORK" 2>&1 | tee "$E2E_WORK/runner.log"
+        sh "plugin/tests/run-$E2E_SUITE-e2e.sh" "$E2E_WORK" 2>&1 | tee "$E2E_WORK/runner.log"
 
     - name: Upload the logs
       if: failure()

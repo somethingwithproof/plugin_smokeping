@@ -80,6 +80,18 @@ switch ($action) {
 		$result = plugin_smokeping_upgrade();
 
 		break;
+	case 'forget_templates':
+		db_execute("DELETE FROM settings WHERE name = 'smokeping_templates_version'");
+
+		break;
+	case 'remove_templates':
+		// What an operator would do in the UI before a reinstall.
+		db_execute("DELETE FROM host_template_graph WHERE host_template_id IN (SELECT id FROM host_template WHERE name = 'SmokePing Target')");
+		db_execute("DELETE FROM host_template WHERE name = 'SmokePing Target'");
+		db_execute("DELETE FROM graph_templates WHERE name LIKE 'SmokePing Smoke%'");
+		db_execute("DELETE FROM settings WHERE name = 'smokeping_templates_version'");
+
+		break;
 	case 'set_version':
 		db_execute_prepared("UPDATE plugin_config SET version = ? WHERE directory = 'smokeping'", array($argument));
 
@@ -138,4 +150,13 @@ print json_encode(array(
 	'admin'    => (int) db_fetch_cell("SELECT COUNT(*) FROM user_auth_realm AS uar INNER JOIN plugin_realms AS pr ON pr.id + 100 = uar.realm_id WHERE pr.plugin = 'smokeping' AND uar.user_id = 1"),
 	'tracked'  => array_column(db_fetch_assoc("SELECT `table` FROM plugin_db_changes WHERE plugin = 'smokeping' AND method = 'create' ORDER BY `table`"), 'table'),
 	'tables'   => $tables,
+	'templates' => array(
+		'host'  => (int) db_fetch_cell("SELECT COUNT(*) FROM host_template WHERE name = 'SmokePing Target'"),
+		'graph' => (int) db_fetch_cell("SELECT COUNT(*) FROM graph_templates WHERE name LIKE 'SmokePing Smoke (%'"),
+		'data'  => (int) db_fetch_cell("SELECT COUNT(*) FROM data_template WHERE name LIKE 'SmokePing Smoke (%'"),
+		'cdef'  => (int) db_fetch_cell("SELECT COUNT(*) FROM cdef WHERE name LIKE 'SmokePing %'"),
+		'items' => (int) db_fetch_cell("SELECT COUNT(*) FROM graph_templates_item gti INNER JOIN graph_templates gt ON gt.id = gti.graph_template_id WHERE gt.name LIKE 'SmokePing Smoke (%' AND gti.local_graph_id = 0"),
+		'linked' => (int) db_fetch_cell("SELECT COUNT(*) FROM host_template_graph htg INNER JOIN host_template ht ON ht.id = htg.host_template_id WHERE ht.name = 'SmokePing Target'"),
+		'version' => db_fetch_cell("SELECT value FROM settings WHERE name = 'smokeping_templates_version'"),
+	),
 ), JSON_PRETTY_PRINT) . PHP_EOL;

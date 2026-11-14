@@ -148,14 +148,17 @@ function plugin_smokeping_check_config(): bool {
  * interrupted run is finished by the next one.
  */
 function plugin_smokeping_upgrade(): bool {
+	global $config;
+
 	if (!smokeping_boot()) {
 		return false;
 	}
 
-	$info   = plugin_smokeping_version();
-	$schema = new \Cacti\Smokeping\Schema(false);
+	$info      = plugin_smokeping_version();
+	$schema    = new \Cacti\Smokeping\Schema(false);
+	$templates = new \Cacti\Smokeping\TemplateInstaller(__DIR__ . '/templates/smokeping-templates.xml', $config['library_path'], new \Cacti\Smokeping\CactiObjectRepository(false));
 
-	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered()) {
+	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered() && $templates->isCurrent()) {
 		return true;
 	}
 
@@ -164,6 +167,12 @@ function plugin_smokeping_upgrade(): bool {
 	}
 
 	smokeping_setup_hooks();
+
+	// Templates are imported last: a failed import leaves the version unrecorded,
+	// so the next request or upgrade retries it.
+	if (!$templates->install()) {
+		return false;
+	}
 
 	$schema->recordPluginVersion($info['version'], $info['author'], $info['homepage']);
 

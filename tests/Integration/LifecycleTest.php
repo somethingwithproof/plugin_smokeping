@@ -95,6 +95,41 @@ it('upgrades from an older recorded version and is idempotent on repeated runs',
 	expect($first['tables']['plugin_smokeping_target'])->toBe(1);
 });
 
+it('imports the templates once, and install, upgrade, and re-import leave one copy of each', function () {
+	lifecycle('remove_templates');
+
+	$first = lifecycle('install');
+
+	// One device template; a graph and a data template for each of 10, 20, and 30 pings.
+	expect($first['templates']['host'])->toBe(1)
+		->and($first['templates']['graph'])->toBe(3)
+		->and($first['templates']['data'])->toBe(3)
+		->and($first['templates']['linked'])->toBe(3)
+		->and($first['templates']['version'])->toEqual('1');
+
+	$upgraded = lifecycle('forget_templates');
+	$again    = lifecycle('upgrade');
+
+	expect($again['result'])->toBeTrue()
+		->and($again['templates'])->toBe($first['templates']);
+
+	// Re-importing with nothing forgotten changes nothing either.
+	$third = lifecycle('upgrade');
+	expect($third['templates'])->toBe($first['templates']);
+});
+
+it('keeps the imported templates through uninstall and restores them when an operator removed them', function () {
+	$installed = lifecycle('install');
+	$after     = lifecycle('uninstall');
+
+	expect($after['templates']['graph'])->toBe(3);
+
+	lifecycle('remove_templates');
+	$state = lifecycle('install');
+
+	expect($state['templates'])->toBe($installed['templates']);
+});
+
 it('finishes an upgrade that was interrupted after creating only some tables', function () {
 	lifecycle('install');
 	lifecycle('seed');

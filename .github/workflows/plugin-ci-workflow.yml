@@ -33,10 +33,10 @@ on:
     branches:
       - main
       - develop
+  # Every pull request, whatever its base: the milestones land as a stack in
+  # which each pull request targets the branch below it.
   pull_request:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:
 
 permissions:
   contents: read

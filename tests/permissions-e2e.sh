@@ -50,12 +50,12 @@ for kv in "path_rrdtool=$(command -v rrdtool)" "path_php_binary=$(command -v php
 done
 
 bulk=100
-specs="Perm/a:300:20:normal Perm/b:300:20:normal Perm/u:300:20:normal Perm/xss:300:20:normal Perm/old:300:20:normal Perm/new:300:20:normal Perm/ro:300:20:normal Perm/rn:300:20:normal"
+specs="Perm/a:300:20:normal Perm/b:300:20:normal Perm/u:300:20:normal Perm/xss:300:20:normal Perm/old:300:20:normal Perm/new:300:20:normal Perm/ro:300:20:normal Perm/rn:300:20:normal Perm/plain:300:20:normal"
 n=1
 while [ $n -le $bulk ]; do specs="$specs Bulk/dev$n:300:20:normal"; n=$((n + 1)); done
 php $P/tests/bin/make-fixture-rrds.php $FXDIR $specs
 
-for t in "Perm/a:a.example:20:300" "Perm/b:b.example:20:300" "Perm/u:u.example:20:300" "Perm/xss:xss.example:20:300" "Perm/old:old.example:20:300" "Perm/new:old.example:20:300" "Perm/ro:ro.example:20:300" "Perm/rn:ro.example:20:300"; do
+for t in "Perm/a:a.example:20:300" "Perm/b:b.example:20:300" "Perm/u:u.example:20:300" "Perm/xss:xss.example:20:300" "Perm/old:old.example:20:300" "Perm/new:old.example:20:300" "Perm/ro:ro.example:20:300" "Perm/rn:ro.example:20:300" "Perm/plain:plain.example:20:300"; do
 	$L add_target "$t" >/dev/null
 done
 
@@ -68,7 +68,11 @@ b_sum=$(echo "$out" | sed -n 's/^Summary data source [0-9]* graph \([0-9]*\)$/\1
 b_ds=$(echo "$out" | sed -n 's/^Data source \([0-9]*\) graph [0-9]*$/\1/p')
 out=$(provision Perm/xss); dev_x=$(echo "$out" | sed -n 's/^Created device \([0-9]*\)$/\1/p')
 out=$(provision Perm/old); dev_o=$(echo "$out" | sed -n 's/^Created device \([0-9]*\)$/\1/p')
-[ -n "$dev_a" ] && [ -n "$a_smoke" ] && [ -n "$b_smoke" ] && [ -n "$dev_x" ] && [ -n "$dev_o" ] && result PASS fixtures "devices a=$dev_a b=$dev_b; smoke graphs $a_smoke/$b_smoke, summary graphs $a_sum/$b_sum" || { result FAIL fixtures "a=$dev_a b=$dev_b x=$dev_x o=$dev_o"; exit 1; }
+# A device with graphs but no mapping, for the graph-button check: provision a
+# target, then drop only its mapping row.
+out=$(provision Perm/plain); dev_p=$(echo "$out" | sed -n 's/^Created device \([0-9]*\)$/\1/p')
+[ -n "$dev_p" ] && php -r 'chdir("/cacti"); include("./include/cli_check.php"); db_execute_prepared("DELETE FROM plugin_smokeping_mapping WHERE host_id = ?", array((int) $argv[1]));' "$dev_p"
+[ -n "$dev_a" ] && [ -n "$a_smoke" ] && [ -n "$b_smoke" ] && [ -n "$dev_x" ] && [ -n "$dev_o" ] && [ -n "$dev_p" ] && result PASS fixtures "devices a=$dev_a b=$dev_b; smoke graphs $a_smoke/$b_smoke, summary graphs $a_sum/$b_sum" || { result FAIL fixtures "a=$dev_a b=$dev_b x=$dev_x o=$dev_o p=$dev_p"; exit 1; }
 
 # A hostile name that must come out escaped, on a device the scoped user may see.
 $L update_target 'Perm/xss|title|<img src=x onerror=alert(1)>' >/dev/null

@@ -115,6 +115,11 @@ if [ "$PHASE" = main ]; then
 	bang=$(cell "SELECT GROUP_CONCAT(DISTINCT t.pings) FROM plugin_smokeping_target t WHERE t.path = 'Asia/Bangalore'")
 	[ "$bad" = 0 ] && [ "$frank" = 10 ] && [ "$bang" = 30 ] && result PASS template-matches-target-pings "every smoke graph uses the template of its target's ping count (Frankfurt $frank, Bangalore $bang)" || result FAIL template-matches-target-pings "$bad mismatches, Frankfurt $frank, Bangalore $bang"
 
+	row=$(cell "SELECT COUNT(*) FROM graph_local WHERE host_id IN (SELECT host_id FROM plugin_smokeping_mapping) AND id NOT IN (SELECT local_graph_id FROM plugin_smokeping_object)")
+	[ "$row" = 0 ] && result PASS devices-hold-only-plugin-graphs "no graph on an imported device outside the plugin's objects" || result FAIL devices-hold-only-plugin-graphs "$row graphs the plugin does not own"
+	row=$(cell "SELECT title_cache FROM graph_templates_graph g JOIN plugin_smokeping_object o ON o.local_graph_id = g.local_graph_id JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path = 'Asia/Singapore' AND o.location = '' AND o.state = 'active'")
+	[ "$row" = "Singapore - SmokePing" ] && result PASS graph-titled-for-target "$row" || result FAIL graph-titled-for-target "$row"
+
 	# ---- Tree: branches by section, each device under its sections.
 	branches=$(q "SELECT i.title FROM graph_tree_items i JOIN graph_tree t ON t.id = i.graph_tree_id WHERE t.name = 'SmokePing' AND i.host_id = 0 ORDER BY i.title" | rowsof | tr '\n' ' ')
 	[ "$branches" = "Asia Europe Faults Oceania Web " ] && result PASS tree-branches-by-section "branches: $branches" || result FAIL tree-branches-by-section "$branches"

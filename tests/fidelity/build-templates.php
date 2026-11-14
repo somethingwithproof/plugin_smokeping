@@ -517,6 +517,18 @@ foreach ($exports as $gtId) {
 
 $xml = get_item_xml('host_template', $htId, true);
 
+// The links only made the export carry the graph templates. The shipped device
+// template lists none: Cacti creates every listed graph for a new device, and
+// the plugin creates its own graphs, so a listed template would add a graph
+// with no data source for each ping count.
+db_execute_prepared('DELETE FROM host_template_graph WHERE host_template_id = ?', array($htId));
+$xml = preg_replace('#<graph_templates>[^<]*</graph_templates>#', '<graph_templates></graph_templates>', $xml, -1, $unlinked);
+
+if ($unlinked !== 1) {
+	fwrite(STDERR, "Expected one graph template list in the export, found $unlinked\n");
+	exit(1);
+}
+
 // The export follows the data source profile the data templates use. The
 // plugin must not overwrite a site's profile, so the shipped file leaves it
 // out and import resolves the profile by its hash, which is Cacti's stock one.

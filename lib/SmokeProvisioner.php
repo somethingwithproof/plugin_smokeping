@@ -177,9 +177,9 @@ final class SmokeProvisioner {
 		// Fills the poller cache from the series just stored, so the next poll runs the script.
 		push_out_host($hostId, $sources[0]);
 
-		if ($location !== '') {
-			$this->retitle($localGraphId, $this->title($target->displayName(), 'SmokePing Summary', $location));
-		}
+		// Named for the target, not the device: an imported device is named for
+		// its host and can carry several targets.
+		$this->retitle($localGraphId, $this->title($target->displayName(), 'SmokePing Summary', $location));
 
 		return ProvisionResult::created($sources[0], $localGraphId);
 	}
@@ -321,11 +321,8 @@ final class SmokeProvisioner {
 
 		$this->objects->add($target->id->value, $location, $hostId, $localDataId, $localGraphId, $relative, $state, $this->clock->now());
 
-		if ($title !== $target->displayName()) {
-			$this->retitle($localGraphId, $title);
-		} elseif ($location !== '') {
-			$this->retitle($localGraphId, $this->title($title, 'SmokePing', $location));
-		}
+		// Named for the target, not the device (see provisionSummary()).
+		$this->retitle($localGraphId, $title !== $target->displayName() ? $title : $this->title($title, 'SmokePing', $location));
 
 		return ProvisionResult::created($localDataId, $localGraphId);
 	}

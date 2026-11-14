@@ -21,6 +21,7 @@ result() { echo "RESULT $1 $2${3:+ ($3)}"; [ "$1" = PASS ] || [ "$1" = INFO ] ||
 q() { $L query "$1"; }
 jcell() { php -r '$r = json_decode(stream_get_contents(STDIN), true); echo $r[0] ? implode(" ", array_values($r[0])) : "";'; }
 cell() { q "$1" | jcell; }
+rowsof() { php -r '$r = json_decode(stream_get_contents(STDIN), true); foreach (is_array($r) ? $r : array() as $row) { echo implode(" ", array_values($row)), "\n"; }'; }
 W=$(mktemp -d)
 
 rra=$(php -r 'chdir("."); include("./include/cli_check.php"); echo $config["rra_path"];' 2>/dev/null)
@@ -81,6 +82,11 @@ row=$(counts)
 paris=$(cell "SELECT id FROM host WHERE hostname = 'paris.example.net'")
 row=$(cell "SELECT COUNT(DISTINCT m.host_id), MIN(h.poller_id), MIN(h.host_template_id = (SELECT id FROM host_template WHERE name = 'SmokePing Target')) FROM plugin_smokeping_mapping m JOIN plugin_smokeping_target t ON t.id = m.target_id JOIN host h ON h.id = m.host_id WHERE t.path IN ('Europe/paris', 'Europe/paris_10')")
 [ "$row" = "1 1 1" ] && result PASS one-device-per-host "both Paris targets on device $paris, poller 1, SmokePing Target template" || result FAIL one-device-per-host "$row"
+# The device is named for its host and carries both Paris targets; each graph is named for its target.
+row=$(q "SELECT g.title_cache FROM graph_templates_graph g JOIN plugin_smokeping_object o ON o.local_graph_id = g.local_graph_id JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path IN ('Europe/paris', 'Europe/paris_10') AND o.location = '' ORDER BY t.path, o.state" | rowsof | tr '\n' '|')
+[ "$row" = "Paris gateway - SmokePing|Paris gateway - SmokePing Summary|Paris gateway, 10 pings - SmokePing|Paris gateway, 10 pings - SmokePing Summary|" ] && result PASS graphs-titled-for-targets "$row" || result FAIL graphs-titled-for-targets "$row"
+row=$(cell "SELECT COUNT(*) FROM graph_local WHERE host_id IN (SELECT host_id FROM plugin_smokeping_mapping) AND id NOT IN (SELECT local_graph_id FROM plugin_smokeping_object)")
+[ "$row" = 0 ] && result PASS devices-hold-only-plugin-graphs "no graph on an imported device outside the plugin's objects" || result FAIL devices-hold-only-plugin-graphs "$row graphs the plugin does not own"
 row=$(cell "SELECT GROUP_CONCAT(i.title ORDER BY i.id SEPARATOR ',') FROM graph_tree_items i JOIN graph_tree t ON t.id = i.graph_tree_id WHERE t.name = 'SmokePing' AND i.host_id = 0")
 nordic=$(cell "SELECT p.title FROM graph_tree_items i JOIN graph_tree_items p ON p.id = i.parent JOIN graph_tree t ON t.id = i.graph_tree_id WHERE t.name = 'SmokePing' AND i.title = 'Nordic'")
 oslo=$(cell "SELECT p.title FROM graph_tree_items i JOIN graph_tree_items p ON p.id = i.parent JOIN host h ON h.id = i.host_id WHERE h.hostname = 'oslo.example.net'")

@@ -158,6 +158,10 @@ final class CactiObjectRepository {
 		db_execute_prepared('UPDATE data_template_data SET data_source_path = ?, rrd_step = ? WHERE local_data_id = ?', [$dataSourcePath, $step, $localDataId], true, $this->connection);
 	}
 
+	public function setGraphUpperLimit(int $localGraphId, string $upperLimit): void {
+		db_execute_prepared('UPDATE graph_templates_graph SET upper_limit = ? WHERE local_graph_id = ?', [$upperLimit, $localGraphId], true, $this->connection);
+	}
+
 	public function setGraphTitle(int $localGraphId, string $title): void {
 		db_execute_prepared("UPDATE graph_templates_graph SET title = ?, t_title = 'on' WHERE local_graph_id = ?", [$title, $localGraphId], true, $this->connection);
 	}

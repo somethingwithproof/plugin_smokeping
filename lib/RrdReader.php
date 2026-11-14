@@ -14,5 +14,13 @@ interface RrdReader {
 	 */
 	public function lastUpdate(string $file): ?RrdLastUpdate;
 
+	/**
+	 * The largest median in the file over the last $seconds, or null when the
+	 * file does not exist or has no median in that range.
+	 *
+	 * @throws \RuntimeException when rrdtool cannot read an existing file
+	 */
+	public function maxMedian(string $file, int $seconds): ?float;
+
 	public function close(): void;
 }

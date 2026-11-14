@@ -65,6 +65,17 @@ final class ObjectRepository {
 		return array_values(array_map(fn (array $row) => ['location' => Row::string($row, 'location'), 'local_data_id' => Row::int($row, 'local_data_id')], $rows));
 	}
 
+	/**
+	 * Every smoke graph, live or archived, with its file relative to rra_path.
+	 *
+	 * @return list<array{local_graph_id: int, rrd_path: string}>
+	 */
+	public function smokeGraphs(): array {
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT local_graph_id, rrd_path FROM plugin_smokeping_object WHERE state IN (?, ?) AND local_graph_id > 0 ORDER BY local_graph_id', [self::ACTIVE, self::ARCHIVED], true, $this->connection));
+
+		return array_values(array_map(fn (array $row) => ['local_graph_id' => Row::int($row, 'local_graph_id'), 'rrd_path' => Row::string($row, 'rrd_path')], $rows));
+	}
+
 	public function add(int $targetId, string $location, int $hostId, int $localDataId, int $localGraphId, string $rrdPath, string $state, int $now): void {
 		db_execute_prepared('INSERT INTO plugin_smokeping_object (target_id, location, host_id, local_data_id, local_graph_id, rrd_path, state, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [$targetId, $location, $hostId, $localDataId, $localGraphId, $rrdPath, $state, $now], true, $this->connection);
 	}

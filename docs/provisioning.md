@@ -49,6 +49,18 @@ php plugins/smokeping/cli/smokeping.php import-smokeping --apply --confirm=PLAN 
 
 `--file=PATH` reads another file on its own, as an upload. `--sections=Europe,Lab/Core`, `--device-per=target`, `--device-template=ID`, `--poller=ID`, `--site=ID`, and `--tree=ID` set the other options. The dry run prints the plan and its id; `--apply` needs that id, and it must still match.
 
+## Graph scale
+
+SmokePing sizes each graph from its data. A Cacti graph has one upper limit for every time range, so the plugin applies SmokePing's rule once: when it creates a smoke graph it sets the limit to 1.2 times the largest median of the last day in that graph's file. A graph whose file has no median in the last day keeps the template's limit of 0.05 s (50 ms).
+
+Latency changes, so the limit can go stale. To size every smoke graph again from its last day:
+
+```sh
+php plugins/smokeping/cli/smokeping.php size-graphs
+```
+
+It prints each graph's new limit, or that it kept its limit. A limit set by hand on the graph's page is replaced the next time the command runs. Sizing needs Cacti's rrdtool path (Configuration > Settings > Paths); without it graphs keep the template's limit.
+
 ## Re-linking a renamed target
 
 SmokePing names a target's file after its place in the configuration tree, so renaming or moving a node starts a new, empty file. When an import sees a path disappear and a new path with the same host and probe appear, it records a proposal and changes nothing. **Review** on the inventory page opens a confirm screen. Re-link moves the smoke graph and the summary data source to the new target, moves the device mapping with them, and keeps the old file's history readable in an archived graph. **Dismiss Proposal** closes it without a change.

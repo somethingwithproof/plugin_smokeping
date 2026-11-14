@@ -34,7 +34,7 @@ const SMOKEPING_TABLES = [
 	'plugin_smokeping_target',
 ];
 
-const SMOKEPING_HOOKS = ['api_device_save', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top'];
+const SMOKEPING_HOOKS = ['api_device_save', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top', 'top_graph_header_tabs', 'top_header_tabs'];
 
 beforeEach(function () {
 	lifecycle('reset');
@@ -59,7 +59,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
 		->and($state['realms'])->toEqual([
 			'smokeping.php'                                => 'SmokePing View',
-			'smokeping_inventory.php,smokeping_health.php,smokeping_config.php' => 'SmokePing Admin',
+			'smokeping_inventory.php,smokeping_health.php,smokeping_config.php,smokeping_import.php' => 'SmokePing Admin',
 		])
 		->and($state['admin'])->toBe(2);
 

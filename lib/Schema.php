@@ -54,6 +54,8 @@ final class Schema {
 		'api_device_save'          => 'smokeping_api_device_save',
 		'graph_buttons'            => 'smokeping_graph_buttons',
 		'graph_buttons_thumbnails' => 'smokeping_graph_buttons',
+		'top_header_tabs'          => 'smokeping_show_tab',
+		'top_graph_header_tabs'    => 'smokeping_show_tab',
 	];
 
 	private const PLUGIN  = 'smokeping';

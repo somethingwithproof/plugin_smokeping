@@ -51,6 +51,6 @@ $smokeping_page = new \Cacti\Smokeping\ViewPage(
 	new \Cacti\Smokeping\FreshnessEvaluator(new \Cacti\Smokeping\SystemClock(), $smokeping_settings->freshnessAllowance)
 );
 
-top_header();
+top_graph_header();
 $smokeping_page->render($smokeping_devices);
 bottom_footer();

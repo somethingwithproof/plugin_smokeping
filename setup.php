@@ -274,6 +274,23 @@ function smokeping_config_arrays(): void {
 	}
 }
 
+/**
+ * top_header_tabs and top_graph_header_tabs hook: the SmokePing tab for users
+ * with the SmokePing View realm. Cacti draws plugin tabs from the link's alt
+ * text in its current themes, and from the image in the classic one.
+ */
+function smokeping_show_tab(): void {
+	global $config;
+
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping') || !api_plugin_user_realm_auth(\Cacti\Smokeping\Pages::VIEW)) {
+		return;
+	}
+
+	$down = get_current_page() === \Cacti\Smokeping\Pages::VIEW ? '_down' : '';
+
+	print '<a id="smokeping" href="' . html_escape($config['url_path'] . 'plugins/smokeping/' . \Cacti\Smokeping\Pages::VIEW) . '"><img src="' . html_escape($config['url_path'] . 'plugins/smokeping/images/tab_smokeping' . $down . '.gif') . '" alt="' . html_escape(__('SmokePing', 'smokeping')) . '"></a>';
+}
+
 function smokeping_config_settings(): void {
 	global $tabs, $settings, $config;
 

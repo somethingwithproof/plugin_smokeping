@@ -742,12 +742,12 @@ msgstr ""
 msgid "SmokePing Admin"
 msgstr ""
 
-#: lib/Pages.php setup.php
-msgid "SmokePing"
-msgstr ""
-
 #: lib/Pages.php
 msgid "SmokePing Health"
+msgstr ""
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
 msgstr ""
 
 #: lib/RelinkGuard.php

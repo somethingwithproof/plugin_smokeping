@@ -192,9 +192,9 @@ final class SmokeProvisioner {
 		// Fills the poller cache from the series just stored, so the next poll runs the script.
 		push_out_host($hostId, $sources[0]);
 
-		if ($location !== '') {
-			$this->retitle($localGraphId, $this->title($target->displayName(), 'SmokePing Summary', $location));
-		}
+		// Named for the target, not the device: an imported device is named for
+		// its host and can carry several targets.
+		$this->retitle($localGraphId, $this->title($target->displayName(), 'SmokePing Summary', $location));
 
 		return ProvisionResult::created($sources[0], $localGraphId);
 	}
@@ -306,7 +306,16 @@ final class SmokeProvisioner {
 		// for the same device and another file gets a data source of its own,
 		// and the path and step are set by Cacti's own suggested-values step.
 		$dataTemplateId = $this->cacti->dataTemplateOfGraphTemplate($templateId);
-		$suggested      = [$templateId => ['data_template' => [$dataTemplateId => ['data_source_path' => '<path_rra>/' . $relative, 'rrd_step' => $target->step]]]];
+		$dataSource     = ['data_source_path' => '<path_rra>/' . $relative, 'rrd_step' => $target->step];
+
+		// An archive has the same file as the live data source it is made
+		// beside, so the path alone would let Cacti reuse the live one; its
+		// own name makes the suggested values differ.
+		if ($state === ObjectRepository::ARCHIVED) {
+			$dataSource['name'] = '|host_description| - SmokePing (archived)';
+		}
+
+		$suggested      = [$templateId => ['data_template' => [$dataTemplateId => $dataSource]]];
 		$none           = [];
 		$created      = create_complete_graph_from_template($templateId, $hostId, $none, $suggested);
 		$localGraphId = is_array($created) && is_numeric($created['local_graph_id'] ?? null) ? (int) $created['local_graph_id'] : 0;
@@ -336,11 +345,8 @@ final class SmokeProvisioner {
 
 		$this->objects->add($target->id->value, $location, $hostId, $localDataId, $localGraphId, $relative, $state, $this->clock->now());
 
-		if ($title !== $target->displayName()) {
-			$this->retitle($localGraphId, $title);
-		} elseif ($location !== '') {
-			$this->retitle($localGraphId, $this->title($title, 'SmokePing', $location));
-		}
+		// Named for the target, not the device (see provisionSummary()).
+		$this->retitle($localGraphId, $title !== $target->displayName() ? $title : $this->title($title, 'SmokePing', $location));
 
 		return ProvisionResult::created($localDataId, $localGraphId);
 	}

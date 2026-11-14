@@ -104,12 +104,16 @@ it('imports the templates once, and install, upgrade, and re-import leave one co
 	$first = lifecycle('install');
 
 	// One device template; a graph and a data template for each of 10, 20, and 30 pings.
+	// The device template lists no graph template: Cacti would create a graph
+	// with no data source for each one on every new SmokePing device.
 	expect($first['templates']['host'])->toBe(1)
 		->and($first['templates']['graph'])->toBe(3)
 		->and($first['templates']['data'])->toBe(3)
-		->and($first['templates']['linked'])->toBe(4)
+		->and($first['templates']['linked'])->toBe(0)
 		->and($first['templates']['version'])->toEqual('2');
 
+	// An upgrade removes the links an earlier template file left.
+	lifecycle('link_templates');
 	$upgraded = lifecycle('forget_templates');
 	$again    = lifecycle('upgrade');
 

@@ -140,6 +140,11 @@ final class TemplateInstaller {
 			return 'The SmokePing templates are missing after import';
 		}
 
+		// Import only adds graph templates to a device template, so links left
+		// by an earlier template file survive it. Cacti would create a graph
+		// with no data source for each one on every new SmokePing device.
+		$this->objects->unlinkDeviceTemplateGraphs($this->objects->deviceTemplateId(self::DEVICE_TEMPLATE));
+
 		return null;
 	}
 

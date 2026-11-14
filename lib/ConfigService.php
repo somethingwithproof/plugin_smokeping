@@ -66,13 +66,19 @@ final class ConfigService {
 	 * and is created only when both can be written. The file has a random name
 	 * and is readable by its owner only.
 	 */
-	public function writeBackup(string $defaultDir, string $customDir, int $now): ?string {
+	public function writeBackup(string $defaultDir, string $customDir, int $now, string $webRoot = ''): ?string {
 		try {
 			$custom = rtrim(trim($customDir), '/');
 
 			if ($custom !== '') {
 				if (!is_dir($custom) || !is_writable($custom)) {
 					throw new ConfigException(sprintf('The backup directory %s is not a writable directory; no export was written', $custom));
+				}
+
+				// A configured directory gets no deny-all guard files, so it
+				// must not be one a web server serving Cacti could reach.
+				if (self::within($custom, $webRoot)) {
+					throw new ConfigException(sprintf('The backup directory %s is inside the Cacti web root; no export was written', $custom));
 				}
 
 				$directory = $custom;
@@ -100,6 +106,26 @@ final class ConfigService {
 
 			return null;
 		}
+	}
+
+	/**
+	 * Whether a directory resolves to the root or anywhere below it. Symbolic
+	 * links are resolved on both sides, so a link out of the web root, or into
+	 * it, is judged by where it points.
+	 */
+	private static function within(string $directory, string $root): bool {
+		if ($root === '') {
+			return false;
+		}
+
+		$dir  = realpath($directory);
+		$base = realpath($root);
+
+		if ($dir === false || $base === false) {
+			return false;
+		}
+
+		return $dir === $base || str_starts_with($dir, rtrim($base, '/') . '/');
 	}
 
 	/**

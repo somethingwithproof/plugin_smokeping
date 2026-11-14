@@ -413,6 +413,26 @@ it('writes nothing, and logs it, when the configured backup directory is unusabl
 		->and($messages)->toContain('is not a writable directory; no export was written');
 });
 
+it('refuses a configured backup directory inside the web root, also through a link', function () {
+	$base                      = smokeping_tmp_dir();
+	$outside                   = smokeping_tmp_dir();
+	$GLOBALS['__smokeping_log'] = [];
+
+	mkdir($base . '/web');
+	mkdir($base . '/web/backups');
+	symlink($base . '/web/backups', $outside . '/link-in');
+
+	foreach ([$base . '/web', $base . '/web/backups', $outside . '/link-in'] as $custom) {
+		expect(smokeping_backup_service()->writeBackup($base . '/web/cache/smokeping', $custom, 1700000000, $base . '/web'))->toBeNull();
+	}
+
+	$messages = implode("\n", array_column($GLOBALS['__smokeping_log'], 'message'));
+
+	expect(glob($base . '/web/backups/*.yaml'))->toBe([])
+		->and($messages)->toContain('inside the Cacti web root; no export was written')
+		->and(smokeping_backup_service()->writeBackup($base . '/web/cache/smokeping', $outside, 1700000000, $base . '/web'))->toStartWith($outside . '/');
+});
+
 it('treats the backup directory as a reference-only setting', function () {
 	expect(Cacti\Smokeping\ConfigSchema::isReferenceOnly('smokeping_backup_dir'))->toBeTrue()
 		->and(Cacti\Smokeping\Settings::fromRow(['smokeping_backup_dir' => '/srv/backups/'], '/r')->backupDir)->toBe('/srv/backups');

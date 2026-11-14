@@ -226,7 +226,7 @@ function plugin_smokeping_uninstall(): void {
 		return;
 	}
 
-	$exported = smokeping_config_service()->writeBackup($config['base_path'] . '/cache/smokeping', smokeping_settings()->backupDir, time());
+	$exported = smokeping_config_service()->writeBackup($config['base_path'] . '/cache/smokeping', smokeping_settings()->backupDir, time(), $config['base_path']);
 
 	if ($exported !== null) {
 		$message = __('The SmokePing configuration was exported to %s', $exported, 'smokeping');

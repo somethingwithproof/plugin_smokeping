@@ -12,7 +12,7 @@
 # own privilege-sensitive checks. A single stage, because nothing is compiled
 # here that a later stage could drop. The base is pinned by digest and kept
 # current by Dependabot.
-FROM php:8.2-cli@sha256:604de2f0cba9e9dde16cf717c2f03b0948c99949bdf7c11cdf76326e0da7d2ea
+FROM php:8.5-cli@sha256:50956f094e90a716d43bea28087d447555ad80510e386ab8c9c10d8c70d781a9
 
 RUN apt-get update \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \

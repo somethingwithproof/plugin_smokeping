@@ -291,6 +291,35 @@ describe('SmokepingConfigParser includes and limits', function () {
 		expect(sp_error(sp_config($deep))->reason)->toContain('nested deeper than');
 	});
 
+	it('substitutes @define text in later lines', function () {
+		$doc = sp_parse("@define HOSTNAME 192.0.2.7\n" . sp_config("probe = FPing\nmenu = m\ntitle = t\n+ a\nhost = HOSTNAME\n"));
+
+		expect($doc['targets'][0]['host'])->toBe('192.0.2.7');
+	});
+
+	it('bounds a line that @define substitution lengthens, chained defines too', function () {
+		$half = intdiv(SmokepingConfigParser::MAX_LINE, 2);
+
+		// Each define fits on its line; used together they would grow one line
+		// to several gigabytes.
+		$grow = '@define AA ' . str_repeat('B', $half) . "\n@define B " . str_repeat('C', $half) . "\n";
+
+		expect(sp_error($grow . sp_config("probe = FPing\nmenu = AA\ntitle = t\n"))->reason)->toContain('longer than ' . SmokepingConfigParser::MAX_LINE . ' bytes after @define substitution')
+			->and(sp_error('@define X ' . str_repeat('Y', 100) . "\n" . sp_config('probe = FPing' . "\nmenu = " . str_repeat('X', $half) . "\n"))->reason)->toContain('after @define substitution');
+	});
+
+	it('refuses more defines than the limit, but not a define given again', function () {
+		$defines = '';
+		for ($i = 0; $i <= SmokepingConfigParser::MAX_DEFINES; $i++) {
+			$defines .= "@define DEF$i x\n";
+		}
+
+		$again = str_repeat("@define SAME x\n", SmokepingConfigParser::MAX_DEFINES + 1);
+
+		expect(sp_error($defines . sp_config("probe = FPing\nmenu = m\ntitle = t\n"))->reason)->toContain('more than ' . SmokepingConfigParser::MAX_DEFINES . ' @define lines')
+			->and(sp_parse($again . sp_config("probe = FPing\nmenu = m\ntitle = t\n+ a\nhost = h\n"))['targets'])->toHaveCount(1);
+	});
+
 	it('reports a missing file as SmokePing does', function () {
 		expect(fn () => (new SmokepingConfigParser())->parseFile('/nonexistent/smokeping/config'))->toThrow(SmokepingConfigError::class, "can't open /nonexistent/smokeping/config");
 	});

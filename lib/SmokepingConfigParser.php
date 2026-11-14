@@ -37,9 +37,9 @@ namespace Cacti\Smokeping;
  * lines. Inherited values, defaults and mandatory variables follow the
  * grammar; errors name the file and line as SmokePing does.
  *
- * The file is untrusted input. Its size, the length of a line, the nesting
- * depth, the number of sections and the number and depth of includes are
- * bounded, and an include must resolve inside an allowed directory, by
+ * The file is untrusted input. Its size, the length of a line before and
+ * after @define substitution, the number of defines, the nesting depth, the
+ * number of sections and the number and depth of includes are bounded, and an include must resolve inside an allowed directory, by
  * default the tree of the configuration file's own directory. A parse from
  * a string, such as an uploaded file, refuses @include.
  */
@@ -51,6 +51,7 @@ final class SmokepingConfigParser {
 	public const MAX_INCLUDE_DEPTH = 16;
 	public const MAX_DEPTH         = 32;
 	public const MAX_SECTIONS      = 500000;
+	public const MAX_DEFINES       = 64;
 
 	/** @var list<string> */
 	private array $allowed = [];
@@ -274,12 +275,31 @@ final class SmokepingConfigParser {
 		}
 
 		if (preg_match('/^@define\s+(\S+)\s+(.*)$/', $line, $m) === 1) {
+			// Every define is applied to every later line, so their number
+			// multiplies the time a parse takes.
+			if (!isset($this->defines[$m[1]]) && count($this->defines) >= self::MAX_DEFINES) {
+				$this->fail(sprintf('more than %d @define lines', self::MAX_DEFINES));
+			}
+
 			$this->defines[$m[1]] = $m[2];
 
 			return;
 		}
 
 		foreach ($this->defines as $name => $value) {
+			$name  = (string) $name;
+			$count = substr_count($line, $name);
+
+			if ($count === 0) {
+				continue;
+			}
+
+			// Each substitution can lengthen the line the next one works on,
+			// so the result is bounded before it is built.
+			if (strlen($line) + $count * (strlen($value) - strlen($name)) > self::MAX_LINE) {
+				$this->fail(sprintf('the line is longer than %d bytes after @define substitution', self::MAX_LINE));
+			}
+
 			$line = str_replace($name, $value, $line);
 		}
 

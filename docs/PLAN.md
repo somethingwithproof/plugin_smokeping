@@ -386,6 +386,14 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. No ma
 - `fromRow()` is the only place loose database values are normalized. Tests pin its behavior on empty strings, `NULL`, and malformed values before any logic depends on it, because Cacti stores many values as loose strings and normalizing them can silently change comparisons.
 - PHPStan runs on the class tree with Cacti core on its scan path.
 
+**Cacti conventions kept on purpose.** A review against Thold, Monitor, Servcheck, Webseer, Maint and Cacti 1.2.31 (milestone 4b) moved the view to a top tab, put the SmokePing configuration import under Import/Export, and added range filters to the numeric settings. These differences remain, deliberately:
+
+- **Inventory actions are links with confirm screens, not an actions dropdown.** Each action on SmokePing Inventory acts on one target and asks a question on its confirm screen (a new device or which existing one; accept or dismiss a re-link). The bulk path uses Cacti's own idiom: the **Add SmokePing Targets** action in the device list's actions dropdown.
+- **Path settings are text boxes, not `filepath` or `dirpath` fields.** Cacti checks those fields on the web server, but the SmokePing paths exist on the reader's poller, which may be another host; the health page checks them where they are read.
+- **No help links.** Cacti's help links point into the core documentation, which has no page for this plugin; the guides ship in `docs/` and the release archive.
+- **The plugin's own configuration export and import stay under Management** (SmokePing Configuration), next to the pages whose state they carry; Import/Export holds the import of SmokePing's configuration, which creates Cacti objects as Cacti's own imports there do.
+- **Classes under `lib/` with an autoloader** rather than procedural includes, as the layout above describes; hook callbacks and page scripts remain procedural shims.
+
 ## Storage, jobs, upgrades, and recovery
 
 Plugin tables hold inventory, mappings, profiles, revisions, audit records, observation cache, and health. They are created and upgraded with Cacti's tracked plugin table API, and the stored plugin version changes only after a migration succeeds. SmokePing stays the only writer of its RRD files.

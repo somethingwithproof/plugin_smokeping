@@ -6,7 +6,7 @@ How to read what the plugin shows, what each state means and what evidence it co
 
 | Page | Realm | Shows |
 |---|---|---|
-| **SmokePing** | View | Latest state of the targets mapped to devices you may see, one row per target and location |
+| **SmokePing** (a top tab) | View | Latest state of the targets mapped to devices you may see, one row per target and location |
 | **SmokePing Inventory** | Admin | Every target SmokePing's configuration lists, mapped or not, and open re-link proposals |
 | **SmokePing Health** | Admin | The checks below, and a button to retry the template import |
 | **SmokePing Configuration** | Admin | Export and import of the plugin's configuration ([format](configuration-format.md)) |

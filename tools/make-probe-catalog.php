@@ -1,0 +1,140 @@
+<?php
+/*
+ +-------------------------------------------------------------------------+
+ | Copyright (C) 2004-2026 The Cacti Group                                 |
+ |                                                                         |
+ | This program is free software; you can redistribute it and/or           |
+ | modify it under the terms of the GNU General Public License             |
+ | as published by the Free Software Foundation; either version 2          |
+ | of the License, or (at your option) any later version.                  |
+ |                                                                         |
+ | This program is distributed in the hope that it will be useful,         |
+ | but WITHOUT ANY WARRANTY; without even the implied warranty of          |
+ | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           |
+ | GNU General Public License for more details.                            |
+ +-------------------------------------------------------------------------+
+ | Cacti: The Complete RRDtool-based Graphing Solution                     |
+ +-------------------------------------------------------------------------+
+ | This code is designed, written, and maintained by the Cacti Group. See  |
+ | about.php and/or the AUTHORS file for specific developer information.   |
+ +-------------------------------------------------------------------------+
+ | http://www.cacti.net/                                                   |
+ +-------------------------------------------------------------------------+
+*/
+
+/*
+ * Build tooling: merge the JSON that tools/probe-catalog.pl printed under
+ * each SmokePing release into lib/ProbeCatalog.php.
+ *
+ *   php tools/make-probe-catalog.php out.php 2.7.3=a.json 2.8.2=b.json ...
+ *
+ * A probe or variable known to any release is accepted. When releases
+ * disagree on a variable's pattern, the newest release wins and the
+ * difference is printed, so a reviewer sees it.
+ */
+
+if ($argc < 3) {
+	fwrite(STDERR, "usage: make-probe-catalog.php <out.php> <release>=<json> ...\n");
+	exit(2);
+}
+
+$out      = $argv[1];
+$releases = [];
+
+foreach (array_slice($argv, 2) as $arg) {
+	[$release, $file] = explode('=', $arg, 2);
+	$releases[$release] = json_decode((string) file_get_contents($file), true, 64, JSON_THROW_ON_ERROR);
+}
+
+uksort($releases, 'version_compare');
+
+$catalog = [];
+
+foreach ($releases as $release => $document) {
+	foreach ($document['probes'] as $name => $probe) {
+		$entry = $catalog[$name] ?? ['fork' => $probe['fork'], 'probe_vars' => [], 'probe_mandatory' => [], 'target_vars' => [], 'target_mandatory' => [], 'releases' => []];
+
+		if ($entry['fork'] !== $probe['fork']) {
+			echo "NOTE $name: fork changes in $release\n";
+		}
+
+		$entry['fork'] = $probe['fork'];
+
+		foreach (['probe_vars', 'target_vars'] as $kind) {
+			foreach ($probe[$kind] as $var => $spec) {
+				$range = $spec['range'] ?? null;
+				$spec  = [
+					're'      => is_string($spec['re']) ? $spec['re'] : null,
+					'error'   => is_string($spec['error']) ? $spec['error'] : null,
+					'default' => is_string($spec['default']) ? $spec['default'] : null,
+				];
+
+				if (is_array($range)) {
+					$spec['range'] = $range;
+				}
+
+				if (isset($entry[$kind][$var]) && $entry[$kind][$var] !== $spec) {
+					echo "NOTE $name $kind $var differs in $release; using $release\n";
+				}
+
+				$entry[$kind][$var] = $spec;
+			}
+		}
+
+		$entry['probe_mandatory']  = $probe['probe_mandatory'];
+		$entry['target_mandatory'] = $probe['target_mandatory'];
+		$entry['releases'][]       = $release;
+		$catalog[$name]            = $entry;
+	}
+}
+
+ksort($catalog);
+
+foreach ($catalog as $name => $entry) {
+	foreach (['probe_vars', 'target_vars'] as $kind) {
+		foreach ($entry[$kind] as $var => $spec) {
+			if ($spec['re'] !== null && @preg_match("\x01^" . $spec['re'] . "$\x01", '') === false) {
+				fwrite(STDERR, "pattern of $name $var does not compile: {$spec['re']}\n");
+				exit(1);
+			}
+		}
+	}
+}
+
+$header = implode('', array_slice(file(__FILE__), 1, 22));
+
+$lit = fn (?string $v): string => $v === null ? 'null' : var_export($v, true);
+$list = fn (array $v): string => '[' . implode(', ', array_map($lit, $v)) . ']';
+$body = '';
+
+foreach ($catalog as $name => $entry) {
+	$body .= "\t\t" . var_export($name, true) . " => [\n";
+	$body .= "\t\t\t'fork' => " . ($entry['fork'] ? 'true' : 'false') . ",\n";
+
+	foreach (['probe_vars', 'target_vars'] as $kind) {
+		$body .= "\t\t\t'$kind' => [\n";
+
+		foreach ($entry[$kind] as $var => $spec) {
+			$range = isset($spec['range']) ? ", 'range' => [" . (int) $spec['range'][0] . ', ' . ($spec['range'][1] === null ? 'null' : (int) $spec['range'][1]) . ', ' . $lit($spec['range'][2]) . ']' : '';
+			$body .= "\t\t\t\t" . var_export($var, true) . " => ['re' => " . $lit($spec['re']) . ", 'error' => " . $lit($spec['error']) . ", 'default' => " . $lit($spec['default']) . $range . "],\n";
+		}
+
+		$body .= "\t\t\t],\n";
+		$mandatory = $kind === 'probe_vars' ? 'probe_mandatory' : 'target_mandatory';
+		$body .= "\t\t\t'$mandatory' => " . $list($entry[$mandatory]) . ",\n";
+	}
+
+	$body .= "\t\t\t'releases' => " . $list($entry['releases']) . ",\n";
+	$body .= "\t\t],\n";
+}
+
+$php = "<?php\n" . $header . "\nnamespace Cacti\\Smokeping;\n\n"
+	. "/**\n * Variables of SmokePing's probe modules, for the configuration parser.\n *\n"
+	. " * Generated by tools/make-probe-catalog.php from tools/probe-catalog.pl run\n"
+	. ' * under SmokePing ' . implode(', ', array_keys($releases)) . ". Do not edit by hand.\n */\n"
+	. "final class ProbeCatalog {\n"
+	. "\t/**\n\t * @var array<string, array{fork: bool, probe_vars: array<string, array{re: ?string, error: ?string, default: ?string, range?: array{int, ?int, string}}>, probe_mandatory: list<string>, target_vars: array<string, array{re: ?string, error: ?string, default: ?string, range?: array{int, ?int, string}}>, target_mandatory: list<string>, releases: list<string>}>\n\t */\n"
+	. "\tpublic const PROBES = [\n" . $body . "\t];\n}\n";
+
+file_put_contents($out, $php);
+echo 'wrote ' . count($catalog) . " probes to $out\n";

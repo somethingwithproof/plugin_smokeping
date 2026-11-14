@@ -50,7 +50,7 @@ for kv in "path_rrdtool=$(command -v rrdtool)" "path_php_binary=$(command -v php
 done
 
 bulk=100
-specs="Perm/a:300:20:normal Perm/b:300:20:normal Perm/u:300:20:normal Perm/xss:300:20:normal Perm/old:300:20:normal Perm/new:300:20:normal Perm/ro:300:20:normal Perm/rn:300:20:normal Perm/plain:300:20:normal"
+specs="Perm/a:300:20:normal Perm/b:300:20:normal Perm/u:300:20:normal Perm/xss:300:20:normal Perm/old:300:20:normal Perm/new:300:20:normal Perm/ro:300:20:normal Perm/rn:300:20:normal Perm/plain:300:20:normal Imp/web/one:300:20:normal Imp/web/two:300:10:normal"
 n=1
 while [ $n -le $bulk ]; do specs="$specs Bulk/dev$n:300:20:normal"; n=$((n + 1)); done
 php $P/tests/bin/make-fixture-rrds.php $FXDIR $specs
@@ -136,9 +136,9 @@ HEALTH=plugins/smokeping/smokeping_health.php
 # ---- unauthenticated ----
 anon=$WORK/anon.jar; : > $anon
 leak=0
-for f in smokeping.php smokeping_inventory.php smokeping_health.php scripts/ss_smokeping_summary.php poller_smokeping.php cli/smokeping.php setup.php lib/Row.php include/autoload.php index.php; do
+for f in smokeping.php smokeping_inventory.php smokeping_health.php smokeping_config.php scripts/ss_smokeping_summary.php poller_smokeping.php cli/smokeping.php setup.php lib/Row.php include/autoload.php index.php; do
 	body=$(curl -s -b $anon "$BASE/plugins/smokeping/$f?series=1~")
-	if echo "$body" | grep -q 'Perm/\|median:\|SmokePing Targets\|SmokePing Inventory\|SmokePing Health'; then leak=1; echo "RESULT FAIL anonymous-$f ($(echo "$body" | head -c 80))"; fi
+	if echo "$body" | grep -q 'Perm/\|median:\|SmokePing Targets\|SmokePing Inventory\|SmokePing Health\|Import a SmokePing'; then leak=1; echo "RESULT FAIL anonymous-$f ($(echo "$body" | head -c 80))"; fi
 done
 [ $leak = 0 ] && result PASS anonymous-gets-nothing "every plugin file returns no SmokePing data without a login"
 
@@ -229,6 +229,121 @@ is_graph broad "graph_image.php?local_graph_id=$a_smoke&graph_start=-3600&graph_
 for page in $VIEW $INV $HEALTH; do
 	check "norealm-denied-$(basename $page .php)" "no SmokePing realm" sh -c '! echo "$1" | grep -q "Perm/a\|SmokePing Targets\|SmokePing Inventory\|SmokePing Health for"' x "$(get norealm $page)"
 done
+
+# ---- configuration page: admin realm only, posts only, confirmed in two steps ----
+CONF=plugins/smokeping/smokeping_config.php
+for u in scoped revoked broad norealm; do
+	check "config-page-denied-$u" "no SmokePing admin realm" sh -c '! echo "$1" | grep -q "Import a SmokePing Configuration\|Export the SmokePing"' x "$(get $u $CONF)"
+done
+check config-page-admin "export and import forms" sh -c 'echo "$1" | grep -q "Export the SmokePing Configuration" && echo "$1" | grep -q "Import a SmokePing Configuration"' x "$(get admin $CONF)"
+
+conf_token() { get "$1" "$CONF" | grep -o "name='__csrf_magic' value=\"[^\"]*\"" | head -1 | sed 's/.*value="//;s/"$//'; }
+token=$(conf_token admin)
+export_body=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=yaml" "$BASE/$CONF")
+check config-export-yaml "a POST with a token downloads YAML" sh -c 'echo "$1" | grep -q "^schema_version: 1$" && echo "$1" | grep -q "Perm/a"' x "$export_body"
+export_xml=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=xml" "$BASE/$CONF")
+check config-export-xml "a POST with a token downloads XML" sh -c 'echo "$1" | grep -q "<smokeping-config schema_version=\"1\">"' x "$export_xml"
+# A refused post regenerates the session id, and from 1.2.32 deletes the old
+# session; keep the jar current, as a browser keeps its cookie, so the
+# administrator stays logged in for the checks that follow.
+check config-export-needs-token "a POST without a token is turned away" sh -c '! curl -s -b "$1" -c "$1" --data "action=export&format=yaml" "$2" | grep -q "^schema_version"' x "$WORK/admin.jar" "$BASE/$CONF"
+check config-export-refusal-keeps-session "the administrator is still logged in after the refused post" sh -c '! echo "$1" | grep -q "<title>Login to Cacti"' x "$(get admin $CONF)"
+check config-export-get-ignored "a GET with action=export shows the page, not a download" sh -c '! echo "$1" | grep -q "^schema_version"' x "$(get admin "$CONF?action=export&format=yaml")"
+
+# An administrator whose device permissions are limited holds the realm and is still refused: the
+# export and the import cover every target and every mapping with the names of its devices.
+body=$(get restricted $CONF)
+check config-page-refused-restricted-admin "no forms, no device named" sh -c '! echo "$1" | grep -q "Import a SmokePing Configuration\|Export the SmokePing" && echo "$1" | grep -q "do not cover every device" && ! echo "$1" | grep -q "Perm/\|a.example\|b.example"' x "$body"
+token=$(csrf restricted $INV)
+export_r=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=yaml" "$BASE/$CONF")
+check config-export-refused-restricted-admin "a POST to export returns no configuration" sh -c '! echo "$1" | grep -q "schema_version\|Perm/\|hostname" && echo "$1" | grep -q "do not cover every device"' x "$export_r"
+export_rx=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=xml" "$BASE/$CONF")
+check config-export-xml-refused-restricted-admin "xml too" sh -c '! echo "$1" | grep -q "smokeping-config\|Perm/"' x "$export_rx"
+
+printf 'schema_version: 1\ntargets:\n  - path: Conf/restricted\n    host: restricted.example\n' > $WORK/conf-r.yaml
+token=$(csrf restricted $INV)
+page_r=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-r.yaml" "$BASE/$CONF")
+check config-plan-refused-restricted-admin "an upload to check returns no plan" sh -c '! echo "$1" | grep -q "add    target\|Apply Import\|Plan " && echo "$1" | grep -q "do not cover every device"' x "$page_r"
+token=$(csrf restricted $INV)
+curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
+[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/restricted'" | jcell)" = 0 ] && result PASS config-apply-refused-restricted-admin "an apply post changes nothing" || result FAIL config-apply-refused-restricted-admin "a target was added"
+
+printf 'schema_version: 1\ntargets:\n  - path: Conf/new\n    host: conf.example\n' > $WORK/conf-new.yaml
+n0=$(q "SELECT COUNT(*) FROM plugin_smokeping_target" | jcell)
+# A scoped user's check and apply reach no code: the realm is missing.
+token=$(conf_token scoped)
+curl -s -b $WORK/scoped.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
+token=$(conf_token admin)
+page=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-new.yaml" "$BASE/$CONF")
+plan=$(echo "$page" | sed -n 's/.*name="plan" value="\([0-9a-f]*\)".*/\1/p' | head -1)
+check config-check-shows-plan-writes-nothing "the plan lists the add and nothing is stored" sh -c 'echo "$1" | grep -q "add    target Conf/new" && [ "$2" = "$3" ]' x "$page" "$(q "SELECT COUNT(*) FROM plugin_smokeping_target" | jcell)" "$n0"
+token=$(conf_token admin)
+curl -s -b $WORK/admin.jar -c $WORK/admin.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
+[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/new'" | jcell)" = 0 ] && result PASS config-apply-wrong-plan-refused "a plan id that was not shown applies nothing" || result FAIL config-apply-wrong-plan-refused "target was added"
+# A refused apply consumes the checked import, so the administrator checks again before the real apply.
+token=$(conf_token admin)
+page=$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-new.yaml" "$BASE/$CONF")
+plan=$(echo "$page" | sed -n 's/.*name="plan" value="\([0-9a-f]*\)".*/\1/p' | head -1)
+token=$(conf_token admin)
+curl -s -b $WORK/admin.jar -c $WORK/admin.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$plan" "$BASE/$CONF"
+[ -n "$plan" ] && [ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/new'" | jcell)" = 1 ] && result PASS config-apply-confirmed "the shown plan applied once confirmed" || result FAIL config-apply-confirmed "plan '$plan'"
+
+# ---- import of a SmokePing configuration: admin realm and every device, posts only, two steps ----
+IMP=plugins/smokeping/smokeping_import.php
+for u in scoped revoked broad norealm; do
+	check "import-page-denied-$u" "no SmokePing admin realm" sh -c '! echo "$1" | grep -q "Preview reads the configuration"' x "$(get $u $IMP)"
+done
+body=$(get admin $IMP)
+check import-page-admin "the options form, and the entry under Import/Export" sh -c 'echo "$1" | grep -q "Preview reads the configuration" && echo "$1" | grep -q "plugins/smokeping/smokeping_import.php"' x "$body"
+body=$(get restricted $IMP)
+check import-page-refused-restricted-admin "no form, no device named" sh -c '! echo "$1" | grep -q "Preview reads the configuration" && echo "$1" | grep -q "do not cover every device"' x "$body"
+
+# What an earlier run imported: the plugin's tables were reset, Cacti's were not.
+old=$(q "SELECT id FROM host WHERE hostname = 'imp.example'" | ids_of)
+[ -n "$old" ] && $L remove_devices "$old" >/dev/null 2>&1
+php -r 'chdir("/cacti"); include("./include/cli_check.php"); foreach (db_fetch_assoc("SELECT id FROM graph_tree WHERE name = \"SmokePing Web\"") as $t) { db_execute_prepared("DELETE FROM graph_tree_items WHERE graph_tree_id = ?", array($t["id"])); db_execute_prepared("DELETE FROM graph_tree WHERE id = ?", array($t["id"])); }'
+
+imp_conf() {
+	printf '*** General ***\nowner = o\ncontact = o@example.net\ncgiurl = http://localhost/\nimgcache = /c\nimgurl = c\ndatadir = /var/lib/smokeping\npiddir = /run\nsmokemail = /m\n'
+	printf '*** Database ***\nstep = 300\npings = 20\n*** Presentation ***\ntemplate = /t\n+ overview\nwidth = 600\nheight = 50\n+ detail\nwidth = 600\nheight = 200\n'
+	printf '*** Probes ***\n+ FPing\nbinary = /usr/bin/fping\n++ FPing20\n++ FPing10\npings = 10\n*** Targets ***\nprobe = FPing20\nmenu = Top\ntitle = Top\n'
+	printf '+ Imp\nmenu = Imp\ntitle = Imp\n++ web\nmenu = Web\ntitle = Web\n+++ one\nhost = imp.example\n+++ two\nprobe = FPing10\nhost = imp.example\n%s' "${1:-}"
+}
+imp_conf > $WORK/imp.conf
+imp_conf '@include more.conf
+' > $WORK/imp-include.conf
+imp_rows() { q "SELECT (SELECT COUNT(*) FROM plugin_smokeping_target WHERE path LIKE 'Imp/%') AS t, (SELECT COUNT(*) FROM host WHERE hostname = 'imp.example') AS h, (SELECT COUNT(*) FROM plugin_smokeping_object o JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path LIKE 'Imp/%') AS o, (SELECT COUNT(*) FROM graph_tree WHERE name = 'SmokePing Web') AS tree" | jcell; }
+imp_preview() { # imp_preview <user> <file> -> the preview page
+	token=$(csrf "$1" $IMP)
+	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -F "__csrf_magic=$token" -F action=preview -F source=upload -F device_per=host -F poller=1 -F site=0 -F tree=-1 -F "tree_name=SmokePing Web" -F "smokeping_file=@$2" "$BASE/$IMP"
+}
+imp_apply() { # imp_apply <user> <plan> [no-token]
+	token=$(csrf "$1" $IMP)
+	[ "${3:-}" = no-token ] && token=
+	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$2&source=upload&device_per=host&poller=1&site=0&tree=-1" --data-urlencode "tree_name=SmokePing Web" "$BASE/$IMP"
+}
+
+page=$(imp_preview admin $WORK/imp.conf)
+plan=$(echo "$page" | sed -n 's/.*name=.plan. value=.\([0-9a-f]\{16\}\).*/\1/p' | head -1)
+check import-preview-writes-nothing "the preview lists one device and four graphs and stores nothing" sh -c 'echo "$1" | grep -q "Devices: 1 to create" && echo "$1" | grep -q "Graphs: 4 to create" && echo "$1" | grep -q "SmokePing Sections" && [ -n "$2" ] && [ "$3" = "0 0 0 0" ]' x "$page" "$plan" "$(imp_rows)"
+page=$(imp_preview admin $WORK/imp-include.conf)
+check import-upload-refuses-include "an uploaded @include is refused with its line" sh -c 'echo "$1" | grep -q "@include is not allowed here: an uploaded file is read on its own"' x "$page"
+page=$(imp_preview restricted $WORK/imp.conf)
+check import-preview-refused-restricted-admin "no plan for a limited administrator" sh -c '! echo "$1" | grep -q "Devices: \|imp.example" && echo "$1" | grep -q "do not cover every device"' x "$page"
+
+page=$(imp_preview admin $WORK/imp.conf)
+plan=$(echo "$page" | sed -n 's/.*name=.plan. value=.\([0-9a-f]\{16\}\).*/\1/p' | head -1)
+imp_apply admin "$plan" no-token
+imp_apply admin 0000000000000000
+imp_apply scoped "$plan"
+imp_apply restricted "$plan"
+[ "$(imp_rows)" = "0 0 0 0" ] && result PASS import-apply-refusals "no token, a plan never shown, no realm, and limited devices all write nothing" || result FAIL import-apply-refusals "$(imp_rows)"
+page=$(imp_preview admin $WORK/imp.conf)
+plan=$(echo "$page" | sed -n 's/.*name=.plan. value=.\([0-9a-f]\{16\}\).*/\1/p' | head -1)
+imp_apply admin "$plan"
+[ -n "$plan" ] && [ "$(imp_rows)" = "2 1 4 1" ] && result PASS import-apply-confirmed "two targets on one device, four graphs, the new tree" || result FAIL import-apply-confirmed "plan '$plan': $(imp_rows)"
+page=$(imp_preview admin $WORK/imp.conf)
+check import-rerun-nothing-to-do "a second preview creates nothing" sh -c 'echo "$1" | grep -q "Devices: 0 to create, 0 existing to use, 1 already mapped" && echo "$1" | grep -q "Graphs: 0 to create, 4 already exist"' x "$page"
 
 # ---- administrator workflows over HTTP ----
 admin_token() { get admin "$1" | grep -o "name='__csrf_magic' value=\"[^\"]*\"" | head -1 | sed 's/.*value="//;s/"$//'; }

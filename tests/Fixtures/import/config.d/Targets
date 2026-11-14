@@ -1,0 +1,48 @@
+*** Targets ***
+
+probe = FPingNormal
+
+menu = Top
+title = Network Latency Grapher
+remark = Welcome to the SmokePing website of Import Test.
+
++ Europe
+menu = Europe
+title = European sites
+
+++ paris
+menu = Paris
+title = Paris gateway
+host = paris.example.net
+slaves = boston
+
+++ paris_10
+probe = FPing10
+menu = Paris (10 pings)
+title = Paris gateway, 10 pings
+host = paris.example.net
+
+++ Nordic
+menu = Nordic
+title = Nordic sites
+
++++ oslo
+menu = Oslo
+title = Oslo
+host = oslo.example.net
+
++ Lab
+menu = Lab
+title = Lab
+
+++ disman
+menu = DISMAN
+title = DISMAN-PING-MIB probe
+probe = DismanPing
+host = lab.example.net
+pinghost = 192.0.2.1
+
+++ multi
+menu = Multi
+title = Paris and Oslo
+host = /Europe/paris /Europe/Nordic/oslo

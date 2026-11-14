@@ -1,8 +1,8 @@
 #!/bin/sh
-# End-to-end check of inventory import and the reader on a real Cacti with
-# packaged SmokePing: real inventory script, real rrdtool, real database.
-# Run from the Cacti root in a container that has Cacti's PHP extensions,
-# rrdtool, and SmokePing, with this plugin at plugins/smokeping and a
+# End-to-end check of inventory import and the reader on a real Cacti: the
+# plugin's configuration parser, real rrdtool, real database. Run from the
+# Cacti root in a container that has Cacti's PHP extensions and rrdtool,
+# with this plugin at plugins/smokeping and a
 # disposable, installed Cacti database:
 #
 #   SMOKEPING_TEST_DATABASE=disposable sh plugins/smokeping/tests/reader-e2e.sh
@@ -28,7 +28,6 @@ $L set_setting "path_rrdtool=$(command -v rrdtool)" >/dev/null
 $L set_setting "smokeping_mount_path=$mount" >/dev/null
 $L set_setting "smokeping_datadir=$mount" >/dev/null
 $L set_setting "smokeping_config_file=$work/config" >/dev/null
-$L set_setting "smokeping_perl_binary=$(command -v perl)" >/dev/null
 $L set_setting "smokeping_reader_budget=60" >/dev/null
 
 # SmokePing configuration from the inventory fixture, datadir = the mount.

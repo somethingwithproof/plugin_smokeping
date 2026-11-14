@@ -23,6 +23,9 @@ CACTI_CORE=${CACTI_CORE:-$PLUGIN/../plugin-test-ws/cores/1.2.31}
 DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
 SP_DB_NAME=${SP_DB_NAME:-smokeping_m3}
 
+# The database is created and loaded when it is missing.
+sh "$PLUGIN/tests/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
+
 mkdir -p "$WORK/fx" "$WORK/cacti" "$WORK/cacti-legacy"
 
 cacti() {

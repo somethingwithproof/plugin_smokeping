@@ -33,6 +33,10 @@ result() {
 q() { $L query "$1"; }
 jcell() { php -r '$r = json_decode(stream_get_contents(STDIN), true); echo $r[0] ? implode(" ", array_values($r[0])) : "";'; }
 
+# A database loaded from cacti.sql records "new_install"; record the version of
+# the tree under test, as a finished install would, so plugins see a real Cacti.
+php -r 'chdir("/cacti"); include("./include/cli_check.php"); db_execute_prepared("UPDATE version SET cacti = ?", array($config["cacti_version"]));'
+
 # Start from nothing: devices an earlier run created, then the plugins themselves.
 old=$(q "SELECT DISTINCT host_id FROM plugin_smokeping_object" 2>/dev/null | php -r '$r = json_decode(stream_get_contents(STDIN), true); echo is_array($r) ? implode(",", array_column($r, "host_id")) : "";')
 [ -n "$old" ] && $L remove_devices "$old" >/dev/null 2>&1
@@ -50,6 +54,16 @@ result INFO versions "thold $(sed -n 's/^version = //p' plugins/thold/INFO), mai
 php $P/tests/bin/make-fixture-rrds.php /cacti/rra/smokeping Alert/probe:300:20:normal Alert/stale:300:20:stale
 $L add_target "Alert/probe:probe.example:20:300" >/dev/null
 $L add_target "Alert/stale:stale.example:20:300" >/dev/null
+
+# The reader reads a configuration that lists both targets, so the inventory
+# keeps them present, as it would on a SmokePing host.
+{
+	printf '*** General ***\nowner = o\ncontact = o@example.net\ncgiurl = http://localhost/\nimgcache = /c\nimgurl = c\ndatadir = /cacti/rra/smokeping\npiddir = /run\nsmokemail = /m\n'
+	printf '*** Database ***\nstep = 300\npings = 20\n*** Presentation ***\ntemplate = /t\n+ overview\nwidth = 600\nheight = 50\n+ detail\nwidth = 600\nheight = 200\n'
+	printf '*** Probes ***\n+ FPing\nbinary = /usr/bin/fping\n*** Targets ***\nprobe = FPing\nmenu = Top\ntitle = Top\n'
+	printf '+ Alert\nmenu = Alert\ntitle = Alert\n++ probe\nhost = probe.example\n++ stale\nhost = stale.example\n'
+} > /cacti/rra/smokeping/alert.conf
+$L set_setting "smokeping_config_file=/cacti/rra/smokeping/alert.conf" >/dev/null
 
 out=$(php $P/cli/smokeping.php provision Alert/probe 2>&1)
 dev=$(echo "$out" | sed -n 's/^Created device \([0-9]*\)$/\1/p')

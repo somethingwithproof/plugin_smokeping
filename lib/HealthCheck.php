@@ -68,6 +68,29 @@ final class HealthCheck {
 		return new Finding('device_pollers', HealthLevel::Error, __('%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s', count($devices), $readerPollerId, implode(', ', array_slice($devices, 0, 5)), 'smokeping'));
 	}
 
+	/**
+	 * Read the SmokePing configuration with the plugin's parser, as the reader
+	 * will. Only meaningful on the host of the reader's poller, which is the
+	 * one that can see the file.
+	 */
+	public static function configFile(string $file, bool $readerHost, int $readerPollerId): Finding {
+		if (!$readerHost) {
+			return new Finding('config_file', HealthLevel::Unknown, __('The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read.', $readerPollerId, 'smokeping'));
+		}
+
+		try {
+			$inventory = (new SmokepingConfigReader($file))->read($readerPollerId);
+		} catch (InventoryError $e) {
+			return new Finding('config_file', HealthLevel::Error, __('The SmokePing configuration %s cannot be read: %s', $file, $e->getMessage(), 'smokeping'));
+		}
+
+		if ($inventory->warnings !== []) {
+			return new Finding('config_file', HealthLevel::Warning, __('The SmokePing configuration %s lists %d targets; %d entries are skipped: %s', $file, count($inventory->targets), count($inventory->warnings), implode('; ', array_slice($inventory->warnings, 0, 5)), 'smokeping'));
+		}
+
+		return new Finding('config_file', HealthLevel::Ok, __('The SmokePing configuration %s lists %d targets.', $file, count($inventory->targets), 'smokeping'));
+	}
+
 	public static function phpBinary(string $phpBinary): Finding {
 		if ($phpBinary === '' || !is_file($phpBinary) || !is_executable($phpBinary)) {
 			return new Finding('php_binary', HealthLevel::Error, __('The PHP binary path setting is empty or not an executable file, so the reader cannot start.', 'smokeping'));

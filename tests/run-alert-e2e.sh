@@ -19,6 +19,16 @@ DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
 SP_DB_NAME=${SP_DB_NAME:-smokeping_m3c}
 PLUGIN_SOURCE=${PLUGIN_SOURCE:-$PLUGIN/../plugin-test-ws/cacti/plugins}
 
+# The database is created and loaded when it is missing.
+sh "$HERE/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
+
+# What this run leaves in the core is removed afterwards: the RRD files of the
+# devices it creates, the uninstall export, and mount points Docker made.
+made=
+for d in rra/smokeping plugins/thold plugins/maint cache/smokeping; do
+	[ -e "$CACTI_CORE/$d" ] || made="$made $CACTI_CORE/$d"
+done
+
 for p in thold maint; do
 	rm -rf "$WORK/plugins/$p"
 	mkdir -p "$WORK/plugins/$p"
@@ -34,7 +44,17 @@ mkdir -p "$FX"
 
 PRELUDE='ini=$(php -r "echo PHP_CONFIG_FILE_PATH;")/php.ini; [ -f "$ini" ] || { cp "$(dirname "$ini")/php.ini-production" "$ini" 2>/dev/null || touch "$ini"; printf "date.timezone=UTC\nmemory_limit=512M\n" >> "$ini"; };'
 
+status=0
+
 docker run --rm --network cpt --env-file "$DB_ENV" -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEST_DATABASE=disposable \
 	-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$WORK/plugins/thold":/cacti/plugins/thold \
 	-v "$WORK/plugins/maint":/cacti/plugins/maint -v "$FX":/cacti/rra/smokeping -w /cacti spm2-e2e \
-	sh -c "$PRELUDE sh plugins/smokeping/tests/alert-e2e.sh" 2>&1 | grep -E "${RESULT_FILTER:-^(RESULT|LOG|DUMP)}"
+	sh -c "$PRELUDE sh plugins/smokeping/tests/alert-e2e.sh" 2>&1 | grep -E "${RESULT_FILTER:-^(RESULT|LOG|DUMP)}" || status=1
+
+rm -f "$CACTI_CORE"/rra/alertprobe_*.rrd
+
+for dir in $made; do
+	[ "$dir" = "$CACTI_CORE/cache/smokeping" ] && rm -rf "$dir" || rmdir "$dir" 2>/dev/null || true
+done
+
+exit $status

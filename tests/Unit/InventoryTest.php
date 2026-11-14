@@ -32,9 +32,9 @@ use Cacti\Smokeping\TargetMode;
 use Cacti\Smokeping\TargetPath;
 
 /**
- * tests/Fixtures/inventory.json is the script's output for
- * tests/Fixtures/inventory.conf, identical on SmokePing 2.8.2 and 2.9.0
- * apart from the version (tests/inventory.sh checks both).
+ * tests/Fixtures/inventory.json is the inventory of tests/Fixtures/inventory.conf,
+ * identical on SmokePing 2.7.3, 2.8.2 and 2.9.0 apart from the version
+ * (tests/oracle/run.sh checks all three).
  */
 function fixture_inventory(string $version = '2.009000'): Inventory {
 	$json = str_replace(['@DIR@', '@VERSION@'], ['/var/lib/smokeping', $version], (string) file_get_contents(dirname(__DIR__) . '/Fixtures/inventory.json'));

@@ -1,8 +1,8 @@
 # plugin_smokeping
 
-A proposed Cacti 1.2 plugin that brings SmokePing latency and loss measurements into Cacti as ordinary devices, data sources, and graphs. Smoke graphs then sit next to the device they belong to, under Cacti's permissions, and Thold and Maint can alert on and suppress them.
+A Cacti 1.2 plugin that brings SmokePing latency and loss measurements into Cacti as ordinary devices, data sources, and graphs. Smoke graphs then sit next to the device they belong to, under Cacti's permissions, and Thold and Maint can alert on and suppress them.
 
-> **Status: proposal.** This repository contains no plugin code yet. It holds the design, its decision records, and the requirements tracked as issues and milestones. Nothing below describes shipped behavior.
+> **Status: observe mode, release candidate.** The plugin reads SmokePing's configuration and RRD files, shows their state, creates Cacti devices, data sources, and graphs for them, and feeds Thold and Maint. It writes nothing to SmokePing. Managed mode (the plugin writing SmokePing configuration) and remote collectors are later phases and are not in this release. See [docs/install.md](docs/install.md) to start.
 
 ## Why
 
@@ -29,10 +29,24 @@ Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemo
 
 | Component | Target |
 |---|---|
-| Cacti | 1.2.31 or later, no core patches |
+| Cacti | 1.2.31 or later in 1.2.x, no core patches |
 | PHP | 8.2 or later; `setup.php` stays parseable on 8.0 so an unsupported runtime gets a refusal instead of a broken Cacti UI |
 | SmokePing | 2.9.0 and 2.8.2; 2.7.3 if a supported distribution still ships it |
 | Thold, Maint | No changes required |
+
+## Documentation
+
+| | |
+|---|---|
+| [Install](docs/install.md) | Requirements, the read-only mount of SmokePing's data directory, installation, containers, supported versions |
+| [Operate](docs/operations.md) | What each state means and its evidence, health checks, behavior when inputs fail |
+| [Add targets to Cacti](docs/provisioning.md) | One target, many devices, re-linking, permissions |
+| [Alerting](docs/alerting.md) | Summary values, Thold durations, staleness, late data, overlap with SmokePing's alerts, Maint |
+| [Configuration format](docs/configuration-format.md) | YAML and XML export and import |
+| [Backup and restore](docs/backup-restore.md) | What to back up and how a restore resumes |
+| [Performance](docs/performance.md) | Measured cost at 100, 1,000, and 10,000 series |
+| [Failure qualification](docs/failure-qualification.md) | The failure scenarios and how each is tested |
+| [Releasing](docs/release.md) | Version, changelog, and the release archive |
 
 ## Design
 

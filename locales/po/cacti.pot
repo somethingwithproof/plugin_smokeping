@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Cacti 0.1\n"
+"Project-Id-Version: Cacti 1.0.0-rc.1\n"
 "Report-Msgid-Bugs-To: developers@cacti.net\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Cacti Developers <developers@cacti.net>\n"
@@ -19,6 +19,79 @@ msgstr ""
 #: lib/ActionOutcome.php
 #, php-format
 msgid "skipped, %s"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr ""
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr ""
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr ""
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr ""
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr ""
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr ""
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
 msgstr ""
 
 #: lib/DeviceActions.php
@@ -76,6 +149,26 @@ msgstr ""
 #: lib/HealthCheck.php
 #, php-format
 msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
 msgstr ""
 
 #: lib/HealthCheck.php
@@ -149,7 +242,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: lib/Html.php
+#: lib/Html.php lib/ImportPage.php
 msgid "Error"
 msgstr ""
 
@@ -164,6 +257,280 @@ msgstr ""
 
 #: lib/Html.php lib/ViewPage.php
 msgid "never"
+msgstr ""
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr ""
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr ""
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr ""
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr ""
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr ""
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr ""
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr ""
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr ""
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
 msgstr ""
 
 #: lib/InventoryForms.php
@@ -190,10 +557,6 @@ msgstr ""
 
 #: lib/InventoryForms.php
 msgid "Add"
-msgstr ""
-
-#: lib/InventoryForms.php
-msgid "Cancel"
 msgstr ""
 
 #: lib/InventoryForms.php
@@ -240,10 +603,6 @@ msgstr ""
 
 #: lib/InventoryPage.php lib/Pages.php
 msgid "SmokePing Inventory"
-msgstr ""
-
-#: lib/InventoryPage.php
-msgid "Action"
 msgstr ""
 
 #: lib/InventoryPage.php
@@ -300,6 +659,16 @@ msgstr ""
 
 #: lib/InventoryPage.php
 msgid "No re-link proposals."
+msgstr ""
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr ""
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
 msgstr ""
 
 #: lib/MountCheck.php
@@ -373,12 +742,12 @@ msgstr ""
 msgid "SmokePing Admin"
 msgstr ""
 
-#: lib/Pages.php setup.php
-msgid "SmokePing"
-msgstr ""
-
 #: lib/Pages.php
 msgid "SmokePing Health"
+msgstr ""
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
 msgstr ""
 
 #: lib/RelinkGuard.php
@@ -412,23 +781,7 @@ msgid "SmokePing Configuration File"
 msgstr ""
 
 #: lib/Settings.php
-msgid "The main SmokePing configuration file. The plugin only reads it, through SmokePing's own parser."
-msgstr ""
-
-#: lib/Settings.php
-msgid "Perl Binary"
-msgstr ""
-
-#: lib/Settings.php
-msgid "The Perl interpreter that runs the inventory script."
-msgstr ""
-
-#: lib/Settings.php
-msgid "SmokePing Perl Library Directory"
-msgstr ""
-
-#: lib/Settings.php
-msgid "The directory holding Smokeping.pm. Leave blank to search the packaged locations."
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
 msgstr ""
 
 #: lib/Settings.php
@@ -485,6 +838,14 @@ msgstr ""
 
 #: lib/Settings.php
 msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
 msgstr ""
 
 #: lib/SmokeProvisioner.php
@@ -547,6 +908,77 @@ msgstr ""
 msgid "Cacti does not accept the SmokePing path for a data source."
 msgstr ""
 
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr ""
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr ""
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr ""
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr ""
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr ""
+
 #: lib/TargetActions.php
 msgid "the target has not been saved yet"
 msgstr ""
@@ -577,10 +1009,6 @@ msgstr ""
 #: lib/TargetActions.php
 #, php-format
 msgid "mapped to device %d"
-msgstr ""
-
-#: lib/TargetActions.php
-msgid "master"
 msgstr ""
 
 #: lib/TargetActions.php
@@ -641,15 +1069,7 @@ msgid "device %d is mapped to the new target"
 msgstr ""
 
 #: lib/ViewPage.php
-msgid "SmokePing Targets"
-msgstr ""
-
-#: lib/ViewPage.php
 msgid "Condition"
-msgstr ""
-
-#: lib/ViewPage.php
-msgid "Device"
 msgstr ""
 
 #: lib/ViewPage.php
@@ -658,10 +1078,6 @@ msgstr ""
 
 #: lib/ViewPage.php
 msgid "Last Update"
-msgstr ""
-
-#: lib/ViewPage.php
-msgid "Location"
 msgstr ""
 
 #: lib/ViewPage.php
@@ -703,15 +1119,70 @@ msgid "The SmokePing plugin requires PHP %s or later."
 msgstr ""
 
 #: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr ""
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr ""
+
+#: setup.php
 msgid "Management"
+msgstr ""
+
+#: setup.php
+msgid "Import/Export"
 msgstr ""
 
 #: setup.php
 msgid "You do not have permission to add SmokePing targets."
 msgstr ""
 
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr ""
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr ""
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr ""
+
 #: smokeping_health.php
 msgid "The SmokePing templates failed to import. See the health table."
+msgstr ""
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr ""
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr ""
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr ""
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr ""
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr ""
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr ""
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
 msgstr ""
 
 #: smokeping_inventory.php
@@ -724,8 +1195,4 @@ msgstr ""
 
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
-msgstr ""
-
-#: smokeping_inventory.php
-msgid "None"
 msgstr ""

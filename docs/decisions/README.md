@@ -11,5 +11,7 @@ Each record captures one architecture decision: its context, the decision, its c
 | [0005](0005-never-reuse-managed-target-ids.md) | Use random, never-reused section names for managed targets | Accepted |
 | [0006](0006-php-82-floor-with-80-parse-guard.md) | Require PHP 8.2, keep entry points parseable on PHP 8.0 | Accepted |
 | [0007](0007-read-only-mount-under-rra-path.md) | Expose SmokePing's datadir through a read-only mount under `rra_path` | Accepted; amends 0003 |
+| [0008](0008-yaml-and-xml-configuration-files.md) | Export and import the plugin's configuration as YAML or XML, YAML by default | Accepted |
+| [0009](0009-php-configuration-parser.md) | Read SmokePing's configuration with a PHP parser, checked against SmokePing's own | Accepted; supersedes the inventory script |
 
 Open decisions are tracked as issues labelled `type: decision`.

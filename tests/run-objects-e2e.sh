@@ -21,6 +21,16 @@ CACTI_CORE=${CACTI_CORE:-$PLUGIN/../plugin-test-ws/cores/1.2.31}
 DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
 SP_DB_NAME=${SP_DB_NAME:-smokeping_m3b}
 
+# The database is created and loaded when it is missing.
+sh "$HERE/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
+
+# Mount points Docker creates inside the core, and the uninstall export; this
+# run removes the ones it made.
+made=
+for d in rra/smokeping plugins/slowplugin cache/smokeping; do
+	[ -e "$CACTI_CORE/$d" ] || made="$made $CACTI_CORE/$d"
+done
+
 PRELUDE='ini=$(php -r "echo PHP_CONFIG_FILE_PATH;")/php.ini; [ -f "$ini" ] || { cp "$(dirname "$ini")/php.ini-production" "$ini" 2>/dev/null || touch "$ini"; printf "date.timezone=UTC\nmemory_limit=512M\n" >> "$ini"; };'
 
 run() {
@@ -51,6 +61,10 @@ for variant in "ro guard" "rw guard" "ro noguard" "rw noguard"; do
 
 	run -v "$fx":/cacti/rra/smokeping$suffix -v "$WORK/outside":/outside:ro -w /cacti spm2-e2e \
 		sh -c "$PRELUDE sh plugins/smokeping/tests/objects-e2e.sh $mode $guard" 2>&1 | grep -E '^RESULT' || status=1
+done
+
+for dir in $made; do
+	[ "$dir" = "$CACTI_CORE/cache/smokeping" ] && rm -rf "$dir" || rmdir "$dir" 2>/dev/null || true
 done
 
 exit $status

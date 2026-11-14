@@ -46,7 +46,9 @@ Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemo
 | [Backup and restore](docs/backup-restore.md) | What to back up and how a restore resumes |
 | [Performance](docs/performance.md) | Measured cost at 100, 1,000, and 10,000 series |
 | [Failure qualification](docs/failure-qualification.md) | The failure scenarios and how each is tested |
-| [Releasing](docs/release.md) | Version, changelog, and the release archive |
+| [Releasing](docs/RELEASING.md) | The release procedure: the pull request, the signed tag, what the workflow does, how to verify the result |
+| [Release archive](docs/release.md) | Version, changelog, and the release archive |
+| [Testing](docs/testing.md) | The suites, what CI runs, and the live suite against a real SmokePing |
 
 ## Design
 

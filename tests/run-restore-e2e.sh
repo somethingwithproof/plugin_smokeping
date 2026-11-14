@@ -18,6 +18,7 @@ mkdir -p "${1:?usage: run-restore-e2e.sh <work-dir>}"
 WORK=$(cd "$1" && pwd)
 CACTI_CORE=${CACTI_CORE:-$PLUGIN/../plugin-test-ws/cores/1.2.31}
 DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
+. "$HERE/e2e-env.sh"
 
 PRELUDE='ini=$(php -r "echo PHP_CONFIG_FILE_PATH;")/php.ini; [ -f "$ini" ] || { cp "$(dirname "$ini")/php.ini-production" "$ini" 2>/dev/null || touch "$ini"; printf "date.timezone=UTC\nmemory_limit=512M\n" >> "$ini"; };'
 
@@ -33,14 +34,14 @@ done
 # Every database this runner uses starts from this core's cacti.sql, whatever an
 # earlier run left in it.
 fresh_db() { # fresh_db <smokeping_ database>
-	docker run --rm --network cpt --env-file "$DB_ENV" -e DB="$1" mariadb:10.11 sh -c 'mariadb -h cpt-db -uroot -p"$MARIADB_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS \`$DB\`"' >/dev/null
+	e2e_docker -e DB="$1" "$E2E_MARIADB_IMAGE" sh -c 'mariadb -h "$SP_DB_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS \`$DB\`"' >/dev/null
 	sh "$HERE/ensure-db.sh" "$1" "$CACTI_CORE" "$DB_ENV"
 }
 
 fresh_db smokeping_m4src
 
 # SmokePing's side: its configuration and files, and RRD files in its data directory.
-docker run --rm -v "$PLUGIN":/p:ro -v "$R/src-config":/c -v "$R/src-data":/d spm2-e2e sh -c '
+docker run --rm -v "$PLUGIN":/p:ro -v "$R/src-config":/c -v "$R/src-data":/d "$E2E_IMAGE" sh -c '
 	mkdir -p /c/cache /c/run
 	touch /c/smokemail /c/tmail /c/basepage.html /c/secrets
 	printf "#!/bin/sh\n" > /c/fping; cp /c/fping /c/dig; chmod 755 /c/fping /c/dig
@@ -49,9 +50,9 @@ docker run --rm -v "$PLUGIN":/p:ro -v "$R/src-config":/c -v "$R/src-data":/d spm
 	php /p/tests/bin/make-fixture-rrds.php /d Europe/paris:300:20:normal Europe/paris~boston:300:20:partial Europe/berlin:60:10:stale Europe/berlin/core:60:10:never Slaves/remote~boston:300:20:delayed' >/dev/null 2>&1
 
 cacti() { # cacti <db> <data dir> <config dir> <data mode> <phase>
-	docker run --rm --network cpt --env-file "$DB_ENV" -e SP_DB_NAME="$1" -e SMOKEPING_TEST_DATABASE=disposable \
-		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$2":/cacti/rra/smokeping:"$4" -v "$3":/srv/smokeping-config:ro -v "$R/state":/state -w /cacti spm2-e2e \
-		sh -c "$PRELUDE sh plugins/smokeping/tests/restore-e2e.sh $5" 2>&1 | grep -E '^RESULT'
+	e2e_docker -e SP_DB_NAME="$1" \
+		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$2":/cacti/rra/smokeping:"$4" -v "$3":/srv/smokeping-config:ro -v "$R/state":/state -w /cacti "$E2E_IMAGE" \
+		sh -c "$PRELUDE sh plugins/smokeping/tests/restore-e2e.sh $5" 2>&1 | e2e_check "$WORK/log-restore-$5.txt"
 }
 
 status=0
@@ -60,20 +61,21 @@ run() { out=$(cacti "$@") || true; echo "$out"; echo "$out" | grep -q '^RESULT F
 run smokeping_m4src "$R/src-data" "$R/src-config" ro source
 
 # The backups, taken as an operator would: the database, SmokePing's configuration, its data directory.
-docker run --rm --network cpt --env-file "$DB_ENV" -e DB=smokeping_m4src -v "$R/backup":/backup mariadb:10.11 sh -c 'mariadb-dump -h cpt-db -uroot -p"$MARIADB_ROOT_PASSWORD" --single-transaction "$DB" > /backup/cacti.sql'
-tar -czf "$R/backup/smokeping-config.tgz" -C "$R/src-config" .
-tar -czf "$R/backup/smokeping-datadir.tgz" -C "$R/src-data" .
+e2e_docker -e DB=smokeping_m4src -v "$R/backup":/backup "$E2E_MARIADB_IMAGE" sh -c 'mariadb-dump -h "$SP_DB_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" --single-transaction "$DB" > /backup/cacti.sql'
+# As root, like an operator's backup: SmokePing's secrets file is mode 600
+# and belongs to the container's root, which a non-root host user cannot read.
+docker run --rm -v "$R":/r "$E2E_IMAGE" sh -c 'tar -czf /r/backup/smokeping-config.tgz -C /r/src-config . && tar -czf /r/backup/smokeping-datadir.tgz -C /r/src-data .'
 
 # Everything is lost: a fresh database, a fresh container, empty directories.
-docker run --rm --network cpt --env-file "$DB_ENV" -e DB=smokeping_m4dst -e RESTORE=1 -v "$R/backup":/backup:ro mariadb:10.11 sh -c '
-	mariadb -h cpt-db -uroot -p"$MARIADB_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS $DB; CREATE DATABASE $DB; GRANT ALL ON $DB.* TO \`$MARIADB_USER\`@\`%\`"
-	mariadb -h cpt-db -uroot -p"$MARIADB_ROOT_PASSWORD" "$DB" < /backup/cacti.sql'
+e2e_docker -e DB=smokeping_m4dst -e RESTORE=1 -v "$R/backup":/backup:ro "$E2E_MARIADB_IMAGE" sh -c '
+	mariadb -h "$SP_DB_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS $DB; CREATE DATABASE $DB; GRANT ALL ON $DB.* TO \`$MARIADB_USER\`@\`%\`"
+	mariadb -h "$SP_DB_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" "$DB" < /backup/cacti.sql'
 mkdir -p "$R/new-data" "$R/new-config"
 tar -xzf "$R/backup/smokeping-datadir.tgz" -C "$R/new-data"
 tar -xzf "$R/backup/smokeping-config.tgz" -C "$R/new-config"
 
 # SmokePing keeps running while Cacti is being restored: it writes a new round.
-docker run --rm -v "$PLUGIN":/p:ro -v "$R/new-data":/d spm2-e2e php /p/tests/bin/fixture-update.php /d/Europe/paris.rrd 20 3 >/dev/null 2>&1
+docker run --rm -v "$PLUGIN":/p:ro -v "$R/new-data":/d "$E2E_IMAGE" php /p/tests/bin/fixture-update.php /d/Europe/paris.rrd 20 3 >/dev/null 2>&1
 run smokeping_m4dst "$R/new-data" "$R/new-config" ro restore
 
 # Restore from the YAML export alone: a fresh Cacti database, nothing from the old database.

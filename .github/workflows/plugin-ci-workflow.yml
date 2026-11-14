@@ -26,7 +26,11 @@
 # harness choice is pending maintainers in #12; this matches what maintained
 # plugins use today.
 
-name: Plugin Integration Tests
+# The release workflow calls this one (workflow_call) for the tagged commit, so
+# a release is built only from a commit that passed the same checks as a pull
+# request. `ci-ok` is the one check branch protection needs to name.
+
+name: CI
 
 on:
   push:
@@ -37,12 +41,15 @@ on:
   # which each pull request targets the branch below it.
   pull_request:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
 
+# A called workflow sees the caller's github.workflow, so the group is spelled
+# out. Only pull requests cancel: a push to main or a tag must run to the end.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -254,3 +261,246 @@ jobs:
 
     - name: Compare with SmokePing's parser
       run: sh tests/oracle/run.sh "$RUNNER_TEMP/oracle"
+
+    - name: Upload the comparison output
+      if: failure()
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: config-parser-logs
+        path: ${{ runner.temp }}/oracle/out
+        if-no-files-found: ignore
+
+  # tests/lint-workflows.sh runs actionlint and zizmor from pinned images; the
+  # same script lints the workflows on a developer machine. zizmor's online
+  # audits (impostor commits, known-vulnerable actions) use the workflow token.
+  workflow-lint:
+    name: Workflow lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Lint the workflows with actionlint and zizmor
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: sh tests/lint-workflows.sh
+
+  # The release gate and the archive policy are plain shell over git; they need
+  # neither Docker nor Cacti.
+  release-tools:
+    name: Release tools and archive policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Test tools/release-check.sh
+      run: sh tests/release-tools-test.sh
+
+    - name: Check that GitHub's source archives match the release archive
+      run: sh tests/archive-policy-test.sh
+
+    - name: Build the release archive twice
+      run: |
+        set -euo pipefail
+        sh tools/make-release.sh HEAD "$RUNNER_TEMP/dist-a" >/dev/null
+        sh tools/make-release.sh HEAD "$RUNNER_TEMP/dist-b" >/dev/null
+        cmp "$RUNNER_TEMP"/dist-a/SHA256SUMS "$RUNNER_TEMP"/dist-b/SHA256SUMS
+        cat "$RUNNER_TEMP/dist-a/SHA256SUMS"
+
+  # docs/install.md's commands, run on a real distribution. The install guide's
+  # mount needs CAP_SYS_ADMIN, which a privileged container on a GitHub-hosted
+  # runner (a throwaway virtual machine) has.
+  docs-commands:
+    name: Install guide on ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['debian:13', 'almalinux:9']
+
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Run the commands of docs/install.md
+      env:
+        IMAGE: ${{ matrix.image }}
+      run: |
+        set -euo pipefail
+        docker run --rm --privileged -v "$PWD:/plugin:ro" "$IMAGE" sh /plugin/tests/docs-commands.sh 2>&1 | tee "$RUNNER_TEMP/docs-commands.log"
+
+    - name: Upload the log
+      if: failure()
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: docs-commands-${{ strategy.job-index }}-log
+        path: ${{ runner.temp }}/docs-commands.log
+        if-no-files-found: ignore
+
+  # The end-to-end test image is built once, here, into the GitHub Actions
+  # cache. Each e2e job below rebuilds it from that cache in seconds.
+  e2e-image:
+    name: End-to-end test image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+    - name: Build the image into the cache
+      uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+      with:
+        context: tests/docker
+        cache-from: type=gha,scope=e2e-image
+        cache-to: type=gha,scope=e2e-image,mode=max
+
+  # Every host-side runner under tests/ against a real Cacti and a MariaDB
+  # service container. The runners start their own containers, on the service
+  # container's network, from the image built above.
+  e2e:
+    name: ${{ matrix.runner }} on Cacti ${{ matrix.cacti.name }}
+    needs: e2e-image
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [objects, permissions, alert, config, restore, release, failure, import]
+        cacti:
+          - { name: '1.2.31', ref: 'release/1.2.31' }
+          - { name: '1.2.x', ref: '1.2.x' }
+
+    services:
+      mariadb:
+        image: mariadb:11.8@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15
+        env:
+          MARIADB_ROOT_PASSWORD: cactiroot
+          MARIADB_USER: cactiuser
+          MARIADB_PASSWORD: cactiuser
+        options: >-
+          --health-cmd="mariadb-admin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=6
+
+    env:
+      CACTI_CORE: ${{ github.workspace }}/cacti
+      E2E_DB_HOST: mariadb
+      E2E_MARIADB_IMAGE: mariadb:11.8@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15
+      MARIADB_ROOT_PASSWORD: cactiroot
+      MARIADB_USER: cactiuser
+      MARIADB_PASSWORD: cactiuser
+
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+        path: plugin
+
+    - name: Checkout Cacti
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+        repository: Cacti/cacti
+        ref: ${{ matrix.cacti.ref }}
+        path: cacti
+
+    # The alert runner copies Thold and Maint from PLUGIN_SOURCE. The runner's
+    # helper uses includes/functions.php, which the Thold 1.8.2 release does not
+    # have, so Thold is pinned at a commit of its develop branch (1.8.3) that
+    # supports Cacti 1.2.31 and 1.2.x; Maint is its 1.3 release.
+    - name: Checkout Thold
+      if: matrix.runner == 'alert'
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+        repository: Cacti/plugin_thold
+        ref: dc76952ee52e8b4877b2d5b830caab1f7c43dde9 # develop, 1.8.3
+        path: plugin-source/thold
+
+    - name: Checkout Maint
+      if: matrix.runner == 'alert'
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+        repository: Cacti/plugin_maint
+        ref: cd62de9cc323a4f5a8ac80a8d9dda3c7fa16c470 # v1.3
+        path: plugin-source/maint
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+    - name: Load the end-to-end test image from the cache
+      uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+      with:
+        context: plugin/tests/docker
+        load: true
+        tags: spm2-e2e
+        cache-from: type=gha,scope=e2e-image
+
+    - name: Run tests/run-${{ matrix.runner }}-e2e.sh
+      env:
+        E2E_SUITE: ${{ matrix.runner }}
+        PLUGIN_SOURCE: ${{ github.workspace }}/plugin-source
+        E2E_NETWORK: ${{ job.services.mariadb.network }}
+      run: |
+        set -euo pipefail
+        E2E_WORK="$RUNNER_TEMP/e2e"
+        mkdir -p "$E2E_WORK"
+        sh "plugin/tests/run-$E2E_SUITE-e2e.sh" "$E2E_WORK" 2>&1 | tee "$E2E_WORK/runner.log"
+
+    - name: Upload the logs
+      if: failure()
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: e2e-${{ matrix.runner }}-${{ matrix.cacti.name }}-logs
+        path: |
+          ${{ runner.temp }}/e2e/runner.log
+          ${{ runner.temp }}/e2e/log-*.txt
+          ${{ github.workspace }}/cacti/log/cacti.log
+        if-no-files-found: ignore
+
+  # The single check branch protection names: it fails unless every job above
+  # succeeded. A skipped or cancelled job is a failure, so a job removed from
+  # this list by mistake is the only way to lose coverage.
+  ci-ok:
+    name: ci-ok
+    if: ${{ always() }}
+    needs:
+      - workflow-lint
+      - release-tools
+      - entry-point-lint
+      - integration-test
+      - config-parser
+      - docs-commands
+      - e2e-image
+      - e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+    - name: Require every job to have succeeded
+      env:
+        NEEDS: ${{ toJSON(needs) }}
+      run: |
+        set -euo pipefail
+        echo "$NEEDS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+        echo "$NEEDS" | jq -e 'all(.[]; .result == "success")' >/dev/null

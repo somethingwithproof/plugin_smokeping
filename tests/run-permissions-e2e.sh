@@ -13,6 +13,7 @@ WORK=$(cd "$1" && pwd)
 CACTI_CORE=${CACTI_CORE:-$PLUGIN/../plugin-test-ws/cores/1.2.31}
 DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
 SP_DB_NAME=${SP_DB_NAME:-smokeping_m3c}
+. "$HERE/e2e-env.sh"
 
 # The database is created and loaded when it is missing.
 sh "$HERE/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
@@ -32,9 +33,9 @@ PRELUDE='ini=$(php -r "echo PHP_CONFIG_FILE_PATH;")/php.ini; [ -f "$ini" ] || { 
 
 status=0
 
-docker run --rm --network cpt --env-file "$DB_ENV" -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEST_DATABASE=disposable \
-	-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$FX":/cacti/rra/smokeping -w /cacti spm2-e2e \
-	sh -c "$PRELUDE sh plugins/smokeping/tests/permissions-e2e.sh" 2>&1 | grep -E "${RESULT_FILTER:-^RESULT}" || status=1
+e2e_docker -e SP_DB_NAME="$SP_DB_NAME" \
+	-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$FX":/cacti/rra/smokeping -w /cacti "$E2E_IMAGE" \
+	sh -c "$PRELUDE sh plugins/smokeping/tests/permissions-e2e.sh" 2>&1 | e2e_check "$WORK/log-permissions.txt" || status=1
 
 for dir in $made; do
 	[ "$dir" = "$CACTI_CORE/cache/smokeping" ] && rm -rf "$dir" || rmdir "$dir" 2>/dev/null || true

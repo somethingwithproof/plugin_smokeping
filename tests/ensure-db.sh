@@ -6,7 +6,7 @@
 #   sh tests/ensure-db.sh <database> <core dir> <db.env>
 #
 # The database name must start with smokeping_, so a runner can never touch
-# another database. Needs the `cpt` network and the `cpt-db` container.
+# another database. Needs the database network and container: `cpt` and `cpt-db`, or E2E_NETWORK and E2E_DB_HOST.
 set -eu
 
 DB=${1:?usage: ensure-db.sh <database> <core dir> <db.env>}
@@ -21,9 +21,9 @@ esac
 
 [ -f "$CORE/cacti.sql" ] || { echo "ensure-db: $CORE/cacti.sql not found" >&2; exit 2; }
 
-docker run --rm -i --network cpt --env-file "$DBENV" -e DB="$DB" -v "$CORE/cacti.sql":/cacti.sql:ro mariadb:10.11 sh -s <<'EOS'
+docker run --rm -i --network "${E2E_NETWORK:-cpt}" --env-file "$DBENV" -e DBHOST="${E2E_DB_HOST:-cpt-db}" -e DB="$DB" -v "$CORE/cacti.sql":/cacti.sql:ro "${E2E_MARIADB_IMAGE:-mariadb:10.11}" sh -s <<'EOS'
 set -eu
-root() { mariadb -h cpt-db -uroot -p"$MARIADB_ROOT_PASSWORD" "$@"; }
+root() { mariadb -h "$DBHOST" -uroot -p"$MARIADB_ROOT_PASSWORD" "$@"; }
 tables=$(root -N -e "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$DB' AND TABLE_NAME = 'settings'")
 if [ "$tables" = 0 ]; then
 	root -e "CREATE DATABASE IF NOT EXISTS \`$DB\`; GRANT ALL ON \`$DB\`.* TO \`$MARIADB_USER\`@\`%\`"

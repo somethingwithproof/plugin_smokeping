@@ -15,6 +15,7 @@ shift
 CACTI_CORE=${CACTI_CORE:-$PLUGIN/../plugin-test-ws/cores/1.2.31}
 DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
 SP_DB_NAME=${SP_DB_NAME:-smokeping_m4perf}
+. "$HERE/e2e-env.sh"
 
 sh "$HERE/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
 
@@ -30,13 +31,13 @@ for n in ${@:-100 1000 10000}; do
 	rm -rf "$fx"
 	mkdir -p "$fx"
 
-	docker run --rm -v "$PLUGIN":/p:ro -v "$fx":/fx spm2-e2e sh -c '
+	docker run --rm -v "$PLUGIN":/p:ro -v "$fx":/fx "$E2E_IMAGE" sh -c '
 		i=0; specs=""
 		while [ $i -lt '"$n"' ]; do specs="$specs Perf/g$((i / 100))/t$i:300:20:normal"; i=$((i + 1)); done
 		php /p/tests/bin/make-fixture-rrds.php /fx $specs' >/dev/null 2>&1
 
-	docker run --rm --network cpt --env-file "$DB_ENV" -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEST_DATABASE=disposable \
-		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$fx":/cacti/rra/smokeping:ro -w /cacti spm2-e2e \
+	e2e_docker -e SP_DB_NAME="$SP_DB_NAME" \
+		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$fx":/cacti/rra/smokeping:ro -w /cacti "$E2E_IMAGE" \
 		sh -c "$PRELUDE sh plugins/smokeping/tests/perf-e2e.sh $n" 2>&1 | grep -E '^PERF'
 
 	rm -rf "$fx"

@@ -142,7 +142,8 @@ row=$(thold_row "$loss_id")
 [ "$(notices "$loss_id" $ST_NOTIFYAL)" = "$alerts_before" ] && result PASS maint-suppresses-notification "no new notification in three breaching polls during maintenance" || result FAIL maint-suppresses-notification "$(notices "$loss_id" $ST_NOTIFYAL) vs $alerts_before"
 lastread=${row%% *}
 [ "$lastread" = 40 ] && result PASS measurements-continue-in-maint "loss_pct lastread still 40; the summary data source keeps being polled" || result FAIL measurements-continue-in-maint "$row"
-rrd=$(ls rra/*median_${sds}.rrd 2>/dev/null | head -1)
+# The data source's own file: other suites leave files with the same id suffix in a shared rra directory.
+rrd=$(q "SELECT REPLACE(data_source_path, '<path_rra>', 'rra') AS p FROM data_template_data WHERE local_data_id = ${sds:-0}" | jcell)
 last=$(rrdtool lastupdate "$rrd" 2>/dev/null | tail -1 | cut -d: -f1)
 [ -n "$last" ] && [ $(( $(date +%s) - last )) -lt 60 ] && result PASS summary-rrd-updated-in-maint "the Cacti RRD was updated $(( $(date +%s) - last )) s ago" || result FAIL summary-rrd-updated-in-maint "last update $last"
 

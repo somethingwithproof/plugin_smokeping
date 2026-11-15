@@ -21,11 +21,15 @@
 # Cacti's device, data source, and graph management pages and the plugin's
 # overview over HTTP with the devices alone (the baseline) and again with
 # every smoke and summary object, then two poller cycles. Prints PERF lines.
-#   SMOKEPING_TEST_DATABASE=disposable sh plugins/smokeping/tests/perf-objects-e2e.sh <N>
+# With PERF_OBJECTS=stock each device gets two graphs from Cacti's own Local
+# Linux Machine templates instead, the same number of graphs per series as the
+# plugin's, and the poller is not run: the comparison for REQ-PERF-002.
+#   SMOKEPING_TEST_DATABASE=disposable [PERF_OBJECTS=stock] sh plugins/smokeping/tests/perf-objects-e2e.sh <N>
 set -u
 
 N=${1:?series count}
 REQS=${PERF_REQUESTS:-20}
+MODE=${PERF_OBJECTS:-plugin}
 P=plugins/smokeping
 L="php $P/tests/bin/lifecycle.php"
 MOUNT=/cacti/rra/smokeping
@@ -79,24 +83,48 @@ time_page() {
 	echo
 }
 
+# stop <stage> <output>: a provisioning step failed, so the pages would be
+# timed on a partial population.
+stop() {
+	echo "PERF series=$N stage=$1 FAILED $2"
+	exit 1
+}
+
 pages() {
 	login
 	echo "$(time_page devices host.php) $(time_page data_sources data_sources.php) $(time_page graphs graphs.php) $(time_page overview plugins/smokeping/smokeping.php)"
 }
 
 t0=$(now)
-dev=$(php $P/tests/bin/perf-provision.php devices "$N")
+dev=$(php $P/tests/bin/perf-provision.php devices "$N") || stop devices "$dev"
 echo "PERF series=$N stage=devices $dev wall_s=$(since "$t0")"
 echo "PERF series=$N stage=baseline $(pages)"
 
+if [ "$MODE" = stock ]; then
+	# Stock graphs from a previous stock run are on devices reset removed; the
+	# templates stay, so the import is skipped when they exist.
+	[ -n "$(cell "SELECT id FROM graph_templates WHERE name = 'Unix - Load Average'")" ] || php cli/import_package.php --filename=install/templates/Local_Linux_Machine.xml.gz > "$WORK/import.out" 2>&1
+	t0=$(now)
+	obj=$(php $P/tests/bin/perf-provision.php stock 'Unix - Load Average' 'Linux - Memory Usage') || stop stock_objects "$obj"
+	echo "PERF series=$N stage=stock_objects $obj wall_s=$(since "$t0") rows='$(cell "SELECT CONCAT((SELECT COUNT(*) FROM data_template_rrd WHERE local_data_id > 0), ' data_template_rrd, ', (SELECT COUNT(*) FROM graph_templates_item WHERE local_graph_id > 0), ' graph items, ', (SELECT COUNT(*) FROM graph_local), ' graphs')")'"
+	echo "PERF series=$N stage=stock $(pages)"
+	exit 0
+fi
+
 t0=$(now)
-obj=$(php $P/tests/bin/perf-provision.php objects)
+obj=$(php $P/tests/bin/perf-provision.php objects) || stop objects "$obj"
 echo "PERF series=$N stage=objects $obj wall_s=$(since "$t0") rows='$(cell "SELECT CONCAT((SELECT COUNT(*) FROM data_template_rrd WHERE local_data_id > 0), ' data_template_rrd, ', (SELECT COUNT(*) FROM graph_templates_item WHERE local_graph_id > 0), ' graph items, ', (SELECT COUNT(*) FROM poller_item), ' poller items')")'"
 echo "PERF series=$N stage=provisioned $(pages)"
 
 # Two cycles: the first creates the RRD files, the second is a steady cycle.
+# poller_bottom starts the reader in the background, so each cycle waits for
+# it to finish: the next cycle must not overlap it, as 300 s apart they never
+# do. The reader's own time is its health row.
 for c in first steady; do
 	t0=$(now)
 	php poller.php --force > "$WORK/poller-$c.out" 2>&1
-	echo "PERF series=$N stage=poller_$c wall_s=$(since "$t0") stats='$(grep -o 'SYSTEM STATS:.*' log/cacti.log 2>/dev/null | tail -1 | cut -c1-200)'"
+	poller=$(since "$t0")
+	n=0
+	while pgrep -f poller_smokeping.php > /dev/null && [ $n -lt 600 ]; do sleep 1; n=$((n + 1)); done
+	echo "PERF series=$N stage=poller_$c wall_s=$poller reader_s=$(cell "SELECT ROUND(run_duration, 1) FROM plugin_smokeping_health WHERE poller_id = 1") stats='$(grep -o 'SYSTEM STATS:.*' log/cacti.log 2>/dev/null | tail -1 | cut -c1-200)'"
 done

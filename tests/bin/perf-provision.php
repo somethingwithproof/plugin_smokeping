@@ -25,6 +25,10 @@
  *                                           each with its own device
  *   php perf-provision.php objects          the summary and smoke data source
  *                                           and graph for every mapped target
+ *   php perf-provision.php stock <name>...  instead, one graph from each named
+ *                                           stock Cacti graph template on every
+ *                                           mapped device: the comparison for
+ *                                           REQ-PERF-002
  *
  * Disposable databases only. Prints one line: the counts and the seconds.
  */
@@ -57,6 +61,7 @@ $provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner(
 $start = microtime(true);
 $done  = 0;
 $fail  = 0;
+$empty = array();
 
 if (($argv[1] ?? '') === 'devices') {
 	$count = (int) ($argv[2] ?? 0);
@@ -115,5 +120,38 @@ if (($argv[1] ?? '') === 'objects') {
 	exit($fail === 0 ? 0 : 1);
 }
 
-fwrite(STDERR, "usage: perf-provision.php devices <count> | objects\n");
+if (($argv[1] ?? '') === 'stock' && count($argv) > 2) {
+	include_once($config['base_path'] . '/lib/template.php');
+	include_once($config['base_path'] . '/lib/api_automation_tools.php');
+
+	$templates = array();
+
+	foreach (array_slice($argv, 2) as $name) {
+		$id = (int) db_fetch_cell_prepared('SELECT id FROM graph_templates WHERE name = ?', array($name));
+
+		if ($id === 0) {
+			fwrite(STDERR, 'No graph template ' . $name . PHP_EOL);
+			exit(1);
+		}
+
+		$templates[] = $id;
+	}
+
+	foreach (db_fetch_assoc('SELECT host_id FROM plugin_smokeping_mapping ORDER BY host_id') as $row) {
+		foreach ($templates as $id) {
+			$graph = create_complete_graph_from_template($id, (int) $row['host_id'], array(), $empty);
+
+			if (!empty($graph['local_graph_id'])) {
+				$done++;
+			} else {
+				$fail++;
+			}
+		}
+	}
+
+	printf("graphs=%d failed=%d seconds=%.1f\n", $done, $fail, microtime(true) - $start);
+	exit($fail === 0 ? 0 : 1);
+}
+
+fwrite(STDERR, "usage: perf-provision.php devices <count> | objects | stock <graph template>...\n");
 exit(2);

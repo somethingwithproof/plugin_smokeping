@@ -44,7 +44,7 @@ done
 
 for n in ${@:-100 1000 10000}; do
 	fx="$WORK/perf-$n"
-	rm -rf "$fx"
+	e2e_rm "$fx"
 	mkdir -p "$fx"
 
 	docker run --rm -v "$PLUGIN":/p:ro -v "$fx":/fx "$E2E_IMAGE" sh -c '
@@ -52,11 +52,19 @@ for n in ${@:-100 1000 10000}; do
 		while [ $i -lt '"$n"' ]; do specs="$specs Perf/g$((i / 100))/t$i:300:20:normal"; i=$((i + 1)); done
 		php /p/tests/bin/make-fixture-rrds.php /fx $specs' >/dev/null 2>&1
 
-	e2e_docker -e SP_DB_NAME="$SP_DB_NAME" -e PERF_REQUESTS="${PERF_REQUESTS:-20}" \
+	# The container's status, not grep's, decides; a failed run keeps its log.
+	status=0
+	e2e_docker -e SP_DB_NAME="$SP_DB_NAME" -e PERF_REQUESTS="${PERF_REQUESTS:-20}" -e PERF_OBJECTS="${PERF_OBJECTS:-plugin}" \
 		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$fx":/cacti/rra/smokeping:ro -w /cacti "$E2E_IMAGE" \
-		sh -c "$PRELUDE sh plugins/smokeping/tests/perf-objects-e2e.sh $n" 2>&1 | grep -E '^PERF'
+		sh -c "$PRELUDE sh plugins/smokeping/tests/perf-objects-e2e.sh $n" > "$WORK/log-$n.txt" 2>&1 || status=$?
+	grep -E '^PERF' "$WORK/log-$n.txt" || true
 
-	rm -rf "$fx"
+	e2e_rm "$fx"
+
+	if [ "$status" -ne 0 ]; then
+		echo "run-perf-objects: the $n-series run failed (status $status); full output in $WORK/log-$n.txt" >&2
+		exit "$status"
+	fi
 done
 
 for dir in $made; do

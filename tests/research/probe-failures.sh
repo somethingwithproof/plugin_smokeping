@@ -31,7 +31,7 @@ OUT=${1:?usage: probe-failures.sh <work-dir>}
 mkdir -p "$OUT"
 STEP=20
 PINGS=3
-VERSIONS="ubuntu:22.04:2.7.3 debian:13:2.8.2 fedora:45:2.9.0"
+. "$(cd "$(dirname "$0")" && pwd)/images.sh"
 V6='--sysctl net.ipv6.conf.all.disable_ipv6=0 --sysctl net.ipv6.conf.lo.disable_ipv6=0'
 NORAW='--cap-drop NET_RAW --sysctl net.ipv4.ping_group_range=1\ 0'
 
@@ -54,17 +54,7 @@ FPing6|ipv6-disabled|::1|binary = @FPING@|--sysctl net.ipv6.conf.all.disable_ipv
 TCPPing|missing-binary|127.0.0.1|binary = /usr/bin/tcpping-missing;forks = 1|
 TCPPing|binary-exits-with-error|127.0.0.1|binary = /bin/false;forks = 1|"
 
-for spec in $VERSIONS; do
-	distro=${spec%%:*}
-	release=${spec#*:}; release=${release%%:*}
-	image=spfail-$distro:$release
-	docker image inspect "$image" >/dev/null 2>&1 && continue
-	case $distro in
-		fedora) install='dnf install -y -q smokeping fping rrdtool && dnf clean all' ;;
-		*) install='apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends smokeping fping rrdtool >/dev/null && rm -rf /var/lib/apt/lists/*' ;;
-	esac
-	printf 'FROM %s:%s\nRUN %s\n' "$distro" "$release" "$install" | docker build -q -t "$image" - >/dev/null
-done
+research_images
 
 config() { # <probe> <host> <probe options>
 	cat <<CONF

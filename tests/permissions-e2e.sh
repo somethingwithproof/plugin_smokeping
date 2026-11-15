@@ -412,6 +412,20 @@ else
 	result FAIL graph-button-absent-on-other-device "no graph of an unmapped device to check"
 fi
 
+# A plugin graph goes in a tree like any Cacti graph: a graph leaf under a
+# branch, saved through Cacti's tree API, shows on the tree page, which
+# writes each graph as a wrapper_<id> element its script fills.
+leaf=$(php -r 'chdir("/cacti"); include("./include/cli_check.php"); include_once("./lib/api_tree.php");
+	db_execute("INSERT INTO graph_tree (enabled, name, sort_type, sequence, user_id, last_modified, modified_by) VALUES (\"on\", \"SmokePing Leaf\", 1, 99, 1, NOW(), 1)");
+	$tree = db_fetch_insert_id();
+	$branch = api_tree_item_save(0, $tree, TREE_ITEM_TYPE_HEADER, 0, "Smoke", 0, 0, 0, 1, 1, false);
+	$item = api_tree_item_save(0, $tree, TREE_ITEM_TYPE_GRAPH, $branch, "", (int) $argv[1], 0, 0, 1, 1, false);
+	echo $branch . " " . $item;' "$mapped_graph" 2>/dev/null)
+branch=${leaf%% *}
+page=$(get admin "graph_view.php?action=tree_content&node=tbranch-$branch&host_id=-1&site_id=-1&host_template_id=-1&hgd=")
+check graph-in-tree "graph $mapped_graph as a leaf of branch $branch" sh -c 'echo "$1" | grep -q "id=.wrapper_$2."' x "$page" "$mapped_graph"
+php -r 'chdir("/cacti"); include("./include/cli_check.php"); foreach (db_fetch_assoc("SELECT id FROM graph_tree WHERE name = \"SmokePing Leaf\"") as $t) { db_execute_prepared("DELETE FROM graph_tree_items WHERE graph_tree_id = ?", array($t["id"])); db_execute_prepared("DELETE FROM graph_tree WHERE id = ?", array($t["id"])); }'
+
 # Translations: with language support on, each locale Cacti 1.2 offers shows
 # the plugin's own catalog. Cacti has no Latin American Spanish locale, so
 # es-419 ships for when it does and is not requested here.

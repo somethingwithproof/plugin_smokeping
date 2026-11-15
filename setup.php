@@ -563,6 +563,13 @@ function smokeping_graph_buttons($data) {
 	$hostId  = $links->deviceFor($graphId);
 
 	if ($hostId > 0) {
+		static $styled = false;
+
+		if (!$styled) {
+			print \Somethingwithproof\Smokeping\GraphLinks::style();
+			$styled = true;
+		}
+
 		print \Somethingwithproof\Smokeping\GraphLinks::html($config['url_path'], $hostId);
 	}
 

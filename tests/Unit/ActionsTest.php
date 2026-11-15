@@ -68,6 +68,12 @@ describe('GraphLinks', function () {
 		expect($html)->toContain('smokeping.php?host_id=12')
 			->and($html)->not->toContain('<b>');
 	});
+
+	it('gives the link a focus ring of its own that shows on light and dark themes', function () {
+		expect(GraphLinks::html('/cacti/', 12))->toContain('class="iconLink smokepingGraphLink"')
+			->and(GraphLinks::style())->toContain('a.smokepingGraphLink:focus-visible{outline:2px solid #fff')
+			->and(GraphLinks::style())->toContain('box-shadow:0 0 0 4px #000');
+	});
 });
 
 describe('Html::link', function () {

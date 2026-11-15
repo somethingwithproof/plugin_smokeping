@@ -120,6 +120,11 @@ jobs:
           case "$REF_NAME" in main) ;; *) exit 1 ;; esac
           args="-Dsonar.branch.name=$REF_NAME"
         fi
+        # New code is the code since the version in INFO changed (SonarCloud's
+        # "previous version" definition).
+        version=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' INFO)
+        [[ "$version" =~ ^[0-9A-Za-z.+-]+$ ]]
+        args="$args -Dsonar.projectVersion=$version"
         echo "args=$args" >> "$GITHUB_OUTPUT"
 
     - name: Analyze and wait for the quality gate

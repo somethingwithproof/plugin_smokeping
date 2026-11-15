@@ -323,23 +323,20 @@ if ($smokeping_command === 'upgrade-graphs' && $smokeping_paths === []) {
 	$smokeping_retemplater = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
 	$smokeping_version     = (int) read_config_option(\Somethingwithproof\Smokeping\TemplateInstaller::SETTING);
 	$smokeping_totals      = ['upgraded' => 0, 'failed' => 0];
-	$smokeping_objects     = new \Somethingwithproof\Smokeping\ObjectRepository(false);
+	$smokeping_after       = 0;
 
-	// Graphs that failed before are tried again, once each: a batch marks each
-	// graph upgraded or failed, so the next one moves on. The batch count
-	// bounds the run in case a mark cannot be written.
-	$smokeping_objects->clearTemplateFailures();
-	$smokeping_batches = intdiv($smokeping_objects->countGraphsBehindTemplates($smokeping_version), \Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH) + 1;
+	// Graphs that failed before are tried again, once each. Each batch starts
+	// after the last graph the one before handled, so the run reaches every
+	// graph once and ends, even when a graph's result cannot be recorded.
+	(new \Somethingwithproof\Smokeping\ObjectRepository(false))->clearTemplateFailures();
 
-	for ($smokeping_i = 0; $smokeping_i < $smokeping_batches; $smokeping_i++) {
-		$smokeping_batch = $smokeping_retemplater->retemplateDue($smokeping_version, \Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH);
+	do {
+		$smokeping_batch = $smokeping_retemplater->retemplateDue($smokeping_version, \Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH, $smokeping_after);
 		$smokeping_totals['upgraded'] += $smokeping_batch['upgraded'];
 		$smokeping_totals['failed']   += $smokeping_batch['failed'];
-
-		if ($smokeping_batch['upgraded'] + $smokeping_batch['failed'] === 0) {
-			break;
-		}
-	}
+		$smokeping_moved               = $smokeping_batch['last'] > $smokeping_after;
+		$smokeping_after               = $smokeping_batch['last'];
+	} while ($smokeping_moved);
 
 	print sprintf('Upgraded %d graphs to templates version %d; %d failed (see the Cacti log)', $smokeping_totals['upgraded'], $smokeping_version, $smokeping_totals['failed']) . PHP_EOL;
 

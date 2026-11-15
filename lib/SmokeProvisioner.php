@@ -471,15 +471,21 @@ final class SmokeProvisioner {
 	 * transaction, so it renders with the old items or the new ones, never a
 	 * mix whose am/s reads a VDEF the graph does not define.
 	 *
-	 * @return array{upgraded: int, failed: int}
+	 * The batch starts after graph $after; "last" is the last graph it
+	 * handled, or $after when there was none, for the next batch to start
+	 * after.
+	 *
+	 * @return array{upgraded: int, failed: int, last: int}
 	 */
-	public function retemplateDue(int $installedVersion, int $batch): array {
+	public function retemplateDue(int $installedVersion, int $batch, int $after = 0): array {
 		include_once($this->coreLibrary . '/template.php');
 		include_once($this->coreLibrary . '/variables.php');
 
-		$counts = ['upgraded' => 0, 'failed' => 0];
+		$counts = ['upgraded' => 0, 'failed' => 0, 'last' => $after];
 
-		foreach ($this->objects->graphsBehindTemplates($installedVersion, $batch) as $localGraphId) {
+		foreach ($this->objects->graphsBehindTemplates($installedVersion, $batch, $after) as $localGraphId) {
+			$counts['last'] = $localGraphId;
+
 			try {
 				$done = $this->cacti->transaction(function () use ($localGraphId, $installedVersion): bool {
 					if (!$this->cacti->retemplateGraph($localGraphId)) {

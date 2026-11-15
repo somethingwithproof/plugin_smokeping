@@ -187,29 +187,20 @@ final class ObjectRepository {
 
 	/**
 	 * The plugin's graphs whose items follow templates older than $version,
-	 * at most $limit of them. A graph deleted in Cacti is left out.
+	 * at most $limit of them, in id order from the first id above $after. A
+	 * graph deleted in Cacti is left out.
 	 *
 	 * @return list<int> local graph ids
 	 */
-	public function graphsBehindTemplates(int $version, int $limit): array {
+	public function graphsBehindTemplates(int $version, int $limit, int $after = 0): array {
 		$rows = Row::rows(db_fetch_assoc_prepared('SELECT o.local_graph_id
 			FROM plugin_smokeping_object AS o
 			INNER JOIN graph_local AS gl ON gl.id = o.local_graph_id
-			WHERE ' . self::BEHIND_TEMPLATES . '
+			WHERE ' . self::BEHIND_TEMPLATES . ' AND o.local_graph_id > ?
 			ORDER BY o.local_graph_id
-			LIMIT ' . max(0, $limit), [$version, $version, self::ACTIVE, self::ARCHIVED, self::SUMMARY], true, $this->connection));
+			LIMIT ' . max(0, $limit), [$version, $version, self::ACTIVE, self::ARCHIVED, self::SUMMARY, $after], true, $this->connection));
 
 		return array_map(fn (array $row) => Row::int($row, 'local_graph_id'), $rows);
-	}
-
-	/**
-	 * How many graphs graphsBehindTemplates() has left to give.
-	 */
-	public function countGraphsBehindTemplates(int $version): int {
-		return (int) db_fetch_cell_prepared('SELECT COUNT(*)
-			FROM plugin_smokeping_object AS o
-			INNER JOIN graph_local AS gl ON gl.id = o.local_graph_id
-			WHERE ' . self::BEHIND_TEMPLATES, [$version, $version, self::ACTIVE, self::ARCHIVED, self::SUMMARY], '', true, $this->connection);
 	}
 
 	public function recordTemplateVersion(int $localGraphId, int $version): bool {

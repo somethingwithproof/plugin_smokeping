@@ -189,7 +189,7 @@ describe('SmokeProvisioner::retemplateDue', function () {
 		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
 		$GLOBALS['__gtu_change']         = fn () => throw new RuntimeException('boom');
 
-		expect(gtu_provisioner()->retemplateDue(3, 200))->toBe(['upgraded' => 0, 'failed' => 2])
+		expect(gtu_provisioner()->retemplateDue(3, 200))->toBe(['upgraded' => 0, 'failed' => 2, 'last' => 5])
 			->and(gtu_writes('SET template_version'))->toBe([])
 			->and(array_column(gtu_writes('SET template_failed = ? WHERE'), 'params'))->toBe([[3, 4], [3, 5]]);
 	});
@@ -206,7 +206,7 @@ describe('SmokeProvisioner::retemplateDue', function () {
 			default => null,
 		}, $GLOBALS['__smokeping_db_exec'])));
 
-		expect($counts)->toBe(['upgraded' => 1, 'failed' => 0])
+		expect($counts)->toBe(['upgraded' => 1, 'failed' => 0, 'last' => 4])
 			->and($order)->toBe(['BEGIN', 'version', 'COMMIT'])
 			->and($GLOBALS['__gtu_titles'])->toBe([4]);
 	});
@@ -220,7 +220,7 @@ describe('SmokeProvisioner::retemplateDue', function () {
 		$counts = gtu_provisioner()->retemplateDue(3, 200);
 		$sql    = array_column($GLOBALS['__smokeping_db_exec'], 'sql');
 
-		expect($counts)->toBe(['upgraded' => 0, 'failed' => 1])
+		expect($counts)->toBe(['upgraded' => 0, 'failed' => 1, 'last' => 4])
 			->and(array_slice($sql, 0, 2))->toBe(['BEGIN', 'ROLLBACK'])
 			->and(gtu_writes('SET template_version'))->toBe([])
 			->and(gtu_writes('SET template_failed = ? WHERE')[0]['params'])->toBe([3, 4])
@@ -232,9 +232,28 @@ describe('SmokeProvisioner::retemplateDue', function () {
 		gtu_cacti(1);
 		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
 
-		expect(gtu_provisioner()->retemplateDue(3, 200))->toBe(['upgraded' => 0, 'failed' => 1])
+		expect(gtu_provisioner()->retemplateDue(3, 200))->toBe(['upgraded' => 0, 'failed' => 1, 'last' => 4])
 			->and(array_column($GLOBALS['__smokeping_db_exec'], 'sql'))->toContain('ROLLBACK')
 			->and(gtu_writes('SET template_version'))->toBe([]);
+	});
+
+	it('moves past a failed graph whose failure mark cannot be written', function () {
+		$GLOBALS['__smokeping_db_assoc'] = [['local_graph_id' => '4'], ['local_graph_id' => '7']];
+		gtu_cacti();
+		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
+		$GLOBALS['__gtu_change']         = false;
+		$GLOBALS['__smokeping_db_fail']  = 'SET template_failed';
+
+		$first = gtu_provisioner()->retemplateDue(3, 2, 0);
+		$GLOBALS['__smokeping_db_assoc'] = [];
+		$next  = gtu_provisioner()->retemplateDue(3, 2, $first['last']);
+		$query = end($GLOBALS['__smokeping_db_queries']);
+
+		expect($first)->toBe(['upgraded' => 0, 'failed' => 2, 'last' => 7])
+			->and(end($query['params']))->toBe(7)
+			->and($next)->toBe(['upgraded' => 0, 'failed' => 0, 'last' => 7]);
+
+		$GLOBALS['__smokeping_db_fail'] = null;
 	});
 });
 
@@ -256,10 +275,14 @@ describe('ObjectRepository template failures', function () {
 		$GLOBALS['__smokeping_db_affected'] = 1;
 	});
 
-	it('counts the graphs still behind', function () {
-		gtu_cacti(7);
+	it('starts a batch after the last graph of the one before', function () {
+		$objects = new ObjectRepository(false);
 
-		expect((new ObjectRepository(false))->countGraphsBehindTemplates(3))->toBe(7);
+		$objects->graphsBehindTemplates(3, 200, 41);
+		$query = end($GLOBALS['__smokeping_db_queries']);
+
+		expect($query['sql'])->toContain('AND o.local_graph_id > ?')
+			->and(end($query['params']))->toBe(41);
 	});
 });
 

@@ -4,20 +4,28 @@
 // Keyboard focus and contrast of the SmokePing graph link, for one Cacti
 // theme; docs/research/graph-link-themes.md has the method and results.
 //
-//   node graph-link-check.mjs <theme>
+//   CACTI_URL=<cacti base URL> node graph-link-check.mjs <theme>
 //
-// Reads the Cacti URL from CACTI_URL (default http://sp-a11y:8099/cacti),
-// the admin password from /run81/pw, and the id of a graph of a device
-// with SmokePing targets from /run81/graph. Prints one JSON line. With
-// SHOTS set, writes the focused and unfocused images to /shots.
+// Run it from a directory whose node_modules holds playwright. Reads the
+// admin password from /run81/pw and the id of a graph of a device with
+// SmokePing targets from /run81/graph. Prints one JSON line. With SHOTS
+// set, writes the focused and unfocused images to /shots.
 
-import { chromium } from '/node/node_modules/playwright/index.mjs';
+import { chromium } from 'playwright';
 import fs from 'node:fs';
 
-const base = process.env.CACTI_URL || 'http://sp-a11y:8099/cacti';
+const base = process.env.CACTI_URL;
+// Cacti 1.2.31's themes; the name also names the image files.
+const themes = ['classic', 'dark', 'midwinter', 'modern', 'paper-plane', 'paw', 'sunrise'];
 const pw = fs.readFileSync('/run81/pw', 'utf8').trim();
 const graph = fs.readFileSync('/run81/graph', 'utf8').trim();
-const theme = process.argv[2];
+// The theme comes from the list, never from argv, since it names files.
+const theme = themes.find(t => t === process.argv[2]);
+
+if (!base || theme === undefined) {
+	console.error(`usage: CACTI_URL=<url> node graph-link-check.mjs <${themes.join('|')}>`);
+	process.exit(2);
+}
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
@@ -42,7 +50,7 @@ const actualTheme = await page.evaluate(() => [...document.querySelectorAll('lin
 // the ring of pixels just outside the link, which is the real background
 // (themes draw it with gradients and images).
 const contrast = async (loc) => {
-	await page.evaluate(() => document.activeElement && document.activeElement.blur());
+	await page.evaluate(() => document.activeElement?.blur());
 	await page.mouse.move(0, 0);
 	await loc.scrollIntoViewIfNeeded();
 	const r = await loc.locator('img').evaluate(i => { const b = i.getBoundingClientRect(); return { x: b.left, y: b.top, width: b.width, height: b.height }; });
@@ -70,7 +78,7 @@ const contrast = async (loc) => {
 
 // Reach the link with Tab, then compare its pixels unfocused and focused.
 const reachByTab = async (loc) => {
-	await page.evaluate(() => { document.activeElement && document.activeElement.blur(); window.scrollTo(0, 0); });
+	await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
 	for (let i = 1; i <= 300; i++) {
 		await page.keyboard.press('Tab');
 		if (await loc.evaluate(a => a === document.activeElement)) return i;
@@ -94,7 +102,7 @@ const focusVisible = async (loc) => {
 	return { tabs, changed: !before.equals(after), style, stayed: page.url().includes('graph.php') };
 };
 
-const result = { theme, actualTheme: actualTheme.replace(/.*\/themes\//, ''), links: count, forcedOpacity };
+const result = { theme, actualTheme: actualTheme.slice(actualTheme.lastIndexOf('/themes/') + 8).split('/')[0], links: count, forcedOpacity };
 if (count > 0) {
 	result.ours = { contrast: await contrast(ours), focus: await focusVisible(ours) };
 	const core = page.locator('a.iconLink:not([href*="smokeping.php"])').first();

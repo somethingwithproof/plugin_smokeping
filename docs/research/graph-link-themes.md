@@ -7,7 +7,7 @@ Research for [#40](https://github.com/somethingwithproof/plugin_smokeping/issues
 ## Method
 
 1. `tests/run-permissions-e2e.sh` built a Cacti 1.2.31 database with SmokePing targets; `cli/smokeping.php provision` then made a device with a summary and a smoke graph. Cacti was served with PHP's built-in server.
-2. `tests/a11y/graph-link-check.mjs` ran in the `mcr.microsoft.com/playwright:v1.49.1-noble` image (Chromium 1148, headless, 1280×900), once per theme, with the theme set for the user and globally. It logs in, opens the graph page, and for the plugin's link and for the first of Cacti's own graph buttons on the page:
+2. `tests/a11y/graph-link-check.mjs`, from a directory with `playwright@1.49.1` installed and `CACTI_URL` set, ran in the `mcr.microsoft.com/playwright:v1.49.1-noble` image (Chromium 1148, headless, 1280×900), once per theme, with the theme set for the user and globally. It logs in, opens the graph page, and for the plugin's link and for the first of Cacti's own graph buttons on the page:
    - counts Tab presses from the top of the page until the link has focus;
    - takes the link's area with keyboard focus and again after `blur()` (which does not scroll), and compares the two;
    - computes the contrast of the most contrasting icon pixel against the median of the pixels just outside the link, from a screenshot, so gradients and background images count.

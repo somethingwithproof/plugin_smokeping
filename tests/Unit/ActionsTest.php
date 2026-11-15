@@ -74,6 +74,16 @@ describe('GraphLinks', function () {
 			->and(GraphLinks::style())->toContain('a.smokepingGraphLink:focus-visible{outline:2px solid #fff')
 			->and(GraphLinks::style())->toContain('box-shadow:0 0 0 4px #000');
 	});
+
+	it('prints the focus rule once per request, before the first link', function () {
+		(new ReflectionProperty(GraphLinks::class, 'styled'))->setValue(null, false);
+
+		$first  = GraphLinks::forPage('/cacti/', 12);
+		$second = GraphLinks::forPage('/cacti/', 13);
+
+		expect($first)->toStartWith('<style>')->toContain('host_id=12')
+			->and($second)->not->toContain('<style>')->toContain('host_id=13');
+	});
 });
 
 describe('Html::link', function () {

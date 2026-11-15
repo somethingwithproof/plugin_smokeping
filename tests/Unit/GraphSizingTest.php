@@ -164,6 +164,7 @@ describe('SmokeProvisioner::title', function () {
 
 		expect($provisioner->title('Europe/paris', 'SmokePing', ''))->toBe('Europe/paris - SmokePing')
 			->and($provisioner->title('Europe/paris', 'SmokePing', 'oslo'))->toBe('Europe/paris - SmokePing (oslo)')
-			->and($provisioner->title('Europe/paris', 'SmokePing Summary', 'oslo'))->toBe('Europe/paris - SmokePing Summary (oslo)');
+			->and($provisioner->title('Europe/paris', 'SmokePing Summary', 'oslo'))
+			->toBe('Europe/paris - SmokePing Summary (oslo)');
 	});
 });

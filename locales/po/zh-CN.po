@@ -189,12 +189,12 @@ msgstr "读取器上次运行在 %d 秒前结束，已超过三个轮询周期�
 #: lib/HealthCheck.php
 #, php-format
 msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
-msgstr "读取器在 %3$.1f 秒内读取了 %1$d / %2$d 个序列，并已超出其时间预算 %4$d 次。"
+msgstr "读取器读取了 %d / %d 个序列，用时 %.1f 秒，已超出时间预算 %d 次。"
 
 #: lib/HealthCheck.php
 #, php-format
 msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
-msgstr "读取器在 %3$.1f 秒内读取了 %1$d / %2$d 个序列，发生在 %4$d 秒前。"
+msgstr "读取器读取了 %d / %d 个序列，用时 %.1f 秒，发生在 %d 秒前。"
 
 #: lib/HealthCheck.php
 msgid "No inventory has been read on this poller."
@@ -1011,7 +1011,7 @@ msgstr "已映射到设备 %d"
 #: lib/TargetActions.php
 #, php-format
 msgid "summary graph %d for %s"
-msgstr "%2$s 的汇总图形 %1$d"
+msgstr "汇总图形 %d（%s）"
 
 #: lib/TargetActions.php
 #, php-format
@@ -1021,7 +1021,7 @@ msgstr "%s 没有汇总：%s"
 #: lib/TargetActions.php
 #, php-format
 msgid "smoke graph %d for %s"
-msgstr "%2$s 的烟雾图 %1$d"
+msgstr "烟雾图 %d（%s）"
 
 #: lib/TargetActions.php
 #, php-format

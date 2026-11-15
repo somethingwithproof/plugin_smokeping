@@ -189,12 +189,12 @@ msgstr "リーダーの最後の実行は %d 秒前に終了しており、ポ�
 #: lib/HealthCheck.php
 #, php-format
 msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
-msgstr "リーダーは %3$.1f 秒で %1$d / %2$d 件の系列を読み取り、時間予算を %4$d 回超過しました。"
+msgstr "リーダーは %d / %d 件の系列を %.1f 秒で読み取り、時間予算を %d 回超過しました。"
 
 #: lib/HealthCheck.php
 #, php-format
 msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
-msgstr "リーダーは %3$.1f 秒で %1$d / %2$d 件の系列を読み取りました(%4$d 秒前)。"
+msgstr "リーダーは %d / %d 件の系列を %.1f 秒で読み取りました(%d 秒前)。"
 
 #: lib/HealthCheck.php
 msgid "No inventory has been read on this poller."
@@ -974,7 +974,7 @@ msgstr "デバイス %d をツリーに追加できませんでした"
 #: lib/SmokepingImportService.php
 #, php-format
 msgid "device %d under tree branch %s"
-msgstr "ツリーブランチ %2$s の下のデバイス %1$d"
+msgstr "デバイス %d(ツリーブランチ %s の下)"
 
 #: lib/TargetActions.php
 msgid "the target has not been saved yet"
@@ -1011,7 +1011,7 @@ msgstr "デバイス %d にマッピングしました"
 #: lib/TargetActions.php
 #, php-format
 msgid "summary graph %d for %s"
-msgstr "%2$s の概要グラフ %1$d"
+msgstr "概要グラフ %d(%s)"
 
 #: lib/TargetActions.php
 #, php-format
@@ -1021,7 +1021,7 @@ msgstr "%s の概要なし: %s"
 #: lib/TargetActions.php
 #, php-format
 msgid "smoke graph %d for %s"
-msgstr "%2$s のスモークグラフ %1$d"
+msgstr "スモークグラフ %d(%s)"
 
 #: lib/TargetActions.php
 #, php-format

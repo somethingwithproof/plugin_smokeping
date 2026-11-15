@@ -34,7 +34,7 @@ set -u
 
 P=plugins/smokeping
 L="php $P/tests/bin/lifecycle.php"
-FX=/cacti/rra/smokeping/Alert/probe.rrd
+FX=/cacti/rra/smokeping/Alert/gateway.rrd
 fail=0
 result() {
 	echo "RESULT $1 $2${3:+ ($3)}"
@@ -67,21 +67,24 @@ done
 
 result INFO versions "thold $(sed -n 's/^version = //p' plugins/thold/INFO), maint $(sed -n 's/^version = //p' plugins/maint/INFO), Cacti $(q "SELECT cacti AS v FROM version" | jcell)"
 
-php $P/tests/bin/make-fixture-rrds.php /cacti/rra/smokeping Alert/probe:300:20:normal Alert/stale:300:20:stale
-$L add_target "Alert/probe:probe.example:20:300" >/dev/null
+php $P/tests/bin/make-fixture-rrds.php /cacti/rra/smokeping Alert/gateway:300:20:normal Alert/stale:300:20:stale
+$L add_target "Alert/gateway:gateway.example:20:300" >/dev/null
 $L add_target "Alert/stale:stale.example:20:300" >/dev/null
 
 # The reader reads a configuration that lists both targets, so the inventory
-# keeps them present, as it would on a SmokePing host.
+# keeps them present, as it would on a SmokePing host. No target may be named
+# probe: SmokePing refuses a section named after a variable it inherits.
 {
 	printf '*** General ***\nowner = o\ncontact = o@example.net\ncgiurl = http://localhost/\nimgcache = /c\nimgurl = c\ndatadir = /cacti/rra/smokeping\npiddir = /run\nsmokemail = /m\n'
 	printf '*** Database ***\nstep = 300\npings = 20\n*** Presentation ***\ntemplate = /t\n+ overview\nwidth = 600\nheight = 50\n+ detail\nwidth = 600\nheight = 200\n'
-	printf '*** Probes ***\n+ FPing\nbinary = /usr/bin/fping\n*** Targets ***\nprobe = FPing\nmenu = Top\ntitle = Top\n'
-	printf '+ Alert\nmenu = Alert\ntitle = Alert\n++ probe\nhost = probe.example\n++ stale\nhost = stale.example\n'
+	printf '*** Probes ***\n+ FPing\nbinary = /usr/bin/fping\n'
+	printf '*** Alerts ***\nto = alertee@example.net\nfrom = smokealert@example.net\n+ someloss\ntype = loss\npattern = >0%%,*12*,>0%%,*12*,>0%%\ncomment = loss 3 times in a row\n'
+	printf '*** Targets ***\nprobe = FPing\nmenu = Top\ntitle = Top\n'
+	printf '+ Alert\nmenu = Alert\ntitle = Alert\n++ gateway\nhost = gateway.example\nalerts = someloss\n++ stale\nhost = stale.example\n'
 } > /cacti/rra/smokeping/alert.conf
 $L set_setting "smokeping_config_file=/cacti/rra/smokeping/alert.conf" >/dev/null
 
-out=$(php $P/cli/smokeping.php provision Alert/probe 2>&1)
+out=$(php $P/cli/smokeping.php provision Alert/gateway 2>&1)
 dev=$(echo "$out" | sed -n 's/^Created device \([0-9]*\)$/\1/p')
 sds=$(echo "$out" | sed -n 's/^Summary data source \([0-9]*\) graph \([0-9]*\)$/\1/p')
 [ -n "$dev" ] && [ -n "$sds" ] && result PASS provisioned "device $dev, summary data source $sds" || { result FAIL provisioned "$out"; exit 1; }
@@ -123,6 +126,15 @@ row=$(thold_row "$loss_id")
 [ "$row" = "0 0 0" ] && result PASS thold-receives-script-server-values "loss_pct lastread 0 from the script server, no alert" || result FAIL thold-receives-script-server-values "$row"
 row=$(q "SELECT arg1 FROM poller_item WHERE local_data_id = $sds" | jcell)
 echo "$row" | grep -q 'ss_smokeping_summary' && result PASS summary-polled-by-script-server "$row" || result FAIL summary-polled-by-script-server "$row"
+
+# The health page lists the target that alerts in SmokePing and has Thold
+# thresholds, and not the one with thresholds alone.
+php $P/poller_smokeping.php --inventory >/dev/null 2>&1
+dual=$(php -r 'chdir("/cacti"); include("./include/cli_check.php"); include_once("./plugins/smokeping/setup.php"); smokeping_boot(); $f = Somethingwithproof\Smokeping\HealthCheck::dualAlerting((new Somethingwithproof\Smokeping\CactiObjectRepository(false))->dualAlerting(1)); echo $f->level->value, " ", $f->message;' 2>/dev/null)
+case "$dual" in
+	*"warning"*"1 targets"*"Alert/gateway"*) case "$dual" in *Alert/stale*) result FAIL health-dual-alerting "$dual" ;; *) result PASS health-dual-alerting "$dual" ;; esac ;;
+	*) result FAIL health-dual-alerting "$dual" ;;
+esac
 
 # A stale series raises no loss alert (its loss is unknown) and does raise the age alert.
 [ "$(notices "$loss2_id" $ST_NOTIFYAL)" = 0 ] && result PASS stale-loss-unknown-no-alert "loss_pct is U for a stale round, so no loss alert ($(thold_row "$loss2_id"))" || result FAIL stale-loss-unknown-no-alert "$(notices "$loss2_id" $ST_NOTIFYAL) alerts"

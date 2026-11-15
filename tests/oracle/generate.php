@@ -254,10 +254,15 @@ function config(Rng $r, string $env): array {
 		$add('');
 	}
 
-	if ($r->chance(20)) {
+	// Alerts, and targets that name them, inherit them, or clear them with an
+	// empty value.
+	$alerts = [];
+	if ($r->chance(40)) {
 		$add($hdr('Alerts'));
 		$add("to = alertee@example.net\nfrom = smokealert@example.net");
 		$add("+someloss\ntype = loss\npattern = >0%,*12*,>0%,*12*,>0%\ncomment = loss 3 times in a row");
+		$add("+bigloss\ntype = loss\npattern = ==0%,==0%,==0%,==0%,>50%,>50%,>50%\ncomment = suddenly there is packet loss");
+		$alerts = ['someloss', 'bigloss'];
 		$add('');
 	}
 
@@ -269,6 +274,9 @@ function config(Rng $r, string $env): array {
 	$add($r->pick(['title = Oracle', "title = Oracle \\\n  network \\\n  latency"]));
 	if ($slaves !== [] && $r->chance(20)) {
 		$add('slaves = ' . $slaves[0]);
+	}
+	if ($alerts !== [] && $r->chance(30)) {
+		$add('alerts = someloss');
 	}
 	if ($fork[$topProbe] && $r->chance(30)) {
 		$add('pings = ' . $r->pick(['4', '8', '12']));
@@ -337,6 +345,9 @@ function config(Rng $r, string $env): array {
 			}
 			if ($r->chance(15)) {
 				$add('nomasterpoll = ' . $r->pick(['yes', 'no']));
+			}
+			if ($alerts !== [] && $r->chance(25)) {
+				$add('alerts = ' . $r->pick(['bigloss', 'someloss,bigloss', '']));
 			}
 			if ($r->chance(10)) {
 				$add('hide = ' . $r->pick(['yes', 'no']));

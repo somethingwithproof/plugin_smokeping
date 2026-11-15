@@ -29,7 +29,7 @@ namespace Somethingwithproof\Smokeping;
  * whether the tables exist.
  */
 final class Schema {
-	public const VERSION = 5;
+	public const VERSION = 6;
 
 	/** Settings removed by schema 3, when the plugin stopped running Perl. */
 	private const RETIRED_SETTINGS = ['smokeping_perl_binary', 'smokeping_lib_dir'];
@@ -128,6 +128,17 @@ final class Schema {
 			}
 		}
 
+		// Schema 6: the target table gains SmokePing's alerts, for the health
+		// page's list of targets that alert in both SmokePing and Thold, which
+		// the next inventory import fills.
+		db_add_column('plugin_smokeping_target', self::alertsColumn(), true, $this->connection);
+
+		if ((int) db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?', ['plugin_smokeping_target', 'alerts'], '', true, $this->connection) !== 1) {
+			Log::error(sprintf('Unable to add the alerts column to plugin_smokeping_target; schema left at version %d', $from));
+
+			return false;
+		}
+
 		// Nothing recorded who set the limits of graphs made before schema 4,
 		// and size-graphs replaced hand-set limits until then, so the plugin
 		// takes each current limit as its own. sized_at stays 0, which makes
@@ -216,6 +227,13 @@ final class Schema {
 	}
 
 	/**
+	 * @return array{name: string, type: string, NULL: bool, default: string}
+	 */
+	private static function alertsColumn(): array {
+		return ['name' => 'alerts', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''];
+	}
+
+	/**
 	 * The TemplateInstaller version a graph's items follow.
 	 *
 	 * @return array{name: string, type: string, unsigned: bool, NULL: bool, default: string}
@@ -255,6 +273,7 @@ final class Schema {
 					['name' => 'host', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''],
 					['name' => 'probe', 'type' => 'varchar(64)', 'NULL' => false, 'default' => ''],
 					self::probeDescColumn(),
+					self::alertsColumn(),
 					['name' => 'menu', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''],
 					['name' => 'title', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''],
 					['name' => 'slaves', 'type' => 'varchar(1024)', 'NULL' => false, 'default' => ''],

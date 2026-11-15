@@ -34,10 +34,25 @@ final class HealthCheck {
 			self::phpBinary($phpBinary),
 			$this->reader($health),
 			$this->inventory($health),
-			// Needs SmokePing alert data and Thold thresholds on plugin-created data
-			// sources, which do not exist before milestone 3.
-			new Finding('dual_alerting', HealthLevel::Unknown, __('Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist.', 'smokeping')),
 		];
+	}
+
+	/**
+	 * Targets that alert in SmokePing and in Thold notify twice for one
+	 * breach (docs/alerting.md).
+	 *
+	 * @param list<string>|null $paths from CactiObjectRepository::dualAlerting(); null without Thold
+	 */
+	public static function dualAlerting(?array $paths): Finding {
+		if ($paths === null) {
+			return new Finding('dual_alerting', HealthLevel::Ok, __('Thold is not installed, so no target alerts in both SmokePing and Thold.', 'smokeping'));
+		}
+
+		if ($paths === []) {
+			return new Finding('dual_alerting', HealthLevel::Ok, __('No target has both a SmokePing alert and an enabled Thold threshold.', 'smokeping'));
+		}
+
+		return new Finding('dual_alerting', HealthLevel::Warning, __('%d targets have both a SmokePing alert and an enabled Thold threshold, so a breach notifies twice: %s', count($paths), implode(', ', array_slice($paths, 0, 10)) . (count($paths) > 10 ? ', ...' : ''), 'smokeping'));
 	}
 
 	public static function templates(bool $present, ?TemplateFailure $failure): Finding {

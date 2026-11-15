@@ -124,8 +124,17 @@ msgid "SmokePing Targets of this Device"
 msgstr "Cibles SmokePing de cet équipement"
 
 #: lib/HealthCheck.php
-msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
-msgstr "Les cibles en alerte à la fois dans SmokePing et dans Thold ne peuvent pas être listées tant que des sources de données SmokePing n'existent pas."
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold n'est pas installé, donc aucune cible n'alerte à la fois dans SmokePing et dans Thold."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Aucune cible n'a à la fois une alerte SmokePing et un seuil Thold activé."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so a breach notifies twice: %s"
+msgstr "%d cibles ont à la fois une alerte SmokePing et un seuil Thold activé, donc un dépassement notifie deux fois : %s"
 
 #: lib/HealthCheck.php
 #, php-format
@@ -1206,3 +1215,6 @@ msgstr "La proposition n'est pas ouverte, ou elle concerne un équipement ou un 
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
 msgstr "La proposition a été rejetée."
+
+#~ msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
+#~ msgstr "Les cibles en alerte à la fois dans SmokePing et dans Thold ne peuvent pas être listées tant que des sources de données SmokePing n'existent pas."

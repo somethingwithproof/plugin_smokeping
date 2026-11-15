@@ -11,6 +11,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 - The smoke graph legend shows the median's standard deviation, am/s, and SmokePing's probe line, as SmokePing's does. The probe line comes from a port of each SmokePing probe's description, compared with SmokePing's own. Schema 5 stores the description (#81).
 - Graphs made from earlier templates are brought to the installed ones by the main poller, 200 per cycle, or all at once with `cli/smokeping.php upgrade-graphs`. Each keeps its title and upper limit (#81).
 - The SmokePing targets page shows whether each target's device is in a Maint maintenance window, from Maint's `is_device_in_maintenance` hook (#31).
+- The health page lists targets that alert in both SmokePing and Thold, so one breach notifies twice. The inventory now records each target's SmokePing `alerts`; schema 6 stores them (#32).
 
 ### Changed
 

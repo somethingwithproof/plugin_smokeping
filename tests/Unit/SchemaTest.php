@@ -65,13 +65,13 @@ afterEach(function () {
 	$GLOBALS['__smokeping_db_cell'] = 0;
 });
 
-describe('Schema::migrate to version 5', function () {
-	it('adds the probe description and template version columns and records version 5', function () {
+describe('Schema::migrate to versions 5 and 6', function () {
+	it('adds the probe description and template version columns, and goes on to version 6', function () {
 		schema_database(4);
 
 		expect((new Schema(false))->migrate())->toBeTrue()
 			->and($GLOBALS['__schema_columns'])->toContain('plugin_smokeping_target.probe_desc', 'plugin_smokeping_object.template_version', 'plugin_smokeping_object.template_failed')
-			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '5']);
+			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '6']);
 	});
 
 	it('leaves the version alone when a column cannot be added', function () {
@@ -81,10 +81,22 @@ describe('Schema::migrate to version 5', function () {
 			->and(array_filter($GLOBALS['__smokeping_db_exec'], fn (array $w) => str_contains($w['sql'], 'REPLACE INTO settings')))->toBe([]);
 	});
 
+	it('adds the alerts column at version 6', function () {
+		schema_database(5);
+
+		expect((new Schema(false))->migrate())->toBeTrue()
+			->and($GLOBALS['__schema_columns'])->toContain('plugin_smokeping_target.alerts')
+			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '6']);
+
+		schema_database(5, ['plugin_smokeping_target.alerts']);
+
+		expect((new Schema(false))->migrate())->toBeFalse();
+	});
+
 	it('defines both columns for a fresh install', function () {
 		$tables = Schema::tables();
 
-		expect(array_column($tables['plugin_smokeping_target']['columns'], 'name'))->toContain('probe_desc')
+		expect(array_column($tables['plugin_smokeping_target']['columns'], 'name'))->toContain('probe_desc', 'alerts')
 			->and(array_column($tables['plugin_smokeping_object']['columns'], 'name'))->toContain('template_version', 'template_failed');
 	});
 });

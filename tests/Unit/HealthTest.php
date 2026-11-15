@@ -151,7 +151,6 @@ describe('HealthCheck', function () {
 
 		expect($levels['reader'])->toBe(HealthLevel::Unknown)
 			->and($levels['inventory'])->toBe(HealthLevel::Unknown)
-			->and($levels['dual_alerting'])->toBe(HealthLevel::Unknown)
 			->and($levels['php_binary'])->toBe(HealthLevel::Ok);
 
 		expect(Health::fromRow(['poller_id' => 1, 'inventory_status' => 'bogus'])->inventoryStatus)->toBe(InventoryStatus::Never);
@@ -169,6 +168,17 @@ describe('HealthCheck', function () {
 			->and($overrun['reader'])->toBe(HealthLevel::Warning)
 			->and(levels($broken)['inventory'])->toBe(HealthLevel::Error)
 			->and($broken[2]->message)->toContain('unknown section');
+	});
+
+	it('lists targets that alert in both SmokePing and Thold', function () {
+		$many = array_map(fn (int $i) => "Net/t$i", range(1, 12));
+		$both = HealthCheck::dualAlerting($many);
+
+		expect(HealthCheck::dualAlerting(null)->level)->toBe(HealthLevel::Ok)
+			->and(HealthCheck::dualAlerting([])->level)->toBe(HealthLevel::Ok)
+			->and(HealthCheck::dualAlerting(['Europe/paris'])->message)->toContain('1 targets')->toContain('Europe/paris')
+			->and($both->level)->toBe(HealthLevel::Warning)
+			->and($both->message)->toContain('12 targets')->toContain('Net/t10, ...')->not->toContain('Net/t11');
 	});
 
 	it('reports an unusable PHP binary', function (string $binary) {

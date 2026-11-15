@@ -46,6 +46,9 @@ final readonly class Target {
 		// SmokePing's description of the probe, for the graph's probe line;
 		// '' when the plugin cannot know it (see ProbeDescription).
 		public string $probeDesc = '',
+		// SmokePing's alerts for the target, comma-separated as in its
+		// configuration, inherited from the sections above; '' for none.
+		public string $alerts = '',
 	) {
 	}
 
@@ -81,6 +84,7 @@ final readonly class Target {
 			firstSeen: Row::int($row, 'first_seen', 0, 0),
 			lastSeen: Row::int($row, 'last_seen', 0, 0),
 			probeDesc: Row::string($row, 'probe_desc'),
+			alerts: Row::string($row, 'alerts'),
 		);
 	}
 

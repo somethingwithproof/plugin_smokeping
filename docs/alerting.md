@@ -40,7 +40,7 @@ These come from how Cacti and SmokePing sample, not from the plugin, and the plu
 
 **Alerts see the summary only.** Median, loss, and age describe the last round. The smoke graph is the view for investigating the distribution.
 
-**SmokePing's own alerts are separate.** The `alerts` section of the SmokePing configuration keeps working. A target that alerts in both SmokePing and Thold produces two notifications; the plugin does not turn either off.
+**SmokePing's own alerts are separate.** The `alerts` section of the SmokePing configuration keeps working. A target that alerts in both SmokePing and Thold produces two notifications; the plugin does not turn either off. The health page lists these targets under `dual_alerting`, from the `alerts` value the inventory reads, inherited as SmokePing inherits it.
 
 **The Cacti RRD is a copy.** The summary values are stored in Cacti's own RRD as well as in SmokePing's, so a retention or consolidation difference between the two can show in graphs.
 

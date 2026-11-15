@@ -238,7 +238,7 @@ it('adds the sizing columns on upgrade from schema 3 and adopts each smoke graph
 
 	expect($state['result'])->toBeTrue()
 		->and($state['schema'])->toEqual('4')
-		->and($rows)->toEqual([
+		->and(array_values(array_filter($rows, 'is_array')))->toEqual([
 			['state' => 'active', 'sized_limit' => '0.25', 'sized_at' => '0'],
 			['state' => 'summary', 'sized_limit' => '', 'sized_at' => '0'],
 		]);

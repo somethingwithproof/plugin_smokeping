@@ -116,6 +116,7 @@ final readonly class Inventory {
 				present: true,
 				firstSeen: 0,
 				lastSeen: 0,
+				probeDesc: self::text($entry, 'probe_desc'),
 			);
 		}
 

@@ -30,6 +30,7 @@ use warnings;
 use Digest::SHA qw(sha256_hex);
 use List::Util qw(max);
 use Smokeping;
+use Smokeping::RRDhelpers;
 
 my ($rrd, $pings, $step, $start, $end, $max, $height, $width) = @ARGV;
 die "usage: smokeping-args.pl rrd pings step start end max height width\n" unless defined $width;
@@ -99,14 +100,21 @@ if ($Smokeping::VERSION < 2.008) {
 	);
 }
 
+# SmokePing's own standard deviation of the median over the range, which it
+# prints as a COMMENT and divides the average by for am/s.
+my $stddev = Smokeping::RRDhelpers::get_stddev($rrd, 'median', 'AVERAGE', $start, $end) || 0;
+
 my @median = (
 	"DEF:median=${rrd}:median:AVERAGE",
 	"CDEF:ploss=loss,$pings,/,100,*",
 	"VDEF:avmed=median,AVERAGE",
+	"CDEF:mesd=median,POP,avmed,$stddev,/",
 	'GPRINT:avmed:median rtt\:  %.1lf %ss avg',
 	'GPRINT:median:MAX:%.1lf %ss max',
 	'GPRINT:median:MIN:%.1lf %ss min',
-	'GPRINT:median:LAST:%.1lf %ss now\l',
+	'GPRINT:median:LAST:%.1lf %ss now',
+	sprintf('COMMENT:%.1f ms sd', $stddev * 1000.0),
+	'GPRINT:mesd:AVERAGE:%.1lf %s am/s\l',
 	"LINE1:median#202020",
 	"GPRINT:ploss:AVERAGE:packet loss\\: %.2lf %% avg",
 	"GPRINT:ploss:MAX:%.2lf %% max",

@@ -32,7 +32,7 @@ namespace Somethingwithproof\Smokeping;
  */
 final class SmokepingInventory {
 	/**
-	 * @return array{format: int, smokeping: string, datadir: string, step: ?int, pings: ?int, targets: list<array{path: string, host: string, probe: string, menu: string, title: string, slaves: list<string>, nomasterpoll: bool, step: ?int, pings: ?int}>}
+	 * @return array{format: int, smokeping: string, datadir: string, step: ?int, pings: ?int, targets: list<array{path: string, host: string, probe: string, menu: string, title: string, slaves: list<string>, nomasterpoll: bool, step: ?int, pings: ?int, probe_desc: ?string}>}
 	 */
 	public static function document(SmokepingSection $root): array {
 		$general  = $root->child('General');
@@ -49,7 +49,7 @@ final class SmokepingInventory {
 
 			if ($path !== [] && $host !== null && !str_starts_with($host, '/')) {
 				$probe          = $node->value('probe') ?? '';
-				[$props, $base] = self::probeProperties($probes, $probe);
+				[$props, $base, $module] = self::probeProperties($probes, $probe);
 
 				$step = $concurrent ? ($props?->value('step') ?? $base?->value('step') ?? $dbStep) : $dbStep;
 				$pings = $node->value('pings') ?? $props?->value('pings') ?? $base?->value('pings') ?? $dbPings;
@@ -65,6 +65,7 @@ final class SmokepingInventory {
 					'nomasterpoll' => $node->value('nomasterpoll') === 'yes',
 					'step'         => self::intOrNull($step),
 					'pings'        => self::intOrNull($pings),
+					'probe_desc'   => $module === null ? null : ProbeDescription::of($module, $props),
 				];
 			}
 
@@ -94,31 +95,32 @@ final class SmokepingInventory {
 	}
 
 	/**
-	 * The probe section for a probe or probe instance name, and the probe
-	 * it is an instance of.
+	 * The probe section for a probe or probe instance name, the probe it is
+	 * an instance of, and the probe module that runs it (load_probes(): the
+	 * probe's own name, or its parent's for an instance).
 	 *
-	 * @return array{?SmokepingSection, ?SmokepingSection}
+	 * @return array{?SmokepingSection, ?SmokepingSection, ?string}
 	 */
 	private static function probeProperties(?SmokepingSection $probes, string $name): array {
 		if ($probes === null) {
-			return [null, null];
+			return [null, null, null];
 		}
 
 		$own = $probes->child($name);
 
 		if ($own !== null) {
-			return [$own, null];
+			return [$own, null, $name];
 		}
 
-		foreach ($probes->children as $parent) {
+		foreach ($probes->children as $module => $parent) {
 			$sub = $parent->child($name);
 
 			if ($sub !== null) {
-				return [$sub, $parent];
+				return [$sub, $parent, (string) $module];
 			}
 		}
 
-		return [null, null];
+		return [null, null, null];
 	}
 
 	private static function intOrNull(?string $value): ?int {

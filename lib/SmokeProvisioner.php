@@ -30,6 +30,9 @@ namespace Somethingwithproof\Smokeping;
  * sources: the template's input method is None.
  */
 final class SmokeProvisioner {
+	/** Graphs retemplateDue() brings to the installed templates in one poller cycle. */
+	public const RETEMPLATE_BATCH = 200;
+
 	public function __construct(
 		private readonly Settings $settings,
 		private readonly string $rraPath,
@@ -348,6 +351,7 @@ final class SmokeProvisioner {
 
 		// Named for the target, not the device (see provisionSummary()).
 		$this->retitle($localGraphId, $title !== $target->displayName() ? $title : $this->title($title, 'SmokePing', $location));
+		$this->objects->syncProbeLines($localGraphId);
 		$this->sizeNew($localGraphId, $relative);
 
 		return ProvisionResult::created($localDataId, $localGraphId);
@@ -454,6 +458,63 @@ final class SmokeProvisioner {
 
 		foreach ($this->objects->smokeGraphsDue($pollerId, $this->clock->now() - GraphScale::WINDOW, $batch) as $graph) {
 			$counts[$this->resize($graph)->status]++;
+		}
+
+		return $counts;
+	}
+
+	/**
+	 * Bring the plugin's graphs made from older templates to the installed
+	 * ones, at most $batch per call: the items the templates gained (the
+	 * standard deviation, am/s and probe line of #81), the legend as the
+	 * template has it, and the probe line. Each graph changes in one
+	 * transaction, so it renders with the old items or the new ones, never a
+	 * mix whose am/s reads a VDEF the graph does not define.
+	 *
+	 * The batch starts after graph $after; "last" is the last graph it
+	 * handled, or $after when there was none, for the next batch to start
+	 * after.
+	 *
+	 * @return array{upgraded: int, failed: int, last: int}
+	 */
+	public function retemplateDue(int $installedVersion, int $batch, int $after = 0): array {
+		include_once($this->coreLibrary . '/template.php');
+		include_once($this->coreLibrary . '/variables.php');
+
+		$counts = ['upgraded' => 0, 'failed' => 0, 'last' => $after];
+
+		foreach ($this->objects->graphsBehindTemplates($installedVersion, $batch, $after) as $localGraphId) {
+			$counts['last'] = $localGraphId;
+
+			try {
+				$done = $this->cacti->transaction(function () use ($localGraphId, $installedVersion): bool {
+					if (!$this->cacti->retemplateGraph($localGraphId)) {
+						return false;
+					}
+
+					$this->objects->syncProbeLines($localGraphId);
+
+					return $this->objects->recordTemplateVersion($localGraphId, $installedVersion);
+				});
+			} catch (\Throwable $e) {
+				// transaction() rolled back; one graph must not stop the cycle.
+				Log::warning(sprintf('Bringing graph %d to the SmokePing templates failed: %s', $localGraphId, $e->getMessage()));
+				$done = false;
+			}
+
+			if ($done) {
+				update_graph_title_cache($localGraphId);
+				$counts['upgraded']++;
+
+				continue;
+			}
+
+			// The rollback leaves the graph with its old items, which render as
+			// before, and its old version. The failure mark keeps it from taking
+			// a place in every later batch; upgrade-graphs clears it and retries.
+			Log::warning(sprintf('Could not bring graph %d to the SmokePing templates version %d; it keeps its earlier items until upgrade-graphs is run again', $localGraphId, $installedVersion));
+			$this->objects->recordTemplateFailure($localGraphId, $installedVersion);
+			$counts['failed']++;
 		}
 
 		return $counts;

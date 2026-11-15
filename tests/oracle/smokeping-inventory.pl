@@ -62,21 +62,38 @@ sub inventory {
 	my $probes   = $cfg->{Probes}   || {};
 
 	# Probe properties for a probe or subprobe name, as load_probes() would
-	# resolve them, without instantiating the probe module.
+	# resolve them, without instantiating the probe module, and the module
+	# that runs it.
 	my $probe_properties = sub {
 		my ($name) = @_;
 
-		return ($probes->{$name}, undef) if ref $probes->{$name} eq 'HASH';
+		return ($probes->{$name}, undef, $name) if ref $probes->{$name} eq 'HASH';
 
 		for my $parent (keys %$probes) {
 			next unless ref $probes->{$parent} eq 'HASH';
 
 			my $sub = $probes->{$parent}{$name};
 
-			return ($sub, $probes->{$parent}) if ref $sub eq 'HASH';
+			return ($sub, $probes->{$parent}, $parent) if ref $sub eq 'HASH';
 		}
 
-		return ({}, undef);
+		return ({}, undef, undef);
+	};
+
+	# The module's own ProbeDesc() on the properties load_probe() would pass
+	# to new(), called on a bare object so the probe's binary and network
+	# checks in new() do not run. FTPtransfer reads files on the SmokePing
+	# host, so the plugin reports no description for it, and neither does this.
+	my $probe_desc = sub {
+		my ($module, $properties) = @_;
+
+		return undef if !defined $module || $module eq 'FTPtransfer';
+		return undef unless eval "require Smokeping::probes::$module; 1";
+
+		my $self = bless { properties => $properties }, "Smokeping::probes::$module";
+		my $desc = eval { local $SIG{__WARN__} = sub {}; $self->ProbeDesc() };
+
+		return defined $desc ? "$desc" : undef;
 	};
 
 	# Smokeping::probes::base::step(): a probe step applies unless
@@ -117,7 +134,7 @@ sub inventory {
 		# and have no RRD of their own.
 		if (@path && defined $node->{host} && $node->{host} !~ m{^/}) {
 			my $probe = $node->{probe} // '';
-			my ($properties, $parent) = $probe_properties->($probe);
+			my ($properties, $parent, $module) = $probe_properties->($probe);
 
 			push @targets, {
 				path         => join('/', @path),
@@ -129,6 +146,7 @@ sub inventory {
 				nomasterpoll => (defined $node->{nomasterpoll} && $node->{nomasterpoll} eq 'yes') ? JSON::PP::true : JSON::PP::false,
 				step         => int_or_null($step_for->($properties, $parent)),
 				pings        => int_or_null($pings_for->($node, $properties, $parent)),
+				probe_desc   => $probe_desc->($module, $properties),
 			};
 		}
 

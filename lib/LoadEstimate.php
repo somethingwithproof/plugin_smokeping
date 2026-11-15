@@ -27,15 +27,15 @@ namespace Somethingwithproof\Smokeping;
  * Per series (one target at one location): pings / step packets per second
  * leave SmokePing, one RRD update per step lands in SmokePing's file, and
  * the smoke data source has one RRD data source per ping plus uptime, loss,
- * and median, and its graph has pings + 27 items (the shipped templates: one
- * per ping, the smoke and loss bands, the median and the labels; 47 for 20
- * pings). Each target also gets a summary data source of three values and a
+ * and median, and its graph has pings + 30 items (the shipped templates: one
+ * per ping, the smoke and loss bands, the median, the legend and the probe
+ * line; 50 for 20 pings). Each target also gets a summary data source of three values and a
  * summary graph of five items. LoadEstimateTest counts the items in
  * templates/smokeping-templates.xml, so a template change fails it.
  */
 final readonly class LoadEstimate {
 	/** Graph items in a smoke graph beyond one per ping. */
-	public const SMOKE_ITEMS_BEYOND_PINGS = 27;
+	public const SMOKE_ITEMS_BEYOND_PINGS = 30;
 
 	/** Graph items in a summary graph. */
 	public const SUMMARY_ITEMS = 5;

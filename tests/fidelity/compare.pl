@@ -23,7 +23,10 @@
 # Checks, each printed as one RESULT line:
 #   drawing   the ordered drawing items (kind, stacking, color) are equal
 #   xport     every drawn series is equal in `rrdtool xport` output
-#   print     median and loss average, maximum, minimum, last are equal
+#   print     median and loss average, maximum, minimum, last, standard
+#             deviation and am/s are equal; SmokePing prints the standard
+#             deviation as text rounded to 0.1 ms, so that value is compared
+#             to the rounding
 #   png       --only-graph renders of the two definitions are byte-identical
 # Series are compared as numbers; the largest relative difference is reported.
 use strict;
@@ -57,6 +60,9 @@ sub parse {
 			push @draw, $arg;
 		} elsif ($arg =~ /^GPRINT:/) {
 			push @print, $arg;
+		} elsif ($arg =~ /^COMMENT:(-?[\d.]+|-?nan|-?inf) ms sd$/i) {
+			# SmokePing's standard deviation, computed in Perl and printed as text.
+			push @print, "TEXT:$1";
 		}
 	}
 
@@ -229,12 +235,23 @@ if ($sides[0]{rows} && $sides[1]{rows}) {
 	for my $side (@sides) {
 		my ($defs, undef, $prints, $vdef) = @{ $side->{parsed} };
 		my @cmd = ($rrdtool, 'graph', '/dev/null', '--start', $start, '--end', $end, @$defs);
+		my @text;
+
+		# A value for the marker PRINTs that stand in for text values, from
+		# the first DEF, so each text value keeps its place among the PRINTs.
+		if (grep { /^TEXT:/ } @$prints) {
+			my ($first) = map { /^DEF:([^=]+)=/ ? $1 : () } @$defs;
+			push @cmd, "VDEF:TEXTMARK=$first,FIRST";
+		}
 
 		for my $p (@$prints) {
 			my @f = split /:/, $p, 5;
 			shift @f;
 
-			if ($vdef->{ $f[0] }) {
+			if ($p =~ /^TEXT:(.*)$/) {
+				push @text, $1;
+				push @cmd, 'PRINT:TEXTMARK:TEXTMARK %le';
+			} elsif ($vdef->{ $f[0] }) {
 				push @cmd, "PRINT:$f[0]:%le";
 			} else {
 				push @cmd, "PRINT:$f[0]:$f[1]:%le";
@@ -242,7 +259,16 @@ if ($sides[0]{rows} && $sides[1]{rows}) {
 		}
 
 		my ($status, $text) = run(@cmd);
-		my @lines = grep { /e[+-]\d+$|nan/i } split /\n/, $text;
+		my @lines;
+
+		for my $line (split /\n/, $text) {
+			if ($line =~ /^TEXTMARK /) {
+				push @lines, 'TEXT:' . shift @text;
+			} elsif ($line =~ /e[+-]\d+$|nan|inf/i) {
+				push @lines, $line;
+			}
+		}
+
 		$side->{prints} = \@lines;
 	}
 
@@ -253,6 +279,20 @@ if ($sides[0]{rows} && $sides[1]{rows}) {
 	if ($ok) {
 		for my $i (0 .. $#$c) {
 			my ($a, $b) = ($c->[$i], $s->[$i]);
+
+			# A value SmokePing printed as text with %.1f: the other side must
+			# round to the same text.
+			if ($a =~ /^TEXT:/ || $b =~ /^TEXT:/) {
+				my ($ta, $tb) = map { /^TEXT:(.*)$/ ? $1 : sprintf('%.1f', $_) } $a, $b;
+				next if $ta eq $tb;
+				# With no median in the range, rrdtool's STDEV is NaN where
+				# SmokePing's get_stddev() returns undef and prints 0.0. The
+				# first value is the median average on both sides.
+				next if $ta =~ /nan/i && $tb eq '0.0' && $c->[0] =~ /nan/i && $s->[0] =~ /nan/i;
+				$ok = 0;
+				$detail = "value $i: cacti $ta smokeping $tb";
+				last;
+			}
 
 			if ($a =~ /nan/i || $b =~ /nan/i) {
 				next if $a =~ /nan/i && $b =~ /nan/i;

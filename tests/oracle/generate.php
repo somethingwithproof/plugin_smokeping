@@ -200,6 +200,10 @@ function config(Rng $r, string $env): array {
 		if ($m === 'TraceroutePing' && $r->chance(50)) {
 			$add('desthost = 192.0.2.251');
 		}
+		// The ping probes' descriptions name the packet size, which instances inherit.
+		if (in_array($m, ['FPing', 'FPing6', 'DismanPing'], true) && $r->chance(30)) {
+			$add('packetsize = ' . $r->pick(['64', '100', '1000']));
+		}
 		if ($r->chance(30)) {
 			$add('step = ' . $r->pick(['60', '120', '300', '30']));
 		}
@@ -223,6 +227,9 @@ function config(Rng $r, string $env): array {
 			}
 			if ($r->chance(50)) {
 				$add('pings = ' . $r->pick($m === 'DismanPing' ? ['3', '7', '15'] : ['3', '7', '10', '20']));
+			}
+			if (in_array($m, ['FPing', 'FPing6', 'DismanPing'], true) && $r->chance(30)) {
+				$add('packetsize = ' . $r->pick(['72', '500']));
 			}
 			$probeNames[] = $name;
 			$fork[$name]  = MODULES[$m]['fork'];

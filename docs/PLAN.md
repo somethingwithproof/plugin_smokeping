@@ -410,7 +410,7 @@ Arithmetic at 10,000 series with 20 pings every 300 seconds:
 
 - About 667 packets per second on average before bursts. Each slave adds the same from its location.
 - About 33 SmokePing RRD updates per second, and about 33 `lastupdate` reads per second if the reader checks every series each step.
-- 260,000 `data_template_rrd` rows and 520,000 graph item rows (23 and 47 for the smoke objects, 3 and 5 for the summary, per 20-ping series), with 10,000 summary data sources polled by the script server. These were measured on the release runner ([performance](performance.md)).
+- 260,000 `data_template_rrd` rows and 550,000 graph item rows (23 and 50 for the smoke objects, 3 and 5 for the summary, per 20-ping series), with 10,000 summary data sources polled by the script server. The release runner measured these with the earlier 47-item smoke graph, 520,000 graph item rows ([performance](performance.md)).
 
 Engineering targets, to be measured, not yet demonstrated:
 

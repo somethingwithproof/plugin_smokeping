@@ -43,6 +43,9 @@ final readonly class Target {
 		public bool $present,
 		public int $firstSeen,
 		public int $lastSeen,
+		// SmokePing's description of the probe, for the graph's probe line;
+		// '' when the plugin cannot know it (see ProbeDescription).
+		public string $probeDesc = '',
 	) {
 	}
 
@@ -77,6 +80,7 @@ final readonly class Target {
 			present: Row::bool($row, 'present'),
 			firstSeen: Row::int($row, 'first_seen', 0, 0),
 			lastSeen: Row::int($row, 'last_seen', 0, 0),
+			probeDesc: Row::string($row, 'probe_desc'),
 		);
 	}
 

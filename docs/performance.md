@@ -11,7 +11,7 @@ Capacity is stated in series: one target at one measurement location (the master
 
 ## Arithmetic
 
-At 10,000 series with 20 pings every 300 seconds: about 667 packets per second on average, about 33 SmokePing RRD updates per second, and about 33 `lastupdate` reads per second if the reader checks every series each step. The Cacti objects are 260,000 `data_template_rrd` rows (23 for the smoke data source and 3 for the summary, per series) and 520,000 graph item rows (47 for the smoke graph and 5 for the summary graph, per series), with 10,000 summary data sources polled by the script server. The release run below counted exactly these rows. The confirm screen computes the same numbers, and `tests/Unit/LoadEstimateTest.php` checks them against the shipped templates.
+At 10,000 series with 20 pings every 300 seconds: about 667 packets per second on average, about 33 SmokePing RRD updates per second, and about 33 `lastupdate` reads per second if the reader checks every series each step. The Cacti objects are 260,000 `data_template_rrd` rows (23 for the smoke data source and 3 for the summary, per series) and 550,000 graph item rows (50 for the smoke graph and 5 for the summary graph, per series), with 10,000 summary data sources polled by the script server. The release run below used the templates before [#81](https://github.com/somethingwithproof/plugin_smokeping/issues/81) and counted their rows exactly: 47 per smoke graph, 520,000 in all. #81 added the standard deviation, am/s, and probe line items. The confirm screen computes the same numbers, and `tests/Unit/LoadEstimateTest.php` checks them against the shipped templates.
 
 ## Local smoke measurements
 

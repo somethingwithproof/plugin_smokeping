@@ -94,13 +94,33 @@ $smokeping_job = new \Somethingwithproof\Smokeping\ReaderJob(
 try {
 	$smokeping_result = $smokeping_job->run($smokeping_inventory);
 
+	$smokeping_provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner($smokeping_settings, $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
+
 	// Size the graphs that are a day or more past their last sizing, a few
 	// per cycle, unless the read used up its budget (see GraphScale).
 	if (!$smokeping_result->overrun) {
-		$smokeping_sizer = new \Somethingwithproof\Smokeping\SmokeProvisioner($smokeping_settings, $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
-		$smokeping_sized = $smokeping_sizer->resizeDue($smokeping_poller, \Somethingwithproof\Smokeping\GraphScale::BATCH);
+		$smokeping_sized = $smokeping_provisioner->resizeDue($smokeping_poller, \Somethingwithproof\Smokeping\GraphScale::BATCH);
 
 		cacti_log(sprintf('SMOKEPING SIZING: Poller:%d Sized:%d Kept:%d Manual:%d', $smokeping_poller, $smokeping_sized['sized'], $smokeping_sized['kept'], $smokeping_sized['manual']), false, 'SMOKEPING', POLLER_VERBOSITY_HIGH);
+	}
+
+	// The main poller brings graphs made from older templates to the installed
+	// ones, a batch per cycle, then writes each graph's probe line, which
+	// follows its target and which a template import resets.
+	if ($smokeping_poller === 1) {
+		if (!$smokeping_result->overrun) {
+			$smokeping_retemplated = $smokeping_provisioner->retemplateDue((int) read_config_option(\Somethingwithproof\Smokeping\TemplateInstaller::SETTING), \Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH);
+
+			if ($smokeping_retemplated['upgraded'] + $smokeping_retemplated['failed'] > 0) {
+				cacti_log(sprintf('SMOKEPING TEMPLATES: Upgraded:%d Failed:%d', $smokeping_retemplated['upgraded'], $smokeping_retemplated['failed']), false, 'SMOKEPING', POLLER_VERBOSITY_MEDIUM);
+			}
+		}
+
+		$smokeping_lines = (new \Somethingwithproof\Smokeping\ObjectRepository(false))->syncProbeLines();
+
+		if ($smokeping_lines > 0) {
+			cacti_log(sprintf('SMOKEPING PROBE LINES: Written:%d', $smokeping_lines), false, 'SMOKEPING', POLLER_VERBOSITY_MEDIUM);
+		}
 	}
 } finally {
 	unregister_process('smokeping', 'reader', $smokeping_poller);

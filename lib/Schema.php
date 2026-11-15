@@ -116,8 +116,9 @@ final class Schema {
 		// the graph's probe line, which the next inventory import fills; the
 		// object table records which template version each graph follows, 0
 		// for graphs made before, which the poller brings to the current
-		// templates (SmokeProvisioner::retemplateDue()).
-		foreach (['plugin_smokeping_target' => self::probeDescColumn(), 'plugin_smokeping_object' => self::templateVersionColumn()] as $table => $column) {
+		// templates (SmokeProvisioner::retemplateDue()), and the version a
+		// graph failed to upgrade to, which the poller does not retry.
+		foreach ([['plugin_smokeping_target', self::probeDescColumn()], ['plugin_smokeping_object', self::templateVersionColumn()], ['plugin_smokeping_object', self::templateFailedColumn()]] as [$table, $column]) {
 			db_add_column($table, $column, true, $this->connection);
 
 			if ((int) db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?', [$table, $column['name']], '', true, $this->connection) !== 1) {
@@ -224,6 +225,15 @@ final class Schema {
 	}
 
 	/**
+	 * The TemplateInstaller version a graph failed to upgrade to, 0 for none.
+	 *
+	 * @return array{name: string, type: string, unsigned: bool, NULL: bool, default: string}
+	 */
+	private static function templateFailedColumn(): array {
+		return ['name' => 'template_failed', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'];
+	}
+
+	/**
 	 * Table definitions in api_plugin_db_table_create() format.
 	 *
 	 * State values are stored as varchar enum values, never list positions.
@@ -289,6 +299,7 @@ final class Schema {
 					['name' => 'created_at', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'],
 					...self::sizingColumns(),
 					self::templateVersionColumn(),
+					self::templateFailedColumn(),
 				],
 				'primary'     => 'id',
 				'unique_keys' => [['name' => 'local_data_id', 'columns' => ['local_data_id']]],

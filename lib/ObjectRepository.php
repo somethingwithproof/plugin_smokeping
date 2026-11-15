@@ -28,6 +28,9 @@ namespace Somethingwithproof\Smokeping;
  * it pointing at a file that no longer belongs to the target.
  */
 final class ObjectRepository {
+	/** Graphs behind the template version (bound twice) and not failed at it, in the given states. */
+	private const BEHIND_TEMPLATES = 'o.template_version < ? AND o.template_failed < ? AND o.local_graph_id > 0 AND o.state IN (?, ?, ?) AND gl.graph_template_id > 0';
+
 	public const ACTIVE   = 'active';
 	public const ARCHIVED = 'archived';
 
@@ -192,15 +195,45 @@ final class ObjectRepository {
 		$rows = Row::rows(db_fetch_assoc_prepared('SELECT o.local_graph_id
 			FROM plugin_smokeping_object AS o
 			INNER JOIN graph_local AS gl ON gl.id = o.local_graph_id
-			WHERE o.template_version < ? AND o.local_graph_id > 0 AND o.state IN (?, ?, ?) AND gl.graph_template_id > 0
+			WHERE ' . self::BEHIND_TEMPLATES . '
 			ORDER BY o.local_graph_id
-			LIMIT ' . max(0, $limit), [$version, self::ACTIVE, self::ARCHIVED, self::SUMMARY], true, $this->connection));
+			LIMIT ' . max(0, $limit), [$version, $version, self::ACTIVE, self::ARCHIVED, self::SUMMARY], true, $this->connection));
 
 		return array_map(fn (array $row) => Row::int($row, 'local_graph_id'), $rows);
 	}
 
+	/**
+	 * How many graphs graphsBehindTemplates() has left to give.
+	 */
+	public function countGraphsBehindTemplates(int $version): int {
+		return (int) db_fetch_cell_prepared('SELECT COUNT(*)
+			FROM plugin_smokeping_object AS o
+			INNER JOIN graph_local AS gl ON gl.id = o.local_graph_id
+			WHERE ' . self::BEHIND_TEMPLATES, [$version, $version, self::ACTIVE, self::ARCHIVED, self::SUMMARY], '', true, $this->connection);
+	}
+
 	public function recordTemplateVersion(int $localGraphId, int $version): bool {
-		return db_execute_prepared('UPDATE plugin_smokeping_object SET template_version = ? WHERE local_graph_id = ?', [$version, $localGraphId], true, $this->connection) !== false;
+		return db_execute_prepared('UPDATE plugin_smokeping_object SET template_version = ?, template_failed = 0 WHERE local_graph_id = ?', [$version, $localGraphId], true, $this->connection) !== false;
+	}
+
+	/**
+	 * Mark a graph whose upgrade to $version failed. It keeps its version, so
+	 * it is still behind, but the poller passes over it until upgrade-graphs
+	 * clears the mark or a newer template version arrives.
+	 */
+	public function recordTemplateFailure(int $localGraphId, int $version): bool {
+		return db_execute_prepared('UPDATE plugin_smokeping_object SET template_failed = ? WHERE local_graph_id = ?', [$version, $localGraphId], true, $this->connection) !== false;
+	}
+
+	/**
+	 * Make the graphs whose upgrade failed eligible again; returns how many.
+	 */
+	public function clearTemplateFailures(): int {
+		if (db_execute_prepared('UPDATE plugin_smokeping_object SET template_failed = 0 WHERE template_failed > 0', [], true, $this->connection) === false) {
+			return 0;
+		}
+
+		return (int) db_affected_rows($this->connection);
 	}
 
 	public function hostOf(int $localDataId): int {

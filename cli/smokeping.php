@@ -323,15 +323,23 @@ if ($smokeping_command === 'upgrade-graphs' && $smokeping_paths === []) {
 	$smokeping_retemplater = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
 	$smokeping_version     = (int) read_config_option(\Somethingwithproof\Smokeping\TemplateInstaller::SETTING);
 	$smokeping_totals      = ['upgraded' => 0, 'failed' => 0];
+	$smokeping_objects     = new \Somethingwithproof\Smokeping\ObjectRepository(false);
 
-	// Each batch records the version of the graphs it handled, failed or not.
-	// A batch that upgrades nothing ends the run, so graphs whose version
-	// cannot be recorded do not keep it going.
-	do {
+	// Graphs that failed before are tried again, once each: a batch marks each
+	// graph upgraded or failed, so the next one moves on. The batch count
+	// bounds the run in case a mark cannot be written.
+	$smokeping_objects->clearTemplateFailures();
+	$smokeping_batches = intdiv($smokeping_objects->countGraphsBehindTemplates($smokeping_version), \Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH) + 1;
+
+	for ($smokeping_i = 0; $smokeping_i < $smokeping_batches; $smokeping_i++) {
 		$smokeping_batch = $smokeping_retemplater->retemplateDue($smokeping_version, \Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH);
 		$smokeping_totals['upgraded'] += $smokeping_batch['upgraded'];
 		$smokeping_totals['failed']   += $smokeping_batch['failed'];
-	} while ($smokeping_batch['upgraded'] > 0);
+
+		if ($smokeping_batch['upgraded'] + $smokeping_batch['failed'] === 0) {
+			break;
+		}
+	}
 
 	print sprintf('Upgraded %d graphs to templates version %d; %d failed (see the Cacti log)', $smokeping_totals['upgraded'], $smokeping_version, $smokeping_totals['failed']) . PHP_EOL;
 

@@ -56,6 +56,14 @@ function gtu_writes(string $text): array {
 	return array_values(array_filter($GLOBALS['__smokeping_db_exec'], fn (array $exec) => str_contains($exec['sql'], $text)));
 }
 
+/**
+ * Cacti answering template 5 for every graph, and $problems for the check
+ * that the upgraded graph matches its template.
+ */
+function gtu_cacti(int $problems = 0): void {
+	$GLOBALS['__smokeping_db_cell'] = fn (string $sql) => str_contains($sql, 'FROM graph_local') ? 5 : $problems;
+}
+
 function gtu_provisioner(): SmokeProvisioner {
 	// retemplateDue() includes Cacti's template.php and variables.php; the
 	// functions it calls are the stubs above.
@@ -136,7 +144,7 @@ describe('ObjectRepository template versions', function () {
 
 describe('CactiObjectRepository::retemplateGraph', function () {
 	it('retemplates the graph, copies the template\'s item columns, and puts the title back', function () {
-		$GLOBALS['__smokeping_db_cell'] = 5;
+		gtu_cacti();
 		$GLOBALS['__smokeping_db_row']  = ['title' => 'Europe/paris - SmokePing', 't_title' => 'on'];
 
 		expect((new CactiObjectRepository(false))->retemplateGraph(4))->toBeTrue()
@@ -150,14 +158,14 @@ describe('CactiObjectRepository::retemplateGraph', function () {
 
 		expect($repository->retemplateGraph(4))->toBeFalse();
 
-		$GLOBALS['__smokeping_db_cell'] = 5;
+		gtu_cacti();
 
 		expect($repository->retemplateGraph(4))->toBeFalse()
 			->and($GLOBALS['__gtu_changed'])->toBe([]);
 	});
 
 	it('stops when Cacti cannot change the graph template', function () {
-		$GLOBALS['__smokeping_db_cell'] = 5;
+		gtu_cacti();
 		$GLOBALS['__smokeping_db_row']  = ['title' => 't', 't_title' => ''];
 		$GLOBALS['__gtu_change']        = false;
 
@@ -177,17 +185,18 @@ describe('CactiObjectRepository::retemplateGraph', function () {
 describe('SmokeProvisioner::retemplateDue', function () {
 	it('counts a graph whose retemplate throws as failed and goes on', function () {
 		$GLOBALS['__smokeping_db_assoc'] = [['local_graph_id' => '4'], ['local_graph_id' => '5']];
-		$GLOBALS['__smokeping_db_cell']  = 5;
+		gtu_cacti();
 		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
 		$GLOBALS['__gtu_change']         = fn () => throw new RuntimeException('boom');
 
 		expect(gtu_provisioner()->retemplateDue(3, 200))->toBe(['upgraded' => 0, 'failed' => 2])
-			->and(gtu_writes('SET template_version'))->toHaveCount(2);
+			->and(gtu_writes('SET template_version'))->toBe([])
+			->and(array_column(gtu_writes('SET template_failed = ? WHERE'), 'params'))->toBe([[3, 4], [3, 5]]);
 	});
 
 	it('upgrades each graph in one transaction and records its version', function () {
 		$GLOBALS['__smokeping_db_assoc'] = [['local_graph_id' => '4']];
-		$GLOBALS['__smokeping_db_cell']  = 5;
+		gtu_cacti();
 		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
 
 		$counts = gtu_provisioner()->retemplateDue(3, 200);
@@ -202,9 +211,9 @@ describe('SmokeProvisioner::retemplateDue', function () {
 			->and($GLOBALS['__gtu_titles'])->toBe([4]);
 	});
 
-	it('rolls a failed graph back, records its version so it does not hold a place, and counts it', function () {
+	it('rolls a failed graph back, keeps its version, and marks it failed so it does not hold a place', function () {
 		$GLOBALS['__smokeping_db_assoc'] = [['local_graph_id' => '4']];
-		$GLOBALS['__smokeping_db_cell']  = 5;
+		gtu_cacti();
 		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
 		$GLOBALS['__gtu_change']         = false;
 
@@ -213,8 +222,44 @@ describe('SmokeProvisioner::retemplateDue', function () {
 
 		expect($counts)->toBe(['upgraded' => 0, 'failed' => 1])
 			->and(array_slice($sql, 0, 2))->toBe(['BEGIN', 'ROLLBACK'])
-			->and(gtu_writes('SET template_version'))->toHaveCount(1)
+			->and(gtu_writes('SET template_version'))->toBe([])
+			->and(gtu_writes('SET template_failed = ? WHERE')[0]['params'])->toBe([3, 4])
 			->and($GLOBALS['__gtu_titles'])->toBe([]);
+	});
+
+	it('fails a graph that does not match its template after the upgrade', function () {
+		$GLOBALS['__smokeping_db_assoc'] = [['local_graph_id' => '4']];
+		gtu_cacti(1);
+		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
+
+		expect(gtu_provisioner()->retemplateDue(3, 200))->toBe(['upgraded' => 0, 'failed' => 1])
+			->and(array_column($GLOBALS['__smokeping_db_exec'], 'sql'))->toContain('ROLLBACK')
+			->and(gtu_writes('SET template_version'))->toBe([]);
+	});
+});
+
+describe('ObjectRepository template failures', function () {
+	it('passes over graphs that failed at the installed version, and clears the marks for a retry', function () {
+		$objects = new ObjectRepository(false);
+
+		$objects->graphsBehindTemplates(3, 200);
+		$query = end($GLOBALS['__smokeping_db_queries']);
+
+		$GLOBALS['__smokeping_db_affected'] = 2;
+
+		expect($query['sql'])->toContain('o.template_failed < ?')
+			->and(array_slice($query['params'], 0, 2))->toBe([3, 3])
+			->and($objects->clearTemplateFailures())->toBe(2)
+			->and($objects->recordTemplateVersion(4, 3))->toBeTrue()
+			->and(gtu_writes('SET template_version')[0]['sql'])->toContain('template_failed = 0');
+
+		$GLOBALS['__smokeping_db_affected'] = 1;
+	});
+
+	it('counts the graphs still behind', function () {
+		gtu_cacti(7);
+
+		expect((new ObjectRepository(false))->countGraphsBehindTemplates(3))->toBe(7);
 	});
 });
 

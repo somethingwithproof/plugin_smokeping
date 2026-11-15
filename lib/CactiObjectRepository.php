@@ -265,7 +265,35 @@ final class CactiObjectRepository {
 			WHERE gi.local_graph_id = ?', [$localGraphId], true, $this->connection);
 
 		return $copied !== false
-			&& db_execute_prepared('UPDATE graph_templates_graph SET title = ?, t_title = ? WHERE local_graph_id = ?', [$title['title'], $title['t_title'], $localGraphId], true, $this->connection) !== false;
+			&& db_execute_prepared('UPDATE graph_templates_graph SET title = ?, t_title = ? WHERE local_graph_id = ?', [$title['title'], $title['t_title'], $localGraphId], true, $this->connection) !== false
+			&& $this->graphMatchesTemplate($localGraphId, $templateId);
+	}
+
+	/**
+	 * Whether the graph has exactly one item made from each of its template's
+	 * items and every VDEF its items use exists. change_graph_template()
+	 * returns true even when an item insert failed, so this is the check that
+	 * the upgrade happened.
+	 */
+	private function graphMatchesTemplate(int $localGraphId, int $templateId): bool {
+		$problems = db_fetch_cell_prepared('SELECT
+				(SELECT COUNT(*) FROM graph_templates_item AS ti
+					WHERE ti.graph_template_id = ? AND ti.local_graph_id = 0
+					AND (SELECT COUNT(*) FROM graph_templates_item AS gi WHERE gi.local_graph_id = ? AND gi.local_graph_template_item_id = ti.id) <> 1)
+				+ (SELECT COUNT(*) FROM graph_templates_item AS gi
+					LEFT JOIN graph_templates_item AS ti ON ti.id = gi.local_graph_template_item_id AND ti.local_graph_id = 0 AND ti.graph_template_id = ?
+					WHERE gi.local_graph_id = ? AND ti.id IS NULL)
+				+ (SELECT COUNT(*) FROM graph_templates_item AS gi
+					LEFT JOIN vdef AS v ON v.id = gi.vdef_id
+					WHERE gi.local_graph_id = ? AND gi.vdef_id > 0 AND v.id IS NULL)', [$templateId, $localGraphId, $templateId, $localGraphId, $localGraphId], '', true, $this->connection);
+
+		if ((int) $problems !== 0) {
+			Log::warning(sprintf('Graph %d does not match its graph template %d after the upgrade (%d items differ)', $localGraphId, $templateId, (int) $problems));
+
+			return false;
+		}
+
+		return true;
 	}
 
 	public function setGraphTitle(int $localGraphId, string $title): void {

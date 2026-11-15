@@ -70,7 +70,7 @@ describe('Schema::migrate to version 5', function () {
 		schema_database(4);
 
 		expect((new Schema(false))->migrate())->toBeTrue()
-			->and($GLOBALS['__schema_columns'])->toContain('plugin_smokeping_target.probe_desc', 'plugin_smokeping_object.template_version')
+			->and($GLOBALS['__schema_columns'])->toContain('plugin_smokeping_target.probe_desc', 'plugin_smokeping_object.template_version', 'plugin_smokeping_object.template_failed')
 			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '5']);
 	});
 
@@ -85,6 +85,6 @@ describe('Schema::migrate to version 5', function () {
 		$tables = Schema::tables();
 
 		expect(array_column($tables['plugin_smokeping_target']['columns'], 'name'))->toContain('probe_desc')
-			->and(array_column($tables['plugin_smokeping_object']['columns'], 'name'))->toContain('template_version');
+			->and(array_column($tables['plugin_smokeping_object']['columns'], 'name'))->toContain('template_version', 'template_failed');
 	});
 });

@@ -77,7 +77,7 @@ When an upgrade brings new graph templates, graphs made from the earlier ones ke
 php plugins/smokeping/cli/smokeping.php upgrade-graphs
 ```
 
-The upgrade sets each graph's items as the template has them, so changes made by hand to a plugin graph's items are replaced. A graph that cannot be upgraded keeps its old items, and the Cacti log names it.
+The upgrade sets each graph's items as the template has them, so changes made by hand to a plugin graph's items are replaced. After the upgrade the plugin checks that the graph has exactly the template's items and that every VDEF they use exists. A graph that fails keeps its old items and its old version, and the Cacti log names it. The poller does not try it again. `upgrade-graphs` tries every such graph once more on each run, and exits 1 if any still fails.
 
 ## Re-linking a renamed target
 

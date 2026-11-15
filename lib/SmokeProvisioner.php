@@ -504,10 +504,10 @@ final class SmokeProvisioner {
 			}
 
 			// The rollback leaves the graph with its old items, which render as
-			// before. Recording the version keeps it from taking a place in every
-			// later batch; the log names it for an administrator.
-			Log::warning(sprintf('Could not bring graph %d to the SmokePing templates version %d; it keeps its earlier items', $localGraphId, $installedVersion));
-			$this->objects->recordTemplateVersion($localGraphId, $installedVersion);
+			// before, and its old version. The failure mark keeps it from taking
+			// a place in every later batch; upgrade-graphs clears it and retries.
+			Log::warning(sprintf('Could not bring graph %d to the SmokePing templates version %d; it keeps its earlier items until upgrade-graphs is run again', $localGraphId, $installedVersion));
+			$this->objects->recordTemplateFailure($localGraphId, $installedVersion);
 			$counts['failed']++;
 		}
 

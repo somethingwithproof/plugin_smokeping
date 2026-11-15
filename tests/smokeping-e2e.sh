@@ -52,11 +52,22 @@ row=$(q "SELECT o.file_present, o.loss, o.median IS NULL, o.pings FROM plugin_sm
 row=$(q "SELECT o.file_present, o.loss, o.median IS NULL, o.pings FROM plugin_smokeping_observation o JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path = 'Local/down'" | jcell)
 [ "$row" = "1 $SP_PINGS 1 $SP_PINGS" ] && result PASS complete-loss "loss $SP_PINGS of $SP_PINGS, no median" || result FAIL complete-loss "$row"
 
-# The median SmokePing wrote, in seconds, is what the reader cached.
-median=$(q "SELECT o.median FROM plugin_smokeping_observation o JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path = 'Local/up'" | jcell)
-last=$(rrdtool lastupdate /cacti/rra/smokeping/Local/up.rrd | php -r '$l = array_values(array_filter(explode("\n", stream_get_contents(STDIN)), "strlen")); $names = preg_split("/\s+/", trim($l[0])); $values = preg_split("/\s+/", trim(explode(":", $l[1], 2)[1])); echo $values[array_search("median", $names, true)] ?? "";')
-php -r 'exit(is_numeric($argv[1]) && is_numeric($argv[2]) && abs((float) $argv[1] - (float) $argv[2]) <= 1e-9 * max(1.0, abs((float) $argv[2])) ? 0 : 1);' "$median" "$last" \
-	&& result PASS median-matches-rrd "$median" || result INFO median-matches-rrd "cached $median, lastupdate $last (a newer round may have landed)"
+# The median SmokePing wrote, in seconds, is what the reader cached for the
+# same round. When SmokePing has written a newer round since the read, the
+# reader runs again; a different median for the same round fails.
+lastupdate() { rrdtool lastupdate /cacti/rra/smokeping/Local/up.rrd | php -r '$l = array_values(array_filter(explode("\n", stream_get_contents(STDIN)), "strlen")); $names = preg_split("/\s+/", trim($l[0])); [$at, $rest] = explode(":", $l[1], 2); $values = preg_split("/\s+/", trim($rest)); echo trim($at), " ", $values[array_search("median", $names, true)] ?? "";'; }
+cached() { q "SELECT o.observed_at, o.median FROM plugin_smokeping_observation o JOIN plugin_smokeping_target t ON t.id = o.target_id WHERE t.path = 'Local/up' AND o.location = ''" | jcell; }
+for try in 1 2 3; do
+	rrd=$(lastupdate); mine=$(cached)
+	[ "${rrd%% *}" = "${mine%% *}" ] && break
+	php $P/poller_smokeping.php > /dev/null 2>&1
+done
+if [ "${rrd%% *}" != "${mine%% *}" ]; then
+	result FAIL median-matches-rrd "never the same round: rrd $rrd, cached $mine"
+else
+	php -r 'exit(is_numeric($argv[1]) && is_numeric($argv[2]) && abs((float) $argv[1] - (float) $argv[2]) <= 1e-9 * max(1.0, abs((float) $argv[2])) ? 0 : 1);' "${mine#* }" "${rrd#* }" \
+		&& result PASS median-matches-rrd "round ${rrd%% *}: ${mine#* } s" || result FAIL median-matches-rrd "round ${rrd%% *}: cached ${mine#* }, rrd ${rrd#* }"
+fi
 
 states=$(php -r '
 chdir("."); include("./include/cli_check.php"); include_once("./plugins/smokeping/setup.php"); smokeping_boot();

@@ -20,10 +20,11 @@
 #
 #   sh tests/fidelity/run.sh <work-dir>
 #
-# Needs Docker, the `cpt` network with a running MariaDB (`cpt-db`), a Cacti
-# 1.2.31 tree, and one image per SmokePing package that holds the package and
-# rrdtool, named spfid-ubuntu (22.04, 2.7.3), spfid-debian (13, 2.8.2), and
-# spfid-fedora (45, 2.9.0). The Cacti image is spm2-e2e (PHP 8.2, rrdtool).
+# Needs Docker, the `cpt` network with a running MariaDB (`cpt-db`), and a
+# Cacti 1.2.31 tree. The image of each SmokePing package, spfid-ubuntu (22.04,
+# 2.7.3), spfid-debian (13, 2.8.2) and spfid-fedora (45, 2.9.0), is built on
+# first use, which needs network access. The Cacti image is spm2-e2e (PHP
+# 8.2, rrdtool).
 # Disposable database only. Prints RESULT lines; exits non-zero on any FAIL.
 #
 # Environment:
@@ -39,6 +40,17 @@ CACTI_CORE=${CACTI_CORE:-$PLUGIN/../plugin-test-ws/cores/1.2.31}
 DB_ENV=${DB_ENV:-$PLUGIN/../plugin-test-ws/docker/db.env}
 SP_DB_NAME=${SP_DB_NAME:-smokeping_m3}
 . "$PLUGIN/tests/e2e-env.sh"
+
+# One image per SmokePing package, with rrdtool.
+for spec in ubuntu:22.04 debian:13 fedora:45; do
+	image=spfid-${spec%%:*}
+	docker image inspect "$image" >/dev/null 2>&1 && continue
+	case $spec in
+		fedora*) install='dnf install -y -q smokeping rrdtool && dnf clean all' ;;
+		*) install='apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends smokeping rrdtool >/dev/null && rm -rf /var/lib/apt/lists/*' ;;
+	esac
+	printf 'FROM %s\nRUN %s\n' "$spec" "$install" | docker build -q -t "$image" - >/dev/null
+done
 
 # The database is created and loaded when it is missing.
 sh "$PLUGIN/tests/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"

@@ -51,8 +51,9 @@
  *
  * size-graphs sets the upper limit of every smoke graph from its file, as
  * SmokePing does: the largest median of the last day, times 1.2. Graphs are
- * sized when they are created; run it again when latencies have changed. A
- * graph with no median in the last day keeps its limit.
+ * sized when they are created and again about once a day by the reader; run
+ * it to size them all now. A graph with no median in the last day, or with a
+ * limit set by hand, keeps its limit.
  */
 
 $dir = __DIR__;
@@ -301,8 +302,12 @@ if (in_array($smokeping_command, ['export', 'import'], true)) {
 if ($smokeping_command === 'size-graphs' && $smokeping_paths === []) {
 	$smokeping_scaler = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
 
-	foreach ($smokeping_scaler->scaleAll() as $smokeping_graph => $smokeping_limit) {
-		print 'Graph ' . $smokeping_graph . ': ' . ($smokeping_limit === null ? 'kept its limit' : 'upper limit ' . $smokeping_limit) . PHP_EOL;
+	foreach ($smokeping_scaler->resizeAll() as $smokeping_graph => $smokeping_sizing) {
+		print 'Graph ' . $smokeping_graph . ': ' . match ($smokeping_sizing->status) {
+			\Somethingwithproof\Smokeping\GraphSizing::SIZED  => 'upper limit ' . $smokeping_sizing->limit,
+			\Somethingwithproof\Smokeping\GraphSizing::MANUAL => 'kept the limit set by hand' . ($smokeping_sizing->limit === null ? '' : '; the plugin last set ' . $smokeping_sizing->limit),
+			default                                            => 'kept its limit',
+		} . PHP_EOL;
 	}
 
 	exit(0);

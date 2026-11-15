@@ -117,10 +117,17 @@ final class Schema {
 		// takes each current limit as its own. sized_at stays 0, which makes
 		// every adopted graph due for re-sizing.
 		if ($from > 0 && $from < 4) {
-			db_execute_prepared("UPDATE plugin_smokeping_object AS o
+			$adopt = "UPDATE plugin_smokeping_object AS o
 				INNER JOIN graph_templates_graph AS g ON g.local_graph_id = o.local_graph_id
 				SET o.sized_limit = g.upper_limit
-				WHERE o.sized_limit = '' AND o.local_graph_id > 0 AND o.state IN (?, ?)", [ObjectRepository::ACTIVE, ObjectRepository::ARCHIVED], true, $this->connection);
+				WHERE o.sized_limit = '' AND o.local_graph_id > 0 AND o.state IN (?, ?)";
+
+			// A failed adoption leaves the version below 4, so the next run retries it.
+			if (db_execute_prepared($adopt, [ObjectRepository::ACTIVE, ObjectRepository::ARCHIVED], true, $this->connection) === false) {
+				Log::error(sprintf('Unable to record the limits of existing smoke graphs; schema left at version %d', $from));
+
+				return false;
+			}
 		}
 
 		// Schema 3: the plugin reads SmokePing's configuration itself, so the Perl settings go.

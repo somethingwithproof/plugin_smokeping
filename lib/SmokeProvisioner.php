@@ -359,21 +359,26 @@ final class SmokeProvisioner {
 	 * provisioning.
 	 */
 	private function sizeNew(int $localGraphId, string $relativePath): void {
-		$limit = $this->measure($localGraphId, $relativePath);
+		$current = $this->cacti->graphUpperLimit($localGraphId);
 
-		if ($limit !== null) {
-			$this->cacti->setGraphUpperLimit($localGraphId, $limit);
+		if ($current === null) {
+			return;
 		}
 
-		$this->objects->recordSizing($localGraphId, $limit ?? (string) $this->cacti->graphUpperLimit($localGraphId), $this->clock->now());
+		$limit = $this->measure($localGraphId, $relativePath);
+
+		if (!$this->applyLimit($localGraphId, $current, $limit ?? $current)) {
+			Log::warning(sprintf('Could not record the size of the new smoke graph %d; it will count as sized by hand', $localGraphId));
+		}
 	}
 
 	/**
 	 * Size a smoke graph again from its file (see GraphScale), unless its
 	 * limit was set by hand: a limit that is not the one the plugin last
 	 * recorded stays, and so does the limit of a graph with no median in the
-	 * window, no rrdtool, or a file rrdtool cannot read. Every outcome moves
-	 * the graph's sizing time, so the daily run does not pick it again at once.
+	 * window, no rrdtool, or a file rrdtool cannot read. Every outcome but a
+	 * failed write moves the graph's sizing time, so the daily run does not
+	 * pick it again at once.
 	 *
 	 * @param array{local_graph_id: int, rrd_path: string, sized_limit: string} $graph
 	 */
@@ -401,10 +406,24 @@ final class SmokeProvisioner {
 			return GraphSizing::kept();
 		}
 
-		$this->cacti->setGraphUpperLimit($id, $limit);
-		$this->objects->recordSizing($id, $limit, $now);
+		// A failed write leaves the graph as it was and its sizing time
+		// unmoved, so a later cycle tries again, or sees a hand-set limit.
+		if (!$this->applyLimit($id, $current, $limit)) {
+			return GraphSizing::kept();
+		}
 
 		return GraphSizing::sized($limit);
+	}
+
+	/**
+	 * Set a graph's upper limit and the plugin's record of it in one
+	 * transaction, and only while the graph still has the limit read before
+	 * the RRD read, so a limit saved by hand in the meantime stays. Returns
+	 * whether both writes were made.
+	 */
+	private function applyLimit(int $localGraphId, string $expected, string $limit): bool {
+		return $this->cacti->transaction(fn (): bool => $this->cacti->replaceGraphUpperLimit($localGraphId, $expected, $limit)
+			&& $this->objects->recordSizing($localGraphId, $limit, $this->clock->now()));
 	}
 
 	/**

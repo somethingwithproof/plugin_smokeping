@@ -182,8 +182,40 @@ final class CactiObjectRepository {
 		return is_array($row) && $row !== [] ? Row::string($row, 'upper_limit') : null;
 	}
 
-	public function setGraphUpperLimit(int $localGraphId, string $upperLimit): void {
-		db_execute_prepared('UPDATE graph_templates_graph SET upper_limit = ? WHERE local_graph_id = ?', [$upperLimit, $localGraphId], true, $this->connection);
+	/**
+	 * Set a graph's upper limit only while it is still $expected. Returns
+	 * whether the graph had that limit; Cacti's connection counts matched
+	 * rows, so setting the same limit again counts too.
+	 */
+	public function replaceGraphUpperLimit(int $localGraphId, string $expected, string $upperLimit): bool {
+		return db_execute_prepared('UPDATE graph_templates_graph SET upper_limit = ? WHERE local_graph_id = ? AND upper_limit = ?', [$upperLimit, $localGraphId, $expected], true, $this->connection) !== false
+			&& db_affected_rows($this->connection) === 1;
+	}
+
+	/**
+	 * Run $work in a transaction: commit when it returns true, roll back when
+	 * it returns false or throws.
+	 *
+	 * @param callable(): bool $work
+	 */
+	public function transaction(callable $work): bool {
+		db_begin_transaction($this->connection);
+
+		try {
+			$done = $work();
+		} catch (\Throwable $e) {
+			db_rollback_transaction($this->connection);
+
+			throw $e;
+		}
+
+		if ($done) {
+			db_commit_transaction($this->connection);
+		} else {
+			db_rollback_transaction($this->connection);
+		}
+
+		return $done;
 	}
 
 	public function setGraphTitle(int $localGraphId, string $title): void {

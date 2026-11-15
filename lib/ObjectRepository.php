@@ -94,7 +94,8 @@ final class ObjectRepository {
 
 	/**
 	 * Smoke graphs of a poller's targets last sized at or before a time, the
-	 * longest waiting first, at most $limit of them.
+	 * longest waiting first, at most $limit of them. A graph deleted in Cacti
+	 * without its data source is left out, so it cannot hold a batch's places.
 	 *
 	 * @return list<array{local_graph_id: int, rrd_path: string, sized_limit: string}>
 	 */
@@ -102,6 +103,7 @@ final class ObjectRepository {
 		$rows = Row::rows(db_fetch_assoc_prepared('SELECT o.local_graph_id, o.rrd_path, o.sized_limit
 			FROM plugin_smokeping_object AS o
 			INNER JOIN plugin_smokeping_target AS t ON t.id = o.target_id
+			INNER JOIN graph_templates_graph AS g ON g.local_graph_id = o.local_graph_id
 			WHERE t.poller_id = ? AND o.state IN (?, ?) AND o.local_graph_id > 0 AND o.sized_at <= ?
 			ORDER BY o.sized_at, o.local_graph_id
 			LIMIT ' . max(0, $limit), [$pollerId, self::ACTIVE, self::ARCHIVED, $sizedBefore], true, $this->connection));
@@ -113,12 +115,12 @@ final class ObjectRepository {
 	 * Record a sizing of a graph: the limit the plugin set, or null to keep
 	 * the recorded limit and only move the time.
 	 */
-	public function recordSizing(int $localGraphId, ?string $limit, int $now): void {
+	public function recordSizing(int $localGraphId, ?string $limit, int $now): bool {
 		if ($limit === null) {
-			db_execute_prepared('UPDATE plugin_smokeping_object SET sized_at = ? WHERE local_graph_id = ?', [$now, $localGraphId], true, $this->connection);
-		} else {
-			db_execute_prepared('UPDATE plugin_smokeping_object SET sized_limit = ?, sized_at = ? WHERE local_graph_id = ?', [$limit, $now, $localGraphId], true, $this->connection);
+			return db_execute_prepared('UPDATE plugin_smokeping_object SET sized_at = ? WHERE local_graph_id = ?', [$now, $localGraphId], true, $this->connection) !== false;
 		}
+
+		return db_execute_prepared('UPDATE plugin_smokeping_object SET sized_limit = ?, sized_at = ? WHERE local_graph_id = ?', [$limit, $now, $localGraphId], true, $this->connection) !== false;
 	}
 
 	/**

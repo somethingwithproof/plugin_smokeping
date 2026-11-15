@@ -104,11 +104,47 @@ if (!function_exists('db_fetch_row_prepared')) {
 	}
 }
 
+// A statement containing $GLOBALS['__smokeping_db_fail'] fails, and the
+// last statement matched $GLOBALS['__smokeping_db_affected'] rows. The
+// transaction calls are recorded as statements named BEGIN, COMMIT, ROLLBACK.
+$GLOBALS['__smokeping_db_fail']     = null;
+$GLOBALS['__smokeping_db_affected'] = 1;
+
 if (!function_exists('db_execute_prepared')) {
 	function db_execute_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
 		$GLOBALS['__smokeping_db_exec'][] = ['sql' => $sql, 'params' => $params];
 
-		return true;
+		return $GLOBALS['__smokeping_db_fail'] === null || !str_contains($sql, $GLOBALS['__smokeping_db_fail']);
+	}
+}
+
+if (!function_exists('db_affected_rows')) {
+	function db_affected_rows($db_conn = false) {
+		return $GLOBALS['__smokeping_db_affected'];
+	}
+}
+
+function smokeping_test_transaction(string $statement): bool {
+	$GLOBALS['__smokeping_db_exec'][] = ['sql' => $statement, 'params' => []];
+
+	return true;
+}
+
+if (!function_exists('db_begin_transaction')) {
+	function db_begin_transaction($db_conn = false) {
+		return smokeping_test_transaction('BEGIN');
+	}
+}
+
+if (!function_exists('db_commit_transaction')) {
+	function db_commit_transaction($db_conn = false) {
+		return smokeping_test_transaction('COMMIT');
+	}
+}
+
+if (!function_exists('db_rollback_transaction')) {
+	function db_rollback_transaction($db_conn = false) {
+		return smokeping_test_transaction('ROLLBACK');
 	}
 }
 

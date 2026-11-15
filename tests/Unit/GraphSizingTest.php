@@ -73,6 +73,8 @@ function gs_graph(string $sizedLimit): array {
 }
 
 beforeEach(function () {
+	$GLOBALS['__smokeping_db_fail']     = null;
+	$GLOBALS['__smokeping_db_affected'] = 1;
 	$GLOBALS['__smokeping_db_exec']    = [];
 	$GLOBALS['__smokeping_db_assoc']   = [];
 	$GLOBALS['__smokeping_db_queries'] = [];
@@ -80,6 +82,8 @@ beforeEach(function () {
 });
 
 afterEach(function () {
+	$GLOBALS['__smokeping_db_fail']     = null;
+	$GLOBALS['__smokeping_db_affected'] = 1;
 	$GLOBALS['__smokeping_db_assoc'] = [];
 	$GLOBALS['__smokeping_db_row']   = [];
 });
@@ -89,8 +93,32 @@ it('re-sizes a graph whose limit is the one the plugin set, and records the new 
 
 	expect($sizing->status)->toBe(GraphSizing::SIZED)
 		->and($sizing->limit)->toBe('0.1716')
-		->and(gs_writes('graph_templates_graph')[0]['params'])->toBe(['0.1716', 7])
-		->and(gs_writes('plugin_smokeping_object')[0]['params'])->toBe(['0.1716', GS_NOW, 7]);
+		->and(gs_writes('graph_templates_graph')[0]['params'])->toBe(['0.1716', 7, '0.05'])
+		->and(gs_writes('plugin_smokeping_object')[0]['params'])->toBe(['0.1716', GS_NOW, 7])
+		->and(array_column($GLOBALS['__smokeping_db_exec'], 'sql'))->toContain('BEGIN')
+		->and(array_column($GLOBALS['__smokeping_db_exec'], 'sql'))->toContain('COMMIT');
+});
+
+it('leaves a limit saved by hand during the read, and does not record a sizing', function () {
+	// The conditional update matches no row: the limit is no longer the one read.
+	$GLOBALS['__smokeping_db_affected'] = 0;
+
+	$sizing = gs_provisioner(0.143, '0.05')->resize(gs_graph('0.05'));
+
+	expect($sizing->status)->toBe(GraphSizing::KEPT)
+		->and(gs_writes('plugin_smokeping_object'))->toBe([])
+		->and(array_column($GLOBALS['__smokeping_db_exec'], 'sql'))->toContain('ROLLBACK');
+});
+
+it('rolls the limit back when the sizing record cannot be written', function () {
+	$GLOBALS['__smokeping_db_fail'] = 'plugin_smokeping_object';
+
+	$sizing = gs_provisioner(0.143, '0.05')->resize(gs_graph('0.05'));
+	$sql    = array_column($GLOBALS['__smokeping_db_exec'], 'sql');
+
+	expect($sizing->status)->toBe(GraphSizing::KEPT)
+		->and($sql)->toContain('ROLLBACK')
+		->and($sql)->not->toContain('COMMIT');
 });
 
 it('keeps a limit set by hand and only moves the sizing time', function (string $recorded) {
@@ -126,5 +154,6 @@ it('asks only for the poller\'s graphs sized a day ago or more, at most a batch 
 	expect($counts)->toBe([GraphSizing::SIZED => 1, GraphSizing::KEPT => 0, GraphSizing::MANUAL => 1])
 		->and($query['params'])->toBe([3, ObjectRepository::ACTIVE, ObjectRepository::ARCHIVED, GS_NOW - GraphScale::WINDOW])
 		->and($query['sql'])->toContain('LIMIT ' . GraphScale::BATCH)
-		->and($query['sql'])->toContain('ORDER BY o.sized_at');
+		->and($query['sql'])->toContain('ORDER BY o.sized_at')
+		->and($query['sql'])->toContain('INNER JOIN graph_templates_graph');
 });

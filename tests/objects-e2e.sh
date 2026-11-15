@@ -97,10 +97,12 @@ limit=$(q "SELECT upper_limit FROM graph_templates_graph WHERE local_graph_id = 
 # A limit set by hand survives size-graphs and the daily sizing.
 $L set_sizing "${gr:-0}|9|$(q "SELECT sized_limit FROM plugin_smokeping_object WHERE local_graph_id = ${gr:-0}" | jcell)|0" >/dev/null
 out=$(php $P/cli/smokeping.php size-graphs 2>&1)
+row=$(q "SELECT upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+echo "$out" | grep -q "^Graph ${gr:-0}: kept the limit set by hand; the plugin last set " && [ "$row" = "9" ] && result PASS manual-limit-kept-by-size-graphs "left 9" || result FAIL manual-limit-kept-by-size-graphs "limit $row: $out"
 $L set_sizing "${gr:-0}|9|$(q "SELECT sized_limit FROM plugin_smokeping_object WHERE local_graph_id = ${gr:-0}" | jcell)|0" >/dev/null
 due=$($L resize_due 1:25 | res)
 row=$(q "SELECT upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
-echo "$out" | grep -q "^Graph ${gr:-0}: kept the limit set by hand; the plugin last set " && [ "$row" = "9" ] && result PASS manual-limit-kept "size-graphs and daily run ($due) left 9" || result FAIL manual-limit-kept "limit $row, daily $due: $out"
+[ "$due" = '{"sized":0,"kept":0,"manual":1}' ] && [ "$row" = "9" ] && result PASS manual-limit-kept-by-daily-sizing "left 9; $due" || result FAIL manual-limit-kept-by-daily-sizing "limit $row; $due"
 
 # A limit the plugin set follows the data at the next daily run.
 $L set_sizing "${gr:-0}|0.001|0.001|0" >/dev/null

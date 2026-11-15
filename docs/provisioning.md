@@ -51,7 +51,7 @@ php plugins/smokeping/cli/smokeping.php import-smokeping --apply --confirm=PLAN 
 
 ## Graph scale
 
-SmokePing sizes each graph from its data at every render. A Cacti graph has one upper limit for every time range, so the plugin applies SmokePing's rule to the last day: 1.2 times the largest median of the last day in that graph's file. It sizes a smoke graph when it creates it, and again about once a day after that. A graph whose file has no median in the last day keeps its current limit; a new one keeps the template's limit of 0.05 s (50 ms).
+SmokePing sizes each graph from its data at every render. A Cacti graph has one upper limit for every time range, so the plugin applies the rule SmokePing uses for its detail graphs (`findmax` in `Smokeping.pm`) to the last day: 1.2 times the largest median of the last day in that graph's file. SmokePing's Navigator Graph uses 1.5 times instead; the plugin has no navigator. It sizes a smoke graph when it creates it, and again about once a day after that. A graph whose file has no median in the last day keeps its current limit; a new one keeps the template's limit of 0.05 s (50 ms).
 
 The daily sizing is on by default and has no setting. After each read, the reader sizes the smoke graphs of its poller's targets that were last sized a day ago or more, the longest waiting first, at most 25 per poller cycle. It reads one RRD file per graph and runs no probe. It skips a cycle in which the read used up the reader budget. At one poller cycle every five minutes that covers 7,200 graphs a day; with more, each graph is sized a little less often than daily.
 
@@ -65,7 +65,7 @@ php plugins/smokeping/cli/smokeping.php size-graphs
 
 It prints each graph's new limit, that it kept its limit, or that it kept the limit set by hand. It follows the same rule about hand-set limits as the daily sizing. Sizing needs Cacti's rrdtool path (Configuration > Settings > Paths); without it graphs keep their limits.
 
-On upgrade from 1.0.0-rc.1, nothing records who set the existing limits, so the plugin takes each smoke graph's current limit as its own and sizes the graph at its next daily turn. Before then, `size-graphs` replaced hand-set limits too. Set a hand-set limit again after the upgrade's first daily sizing to keep it.
+On upgrade from 1.0.0-rc.1, nothing records who set the existing limits, so the plugin takes each smoke graph's current limit as its own and sizes the graph at its next daily turn. Before then, `size-graphs` replaced hand-set limits too. A limit counts as hand-set only while it differs from the one the plugin recorded, and after the upgrade the recorded limit is the adopted one. To keep a hand-set limit, set it again once a daily sizing has replaced it. If that sizing finds no median, it keeps the adopted limit, so setting the same value again changes nothing and a later sizing can still replace it.
 
 ## Re-linking a renamed target
 

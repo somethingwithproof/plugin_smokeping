@@ -76,6 +76,14 @@ if [ "${1:-}" = "--check" ]; then
 		[ -z "$(msgattrib --only-fuzzy --no-obsolete "$po")" ] || { echo "ERROR: $po has fuzzy entries" >&2; rc=1; }
 		[ -z "$(msgattrib --untranslated --no-obsolete "$po")" ] || { echo "ERROR: $po has untranslated entries" >&2; rc=1; }
 
+		# Cacti's __() formats a message only when it holds a plain placeholder
+		# (%d, %s, ...); a positional one (%1$d) is printed literally, so
+		# translations keep the message's argument order.
+		if msgattrib --no-obsolete "$po" | grep -E '^msgstr' | grep -qE '%[0-9]+\$'; then
+			echo "ERROR: $po uses a positional placeholder such as %1\$d, which Cacti prints literally" >&2
+			rc=1
+		fi
+
 		# The compiled catalog holds the same messages as its source; compared
 		# decompiled, because gettext versions lay the binary out differently.
 		if [ ! -f "$mo" ] || [ "$(msgunfmt "$mo")" != "$(msgfmt -o - "$po" | msgunfmt)" ]; then

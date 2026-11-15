@@ -75,6 +75,18 @@ it('enables and disables through core, stopping the poller hook on disable', fun
 		->and($disabled['hooks']['poller_bottom'])->toEqual('4');
 });
 
+it('passes core\'s remote-collector gate for every poller hook, so the reader can start there', function () {
+	// Cacti runs poller_bottom on a poller other than 1 only for plugins
+	// whose INFO declares remote_poller:1 (#86). Without it the reader never
+	// starts on a remote collector.
+	lifecycle('install');
+	lifecycle('enable');
+
+	$remote = lifecycle('remote_hooks', '2');
+
+	expect($remote['result'])->toBe(['poller_top' => true, 'poller_bottom' => true, 'poller_finishing' => true]);
+});
+
 it('upgrades from an older recorded version and is idempotent on repeated runs', function () {
 	lifecycle('install');
 	lifecycle('seed');

@@ -90,7 +90,7 @@ Features from PHP 8.3 and later are not used: typed class constants, `#[\Overrid
 
 Release dates are from the [SmokePing releases page](https://github.com/oetiker/SmokePing/releases). The [distribution matrix](research/distribution-matrix/README.md) records the packaged version, service user, file layout, file modes, and reload mechanism on each distribution with full vendor support (observed 2026-11-13). EL 10 and openSUSE Leap 16.0 have no vendor package, so they are supported only to the extent a source install is, which the matrix does not cover.
 
-**Plugin metadata.** `INFO` declares `compat = 1.2.31` and `capabilities = online_view:1, online_mgmt:1, offline_view:0, offline_mgmt:0, remote_collect:1`, the same capability set servcheck and webseer declare.
+**Plugin metadata.** `INFO` declares `compat = 1.2.31` and `capabilities = online_view:1, online_mgmt:1, offline_view:0, offline_mgmt:0, remote_collect:1, remote_poller:1`. Cacti 1.2.31 runs the `poller_bottom` hook on a remote collector only for plugins that declare `remote_poller:1`, and the reader starts from that hook.
 
 ## Upstream behavior the design depends on
 

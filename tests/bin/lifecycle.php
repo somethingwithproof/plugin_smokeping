@@ -41,6 +41,14 @@ $action   = isset($argv[1]) ? $argv[1] : 'state';
 $argument = isset($argv[2]) ? $argv[2] : '';
 $result   = null;
 
+$GLOBALS['lifecycle_hook_ran'] = false;
+
+function lifecycle_hook_probe($args) {
+	$GLOBALS['lifecycle_hook_ran'] = true;
+
+	return $args;
+}
+
 ob_start();
 
 switch ($action) {
@@ -68,6 +76,25 @@ switch ($action) {
 		break;
 	case 'uninstall':
 		api_plugin_uninstall('smokeping');
+
+		break;
+	case 'remote_hooks':
+		// poller id: which poller hooks core's capability gate lets run for
+		// this plugin on that poller, judged from the plugin's INFO. A probe
+		// stands in for the hook functions, so nothing is launched.
+		$main_poller         = $config['poller_id'];
+		$config['poller_id'] = (int) $argument;
+		$result              = array();
+
+		foreach (array('poller_top', 'poller_bottom', 'poller_finishing') as $hook) {
+			api_plugin_run_plugin_hook($hook, 'smokeping', 'lifecycle_hook_probe', array());
+
+			$result[$hook] = $GLOBALS['lifecycle_hook_ran'] === true;
+
+			$GLOBALS['lifecycle_hook_ran'] = false;
+		}
+
+		$config['poller_id'] = $main_poller;
 
 		break;
 	case 'upgrade':

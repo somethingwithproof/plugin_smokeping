@@ -98,18 +98,20 @@ Each row is a milestone 1 test, because a change in any of them changes the desi
 
 **SmokePing**
 
-| Fact | Consequence | Source |
-|---|---|---|
-| A target's RRD path is its tree position: `datadir/Section/Sub/target.rrd`. | Tree position is identity; moving or renaming a node creates a new, empty RRD. | [Configuration](https://oss.oetiker.ch/smokeping/doc/smokeping_config.en.html) |
-| Section names must match `[-_0-9a-zA-Z]+` (dots are allowed only in `slaves=` values); `menu` and `title` default to `host`. | Display names can live in `menu`/`title` while the section name stays a stable ID. | Configuration; `lib/Smokeping.pm` |
-| RRD data sources are `uptime`, `loss`, `median`, `ping1` to `pingN`, each GAUGE with heartbeat `2 × step`; `loss` maximum is `pings`. | Freshness and complete loss are readable from the RRD alone. | `lib/Smokeping.pm` (RRD create) |
-| `step` and `pings` are fixed at RRD creation. | Changing either needs a migration, not an edit. | Configuration |
-| Slave results go to `target~slave.rrd`. | Each location has its own RRD and freshness. | [Master/slave](https://oss.oetiker.ch/smokeping/doc/smokeping_master_slave.en.html) |
-| Slaves cache undelivered results and resend them; the master applies them in timestamp order. | Data for a past period can arrive late. | Master/slave; `lib/Smokeping/Slave.pm` (cache and resend), `lib/Smokeping.pm` (ordering) |
-| Master/slave messages are signed with MD5 over the message and a shared secret; TLS is optional. | The plugin cannot strengthen this channel; it documents TLS. | Master/slave |
-| `Smokeping::get_parser()->parse($file)` parses a config outside the daemon; `smokeinfo` uses it. | Inventory can reuse SmokePing's parser from a short CLI script. No daemon is needed. | `lib/Smokeping/Info.pm` |
-| The config grammar supports `@include filename`. | A Cacti-owned file can hold managed targets. | Configuration |
-| `smokeping --config=x --check` validates a config; `--reload` reloads the running daemon. `--check` also tests the host: it fails when `piddir` or a referenced file such as `sendmail` is missing. `--reload` signals the PID in `piddir/smokeping.pid`, which the EL and Fedora units never write because they run `--nodaemon`. | Validation can run against a candidate without touching the live file, but a failing check may be an environment error. Reload goes through `systemctl reload`, not `--reload`. | [Command reference](https://oss.oetiker.ch/smokeping/doc/smokeping.en.html); [distribution matrix](research/distribution-matrix/README.md) |
+Each row was checked on the three SmokePing packages of the matrix by `tests/research/smokeping-facts.sh` (#15): what SmokePing writes when it runs, what `--check` and a changed `step` or `pings` do, and the source lines behind each rule.
+
+| Fact | Consequence | Source | Confirmed (2026-11-15) |
+|---|---|---|---|
+| A target's RRD path is its tree position: `datadir/Section/Sub/target.rrd`. | Tree position is identity; moving or renaming a node creates a new, empty RRD. | [Configuration](https://oss.oetiker.ch/smokeping/doc/smokeping_config.en.html) | Confirmed on 2.7.3, 2.8.2 and 2.9.0: `+ Section`, `++ target` writes `datadir/Section/target.rrd` |
+| Section names must match `[-_0-9a-zA-Z]+` (dots are allowed only in `slaves=` values); `menu` and `title` default to `host`. | Display names can live in `menu`/`title` while the section name stays a stable ID. | Configuration; `lib/Smokeping.pm` | Confirmed on all three: `KEYD_RE = '[-_0-9a-zA-Z]+'`; `menu` and `title` `\|\|= host` |
+| RRD data sources are `uptime`, `loss`, `median`, `ping1` to `pingN`, each GAUGE with heartbeat `2 × step`; `loss` maximum is `pings`. | Freshness and complete loss are readable from the RRD alone. | `lib/Smokeping.pm` (RRD create) | Confirmed on all three, from the files SmokePing created: GAUGE, `minimal_heartbeat` 40 at step 20, `loss` max 3 at 3 pings |
+| `step` and `pings` are fixed at RRD creation. | Changing either needs a migration, not an edit. | Configuration | Confirmed on all three: a changed `step` or `pings` stops SmokePing with "RRD parameter mismatch ... You must delete" the file |
+| Slave results go to `target~slave.rrd`. | Each location has its own RRD and freshness. | [Master/slave](https://oss.oetiker.ch/smokeping/doc/smokeping_master_slave.en.html) | Confirmed on all three: the create call appends `~<slave>`; the live suite reads such files on 2.8.2 |
+| Slaves cache undelivered results and resend them; the master applies them in timestamp order. | Data for a past period can arrive late. | Master/slave; `lib/Smokeping/Slave.pm` (cache and resend), `lib/Smokeping.pm` (ordering) | Confirmed on all three: `Slave.pm` keeps unsent rounds in its cache file and prepends them to the next send; the master sorts each target's rounds by time before `RRDs::update` |
+| Master/slave messages are signed with MD5 over the message and a shared secret; TLS is optional. | The plugin cannot strengthen this channel; it documents TLS. | Master/slave | Confirmed on all three: `hmac_md5_hex` with `shared_secret` both ways; the slave posts to `master_url` with LWP, so TLS is whatever that URL says |
+| `Smokeping::get_parser()->parse($file)` parses a config outside the daemon; `smokeinfo` uses it. | Inventory can reuse SmokePing's parser from a short CLI script. No daemon is needed. | `lib/Smokeping/Info.pm` | Confirmed on all three: `Smokeping::get_parser()`, called by `Smokeping/Info.pm`; `tests/oracle/run.sh` parses with it per version |
+| The config grammar supports `@include filename`. | A Cacti-owned file can hold managed targets. | Configuration | Confirmed on all three: `--check` accepts the file, and the included target gets its own RRD |
+| `smokeping --config=x --check` validates a config; `--reload` reloads the running daemon. `--check` also tests the host: it fails when `piddir` or a referenced file such as `sendmail` is missing. `--reload` signals the PID in `piddir/smokeping.pid`, which the EL and Fedora units never write because they run `--nodaemon`. | Validation can run against a candidate without touching the live file, but a failing check may be an environment error. Reload goes through `systemctl reload`, not `--reload`. | [Command reference](https://oss.oetiker.ch/smokeping/doc/smokeping.en.html); [distribution matrix](research/distribution-matrix/README.md) | Confirmed on all three for `--check`: a missing `piddir` or `sendmail` fails it. `--reload` and the units: [distribution matrix](research/distribution-matrix/README.md) |
 
 **Cacti core 1.2.31**
 
@@ -253,7 +255,7 @@ The plugin's `api_device_save` and `device_remove` hooks keep mappings consisten
 | Dimension | States | Evidence |
 |---|---|---|
 | Freshness | Current, delayed, stale, never observed | `lastupdate` against `step`: current within `step` plus an allowance; delayed up to `2 × step`; stale beyond the heartbeat; never observed when the file is absent or has no update since creation |
-| Execution | Completed, probe error, unknown | Completed rounds have a numeric `loss`. Milestone 1 records what each probe writes on failure |
+| Execution | Completed, probe error, unknown | Completed rounds have a numeric `loss`. A probe that fails while SmokePing runs writes complete loss, the same values as a target that does not answer, and a failure SmokePing detects stops it, which reads as stale ([research](research/probe-failures.md)). Probe error therefore has no RRD evidence; only SmokePing's log names it |
 | Observed condition | Within policy, degraded, complete loss | Complete loss is `loss = pings` with `median` unknown; a stopped collector has every data source unknown after the heartbeat |
 | Administrative | Enabled, disabled, archived | Plugin records |
 | Maintenance | In maintenance, not in maintenance | Maint's `is_device_in_maintenance` hook for the device |

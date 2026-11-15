@@ -6,6 +6,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ### Added
 
+- A supported series count: 10,000 per installation at 20 pings and a 300 s step, measured on the release runner with Cacti's management pages compared against the same number of stock Cacti graphs (#42).
 - Smoke graphs are sized again about once a day from their last day of data, by the same rule as at creation. The reader sizes at most 25 graphs per poller cycle and skips a cycle that used up its budget (#80).
 
 ### Changed

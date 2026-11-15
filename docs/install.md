@@ -11,7 +11,7 @@ This guide takes a Cacti 1.2 host and a SmokePing install from nothing to graphs
 | SmokePing | 2.9.0, 2.8.2, and 2.7.3 (Ubuntu 22.04 only, until 2027-06-01) | All three for the configuration parser, compared with SmokePing's own on 2.7.3 (Ubuntu 22.04), 2.8.2 (Debian 13), and 2.9.0 (Fedora 45); all three for graph fidelity |
 | rrdtool | The version Cacti uses; the reader runs `path_rrdtool` | 1.7.2 |
 | Thold, Maint | No change needed | the versions in the plugin workspace |
-| Series count | See [performance](performance.md) for the measured and the supported number | |
+| Series count | 10,000 per Cacti installation at 20 pings and a 300 s step, on four dedicated vCPUs and 8 GB ([performance](performance.md#supported-series-count)) | 100, 1,000, and 10,000 on the release runner |
 
 A "series" is one target at one measurement location (the master or a slave). Distribution support follows the vendors' full-support windows; see the [distribution matrix](research/distribution-matrix/README.md). Debian 13, Ubuntu 22.04 to 26.10, EL 9, Fedora 43 to 45, and Alpine 3.22 to 3.24 package SmokePing. **EL 10 and openSUSE Leap 16 have no SmokePing package**, so there the plugin works only to the extent a source install of SmokePing does, which this guide does not cover.
 

@@ -84,13 +84,15 @@ row=$(q "SELECT title_cache FROM graph_templates_graph WHERE local_graph_id = ${
 
 # The upper limit is sized from the file, or the template's when the last day has no median.
 row=$(php $P/tests/bin/scale-check.php "${gr:-0}" | tail -1)
-case "$row" in "sized 1 kept 0 wrong 0"|"sized 0 kept 1 wrong 0") result PASS graph-sized-from-data "$row";; *) result FAIL graph-sized-from-data "$row: $(php $P/tests/bin/scale-check.php "${gr:-0}" | head -1)";; esac
+case "$row" in "sized 1 kept 0 wrong 0") result PASS graph-sized-from-data "$row";; *) result FAIL graph-sized-from-data "$row: $(php $P/tests/bin/scale-check.php "${gr:-0}" | head -1)";; esac
 out=$(php $P/cli/smokeping.php size-graphs 2>&1); rc=$?
 [ $rc -eq 0 ] && echo "$out" | grep -q "^Graph ${gr:-0}: " && result PASS size-graphs-command "$(echo "$out" | grep "^Graph ${gr:-0}: ")" || result FAIL size-graphs-command "rc $rc: $out"
 
 # The plugin records the limit it set, so it can tell a hand-set one (#80).
-row=$(q "SELECT o.sized_limit = g.upper_limit, o.sized_at > 0 FROM plugin_smokeping_object o JOIN graph_templates_graph g ON g.local_graph_id = o.local_graph_id WHERE o.local_graph_id = ${gr:-0}" | jcell)
-[ "$row" = "1 1" ] && result PASS graph-limit-recorded "recorded limit matches the graph" || result FAIL graph-limit-recorded "$row"
+# Compared here, not in SQL: the plugin's and Cacti's tables may differ in collation.
+recorded=$(q "SELECT sized_limit, sized_at > 0 FROM plugin_smokeping_object WHERE local_graph_id = ${gr:-0}" | jcell)
+limit=$(q "SELECT upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+[ -n "$limit" ] && [ "$recorded" = "$limit 1" ] && result PASS graph-limit-recorded "recorded $recorded, graph $limit" || result FAIL graph-limit-recorded "recorded '$recorded', graph '$limit'"
 
 # A limit set by hand survives size-graphs and the daily sizing.
 $L set_sizing "${gr:-0}|9|$(q "SELECT sized_limit FROM plugin_smokeping_object WHERE local_graph_id = ${gr:-0}" | jcell)|0" >/dev/null

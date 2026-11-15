@@ -68,7 +68,7 @@ for variant in "ro guard" "rw guard" "ro noguard" "rw noguard"; do
 	# Fixtures: targets with RRDs, a file that is a symlink out of the mount,
 	# and a directory that is.
 	docker run --rm -v "$PLUGIN":/p:ro -v "$fx":/fx -v "$WORK/outside":/outside "$E2E_IMAGE" sh -c '
-		php /p/tests/bin/make-fixture-rrds.php /fx Europe/paris:300:20:normal Europe/rome:300:10:normal Europe/berlin:300:15:normal Europe/oldname:300:20:normal Europe/newname:300:20:normal
+		php /p/tests/bin/make-fixture-rrds.php /fx Europe/paris:300:20:history Europe/rome:300:10:normal Europe/berlin:300:15:normal Europe/oldname:300:20:normal Europe/newname:300:20:normal
 		php /p/tests/bin/make-fixture-rrds.php /outside x:300:20:normal
 		ln -s /outside/x.rrd /fx/Europe/escape.rrd
 		ln -s /outside /fx/Europe/linkdir' >/dev/null 2>&1

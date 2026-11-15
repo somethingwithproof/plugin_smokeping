@@ -26,7 +26,8 @@
  *
  * States: normal, partial (5 of pings lost), loss (all lost, median unknown),
  * delayed (last update 1.5 steps ago), stale (3 steps ago), never (created,
- * never updated). Uses one rrdtool pipe for all files.
+ * never updated), history (normal, with five earlier updates a step apart, so
+ * the last day has a median to size a graph from). Uses one rrdtool pipe for all files.
  */
 
 $datadir = rtrim($argv[1], '/');
@@ -56,7 +57,7 @@ foreach ($specs as $spec) {
 
 	fwrite($rrd, "create $file --step $step --start $start " . implode(' ', $ds) . " RRA:AVERAGE:0.5:1:1008\n");
 
-	$age = array('normal' => 10, 'partial' => 10, 'loss' => 10, 'delayed' => (int) (1.5 * $step), 'stale' => 3 * $step);
+	$age = array('normal' => 10, 'history' => 10, 'partial' => 10, 'loss' => 10, 'delayed' => (int) (1.5 * $step), 'stale' => 3 * $step);
 
 	if ($state === 'never') {
 		continue;
@@ -72,7 +73,9 @@ foreach ($specs as $spec) {
 
 	$median = $lost >= $pings ? 'U' : sprintf('%.6f', 0.010 + (int) (($pings - $lost) / 2) / 10000);
 
-	fwrite($rrd, "update $file $at:3600:$lost:$median:" . implode(':', $rtts) . "\n");
+	for ($k = $state === 'history' ? 5 : 0; $k >= 0; $k--) {
+		fwrite($rrd, 'update ' . $file . ' ' . ($at - $k * $step) . ":3600:$lost:$median:" . implode(':', $rtts) . "\n");
+	}
 }
 
 pclose($rrd);

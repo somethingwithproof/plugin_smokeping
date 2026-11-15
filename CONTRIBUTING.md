@@ -1,6 +1,6 @@
 # Contributing
 
-This project is in the proposal stage. Most useful contributions right now are evidence for the research issues in milestone 1 and review of the requirements and open decisions.
+This project is in development. Observe mode (phase 1) is released as 1.0.0-rc.1. Useful contributions now are bug reports and fixes for observe mode, pilot reports from real SmokePing installations (milestone 4), evidence for the open research issues, and review of the requirements and open decisions for managed mode.
 
 ## Before you start
 

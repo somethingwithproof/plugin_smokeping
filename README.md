@@ -19,7 +19,7 @@
 
 A Cacti 1.2 plugin that brings SmokePing latency and loss measurements into Cacti as ordinary devices, data sources, and graphs. Smoke graphs then sit next to the device they belong to, under Cacti's permissions, and Thold and Maint can alert on and suppress them. It is an independent implementation for Cacti and is not part of, or endorsed by, [SmokePing](https://oss.oetiker.ch/smokeping/), whose original authors are Tobias Oetiker and Niko Tyni. The plugin neither includes nor runs SmokePing's code: it reads the configuration and RRD files that SmokePing writes, and its graph templates are built to draw the same series as SmokePing's own graphs.
 
-> **Status: observe mode, release candidate.** The plugin reads SmokePing's configuration and RRD files, shows their state, creates Cacti devices, data sources, and graphs for them, and feeds Thold and Maint. It writes nothing to SmokePing. Managed mode (the plugin writing SmokePing configuration) and remote collectors are later phases and are not in this release. See [docs/install.md](docs/install.md) to start.
+> **Status: in development. Observe mode (phase 1) is implemented on `main` and released as the 1.0.0-rc.1 pre-release.** The plugin reads SmokePing's configuration and RRD files, shows their state, creates Cacti devices, data sources, and graphs for them, and feeds Thold and Maint. It writes nothing to SmokePing. Managed mode (the plugin writing SmokePing configuration) and remote collectors are later phases, not started, and are not in this release. Pilots on real installations and a closer match to SmokePing's graph legend are still open in milestone 4. See [docs/install.md](docs/install.md) to start.
 
 ## Screenshots
 
@@ -37,16 +37,16 @@ SmokePing measures latency distribution and packet loss well, and its smoke grap
 - **No device context.** Latency and interface counters for the same device live in different tools.
 - **No path into Cacti alerting.** Thold and Maint work on Cacti data sources and devices, so SmokePing alerts are configured and suppressed separately.
 
-The plugin closes these gaps by representing each SmokePing target as Cacti objects that point at SmokePing's existing RRD files, plus a small set of polled summary values. It reuses Cacti's graphing, permissions, remote data collectors, Thold, and Maint rather than building parallel versions of them.
+The plugin closes these gaps by representing each SmokePing target as Cacti objects that point at SmokePing's existing RRD files, plus a small set of polled summary values. It reuses Cacti's graphing, permissions, Thold, and Maint rather than building parallel versions of them. Support for Cacti remote data collectors is planned for phase 3 and is not in this release.
 
-## Planned scope
+## Scope and status
 
-| Phase | Scope | Milestones |
-|---|---|---|
-| 0, research | Compatibility matrix, upstream behavior confirmation, graph fidelity spike | [M1](https://github.com/somethingwithproof/plugin_smokeping/milestone/1) |
-| 1, observe | Inventory import, Cacti devices, smoke and summary graphs, Thold alerting, Maint suppression, health page | [M2](https://github.com/somethingwithproof/plugin_smokeping/milestone/2), [M3](https://github.com/somethingwithproof/plugin_smokeping/milestone/3), [M4](https://github.com/somethingwithproof/plugin_smokeping/milestone/4) |
-| 2, managed | Cacti-owned configuration namespace, ICMP and TCP probe profiles, revisions, validation, reload, rollback | [M5](https://github.com/somethingwithproof/plugin_smokeping/milestone/5) |
-| 3, remote | SmokePing on Cacti remote data collectors, slaves as measurement locations | [M6](https://github.com/somethingwithproof/plugin_smokeping/milestone/6) |
+| Phase | Scope | Milestones | Status |
+|---|---|---|---|
+| 0, research | Compatibility matrix, upstream behavior confirmation, graph fidelity spike | [M1](https://github.com/somethingwithproof/plugin_smokeping/milestone/1) | Findings in `docs/research`; some research issues are open |
+| 1, observe | Inventory import, Cacti devices, smoke and summary graphs, Thold alerting, Maint suppression, health page | [M2](https://github.com/somethingwithproof/plugin_smokeping/milestone/2), [M3](https://github.com/somethingwithproof/plugin_smokeping/milestone/3), [M4](https://github.com/somethingwithproof/plugin_smokeping/milestone/4) | Released as 1.0.0-rc.1; pilots open |
+| 2, managed | Cacti-owned configuration namespace, ICMP and TCP probe profiles, revisions, validation, reload, rollback | [M5](https://github.com/somethingwithproof/plugin_smokeping/milestone/5) | Planned, not started |
+| 3, remote | SmokePing on Cacti remote data collectors, slaves as measurement locations | [M6](https://github.com/somethingwithproof/plugin_smokeping/milestone/6) | Planned, not started |
 
 Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemon or network protocol, managed HTTP/DNS/service checks (servcheck covers them), and writing to SmokePing's RRD files.
 
@@ -56,7 +56,7 @@ Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemo
 |---|---|
 | Cacti | 1.2.31 or later in 1.2.x, no core patches |
 | PHP | 8.2 or later; `setup.php` stays parseable on 8.0 so an unsupported runtime gets a refusal instead of a broken Cacti UI |
-| SmokePing | 2.9.0 and 2.8.2; 2.7.3 if a supported distribution still ships it |
+| SmokePing | 2.9.0, 2.8.2, and 2.7.3 (Ubuntu 22.04 only, until 2027-06-01) |
 | Thold, Maint | No changes required |
 
 ## Documentation
@@ -69,7 +69,7 @@ Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemo
 | [Alerting](docs/alerting.md) | Summary values, Thold durations, staleness, late data, overlap with SmokePing's alerts, Maint |
 | [Configuration format](docs/configuration-format.md) | YAML and XML export and import |
 | [Backup and restore](docs/backup-restore.md) | What to back up and how a restore resumes |
-| [Performance](docs/performance.md) | Measured cost at 100, 1,000, and 10,000 series |
+| [Performance](docs/performance.md) | Local measurements at 100, 1,000, and 10,000 series. The release measurements and the supported series count are not published yet |
 | [Failure qualification](docs/failure-qualification.md) | The failure scenarios and how each is tested |
 | [Releasing](docs/RELEASING.md) | The release procedure: the pull request, the signed tag, what the workflow does, how to verify the result |
 | [Release archive](docs/release.md) | Version, changelog, and the release archive |

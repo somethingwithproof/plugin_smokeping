@@ -378,6 +378,19 @@ it('writes the backup under a random name, mode 0600, in a directory a web serve
 		->and((string) file_get_contents($default . '/index.php'))->toContain('http_response_code(403)')->not->toContain('header(');
 });
 
+it('names the backup from the injected generator', function () {
+	$ids = new class () implements Somethingwithproof\Smokeping\IdGenerator {
+		public function bytes(int $length): string {
+			return str_repeat("\xab", $length);
+		}
+	};
+
+	$default = smokeping_tmp_dir() . '/cache/smokeping';
+	$service = new Somethingwithproof\Smokeping\ConfigService(new Somethingwithproof\Smokeping\ConfigRepository(false, '/var/www/cacti/rra'), null, $ids);
+
+	expect($service->writeBackup($default, '', 1700000000))->toBe($default . '/smokeping-config-20231114-221320-abababababababab.yaml');
+});
+
 it('writes to the configured backup directory and nowhere else', function () {
 	$base   = smokeping_tmp_dir();
 	$custom = $base . '/backups';

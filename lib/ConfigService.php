@@ -28,7 +28,7 @@ final class ConfigService {
 	 * @param \Closure|null $unrestricted whether the acting user may see every
 	 *                                    device; null for the command line, which acts as the system
 	 */
-	public function __construct(private readonly ConfigRepository $repository, private readonly ?\Closure $unrestricted = null) {
+	public function __construct(private readonly ConfigRepository $repository, private readonly ?\Closure $unrestricted = null, private readonly IdGenerator $ids = new RandomIdGenerator()) {
 	}
 
 	/**
@@ -84,7 +84,7 @@ final class ConfigService {
 			}
 
 			$text = ConfigCodec::write(ConfigCodec::YAML, ConfigPlanner::export($this->repository->state()));
-			$file = $directory . '/smokeping-config-' . gmdate('Ymd-His', $now) . '-' . bin2hex(random_bytes(8)) . '.yaml';
+			$file = $directory . '/smokeping-config-' . gmdate('Ymd-His', $now) . '-' . bin2hex($this->ids->bytes(8)) . '.yaml';
 
 			$previous = umask(0077);
 			$handle   = @fopen($file, 'x');

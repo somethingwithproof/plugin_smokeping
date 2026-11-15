@@ -87,12 +87,13 @@ jobs:
         composer --working-dir="$harness" install --no-interaction --no-progress --prefer-dist
         echo "CACTI_PEST_BIN=$harness/vendor/bin/pest" >> "$GITHUB_ENV"
 
-    - name: Unit tests with coverage
-      run: '"$CACTI_PEST_BIN" --configuration=phpunit.xml --coverage-clover=build/coverage/clover.xml'
-
-    # Keep the harness checkout out of the analysis.
+    # The harness now lives in RUNNER_TEMP. The checkout must go before the
+    # tests, whose source rules scan the whole tree, and before the analysis.
     - name: Remove the CI tooling checkout
       run: rm -rf ci-tools
+
+    - name: Unit tests with coverage
+      run: '"$CACTI_PEST_BIN" --configuration=phpunit.xml --coverage-clover=build/coverage/clover.xml'
 
     # workflow_dispatch does not infer the branch, so the context is checked
     # before it reaches the scanner's arguments.

@@ -27,6 +27,7 @@ final class ViewPage {
 		private readonly TargetRepository $targets,
 		private readonly ObservationRepository $observations,
 		private readonly FreshnessEvaluator $evaluator,
+		private readonly DeviceMaintenance $maintenance,
 	) {
 	}
 
@@ -50,13 +51,13 @@ final class ViewPage {
 					}
 				}
 
-				$rows[] = $this->row($devices[$entry['host_id']] ?? '', $target, $location, $observation);
+				$rows[] = $this->row($devices[$entry['host_id']] ?? '', $this->maintenance->inMaintenance($entry['host_id']), $target, $location, $observation);
 			}
 		}
 
 		Html::table(
 			__('SmokePing Targets', 'smokeping'),
-			[__('Device', 'smokeping'), __('Target', 'smokeping'), __('Location', 'smokeping'), __('Freshness', 'smokeping'), __('Condition', 'smokeping'), __('Loss', 'smokeping'), __('Median', 'smokeping'), __('Last Update', 'smokeping')],
+			[__('Device', 'smokeping'), __('Target', 'smokeping'), __('Location', 'smokeping'), __('Freshness', 'smokeping'), __('Condition', 'smokeping'), __('Maintenance', 'smokeping'), __('Loss', 'smokeping'), __('Median', 'smokeping'), __('Last Update', 'smokeping')],
 			$rows,
 			__('No SmokePing targets are mapped to devices you can view.', 'smokeping')
 		);
@@ -65,11 +66,12 @@ final class ViewPage {
 	/**
 	 * @return list<string>
 	 */
-	private function row(string $device, Target $target, string $location, ?Observation $observation): array {
-		$name = $location === '' ? __('Master', 'smokeping') : $location;
+	private function row(string $device, bool $inMaintenance, Target $target, string $location, ?Observation $observation): array {
+		$name        = $location === '' ? __('Master', 'smokeping') : $location;
+		$maintenance = $inMaintenance ? __('In maintenance', 'smokeping') : __('No', 'smokeping');
 
 		if ($observation === null) {
-			return [$device, $target->displayName(), $name, __('Never observed', 'smokeping'), __('Unknown', 'smokeping'), '', '', __('never', 'smokeping')];
+			return [$device, $target->displayName(), $name, __('Never observed', 'smokeping'), __('Unknown', 'smokeping'), $maintenance, '', '', __('never', 'smokeping')];
 		}
 
 		return [
@@ -78,6 +80,7 @@ final class ViewPage {
 			$name,
 			$this->evaluator->freshness($observation)->value,
 			$this->evaluator->condition($observation)->value,
+			$maintenance,
 			$observation->loss === null ? 'U' : sprintf('%d/%d', (int) $observation->loss, $observation->pings),
 			$observation->median === null ? 'U' : sprintf('%.1f ms', $observation->median * 1000),
 			Html::age($this->evaluator->age($observation)),

@@ -1083,6 +1083,10 @@ msgid "Loss"
 msgstr "Perte"
 
 #: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Maintenance"
+
+#: lib/ViewPage.php
 msgid "Median"
 msgstr "Médiane"
 
@@ -1097,6 +1101,14 @@ msgstr "Aucune cible SmokePing n'est associée à des équipements que vous pouv
 #: lib/ViewPage.php
 msgid "Master"
 msgstr "Maître"
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "En maintenance"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Non"
 
 #: lib/ViewPage.php
 msgid "Never observed"

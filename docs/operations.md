@@ -24,7 +24,7 @@ Each row of the SmokePing page combines independent dimensions. They are never m
 | Execution | `completed`, `probe_error`, `unknown` | A round completed when it wrote a numeric loss. Stale or never-observed data says nothing about the last round, so it is `unknown`. `probe_error` is not set by this release: a round without a loss value is `unknown` |
 | Condition | `within_policy`, `degraded`, `complete_loss`, `unknown` | From the last completed round. Complete loss is `loss` equal to `pings` with no median. Any loss below that is degraded. A stopped collector is never shown as loss: it goes stale and the condition is `unknown` |
 | Administrative | `enabled`, `disabled`, `archived` | The plugin's record of the target. A disabled or archived target is not read |
-| Maintenance | in or not in maintenance | Cacti's Maint plugin for the device |
+| Maintenance | in or not in maintenance | Maint's `is_device_in_maintenance` hook for the target's device, shown in the Maintenance column of the SmokePing targets page. Without Maint, or with it disabled, every device reads as not in maintenance |
 | Measurement time | seconds since the last update | The RRD's own timestamp. A page refresh never counts as a measurement |
 
 The freshness of each location comes from that location's own file (`target~slave.rrd` for a slave), so a slave that is behind shows as stale even while the master is current.

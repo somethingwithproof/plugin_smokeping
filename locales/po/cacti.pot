@@ -1085,6 +1085,10 @@ msgid "Loss"
 msgstr ""
 
 #: lib/ViewPage.php
+msgid "Maintenance"
+msgstr ""
+
+#: lib/ViewPage.php
 msgid "Median"
 msgstr ""
 
@@ -1098,6 +1102,14 @@ msgstr ""
 
 #: lib/ViewPage.php
 msgid "Master"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr ""
+
+#: lib/ViewPage.php
+msgid "No"
 msgstr ""
 
 #: lib/ViewPage.php

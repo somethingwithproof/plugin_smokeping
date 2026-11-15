@@ -39,7 +39,8 @@ $devices = array((int) $argv[1] => 'perf device');
 $page    = new \Somethingwithproof\Smokeping\ViewPage(
 	new \Somethingwithproof\Smokeping\TargetRepository(false),
 	new \Somethingwithproof\Smokeping\ObservationRepository(false),
-	new \Somethingwithproof\Smokeping\FreshnessEvaluator(new \Somethingwithproof\Smokeping\SystemClock(), 60)
+	new \Somethingwithproof\Smokeping\FreshnessEvaluator(new \Somethingwithproof\Smokeping\SystemClock(), 60),
+	new \Somethingwithproof\Smokeping\MaintMaintenance()
 );
 
 $start = microtime(true);

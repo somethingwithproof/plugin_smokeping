@@ -1082,6 +1082,10 @@ msgid "Loss"
 msgstr "丢包"
 
 #: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "维护"
+
+#: lib/ViewPage.php
 msgid "Median"
 msgstr "中位数"
 
@@ -1096,6 +1100,14 @@ msgstr "没有 SmokePing 目标映射到您可查看的设备。"
 #: lib/ViewPage.php
 msgid "Master"
 msgstr "主"
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "维护中"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "否"
 
 #: lib/ViewPage.php
 msgid "Never observed"

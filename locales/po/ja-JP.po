@@ -1082,6 +1082,10 @@ msgid "Loss"
 msgstr "パケット損失"
 
 #: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "メンテナンス"
+
+#: lib/ViewPage.php
 msgid "Median"
 msgstr "中央値"
 
@@ -1096,6 +1100,14 @@ msgstr "表示可能なデバイスにマッピングされている SmokePing �
 #: lib/ViewPage.php
 msgid "Master"
 msgstr "マスター"
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "メンテナンス中"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "いいえ"
 
 #: lib/ViewPage.php
 msgid "Never observed"

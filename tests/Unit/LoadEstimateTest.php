@@ -41,7 +41,27 @@ it('estimates packets, RRD updates, and Cacti rows from the targets', function (
 		->and(round($estimate->packetsPerSecond))->toBe(667.0)
 		->and(round($estimate->rrdUpdatesPerSecond))->toBe(33.0)
 		->and($estimate->dataSourceRows)->toBe(10000 * 23 + 10000 * 3)
-		->and($estimate->graphItemRows)->toBe(250000);
+		->and($estimate->graphItemRows)->toBe(10000 * 47 + 10000 * 5);
+});
+
+it('counts the graph items the shipped templates create', function () {
+	// Graph templates are the hash_0001 nodes. The provisioned objects measured on the release runner (docs/performance.md)
+	// have exactly the items of the template they come from.
+	$xml   = simplexml_load_file(dirname(__DIR__, 2) . '/templates/smokeping-templates.xml');
+	$items = [];
+
+	foreach ($xml->children() as $node) {
+		if (str_starts_with($node->getName(), 'hash_0001') && $node->items->children()->count() > 0) {
+			$items[(string) $node->name] = $node->items->children()->count();
+		}
+	}
+
+	foreach ([10, 20, 30] as $pings) {
+		expect($items['SmokePing Smoke (' . $pings . ' pings)'])->toBe($pings + LoadEstimate::SMOKE_ITEMS_BEYOND_PINGS)
+			->and(LoadEstimate::forTargets([smokeping_load_target('A/t', 300, $pings)])->graphItemRows)->toBe($pings + LoadEstimate::SMOKE_ITEMS_BEYOND_PINGS + LoadEstimate::SUMMARY_ITEMS);
+	}
+
+	expect($items['SmokePing Summary'])->toBe(LoadEstimate::SUMMARY_ITEMS);
 });
 
 it('counts every location and leaves the smoke rows out when the pings are not supported', function () {

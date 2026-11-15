@@ -27,11 +27,19 @@ namespace Somethingwithproof\Smokeping;
  * Per series (one target at one location): pings / step packets per second
  * leave SmokePing, one RRD update per step lands in SmokePing's file, and
  * the smoke data source has one RRD data source per ping plus uptime, loss,
- * and median, and a graph item for each of those and for the bands and
- * labels (docs/PLAN.md, "Performance", counts 23 and 25 for 20 pings). Each
- * target also gets a summary data source of three values.
+ * and median, and its graph has pings + 27 items (the shipped templates: one
+ * per ping, the smoke and loss bands, the median and the labels; 47 for 20
+ * pings). Each target also gets a summary data source of three values and a
+ * summary graph of five items. LoadEstimateTest counts the items in
+ * templates/smokeping-templates.xml, so a template change fails it.
  */
 final readonly class LoadEstimate {
+	/** Graph items in a smoke graph beyond one per ping. */
+	public const SMOKE_ITEMS_BEYOND_PINGS = 27;
+
+	/** Graph items in a summary graph. */
+	public const SUMMARY_ITEMS = 5;
+
 	public function __construct(
 		public int $series,
 		public float $packetsPerSecond,
@@ -63,10 +71,11 @@ final readonly class LoadEstimate {
 			// The smoke data source and graph exist for 10, 20, and 30 pings only.
 			if (in_array($target->pings, [10, 20, 30], true)) {
 				$rows  += $locations * ($target->pings + 3);
-				$items += $locations * ($target->pings + 5);
+				$items += $locations * ($target->pings + self::SMOKE_ITEMS_BEYOND_PINGS);
 			}
 
-			$rows += 3;
+			$rows  += 3;
+			$items += self::SUMMARY_ITEMS;
 		}
 
 		return new self($series, $packets, $updates, $rows, $items);

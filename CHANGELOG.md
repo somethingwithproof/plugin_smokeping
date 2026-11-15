@@ -6,6 +6,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ### Added
 
+- A supported series count: 10,000 per installation at 20 pings and a 300 s step, measured on the release runner with Cacti's management pages compared against the same number of stock Cacti graphs (#42).
 - Smoke graphs are sized again about once a day from their last day of data, by the same rule as at creation. The reader sizes at most 25 graphs per poller cycle and skips a cycle that used up its budget (#80).
 
 ### Changed
@@ -15,6 +16,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 ### Fixed
 
 - The reader now starts on a remote data collector. `INFO` declares `remote_poller:1`, which Cacti 1.2.31 needs before it runs the `poller_bottom` hook on a remote poller (#86).
+- The confirm screen of a bulk add counts the graph items Cacti creates: 47 per 20-ping smoke graph and 5 per summary graph, 520,000 at 10,000 series. It showed about half that (#42).
 
 ## [1.0.0-rc.1] - 2026-11-14
 

@@ -58,6 +58,7 @@ Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemo
 | PHP | 8.2 or later; `setup.php` stays parseable on 8.0 so an unsupported runtime gets a refusal instead of a broken Cacti UI |
 | SmokePing | 2.9.0, 2.8.2, and 2.7.3 (Ubuntu 22.04 only, until 2027-06-01) |
 | Thold, Maint | No changes required |
+| Series | 10,000 per installation at 20 pings and a 300 s step ([performance](docs/performance.md#supported-series-count)) |
 
 ## Documentation
 

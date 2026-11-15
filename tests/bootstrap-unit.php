@@ -78,6 +78,12 @@ if (!function_exists('read_config_option')) {
 $GLOBALS['__smokeping_purge_queue'] = [];
 $GLOBALS['__smokeping_db_exec']     = [];
 
+// Rows for any other SELECT, the queries asked, and the row a single-row
+// SELECT returns.
+$GLOBALS['__smokeping_db_assoc']   = [];
+$GLOBALS['__smokeping_db_queries'] = [];
+$GLOBALS['__smokeping_db_row']     = [];
+
 if (!function_exists('db_fetch_cell_prepared')) {
 	function db_fetch_cell_prepared($sql, $params = [], $col_name = '', $log = true, $db_conn = false, $log_function = null) {
 		return 0;
@@ -86,7 +92,15 @@ if (!function_exists('db_fetch_cell_prepared')) {
 
 if (!function_exists('db_fetch_assoc_prepared')) {
 	function db_fetch_assoc_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
-		return str_contains($sql, 'data_source_purge_action') ? $GLOBALS['__smokeping_purge_queue'] : [];
+		$GLOBALS['__smokeping_db_queries'][] = ['sql' => $sql, 'params' => $params];
+
+		return str_contains($sql, 'data_source_purge_action') ? $GLOBALS['__smokeping_purge_queue'] : $GLOBALS['__smokeping_db_assoc'];
+	}
+}
+
+if (!function_exists('db_fetch_row_prepared')) {
+	function db_fetch_row_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
+		return $GLOBALS['__smokeping_db_row'];
 	}
 }
 

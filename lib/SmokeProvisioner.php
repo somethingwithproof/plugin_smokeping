@@ -348,50 +348,114 @@ final class SmokeProvisioner {
 
 		// Named for the target, not the device (see provisionSummary()).
 		$this->retitle($localGraphId, $title !== $target->displayName() ? $title : $this->title($title, 'SmokePing', $location));
-		$this->scale($localGraphId, $relative);
+		$this->sizeNew($localGraphId, $relative);
 
 		return ProvisionResult::created($localDataId, $localGraphId);
 	}
 
 	/**
-	 * Size a smoke graph's upper limit from its file (see GraphScale). Returns
-	 * the limit set, or null when the graph keeps its limit: no rrdtool, no
-	 * median in the window, or a file rrdtool cannot read. Sizing never fails
+	 * Size a graph the plugin just created and record its limit, the sized
+	 * one or the template's, as the plugin's own. Sizing never fails
 	 * provisioning.
 	 */
-	public function scale(int $localGraphId, string $relativePath): ?string {
-		if ($this->rrd === null || $relativePath === '') {
-			return null;
-		}
-
-		try {
-			$limit = GraphScale::upperLimit($this->rrd->maxMedian(rtrim($this->rraPath, '/') . '/' . $relativePath, GraphScale::WINDOW));
-		} catch (\RuntimeException $e) {
-			Log::warning(sprintf('Could not size the smoke graph %d from %s: %s', $localGraphId, $relativePath, $e->getMessage()));
-
-			return null;
-		}
+	private function sizeNew(int $localGraphId, string $relativePath): void {
+		$limit = $this->measure($localGraphId, $relativePath);
 
 		if ($limit !== null) {
 			$this->cacti->setGraphUpperLimit($localGraphId, $limit);
 		}
 
-		return $limit;
+		$this->objects->recordSizing($localGraphId, $limit ?? (string) $this->cacti->graphUpperLimit($localGraphId), $this->clock->now());
 	}
 
 	/**
-	 * Size every smoke graph, live and archived.
+	 * Size a smoke graph again from its file (see GraphScale), unless its
+	 * limit was set by hand: a limit that is not the one the plugin last
+	 * recorded stays, and so does the limit of a graph with no median in the
+	 * window, no rrdtool, or a file rrdtool cannot read. Every outcome moves
+	 * the graph's sizing time, so the daily run does not pick it again at once.
 	 *
-	 * @return array<int, string|null> graph id => the limit set, or null when it kept its limit
+	 * @param array{local_graph_id: int, rrd_path: string, sized_limit: string} $graph
 	 */
-	public function scaleAll(): array {
-		$limits = [];
+	public function resize(array $graph): GraphSizing {
+		$id      = $graph['local_graph_id'];
+		$current = $this->cacti->graphUpperLimit($id);
 
-		foreach ($this->objects->smokeGraphs() as $graph) {
-			$limits[$graph['local_graph_id']] = $this->scale($graph['local_graph_id'], $graph['rrd_path']);
+		if ($current === null) {
+			return GraphSizing::kept();
 		}
 
-		return $limits;
+		$now = $this->clock->now();
+
+		if ($graph['sized_limit'] === '' || $current !== $graph['sized_limit']) {
+			$this->objects->recordSizing($id, null, $now);
+
+			return GraphSizing::manual($graph['sized_limit']);
+		}
+
+		$limit = $this->measure($id, $graph['rrd_path']);
+
+		if ($limit === null) {
+			$this->objects->recordSizing($id, null, $now);
+
+			return GraphSizing::kept();
+		}
+
+		$this->cacti->setGraphUpperLimit($id, $limit);
+		$this->objects->recordSizing($id, $limit, $now);
+
+		return GraphSizing::sized($limit);
+	}
+
+	/**
+	 * Size every smoke graph, live and archived, by the rules of resize().
+	 *
+	 * @return array<int, GraphSizing> graph id => what sizing did
+	 */
+	public function resizeAll(): array {
+		$outcomes = [];
+
+		foreach ($this->objects->smokeGraphs() as $graph) {
+			$outcomes[$graph['local_graph_id']] = $this->resize($graph);
+		}
+
+		return $outcomes;
+	}
+
+	/**
+	 * Size the smoke graphs of a poller's targets that were last sized a day
+	 * ago or more, at most $batch of them, by the rules of resize(). The
+	 * reader calls this every poller cycle, so each graph is sized about
+	 * once a day while no cycle reads more than $batch files for it.
+	 *
+	 * @return array<string, int> GraphSizing status => number of graphs
+	 */
+	public function resizeDue(int $pollerId, int $batch): array {
+		$counts = [GraphSizing::SIZED => 0, GraphSizing::KEPT => 0, GraphSizing::MANUAL => 0];
+
+		foreach ($this->objects->smokeGraphsDue($pollerId, $this->clock->now() - GraphScale::WINDOW, $batch) as $graph) {
+			$counts[$this->resize($graph)->status]++;
+		}
+
+		return $counts;
+	}
+
+	/**
+	 * The upper limit a graph's file asks for, or null when there is none:
+	 * no rrdtool, no median in the window, or a file rrdtool cannot read.
+	 */
+	private function measure(int $localGraphId, string $relativePath): ?string {
+		if ($this->rrd === null || $relativePath === '') {
+			return null;
+		}
+
+		try {
+			return GraphScale::upperLimit($this->rrd->maxMedian(rtrim($this->rraPath, '/') . '/' . $relativePath, GraphScale::WINDOW));
+		} catch (\RuntimeException $e) {
+			Log::warning(sprintf('Could not size the smoke graph %d from %s: %s', $localGraphId, $relativePath, $e->getMessage()));
+
+			return null;
+		}
 	}
 
 	private function retitle(int $localGraphId, string $title): void {

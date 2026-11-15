@@ -4,6 +4,14 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+### Added
+
+- Smoke graphs are sized again about once a day from their last day of data, by the same rule as at creation. The reader sizes at most 25 graphs per poller cycle and skips a cycle that used up its budget (#80).
+
+### Changed
+
+- The plugin records the upper limit it sets on each smoke graph and no longer changes a limit set by hand, in the daily sizing or in `size-graphs`. Schema 4 adds the record. On upgrade the plugin takes each graph's current limit as its own, so set a hand-set limit again after the first daily sizing to keep it (#80).
+
 ### Fixed
 
 - The reader now starts on a remote data collector. `INFO` declares `remote_poller:1`, which Cacti 1.2.31 needs before it runs the `poller_bottom` hook on a remote poller (#86).

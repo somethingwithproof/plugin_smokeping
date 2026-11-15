@@ -60,6 +60,7 @@ switch ($action) {
 		}
 
 		db_execute("DELETE FROM settings WHERE name LIKE 'smokeping\\_%'");
+		db_execute('DELETE FROM graph_templates_graph WHERE local_graph_id = 990001');
 
 		break;
 	case 'install':
@@ -260,6 +261,33 @@ switch ($action) {
 		// A target with an observation, so table drops and keeps are visible.
 		db_execute("INSERT INTO plugin_smokeping_target (poller_id, path, host, probe, step, pings) VALUES (1, 'Seed/target', 'seed.example', 'FPing', 300, 20)");
 		db_execute("INSERT INTO plugin_smokeping_observation (target_id, location, observed_at) SELECT id, '', 1 FROM plugin_smokeping_target WHERE path = 'Seed/target'");
+
+		break;
+	case 'set_sizing':
+		// graph|graph limit|recorded limit|sized at: a graph's limit and the
+		// plugin's record of it, as a hand edit or an older sizing leaves them.
+		list($graph, $limit, $recorded, $at) = explode('|', $argument);
+		db_execute_prepared('UPDATE graph_templates_graph SET upper_limit = ? WHERE local_graph_id = ?', array($limit, (int) $graph));
+		db_execute_prepared('UPDATE plugin_smokeping_object SET sized_limit = ?, sized_at = ? WHERE local_graph_id = ?', array($recorded, (int) $at, (int) $graph));
+
+		break;
+	case 'resize_due':
+		// poller:batch, the reader's daily sizing step on its own.
+		list($poller, $batch) = explode(':', $argument);
+		include_once($config['base_path'] . '/plugins/smokeping/setup.php');
+		smokeping_boot();
+		$sizer  = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], false, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
+		$result = $sizer->resizeDue((int) $poller, (int) $batch);
+
+		break;
+	case 'seed_sized_graph':
+		// An active and a summary object on a graph whose limit is 0.25, as
+		// schema 3 left them, without the sizing columns.
+		db_execute('DELETE FROM graph_templates_graph WHERE local_graph_id = 990001');
+		db_execute("INSERT INTO graph_templates_graph (local_graph_id, upper_limit, title) VALUES (990001, '0.25', 'seeded')");
+		db_execute("INSERT INTO plugin_smokeping_object (target_id, location, host_id, local_data_id, local_graph_id, rrd_path, state) SELECT id, '', 0, 990001, 990001, 'smokeping/Seed/target.rrd', 'active' FROM plugin_smokeping_target WHERE path = 'Seed/target'");
+		db_execute("INSERT INTO plugin_smokeping_object (target_id, location, host_id, local_data_id, local_graph_id, rrd_path, state) SELECT id, '', 0, 990002, 990001, '', 'summary' FROM plugin_smokeping_target WHERE path = 'Seed/target'");
+		db_execute('ALTER TABLE plugin_smokeping_object DROP COLUMN sized_limit, DROP COLUMN sized_at');
 
 		break;
 	case 'query':

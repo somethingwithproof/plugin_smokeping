@@ -88,6 +88,37 @@ case "$row" in "sized 1 kept 0 wrong 0"|"sized 0 kept 1 wrong 0") result PASS gr
 out=$(php $P/cli/smokeping.php size-graphs 2>&1); rc=$?
 [ $rc -eq 0 ] && echo "$out" | grep -q "^Graph ${gr:-0}: " && result PASS size-graphs-command "$(echo "$out" | grep "^Graph ${gr:-0}: ")" || result FAIL size-graphs-command "rc $rc: $out"
 
+# The plugin records the limit it set, so it can tell a hand-set one (#80).
+row=$(q "SELECT o.sized_limit = g.upper_limit, o.sized_at > 0 FROM plugin_smokeping_object o JOIN graph_templates_graph g ON g.local_graph_id = o.local_graph_id WHERE o.local_graph_id = ${gr:-0}" | jcell)
+[ "$row" = "1 1" ] && result PASS graph-limit-recorded "recorded limit matches the graph" || result FAIL graph-limit-recorded "$row"
+
+# A limit set by hand survives size-graphs and the daily sizing.
+$L set_sizing "${gr:-0}|9|$(q "SELECT sized_limit FROM plugin_smokeping_object WHERE local_graph_id = ${gr:-0}" | jcell)|0" >/dev/null
+out=$(php $P/cli/smokeping.php size-graphs 2>&1)
+$L set_sizing "${gr:-0}|9|$(q "SELECT sized_limit FROM plugin_smokeping_object WHERE local_graph_id = ${gr:-0}" | jcell)|0" >/dev/null
+due=$($L resize_due 1:25 | res)
+row=$(q "SELECT upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+echo "$out" | grep -q "^Graph ${gr:-0}: kept the limit set by hand; the plugin last set " && [ "$row" = "9" ] && result PASS manual-limit-kept "size-graphs and daily run ($due) left 9" || result FAIL manual-limit-kept "limit $row, daily $due: $out"
+
+# A limit the plugin set follows the data at the next daily run.
+$L set_sizing "${gr:-0}|0.001|0.001|0" >/dev/null
+due=$($L resize_due 1:25 | res)
+row=$(php $P/tests/bin/scale-check.php "${gr:-0}" | tail -1)
+[ "$row" = "sized 1 kept 0 wrong 0" ] && result PASS daily-sizing-follows-data "$row; $due" || result FAIL daily-sizing-follows-data "$row: $(php $P/tests/bin/scale-check.php "${gr:-0}" | head -1); $due"
+
+# A graph sized less than a day ago is not due, and a cycle sizes at most its batch.
+$L set_sizing "${gr:-0}|0.001|0.001|$(date +%s)" >/dev/null
+due=$($L resize_due 1:25 | res)
+row=$(q "SELECT upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+[ "$row" = "0.001" ] && result PASS daily-sizing-waits-a-day "limit kept; $due" || result FAIL daily-sizing-waits-a-day "limit $row; $due"
+$L set_sizing "${gr:-0}|0.001|0.001|0" >/dev/null
+due=$($L resize_due 1:0 | res)
+row=$(q "SELECT upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+[ "$due" = '{"sized":0,"kept":0,"manual":0}' ] && [ "$row" = "0.001" ] && result PASS daily-sizing-batch-bound "a due graph waits when the batch is full; $due" || result FAIL daily-sizing-batch-bound "limit $row; $due"
+
+# Leave the graph sized from its data for the checks below.
+php $P/cli/smokeping.php size-graphs >/dev/null 2>&1
+
 row=$(q "SELECT availability_method FROM host WHERE id = ${dev:-0}" | jcell)
 [ "$row" = "0" ] && result PASS device-availability-none "availability_method=0" || result FAIL device-availability-none "$row"
 

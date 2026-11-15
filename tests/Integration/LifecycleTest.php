@@ -48,7 +48,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 
 	expect($state['plugin']['status'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION)
-		->and($state['schema'])->toEqual('3')
+		->and($state['schema'])->toEqual('4')
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tracked'])->toBe(SMOKEPING_TABLES)
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
@@ -208,7 +208,7 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tables']['plugin_smokeping_target'])->toBe(1)
-		->and($state['schema'])->toEqual('3')
+		->and($state['schema'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION);
 });
 
@@ -223,8 +223,25 @@ it('removes the Perl settings of schema 2 on upgrade and keeps the others', func
 	$left  = lifecycle('query', "SELECT name FROM settings WHERE name IN ('smokeping_perl_binary', 'smokeping_lib_dir', 'smokeping_config_file') ORDER BY name");
 
 	expect($state['result'])->toBeTrue()
-		->and($state['schema'])->toEqual('3')
+		->and($state['schema'])->toEqual('4')
 		->and(array_column(array_filter($left, 'is_array'), 'name'))->toBe(['smokeping_config_file']);
+});
+
+it('adds the sizing columns on upgrade from schema 3 and adopts each smoke graph\'s limit', function () {
+	lifecycle('install');
+	lifecycle('seed');
+	lifecycle('seed_sized_graph');
+	lifecycle('set_schema', '3');
+
+	$state = lifecycle('upgrade');
+	$rows  = lifecycle('query', 'SELECT state, sized_limit, sized_at FROM plugin_smokeping_object WHERE local_graph_id = 990001 ORDER BY state');
+
+	expect($state['result'])->toBeTrue()
+		->and($state['schema'])->toEqual('4')
+		->and($rows)->toEqual([
+			['state' => 'active', 'sized_limit' => '0.25', 'sized_at' => '0'],
+			['state' => 'summary', 'sized_limit' => '', 'sized_at' => '0'],
+		]);
 });
 
 it('refuses a schema newer than the code and leaves the recorded version alone', function () {

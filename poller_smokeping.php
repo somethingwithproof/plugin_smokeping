@@ -93,6 +93,15 @@ $smokeping_job = new \Somethingwithproof\Smokeping\ReaderJob(
 
 try {
 	$smokeping_result = $smokeping_job->run($smokeping_inventory);
+
+	// Size the graphs that are a day or more past their last sizing, a few
+	// per cycle, unless the read used up its budget (see GraphScale).
+	if (!$smokeping_result->overrun) {
+		$smokeping_sizer = new \Somethingwithproof\Smokeping\SmokeProvisioner($smokeping_settings, $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
+		$smokeping_sized = $smokeping_sizer->resizeDue($smokeping_poller, \Somethingwithproof\Smokeping\GraphScale::BATCH);
+
+		cacti_log(sprintf('SMOKEPING SIZING: Poller:%d Sized:%d Kept:%d Manual:%d', $smokeping_poller, $smokeping_sized['sized'], $smokeping_sized['kept'], $smokeping_sized['manual']), false, 'SMOKEPING', POLLER_VERBOSITY_HIGH);
+	}
 } finally {
 	unregister_process('smokeping', 'reader', $smokeping_poller);
 }

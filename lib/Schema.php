@@ -29,10 +29,11 @@ namespace Somethingwithproof\Smokeping;
  * whether the tables exist.
  */
 final class Schema {
-	public const VERSION = 3;
+	public const VERSION = 4;
 
 	/** Settings removed by schema 3, when the plugin stopped running Perl. */
 	private const RETIRED_SETTINGS = ['smokeping_perl_binary', 'smokeping_lib_dir'];
+
 
 	public const HOOKS = [
 		'config_arrays'            => 'smokeping_config_arrays',
@@ -95,6 +96,33 @@ final class Schema {
 			}
 		}
 
+		// Schema 4: the object table gains the sizing columns. Cacti 1.2.31
+		// creates missing tables but never adds columns to an existing one.
+		$sizing = self::sizingColumns();
+
+		foreach ($sizing as $column) {
+			db_add_column('plugin_smokeping_object', $column, true, $this->connection);
+		}
+
+		$present = (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME IN (?, ?)', array_merge(['plugin_smokeping_object'], array_column($sizing, 'name')), '', true, $this->connection);
+
+		if ($present !== count($sizing)) {
+			Log::error(sprintf('Unable to add the sizing columns to plugin_smokeping_object; schema left at version %d', $from));
+
+			return false;
+		}
+
+		// Nothing recorded who set the limits of graphs made before schema 4,
+		// and size-graphs replaced hand-set limits until then, so the plugin
+		// takes each current limit as its own. sized_at stays 0, which makes
+		// every adopted graph due for re-sizing.
+		if ($from > 0 && $from < 4) {
+			db_execute_prepared("UPDATE plugin_smokeping_object AS o
+				INNER JOIN graph_templates_graph AS g ON g.local_graph_id = o.local_graph_id
+				SET o.sized_limit = g.upper_limit
+				WHERE o.sized_limit = '' AND o.local_graph_id > 0 AND o.state IN (?, ?)", [ObjectRepository::ACTIVE, ObjectRepository::ARCHIVED], true, $this->connection);
+		}
+
 		// Schema 3: the plugin reads SmokePing's configuration itself, so the Perl settings go.
 		db_execute_prepared('DELETE FROM settings WHERE name IN (?, ?)', self::RETIRED_SETTINGS, true, $this->connection);
 
@@ -138,6 +166,20 @@ final class Schema {
 
 	private function tableExists(string $table): bool {
 		return db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?', [$table], '', true, $this->connection) > 0;
+	}
+
+	/**
+	 * The columns schema 4 adds to plugin_smokeping_object: the upper limit
+	 * the plugin last set on the graph, and when it last sized the graph. A
+	 * graph whose limit differs from sized_limit was sized by hand.
+	 *
+	 * @return list<array{name: string, type: string, NULL: bool, default: string, unsigned?: bool}>
+	 */
+	private static function sizingColumns(): array {
+		return [
+			['name' => 'sized_limit', 'type' => 'varchar(32)', 'NULL' => false, 'default' => ''],
+			['name' => 'sized_at', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'],
+		];
 	}
 
 	/**
@@ -203,6 +245,7 @@ final class Schema {
 					['name' => 'rrd_path', 'type' => 'varchar(512)', 'NULL' => false, 'default' => ''],
 					['name' => 'state', 'type' => 'varchar(16)', 'NULL' => false, 'default' => 'active'],
 					['name' => 'created_at', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'],
+					...self::sizingColumns(),
 				],
 				'primary'     => 'id',
 				'unique_keys' => [['name' => 'local_data_id', 'columns' => ['local_data_id']]],

@@ -32,6 +32,12 @@ final class GraphScale {
 	/** The range the largest median is taken from, in seconds. */
 	public const WINDOW = 86400;
 
+	/**
+	 * The most graphs the reader sizes in one poller cycle. At one cycle every
+	 * five minutes this re-sizes 7,200 graphs a day.
+	 */
+	public const BATCH = 25;
+
 	/** SmokePing's headroom above the largest median. */
 	public const HEADROOM = 1.2;
 

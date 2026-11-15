@@ -81,14 +81,53 @@ final class ObjectRepository {
 	}
 
 	/**
-	 * Every smoke graph, live or archived, with its file relative to rra_path.
+	 * Every smoke graph, live or archived, with its file relative to rra_path
+	 * and the limit the plugin last set on it.
 	 *
-	 * @return list<array{local_graph_id: int, rrd_path: string}>
+	 * @return list<array{local_graph_id: int, rrd_path: string, sized_limit: string}>
 	 */
 	public function smokeGraphs(): array {
-		$rows = Row::rows(db_fetch_assoc_prepared('SELECT local_graph_id, rrd_path FROM plugin_smokeping_object WHERE state IN (?, ?) AND local_graph_id > 0 ORDER BY local_graph_id', [self::ACTIVE, self::ARCHIVED], true, $this->connection));
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT local_graph_id, rrd_path, sized_limit FROM plugin_smokeping_object WHERE state IN (?, ?) AND local_graph_id > 0 ORDER BY local_graph_id', [self::ACTIVE, self::ARCHIVED], true, $this->connection));
 
-		return array_values(array_map(fn (array $row) => ['local_graph_id' => Row::int($row, 'local_graph_id'), 'rrd_path' => Row::string($row, 'rrd_path')], $rows));
+		return self::graphRows($rows);
+	}
+
+	/**
+	 * Smoke graphs of a poller's targets last sized at or before a time, the
+	 * longest waiting first, at most $limit of them.
+	 *
+	 * @return list<array{local_graph_id: int, rrd_path: string, sized_limit: string}>
+	 */
+	public function smokeGraphsDue(int $pollerId, int $sizedBefore, int $limit): array {
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT o.local_graph_id, o.rrd_path, o.sized_limit
+			FROM plugin_smokeping_object AS o
+			INNER JOIN plugin_smokeping_target AS t ON t.id = o.target_id
+			WHERE t.poller_id = ? AND o.state IN (?, ?) AND o.local_graph_id > 0 AND o.sized_at <= ?
+			ORDER BY o.sized_at, o.local_graph_id
+			LIMIT ' . max(0, $limit), [$pollerId, self::ACTIVE, self::ARCHIVED, $sizedBefore], true, $this->connection));
+
+		return self::graphRows($rows);
+	}
+
+	/**
+	 * Record a sizing of a graph: the limit the plugin set, or null to keep
+	 * the recorded limit and only move the time.
+	 */
+	public function recordSizing(int $localGraphId, ?string $limit, int $now): void {
+		if ($limit === null) {
+			db_execute_prepared('UPDATE plugin_smokeping_object SET sized_at = ? WHERE local_graph_id = ?', [$now, $localGraphId], true, $this->connection);
+		} else {
+			db_execute_prepared('UPDATE plugin_smokeping_object SET sized_limit = ?, sized_at = ? WHERE local_graph_id = ?', [$limit, $now, $localGraphId], true, $this->connection);
+		}
+	}
+
+	/**
+	 * @param list<array<string, mixed>> $rows
+	 *
+	 * @return list<array{local_graph_id: int, rrd_path: string, sized_limit: string}>
+	 */
+	private static function graphRows(array $rows): array {
+		return array_values(array_map(fn (array $row) => ['local_graph_id' => Row::int($row, 'local_graph_id'), 'rrd_path' => Row::string($row, 'rrd_path'), 'sized_limit' => Row::string($row, 'sized_limit')], $rows));
 	}
 
 	public function add(int $targetId, string $location, int $hostId, int $localDataId, int $localGraphId, string $rrdPath, string $state, int $now): void {

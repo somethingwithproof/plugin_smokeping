@@ -173,6 +173,15 @@ final class CactiObjectRepository {
 		db_execute_prepared('UPDATE data_template_data SET data_source_path = ?, rrd_step = ? WHERE local_data_id = ?', [$dataSourcePath, $step, $localDataId], true, $this->connection);
 	}
 
+	/**
+	 * A graph's upper limit as stored, or null when the graph is gone.
+	 */
+	public function graphUpperLimit(int $localGraphId): ?string {
+		$row = db_fetch_row_prepared('SELECT upper_limit FROM graph_templates_graph WHERE local_graph_id = ?', [$localGraphId], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? Row::string($row, 'upper_limit') : null;
+	}
+
 	public function setGraphUpperLimit(int $localGraphId, string $upperLimit): void {
 		db_execute_prepared('UPDATE graph_templates_graph SET upper_limit = ? WHERE local_graph_id = ?', [$upperLimit, $localGraphId], true, $this->connection);
 	}

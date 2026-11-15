@@ -29,5 +29,6 @@
 /locales/build_gettext.sh export-ignore
 /phpstan.neon export-ignore
 /phpunit*.xml export-ignore
+/sonar-project.properties export-ignore
 /tests export-ignore
 /tools export-ignore

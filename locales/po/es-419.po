@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
-
 msgid ""
 msgstr ""
 "Project-Id-Version: smokeping 1.0.0-rc.1\n"
@@ -1083,6 +1082,10 @@ msgid "Loss"
 msgstr "Pérdida"
 
 #: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Mantenimiento"
+
+#: lib/ViewPage.php
 msgid "Median"
 msgstr "Mediana"
 
@@ -1097,6 +1100,14 @@ msgstr "Ningún destino de SmokePing está asociado a dispositivos que usted pue
 #: lib/ViewPage.php
 msgid "Master"
 msgstr "Maestro"
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "En mantenimiento"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "No"
 
 #: lib/ViewPage.php
 msgid "Never observed"

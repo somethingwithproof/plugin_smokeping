@@ -43,7 +43,8 @@ if (isset_request_var('host_id')) {
 $smokeping_page = new \Somethingwithproof\Smokeping\ViewPage(
 	new \Somethingwithproof\Smokeping\TargetRepository(false),
 	new \Somethingwithproof\Smokeping\ObservationRepository(false),
-	new \Somethingwithproof\Smokeping\FreshnessEvaluator(new \Somethingwithproof\Smokeping\SystemClock(), $smokeping_settings->freshnessAllowance)
+	new \Somethingwithproof\Smokeping\FreshnessEvaluator(new \Somethingwithproof\Smokeping\SystemClock(), $smokeping_settings->freshnessAllowance),
+	new \Somethingwithproof\Smokeping\MaintMaintenance()
 );
 
 top_graph_header();

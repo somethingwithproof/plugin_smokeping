@@ -152,6 +152,9 @@ php -r '
 	$id = db_fetch_cell("SELECT MAX(id) FROM plugin_maint_schedules");
 	db_execute_prepared("INSERT INTO plugin_maint_hosts (type, host, schedule) VALUES (1, ?, ?)", array((int) $argv[1], $id));
 ' "$dev"
+# The SmokePing page asks Maint the same way, through is_device_in_maintenance.
+in_maint() { php -r 'chdir("/cacti"); include("./include/cli_check.php"); include_once("./plugins/smokeping/setup.php"); smokeping_boot(); echo (new Somethingwithproof\Smokeping\MaintMaintenance())->inMaintenance((int) $argv[1]) ? "yes" : "no";' "$1" 2>/dev/null; }
+[ "$(in_maint "$dev")" = yes ] && result PASS page-shows-maintenance "device $dev reads as in maintenance" || result FAIL page-shows-maintenance "$(in_maint "$dev")"
 alerts_before=$(notices "$loss_id" $ST_NOTIFYAL)
 cycle 8; cycle 8; cycle 8
 row=$(thold_row "$loss_id")
@@ -165,6 +168,7 @@ last=$(rrdtool lastupdate "$rrd" 2>/dev/null | tail -1 | cut -d: -f1)
 
 # Maintenance ends while loss continues: the alert follows the trigger.
 php -r 'chdir("/cacti"); include("./include/cli_check.php"); db_execute("DELETE FROM plugin_maint_hosts"); db_execute("DELETE FROM plugin_maint_schedules");'
+[ "$(in_maint "$dev")" = no ] && result PASS page-shows-maintenance-ended "device $dev reads as out of maintenance" || result FAIL page-shows-maintenance-ended "$(in_maint "$dev")"
 cycle 8; cycle 8
 [ "$(notices "$loss_id" $ST_NOTIFYAL)" = $((alerts_before + 1)) ] && result PASS alert-after-maint "the alert fires once maintenance has ended" || result FAIL alert-after-maint "$(notices "$loss_id" $ST_NOTIFYAL) vs $alerts_before"
 cycle 0

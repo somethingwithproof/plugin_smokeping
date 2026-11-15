@@ -108,9 +108,13 @@ jobs:
       run: |
         set -euo pipefail
         if [ "$EVENT_NAME" = pull_request ]; then
-          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]
-          [[ "$PR_HEAD" =~ ^[A-Za-z0-9._/-]+$ ]]
-          [[ "$PR_BASE" =~ ^[A-Za-z0-9._/-]+$ ]]
+          # The names go into the scanner's arguments, so only characters
+          # that need no quoting pass: Git's own branch names, including +.
+          ref='^[A-Za-z0-9._/+-]+$'
+          if ! [[ "$PR_NUMBER" =~ ^[0-9]+$ && "$PR_HEAD" =~ $ref && "$PR_BASE" =~ $ref ]]; then
+            echo '::error::The pull request number or a branch name has characters the analysis does not pass to the scanner.'
+            exit 1
+          fi
           args="-Dsonar.pullrequest.key=$PR_NUMBER -Dsonar.pullrequest.branch=$PR_HEAD -Dsonar.pullrequest.base=$PR_BASE"
         else
           case "$REF_NAME" in main) ;; *) exit 1 ;; esac

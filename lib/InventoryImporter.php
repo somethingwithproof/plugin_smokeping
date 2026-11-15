@@ -77,6 +77,7 @@ final class InventoryImporter {
 					present: true,
 					firstSeen: $old->firstSeen,
 					lastSeen: $old->lastSeen,
+					probeDesc: $target->probeDesc,
 				);
 			}
 		}
@@ -114,6 +115,7 @@ final class InventoryImporter {
 			|| $a->slaves !== $b->slaves
 			|| $a->noMasterPoll !== $b->noMasterPoll
 			|| $a->step !== $b->step
-			|| $a->pings !== $b->pings;
+			|| $a->pings !== $b->pings
+			|| $a->probeDesc !== $b->probeDesc;
 	}
 }

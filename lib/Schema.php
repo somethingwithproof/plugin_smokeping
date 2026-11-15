@@ -29,7 +29,7 @@ namespace Somethingwithproof\Smokeping;
  * whether the tables exist.
  */
 final class Schema {
-	public const VERSION = 4;
+	public const VERSION = 5;
 
 	/** Settings removed by schema 3, when the plugin stopped running Perl. */
 	private const RETIRED_SETTINGS = ['smokeping_perl_binary', 'smokeping_lib_dir'];
@@ -112,6 +112,21 @@ final class Schema {
 			return false;
 		}
 
+		// Schema 5: the target table gains SmokePing's probe description, for
+		// the graph's probe line, which the next inventory import fills; the
+		// object table records which template version each graph follows, 0
+		// for graphs made before, which the poller brings to the current
+		// templates (SmokeProvisioner::retemplateDue()).
+		foreach (['plugin_smokeping_target' => self::probeDescColumn(), 'plugin_smokeping_object' => self::templateVersionColumn()] as $table => $column) {
+			db_add_column($table, $column, true, $this->connection);
+
+			if ((int) db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?', [$table, $column['name']], '', true, $this->connection) !== 1) {
+				Log::error(sprintf('Unable to add the %s column to %s; schema left at version %d', $column['name'], $table, $from));
+
+				return false;
+			}
+		}
+
 		// Nothing recorded who set the limits of graphs made before schema 4,
 		// and size-graphs replaced hand-set limits until then, so the plugin
 		// takes each current limit as its own. sized_at stays 0, which makes
@@ -190,6 +205,25 @@ final class Schema {
 	}
 
 	/**
+	 * SmokePing's description of a target's probe (ProbeDescription), '' when
+	 * the plugin cannot know it.
+	 *
+	 * @return array{name: string, type: string, NULL: bool, default: string}
+	 */
+	private static function probeDescColumn(): array {
+		return ['name' => 'probe_desc', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''];
+	}
+
+	/**
+	 * The TemplateInstaller version a graph's items follow.
+	 *
+	 * @return array{name: string, type: string, unsigned: bool, NULL: bool, default: string}
+	 */
+	private static function templateVersionColumn(): array {
+		return ['name' => 'template_version', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'];
+	}
+
+	/**
 	 * Table definitions in api_plugin_db_table_create() format.
 	 *
 	 * State values are stored as varchar enum values, never list positions.
@@ -210,6 +244,7 @@ final class Schema {
 					['name' => 'path', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''],
 					['name' => 'host', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''],
 					['name' => 'probe', 'type' => 'varchar(64)', 'NULL' => false, 'default' => ''],
+					self::probeDescColumn(),
 					['name' => 'menu', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''],
 					['name' => 'title', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''],
 					['name' => 'slaves', 'type' => 'varchar(1024)', 'NULL' => false, 'default' => ''],
@@ -253,6 +288,7 @@ final class Schema {
 					['name' => 'state', 'type' => 'varchar(16)', 'NULL' => false, 'default' => 'active'],
 					['name' => 'created_at', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'],
 					...self::sizingColumns(),
+					self::templateVersionColumn(),
 				],
 				'primary'     => 'id',
 				'unique_keys' => [['name' => 'local_data_id', 'columns' => ['local_data_id']]],

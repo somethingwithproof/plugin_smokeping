@@ -67,6 +67,18 @@ It prints each graph's new limit, that it kept its limit, or that it kept the li
 
 On upgrade from 1.0.0-rc.1, nothing records who set the existing limits, so the plugin takes each smoke graph's current limit as its own and sizes the graph at its next daily turn. Before then, `size-graphs` replaced hand-set limits too. A limit counts as hand-set only while it differs from the one the plugin recorded, and after the upgrade the recorded limit is the adopted one. To keep a hand-set limit, set it again once a daily sizing has replaced it. If that sizing finds no median, it keeps the adopted limit, so setting the same value again changes nothing and a later sizing can still replace it.
 
+## Graph legend and template upgrades
+
+The smoke graph's legend follows SmokePing's: the median's average, maximum, minimum, and last value, its standard deviation, and am/s (the average over the standard deviation), then the loss values and colors, and SmokePing's probe line, such as `probe: 20 ICMP Echo Pings (56 Bytes) every 300s`. The probe line comes from the target's probe, packet size, pings, and step, which the inventory reads from SmokePing's configuration. The main poller writes it on each graph, and writes it again when the target's probe changes or a template import resets it. A target stored before the inventory has read its probe shows the probe's name.
+
+When an upgrade brings new graph templates, graphs made from the earlier ones keep their old items, which still render, until the plugin brings them to the new templates. The main poller does that for 200 graphs per cycle, keeping each graph's title and upper limit. To do every graph now:
+
+```sh
+php plugins/smokeping/cli/smokeping.php upgrade-graphs
+```
+
+The upgrade sets each graph's items as the template has them, so changes made by hand to a plugin graph's items are replaced. A graph that cannot be upgraded keeps its old items, and the Cacti log names it.
+
 ## Re-linking a renamed target
 
 SmokePing names a target's file after its place in the configuration tree, so renaming or moving a node starts a new, empty file. When an import sees a path disappear and a new path with the same host and probe appear, it records a proposal and changes nothing. **Review** on the inventory page opens a confirm screen. Re-link moves the smoke graph and the summary data source to the new target, moves the device mapping with them, and keeps the old file's history readable in an archived graph. **Dismiss Proposal** closes it without a change.

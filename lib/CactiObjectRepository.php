@@ -122,6 +122,22 @@ final class CactiObjectRepository {
 		return (int) db_fetch_cell_prepared('SELECT poller_id FROM host WHERE id = ?', [$hostId], '', true, $this->connection);
 	}
 
+	/**
+	 * The graph template items of the named graph templates that use a VDEF.
+	 *
+	 * @param list<string> $names
+	 */
+	public function graphTemplateVdefItems(array $names): int {
+		if ($names === []) {
+			return 0;
+		}
+
+		return (int) db_fetch_cell_prepared('SELECT COUNT(*)
+			FROM graph_templates_item AS gti
+			INNER JOIN graph_templates AS gt ON gt.id = gti.graph_template_id
+			WHERE gti.local_graph_id = 0 AND gti.vdef_id > 0 AND gt.name IN (' . implode(', ', array_fill(0, count($names), '?')) . ')', $names, '', true, $this->connection);
+	}
+
 	public function graphTemplateId(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM graph_templates WHERE name = ?', [$name], '', true, $this->connection);
 	}
@@ -216,6 +232,40 @@ final class CactiObjectRepository {
 		}
 
 		return $done;
+	}
+
+	/**
+	 * Bring a graph to the current state of its graph template. Cacti's
+	 * change_graph_template() adds the items the template gained, in the
+	 * template's order, but keeps every column of the items the graph already
+	 * has, and replaces the graph's title with the template's. The item
+	 * columns update_graph_template_items() pushes are copied from the
+	 * template here, because a legend item reads the VDEFs of others by their
+	 * position, and the title is put back. The caller includes lib/template.php
+	 * and runs this in a transaction.
+	 */
+	public function retemplateGraph(int $localGraphId): bool {
+		$templateId = (int) db_fetch_cell_prepared('SELECT graph_template_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
+		$title      = db_fetch_row_prepared('SELECT title, t_title FROM graph_templates_graph WHERE local_graph_id = ?', [$localGraphId], true, $this->connection);
+
+		if ($templateId === 0 || !is_array($title) || $title === []) {
+			return false;
+		}
+
+		if (change_graph_template($localGraphId, $templateId, true) === false) {
+			return false;
+		}
+
+		$copied = db_execute_prepared('UPDATE graph_templates_item AS gi
+			INNER JOIN graph_templates_item AS ti ON ti.id = gi.local_graph_template_item_id AND ti.local_graph_id = 0
+			SET gi.color_id = ti.color_id, gi.alpha = ti.alpha, gi.graph_type_id = ti.graph_type_id, gi.line_width = ti.line_width,
+				gi.dashes = ti.dashes, gi.dash_offset = ti.dash_offset, gi.cdef_id = ti.cdef_id, gi.vdef_id = ti.vdef_id, gi.shift = ti.shift,
+				gi.consolidation_function_id = ti.consolidation_function_id, gi.textalign = ti.textalign, gi.text_format = ti.text_format,
+				gi.value = ti.value, gi.hard_return = ti.hard_return, gi.gprint_id = ti.gprint_id, gi.sequence = ti.sequence
+			WHERE gi.local_graph_id = ?', [$localGraphId], true, $this->connection);
+
+		return $copied !== false
+			&& db_execute_prepared('UPDATE graph_templates_graph SET title = ?, t_title = ? WHERE local_graph_id = ?', [$title['title'], $title['t_title'], $localGraphId], true, $this->connection) !== false;
 	}
 
 	public function setGraphTitle(int $localGraphId, string $title): void {

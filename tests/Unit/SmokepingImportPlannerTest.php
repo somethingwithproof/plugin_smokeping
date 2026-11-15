@@ -75,7 +75,7 @@ function ip_stored(): array {
 	$id     = 1;
 
 	foreach (ip_inventory()->targets as $t) {
-		$stored[$t->path->value] = new Target(TargetId::fromInt($id++), $t->pollerId, $t->path, $t->host, $t->probe, $t->menu, $t->title, $t->slaves, $t->noMasterPoll, $t->step, $t->pings, $t->mode, $t->adminState, true, 0, 0);
+		$stored[$t->path->value] = new Target(TargetId::fromInt($id++), $t->pollerId, $t->path, $t->host, $t->probe, $t->menu, $t->title, $t->slaves, $t->noMasterPoll, $t->step, $t->pings, $t->mode, $t->adminState, true, 0, 0, $t->probeDesc);
 	}
 
 	return $stored;

@@ -38,11 +38,11 @@ function fixture_inventory(string $version = '2.009000'): Inventory {
 }
 
 function stored(Target $target, int $id, bool $present = true): Target {
-	return new Target(TargetId::fromInt($id), $target->pollerId, $target->path, $target->host, $target->probe, $target->menu, $target->title, $target->slaves, $target->noMasterPoll, $target->step, $target->pings, TargetMode::Observed, $target->adminState, $present, 100, 200);
+	return new Target(TargetId::fromInt($id), $target->pollerId, $target->path, $target->host, $target->probe, $target->menu, $target->title, $target->slaves, $target->noMasterPoll, $target->step, $target->pings, TargetMode::Observed, $target->adminState, $present, 100, 200, $target->probeDesc);
 }
 
 function with_path(Target $target, string $path): Target {
-	return new Target(null, $target->pollerId, TargetPath::fromString($path), $target->host, $target->probe, $target->menu, $target->title, $target->slaves, $target->noMasterPoll, $target->step, $target->pings, $target->mode, $target->adminState, true, 0, 0);
+	return new Target(null, $target->pollerId, TargetPath::fromString($path), $target->host, $target->probe, $target->menu, $target->title, $target->slaves, $target->noMasterPoll, $target->step, $target->pings, $target->mode, $target->adminState, true, 0, 0, $target->probeDesc);
 }
 
 describe('Inventory::fromJson', function () {
@@ -153,6 +153,27 @@ describe('InventoryImporter', function () {
 			->and($plan->changed[0]->adminState)->toBe(AdminState::Disabled)
 			->and($plan->warnings)->toHaveCount(1)
 			->and($plan->warnings[0])->toContain('Europe/paris changed step or pings');
+	});
+
+	it('updates a target whose probe description changed, for its probe line', function () {
+		$inventory = fixture_inventory();
+		$existing  = [];
+
+		foreach ($inventory->targets as $i => $target) {
+			$stored = stored($target, $i + 1);
+
+			if ($target->path->value === 'DNS/resolver') {
+				$stored = new Target($stored->id, 1, $target->path, $target->host, $target->probe, $target->menu, $target->title, $target->slaves, $target->noMasterPoll, $target->step, $target->pings, TargetMode::Observed, $target->adminState, true, 100, 200, '');
+			}
+
+			$existing[] = $stored;
+		}
+
+		$plan = (new InventoryImporter())->plan($inventory, $existing);
+
+		expect(array_map(fn (Target $t) => $t->path->value, $plan->changed))->toBe(['DNS/resolver'])
+			->and($plan->changed[0]->probeDesc)->toBe('DNS requests')
+			->and($plan->warnings)->toBe([]);
 	});
 
 	it('marks a returning target present again', function () {

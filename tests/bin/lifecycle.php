@@ -221,6 +221,12 @@ switch ($action) {
 		$result = plugin_smokeping_upgrade(true);
 
 		break;
+	case 'sync_probe_lines':
+		// What the main poller does each cycle.
+		include_once($config['base_path'] . '/plugins/smokeping/setup.php');
+		$result = (new \Somethingwithproof\Smokeping\ObjectRepository(false))->syncProbeLines() > 0;
+
+		break;
 	case 'forget_templates':
 		db_execute("DELETE FROM settings WHERE name = 'smokeping_templates_version'");
 
@@ -255,6 +261,12 @@ switch ($action) {
 		break;
 	case 'drop_table':
 		db_execute('DROP TABLE IF EXISTS `' . preg_replace('/[^a-z_]/', '', $argument) . '`');
+
+		break;
+	case 'drop_column':
+		// table:column, to rebuild an earlier schema.
+		list($table, $column) = array_map(fn ($name) => preg_replace('/[^a-z_]/', '', $name), explode(':', $argument, 2));
+		db_execute('ALTER TABLE `' . $table . '` DROP COLUMN `' . $column . '`');
 
 		break;
 	case 'seed':

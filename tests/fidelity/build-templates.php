@@ -125,6 +125,22 @@ function sp_cdef(string $name, string $rpn): int {
 	return $id;
 }
 
+/**
+ * A VDEF of one function over the item's own data source (Cacti's
+ * CURRENT_DATA_SOURCE, then the function), e.g. "CURRENT_DATA_SOURCE,STDEV".
+ */
+function sp_vdef(string $name, string $function): int {
+	global $vdef_functions;
+
+	$id = sp_save('vdef', array('hash' => sp_hash('vdef', $name), 'name' => $name));
+
+	db_execute_prepared('DELETE FROM vdef_items WHERE vdef_id = ?', array($id));
+	sp_save('vdef_items', array('hash' => sp_hash('vdef_item', "$name:1"), 'vdef_id' => $id, 'sequence' => 1, 'type' => 4, 'value' => 'CURRENT_DATA_SOURCE'));
+	sp_save('vdef_items', array('hash' => sp_hash('vdef_item', "$name:2"), 'vdef_id' => $id, 'sequence' => 2, 'type' => 1, 'value' => (string) array_search($function, $vdef_functions, true)));
+
+	return $id;
+}
+
 function sp_gprint(string $name, string $text): int {
 	return sp_save('graph_templates_gprint', array('hash' => sp_hash('gprint', $name), 'name' => $name, 'gprint_text' => $text));
 }
@@ -191,7 +207,12 @@ $gray = static function (int $pings, int $band): string {
 
 $gprintMedian = sp_gprint('SmokePing median', '%.1lf %ss');
 $gprintLoss   = sp_gprint('SmokePing loss', '%.2lf %%');
+$gprintMs     = sp_gprint('SmokePing milliseconds', '%.1lf ms');
+$gprintAms    = sp_gprint('SmokePing am/s', '%.1lf %s');
 $cdefHeight   = SP_HEIGHT;
+$cdefMs       = sp_cdef('SmokePing seconds to milliseconds', 'CURRENT_DATA_SOURCE,1000,*');
+$vdefAverage  = sp_vdef('SmokePing average', 'AVERAGE');
+$vdefStdev    = sp_vdef('SmokePing standard deviation', 'STDEV');
 
 // Keeps a ping below the graph's upper limit, as cp$i does in Smokeping.pm.
 $clip = 'CURRENT_DATA_SOURCE,CURRENT_GRAPH_MAXIMUM_VALUE,LT,CURRENT_DATA_SOURCE,INF,IF';
@@ -303,6 +324,7 @@ foreach (array(false, true) as $legacy) {
 			'value'                     => '',
 			'hard_return'               => '',
 			'gprint_id'                 => 0,
+			'vdef_id'                   => 0,
 			'sequence'                  => $sequence,
 		);
 	};
@@ -326,11 +348,26 @@ foreach (array(false, true) as $legacy) {
 		));
 	}
 
+	// The median legend, as Smokeping.pm prints it: avg, max, min, now, then
+	// the standard deviation and am/s. Cacti names an item's CDEF and VDEF
+	// cdef<X> and vdef<X> after the item's position, generate_graph_def_name
+	// of its index in the graph, so the am/s CDEF names the average and
+	// standard deviation VDEFs by the positions of their items.
 	$ref('median');
-	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_AVERAGE, 'text_format' => 'median rtt:', 'gprint_id' => $gprintMedian));
+	$avgIndex = count($gi);
+	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_AVERAGE, 'vdef_id' => $vdefAverage, 'text_format' => 'median rtt:', 'gprint_id' => $gprintMedian));
 	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_MAX, 'text_format' => ' max', 'gprint_id' => $gprintMedian, 'consolidation_function_id' => 1));
 	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_MIN, 'text_format' => ' min', 'gprint_id' => $gprintMedian));
-	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_LAST, 'text_format' => ' now', 'gprint_id' => $gprintMedian, 'hard_return' => 'on'));
+	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_LAST, 'text_format' => ' now', 'gprint_id' => $gprintMedian));
+	// SmokePing prints sd in milliseconds from the median over the range
+	// (Smokeping::RRDhelpers::get_stddev); the VDEF is the same population
+	// standard deviation, over the median in milliseconds.
+	$sdIndex = count($gi);
+	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_AVERAGE, 'cdef_id' => $cdefMs, 'vdef_id' => $vdefStdev, 'text_format' => ' sd', 'gprint_id' => $gprintMs));
+	// am/s: the average median over the standard deviation, both in seconds
+	// (CDEF:mesd=median,POP,avmed,<sd>,/ in Smokeping.pm).
+	$ams = sp_cdef('SmokePing am/s (' . generate_graph_def_name((string) $avgIndex) . '/' . generate_graph_def_name((string) $sdIndex) . ')', 'CURRENT_DATA_SOURCE,POP,vdef' . generate_graph_def_name((string) $avgIndex) . ',vdef' . generate_graph_def_name((string) $sdIndex) . ',1000,/,/');
+	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_GPRINT_AVERAGE, 'cdef_id' => $ams, 'text_format' => ' am/s', 'gprint_id' => $gprintAms, 'hard_return' => 'on'));
 	$add(array('task_item_id' => $dsId['median'], 'graph_type_id' => GRAPH_ITEM_TYPE_LINE1, 'color_id' => sp_color(SP_MEDIAN_COLOR)));
 
 	$lossName = $ref('loss');
@@ -357,6 +394,10 @@ foreach (array(false, true) as $legacy) {
 	}
 
 	$add(array('graph_type_id' => GRAPH_ITEM_TYPE_HRULE, 'value' => '0', 'color_id' => sp_color('000000')));
+	// SmokePing's probe line. It differs per target (probe, packet size, step),
+	// so the plugin writes each graph's own text over this placeholder
+	// (SmokeProvisioner::PROBE_LINE).
+	$add(array('graph_type_id' => GRAPH_ITEM_TYPE_COMMENT, 'text_format' => 'probe:', 'hard_return' => 'on'));
 
 	$medianItem = 0;
 

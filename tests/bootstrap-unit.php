@@ -84,9 +84,13 @@ $GLOBALS['__smokeping_db_assoc']   = [];
 $GLOBALS['__smokeping_db_queries'] = [];
 $GLOBALS['__smokeping_db_row']     = [];
 
+// The value a single-cell SELECT returns, or a callable that gives it.
+$GLOBALS['__smokeping_db_cell'] = 0;
+
 if (!function_exists('db_fetch_cell_prepared')) {
 	function db_fetch_cell_prepared($sql, $params = [], $col_name = '', $log = true, $db_conn = false, $log_function = null) {
-		return 0;
+		// A callable answers each query: fn (string $sql, array $params).
+		return is_callable($GLOBALS['__smokeping_db_cell']) ? ($GLOBALS['__smokeping_db_cell'])($sql, $params) : $GLOBALS['__smokeping_db_cell'];
 	}
 }
 

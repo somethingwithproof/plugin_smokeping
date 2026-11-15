@@ -31,7 +31,7 @@ namespace Somethingwithproof\Smokeping;
  * upgrade re-imports only when the file changed.
  */
 final class TemplateInstaller {
-	public const VERSION = 2;
+	public const VERSION = 3;
 
 	public const SETTING = 'smokeping_templates_version';
 
@@ -112,6 +112,62 @@ final class TemplateInstaller {
 		include_once($this->coreLibrary . '/utility.php');
 		include_once($this->coreLibrary . '/import.php');
 
+		// Cacti 1.2.31 imports VDEFs after graph templates and resolves a
+		// graph item's VDEF only from objects that existed before the import,
+		// so importing a new VDEF with the items that use it leaves the items
+		// without one, and logs an import error for each. The am/s item reads
+		// the average's and standard deviation's VDEFs by name, so the file's
+		// VDEFs are imported on their own first.
+		$vdefs = self::vdefsOnly($xml);
+
+		if ($vdefs !== null) {
+			$error = $this->importOnce($vdefs);
+
+			if ($error !== null) {
+				return $error;
+			}
+		}
+
+		$error = $this->importOnce($xml);
+
+		if ($error !== null) {
+			return $error;
+		}
+
+		if (!$this->present()) {
+			return 'The SmokePing templates are missing after import';
+		}
+
+		$names = array_merge(array_map(self::graphTemplateName(...), self::PINGS), [self::SUMMARY_TEMPLATE]);
+
+		if ($this->objects->graphTemplateVdefItems($names) < preg_match_all('/<vdef_id>hash_18/', $xml)) {
+			return 'The SmokePing graph templates are missing their VDEFs after import';
+		}
+
+		// Import only adds graph templates to a device template, so links left
+		// by an earlier template file survive it. Cacti would create a graph
+		// with no data source for each one on every new SmokePing device.
+		$this->objects->unlinkDeviceTemplateGraphs($this->objects->deviceTemplateId(self::DEVICE_TEMPLATE));
+
+		return null;
+	}
+
+	/**
+	 * The VDEF objects of a Cacti export, as an export of their own, or null
+	 * when it has none.
+	 */
+	private static function vdefsOnly(string $xml): ?string {
+		if (preg_match_all('#<(hash_18[0-9a-f]{36})>.*?</\1>#s', $xml, $found) < 1) {
+			return null;
+		}
+
+		return "<cacti>\n" . implode("\n", $found[0]) . "\n</cacti>\n";
+	}
+
+	/**
+	 * @return string|null the reason one import of the file failed, or null
+	 */
+	private function importOnce(string $xml): ?string {
 		$result = import_xml_data($xml, false, $this->objects->defaultProfileId());
 
 		if (!is_array($result) || $result === []) {
@@ -135,15 +191,6 @@ final class TemplateInstaller {
 		if ($failed > 0) {
 			return sprintf('%d SmokePing template objects failed to import', $failed);
 		}
-
-		if (!$this->present()) {
-			return 'The SmokePing templates are missing after import';
-		}
-
-		// Import only adds graph templates to a device template, so links left
-		// by an earlier template file survive it. Cacti would create a graph
-		// with no data source for each one on every new SmokePing device.
-		$this->objects->unlinkDeviceTemplateGraphs($this->objects->deviceTemplateId(self::DEVICE_TEMPLATE));
 
 		return null;
 	}

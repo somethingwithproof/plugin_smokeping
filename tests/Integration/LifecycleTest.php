@@ -48,7 +48,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 
 	expect($state['plugin']['status'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION)
-		->and($state['schema'])->toEqual('4')
+		->and($state['schema'])->toEqual('5')
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tracked'])->toBe(SMOKEPING_TABLES)
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
@@ -122,7 +122,7 @@ it('imports the templates once, and install, upgrade, and re-import leave one co
 		->and($first['templates']['graph'])->toBe(3)
 		->and($first['templates']['data'])->toBe(3)
 		->and($first['templates']['linked'])->toBe(0)
-		->and($first['templates']['version'])->toEqual('2');
+		->and($first['templates']['version'])->toEqual('3');
 
 	// An upgrade removes the links an earlier template file left.
 	lifecycle('link_templates');
@@ -208,7 +208,7 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(SMOKEPING_TABLES)
 		->and($state['tables']['plugin_smokeping_target'])->toBe(1)
-		->and($state['schema'])->toEqual('4')
+		->and($state['schema'])->toEqual('5')
 		->and($state['plugin']['version'])->toEqual(SMOKEPING_VERSION);
 });
 
@@ -223,7 +223,7 @@ it('removes the Perl settings of schema 2 on upgrade and keeps the others', func
 	$left  = lifecycle('query', "SELECT name FROM settings WHERE name IN ('smokeping_perl_binary', 'smokeping_lib_dir', 'smokeping_config_file') ORDER BY name");
 
 	expect($state['result'])->toBeTrue()
-		->and($state['schema'])->toEqual('4')
+		->and($state['schema'])->toEqual('5')
 		->and(array_column(array_filter($left, 'is_array'), 'name'))->toBe(['smokeping_config_file']);
 });
 
@@ -237,10 +237,36 @@ it('adds the sizing columns on upgrade from schema 3 and adopts each smoke graph
 	$rows  = lifecycle('query', 'SELECT state, sized_limit, sized_at FROM plugin_smokeping_object WHERE local_graph_id = 990001 ORDER BY state');
 
 	expect($state['result'])->toBeTrue()
-		->and($state['schema'])->toEqual('4')
+		->and($state['schema'])->toEqual('5')
 		->and(array_values(array_filter($rows, 'is_array')))->toEqual([
 			['state' => 'active', 'sized_limit' => '0.25', 'sized_at' => '0'],
 			['state' => 'summary', 'sized_limit' => '', 'sized_at' => '0'],
+		]);
+});
+
+it('adds the probe description and template version columns on upgrade from schema 4', function () {
+	lifecycle('install');
+	lifecycle('seed');
+	lifecycle('seed_sized_graph');
+	lifecycle('drop_column', 'plugin_smokeping_target:probe_desc');
+	lifecycle('drop_column', 'plugin_smokeping_object:template_version');
+	lifecycle('set_schema', '4');
+
+	$state   = lifecycle('upgrade');
+	$columns = lifecycle('query', "SELECT TABLE_NAME AS t, COLUMN_NAME AS c FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND COLUMN_NAME IN ('probe_desc', 'template_version') ORDER BY TABLE_NAME");
+	$rows    = lifecycle('query', 'SELECT state, template_version FROM plugin_smokeping_object WHERE local_graph_id = 990001 ORDER BY state');
+
+	// Graphs made before schema 5 are behind every template version, so the
+	// poller brings them to the installed templates.
+	expect($state['result'])->toBeTrue()
+		->and($state['schema'])->toEqual('5')
+		->and(array_values(array_filter($columns, 'is_array')))->toEqual([
+			['t' => 'plugin_smokeping_object', 'c' => 'template_version'],
+			['t' => 'plugin_smokeping_target', 'c' => 'probe_desc'],
+		])
+		->and(array_values(array_filter($rows, 'is_array')))->toEqual([
+			['state' => 'active', 'template_version' => '0'],
+			['state' => 'summary', 'template_version' => '0'],
 		]);
 });
 

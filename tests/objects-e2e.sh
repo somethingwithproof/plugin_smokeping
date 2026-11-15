@@ -82,6 +82,40 @@ row=$(q "SELECT COUNT(*) FROM graph_local WHERE host_id = ${dev:-0} AND id NOT I
 row=$(q "SELECT title_cache FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
 [ "$row" = "Europe/paris - SmokePing" ] && result PASS graph-titled-for-target "$row" || result FAIL graph-titled-for-target "$row"
 
+# SmokePing's probe line: the target's pings, probe description (the probe's
+# name while none is known) and step, on the item made from the template's.
+probe_line() { q "SELECT gi.text_format FROM graph_templates_item AS gi INNER JOIN graph_templates_item AS ti ON ti.id = gi.local_graph_template_item_id WHERE gi.local_graph_id = ${gr:-0} AND ti.text_format = 'probe:'" | jcell; }
+row=$(probe_line)
+[ "$row" = "probe:       20 FPing every 300s" ] && result PASS graph-probe-line "$row" || result FAIL graph-probe-line "$row"
+
+# Importing the templates again resets the item; the next poller cycle writes
+# it back, with the description an inventory import stored since.
+php -r 'include("./include/cli_check.php"); db_execute("UPDATE plugin_smokeping_target SET probe_desc = \"ICMP Echo Pings (56 Bytes)\" WHERE path = \"Europe/paris\"");' >/dev/null 2>&1
+$L forget_templates >/dev/null
+$L retry_templates >/dev/null
+$L sync_probe_lines >/dev/null
+row=$(probe_line)
+[ "$row" = "probe:       20 ICMP Echo Pings (56 Bytes) every 300s" ] && result PASS probe-line-after-template-import "$row" || result FAIL probe-line-after-template-import "$row"
+
+# A graph made from the templates before #81: no standard deviation, am/s or
+# probe line items, no VDEF on the average, the hard return after "now".
+# upgrade-graphs brings it to the installed templates, keeping its title and limit.
+php -r 'include("./include/cli_check.php"); $g = (int) $argv[1];
+	db_execute_prepared("DELETE gi FROM graph_templates_item AS gi INNER JOIN graph_templates_item AS ti ON ti.id = gi.local_graph_template_item_id WHERE gi.local_graph_id = ? AND ti.text_format IN (\" sd\", \" am/s\", \"probe:\")", [$g]);
+	db_execute_prepared("UPDATE graph_templates_item SET vdef_id = 0 WHERE local_graph_id = ?", [$g]);
+	db_execute_prepared("UPDATE graph_templates_item SET hard_return = \"on\" WHERE local_graph_id = ? AND text_format = \" now\" AND cdef_id = 0", [$g]);
+	db_execute_prepared("UPDATE plugin_smokeping_object SET template_version = 0 WHERE local_graph_id = ?", [$g]);' "${gr:-0}" >/dev/null 2>&1
+before_items=$(q "SELECT COUNT(*) FROM graph_templates_item WHERE local_graph_id = ${gr:-0}" | jcell)
+before_graph=$(q "SELECT title_cache, upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+out=$(php $P/cli/smokeping.php upgrade-graphs 2>&1); rc=$?
+items=$(q "SELECT COUNT(*) FROM graph_templates_item WHERE local_graph_id = ${gr:-0}" | jcell)
+tpl=$(q "SELECT COUNT(*) FROM graph_templates_item AS gi INNER JOIN graph_local AS gl ON gl.graph_template_id = gi.graph_template_id WHERE gl.id = ${gr:-0} AND gi.local_graph_id = 0" | jcell)
+differ=$(q "SELECT COUNT(*) FROM graph_templates_item AS gi INNER JOIN graph_templates_item AS ti ON ti.id = gi.local_graph_template_item_id WHERE gi.local_graph_id = ${gr:-0} AND (gi.vdef_id <> ti.vdef_id OR gi.cdef_id <> ti.cdef_id OR gi.hard_return <> ti.hard_return OR gi.sequence <> ti.sequence)" | jcell)
+after_graph=$(q "SELECT title_cache, upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+[ $rc -eq 0 ] && [ "$before_items" = 47 ] && [ "$items" = "$tpl" ] && [ "$differ" = 0 ] && [ "$after_graph" = "$before_graph" ] && [ "$(probe_line)" = "probe:       20 ICMP Echo Pings (56 Bytes) every 300s" ] \
+	&& result PASS upgrade-graphs-retemplates "$before_items to $items items; $after_graph; $out" \
+	|| result FAIL upgrade-graphs-retemplates "rc $rc, $before_items to $items of $tpl items, $differ differ, graph '$before_graph' to '$after_graph', probe '$(probe_line)': $out"
+
 # The upper limit is sized from the file, or the template's when the last day has no median.
 row=$(php $P/tests/bin/scale-check.php "${gr:-0}" | tail -1)
 case "$row" in "sized 1 kept 0 wrong 0") result PASS graph-sized-from-data "$row";; *) result FAIL graph-sized-from-data "$row: $(php $P/tests/bin/scale-check.php "${gr:-0}" | head -1)";; esac

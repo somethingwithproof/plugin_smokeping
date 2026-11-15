@@ -112,6 +112,48 @@ final class ObjectRepository {
 	}
 
 	/**
+	 * Write each smoke graph's probe line, or one graph's: the graph item made
+	 * from the template's probe line item gets its target's text (see
+	 * ProbeDescription::line()). Importing the templates again resets the
+	 * item to the template's text, and a target's probe can change, so the
+	 * poller runs this every cycle; only items whose text differs are written.
+	 *
+	 * @return int the number of graph items written
+	 */
+	public function syncProbeLines(?int $localGraphId = null): int {
+		$params = [ProbeDescription::PLACEHOLDER, self::ACTIVE, self::ARCHIVED];
+		$where  = '';
+
+		if ($localGraphId !== null) {
+			$where    = ' AND o.local_graph_id = ?';
+			$params[] = $localGraphId;
+		}
+
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT gi.id, gi.text_format, t.pings, t.step, t.probe, t.probe_desc
+			FROM plugin_smokeping_object AS o
+			INNER JOIN plugin_smokeping_target AS t ON t.id = o.target_id
+			INNER JOIN graph_templates_item AS gi ON gi.local_graph_id = o.local_graph_id
+			INNER JOIN graph_templates_item AS ti ON ti.id = gi.local_graph_template_item_id AND ti.local_graph_id = 0
+			WHERE ti.graph_type_id = 1 AND ti.text_format = ? AND o.state IN (?, ?) AND o.local_graph_id > 0' . $where, $params, true, $this->connection));
+
+		$written = 0;
+
+		foreach ($rows as $row) {
+			$text = ProbeDescription::line(Row::int($row, 'pings'), Row::string($row, 'probe_desc'), Row::string($row, 'probe'), Row::int($row, 'step'));
+
+			if ($text === Row::string($row, 'text_format')) {
+				continue;
+			}
+
+			if (db_execute_prepared('UPDATE graph_templates_item SET text_format = ? WHERE id = ?', [$text, Row::int($row, 'id')], true, $this->connection) !== false) {
+				$written++;
+			}
+		}
+
+		return $written;
+	}
+
+	/**
 	 * Record a sizing of a graph: the limit the plugin set, or null to keep
 	 * the recorded limit and only move the time.
 	 */
@@ -133,7 +175,32 @@ final class ObjectRepository {
 	}
 
 	public function add(int $targetId, string $location, int $hostId, int $localDataId, int $localGraphId, string $rrdPath, string $state, int $now): void {
-		db_execute_prepared('INSERT INTO plugin_smokeping_object (target_id, location, host_id, local_data_id, local_graph_id, rrd_path, state, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [$targetId, $location, $hostId, $localDataId, $localGraphId, $rrdPath, $state, $now], true, $this->connection);
+		// A new graph has the items of the templates installed now, whichever
+		// version that is; the setting is the installed one, not this code's.
+		db_execute_prepared('INSERT INTO plugin_smokeping_object (target_id, location, host_id, local_data_id, local_graph_id, rrd_path, state, created_at, template_version)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, COALESCE((SELECT CAST(value AS UNSIGNED) FROM settings WHERE name = ?), 0))',
+			[$targetId, $location, $hostId, $localDataId, $localGraphId, $rrdPath, $state, $now, TemplateInstaller::SETTING], true, $this->connection);
+	}
+
+	/**
+	 * The plugin's graphs whose items follow templates older than $version,
+	 * at most $limit of them. A graph deleted in Cacti is left out.
+	 *
+	 * @return list<int> local graph ids
+	 */
+	public function graphsBehindTemplates(int $version, int $limit): array {
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT o.local_graph_id
+			FROM plugin_smokeping_object AS o
+			INNER JOIN graph_local AS gl ON gl.id = o.local_graph_id
+			WHERE o.template_version < ? AND o.local_graph_id > 0 AND o.state IN (?, ?, ?) AND gl.graph_template_id > 0
+			ORDER BY o.local_graph_id
+			LIMIT ' . max(0, $limit), [$version, self::ACTIVE, self::ARCHIVED, self::SUMMARY], true, $this->connection));
+
+		return array_map(fn (array $row) => Row::int($row, 'local_graph_id'), $rows);
+	}
+
+	public function recordTemplateVersion(int $localGraphId, int $version): bool {
+		return db_execute_prepared('UPDATE plugin_smokeping_object SET template_version = ? WHERE local_graph_id = ?', [$version, $localGraphId], true, $this->connection) !== false;
 	}
 
 	public function hostOf(int $localDataId): int {

@@ -24,6 +24,7 @@
  *   cli/smokeping.php provision <target path> [--device=ID] [--location=NAME]
  *   cli/smokeping.php relink <old target path> <new target path> [--location=NAME]
  *   cli/smokeping.php size-graphs
+ *   cli/smokeping.php upgrade-graphs
  *   cli/smokeping.php export [--format=yaml|xml] [--file=PATH]
  *   cli/smokeping.php import --file=PATH [--format=yaml|xml] [--apply --confirm=PLAN]
  *   cli/smokeping.php import-smokeping [--dry-run | --apply --confirm=PLAN] [--file=PATH]
@@ -54,6 +55,10 @@
  * sized when they are created and again about once a day by the reader; run
  * it to size them all now. A graph with no median in the last day, or with a
  * limit set by hand, keeps its limit.
+ *
+ * upgrade-graphs brings every graph the plugin made from older templates to
+ * the installed ones: the items the templates gained and their legend. The
+ * main poller does the same a batch per cycle; run it to do them all now.
  */
 
 $dir = __DIR__;
@@ -75,6 +80,7 @@ smokeping_boot();
 $smokeping_usage = 'usage: cli/smokeping.php provision <target path> [--device=ID] [--location=NAME]' . PHP_EOL
 	. '       cli/smokeping.php relink <old target path> <new target path> [--location=NAME]' . PHP_EOL
 	. '       cli/smokeping.php size-graphs' . PHP_EOL
+	. '       cli/smokeping.php upgrade-graphs' . PHP_EOL
 	. '       cli/smokeping.php export [--format=yaml|xml] [--file=PATH]' . PHP_EOL
 	. '       cli/smokeping.php import --file=PATH [--format=yaml|xml] [--apply --confirm=PLAN]' . PHP_EOL
 	. '       cli/smokeping.php import-smokeping [--dry-run | --apply --confirm=PLAN] [--file=PATH] [--sections=A,B/C]' . PHP_EOL
@@ -311,6 +317,25 @@ if ($smokeping_command === 'size-graphs' && $smokeping_paths === []) {
 	}
 
 	exit(0);
+}
+
+if ($smokeping_command === 'upgrade-graphs' && $smokeping_paths === []) {
+	$smokeping_retemplater = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
+	$smokeping_version     = (int) read_config_option(\Somethingwithproof\Smokeping\TemplateInstaller::SETTING);
+	$smokeping_totals      = ['upgraded' => 0, 'failed' => 0];
+
+	// Each batch records the version of the graphs it handled, failed or not.
+	// A batch that upgrades nothing ends the run, so graphs whose version
+	// cannot be recorded do not keep it going.
+	do {
+		$smokeping_batch = $smokeping_retemplater->retemplateDue($smokeping_version, \Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH);
+		$smokeping_totals['upgraded'] += $smokeping_batch['upgraded'];
+		$smokeping_totals['failed']   += $smokeping_batch['failed'];
+	} while ($smokeping_batch['upgraded'] > 0);
+
+	print sprintf('Upgraded %d graphs to templates version %d; %d failed (see the Cacti log)', $smokeping_totals['upgraded'], $smokeping_version, $smokeping_totals['failed']) . PHP_EOL;
+
+	exit($smokeping_totals['failed'] > 0 ? 1 : 0);
 }
 
 if (!in_array($smokeping_command, ['provision', 'relink'], true) || count($smokeping_paths) !== ($smokeping_command === 'relink' ? 2 : 1)) {

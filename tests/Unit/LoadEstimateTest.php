@@ -41,7 +41,7 @@ it('estimates packets, RRD updates, and Cacti rows from the targets', function (
 		->and(round($estimate->packetsPerSecond))->toBe(667.0)
 		->and(round($estimate->rrdUpdatesPerSecond))->toBe(33.0)
 		->and($estimate->dataSourceRows)->toBe(10000 * 23 + 10000 * 3)
-		->and($estimate->graphItemRows)->toBe(10000 * 47 + 10000 * 5);
+		->and($estimate->graphItemRows)->toBe(10000 * 50 + 10000 * 5);
 });
 
 it('counts the graph items the shipped templates create', function () {

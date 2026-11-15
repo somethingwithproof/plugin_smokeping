@@ -183,7 +183,7 @@ final class ConfigRepository {
 				$target->id, $target->pollerId, $target->path,
 				self::clean($target->host), self::clean($target->probe), self::clean($target->menu), self::clean($target->title),
 				$target->slaves, $target->noMasterPoll, $target->step, $target->pings, $target->mode, $target->adminState,
-				$target->present, $target->firstSeen, $target->lastSeen
+				$target->present, $target->firstSeen, $target->lastSeen, $target->probeDesc
 			);
 		}
 

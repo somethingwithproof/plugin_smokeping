@@ -18,6 +18,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 ### Fixed
 
 - The reader now starts on a remote data collector. `INFO` declares `remote_poller:1`, which Cacti 1.2.31 needs before it runs the `poller_bottom` hook on a remote poller (#86).
+- The link beside a device's graphs shows keyboard focus in Cacti's dark and modern themes, where focusing it changed nothing on screen (#40).
 - The confirm screen of a bulk add counts the graph items Cacti creates: 50 per 20-ping smoke graph and 5 per summary graph, 550,000 at 10,000 series. It showed about half that (#42, #81).
 
 ## [1.0.0-rc.1] - 2026-11-14

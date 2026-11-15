@@ -26,6 +26,9 @@ namespace Somethingwithproof\Smokeping;
  * page, which lists nothing the user's device permissions do not allow.
  */
 final class GraphLinks {
+	/** Whether this request has printed the focus rule already. */
+	private static bool $styled = false;
+
 	public function __construct(
 		private readonly TargetRepository $targets,
 		private readonly CactiObjectRepository $cacti,
@@ -45,9 +48,33 @@ final class GraphLinks {
 		return $hostId > 0 && $this->targets->deviceHasTargets($hostId) ? $hostId : 0;
 	}
 
-	public static function html(string $urlPath, int $hostId): string {
-		$url = $urlPath . 'plugins/smokeping/smokeping.php?host_id=' . $hostId;
+	/**
+	 * A keyboard focus ring for the link. Cacti's themes draw graph buttons'
+	 * focus as a thin dark outline, which does not show on the dark themes;
+	 * a white ring inside a black one shows on any background.
+	 */
+	public static function style(): string {
+		return '<style>a.smokepingGraphLink:focus-visible'
+			. '{outline:2px solid #fff;outline-offset:0;box-shadow:0 0 0 4px #000}</style>';
+	}
 
-		return '<a class="iconLink" role="link" href="' . html_escape($url) . '" title="' . html_escape(__('SmokePing Targets of this Device', 'smokeping')) . '" aria-label="' . html_escape(__('SmokePing Targets of this Device', 'smokeping')) . '"><img class="drillDown" src="' . html_escape($urlPath . 'images/server_chart_curve.png') . '" alt=""></a><br/>';
+	/**
+	 * The link for one graph, preceded by the focus rule on the first link
+	 * of the request.
+	 */
+	public static function forPage(string $urlPath, int $hostId): string {
+		$style        = self::$styled ? '' : self::style();
+		self::$styled = true;
+
+		return $style . self::html($urlPath, $hostId);
+	}
+
+	public static function html(string $urlPath, int $hostId): string {
+		$url   = $urlPath . 'plugins/smokeping/smokeping.php?host_id=' . $hostId;
+		$label = html_escape(__('SmokePing Targets of this Device', 'smokeping'));
+		$icon  = html_escape($urlPath . 'images/server_chart_curve.png');
+
+		return '<a class="iconLink smokepingGraphLink" href="' . html_escape($url) . '" title="' . $label . '" aria-label="' . $label . '">'
+			. '<img class="drillDown" src="' . $icon . '" alt=""></a><br/>';
 	}
 }

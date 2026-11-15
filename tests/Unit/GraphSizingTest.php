@@ -157,3 +157,14 @@ it('asks only for the poller\'s graphs sized a day ago or more, at most a batch 
 		->and($query['sql'])->toContain('ORDER BY o.sized_at')
 		->and($query['sql'])->toContain('INNER JOIN graph_templates_graph');
 });
+
+describe('SmokeProvisioner::title', function () {
+	it('names the location of a slave graph, so the graphs of one target are told apart', function () {
+		$provisioner = gs_provisioner(null, null);
+
+		expect($provisioner->title('Europe/paris', 'SmokePing', ''))->toBe('Europe/paris - SmokePing')
+			->and($provisioner->title('Europe/paris', 'SmokePing', 'oslo'))->toBe('Europe/paris - SmokePing (oslo)')
+			->and($provisioner->title('Europe/paris', 'SmokePing Summary', 'oslo'))
+			->toBe('Europe/paris - SmokePing Summary (oslo)');
+	});
+});

@@ -37,7 +37,7 @@ SmokePing measures latency distribution and packet loss well, and its smoke grap
 - **No device context.** Latency and interface counters for the same device live in different tools.
 - **No path into Cacti alerting.** Thold and Maint work on Cacti data sources and devices, so SmokePing alerts are configured and suppressed separately.
 
-The plugin closes these gaps by representing each SmokePing target as Cacti objects that point at SmokePing's existing RRD files, plus a small set of polled summary values. It reuses Cacti's graphing, permissions, remote data collectors, Thold, and Maint rather than building parallel versions of them.
+The plugin closes these gaps by representing each SmokePing target as Cacti objects that point at SmokePing's existing RRD files, plus a small set of polled summary values. It reuses Cacti's graphing, permissions, Thold, and Maint rather than building parallel versions of them. Support for Cacti remote data collectors is planned for phase 3 and is not in this release.
 
 ## Scope and status
 
@@ -56,7 +56,7 @@ Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemo
 |---|---|
 | Cacti | 1.2.31 or later in 1.2.x, no core patches |
 | PHP | 8.2 or later; `setup.php` stays parseable on 8.0 so an unsupported runtime gets a refusal instead of a broken Cacti UI |
-| SmokePing | 2.9.0 and 2.8.2; 2.7.3 if a supported distribution still ships it |
+| SmokePing | 2.9.0, 2.8.2, and 2.7.3 (Ubuntu 22.04 only, until 2027-06-01) |
 | Thold, Maint | No changes required |
 
 ## Documentation
@@ -69,7 +69,7 @@ Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemo
 | [Alerting](docs/alerting.md) | Summary values, Thold durations, staleness, late data, overlap with SmokePing's alerts, Maint |
 | [Configuration format](docs/configuration-format.md) | YAML and XML export and import |
 | [Backup and restore](docs/backup-restore.md) | What to back up and how a restore resumes |
-| [Performance](docs/performance.md) | Measured cost at 100, 1,000, and 10,000 series |
+| [Performance](docs/performance.md) | Local measurements at 100, 1,000, and 10,000 series. The release measurements and the supported series count are not published yet |
 | [Failure qualification](docs/failure-qualification.md) | The failure scenarios and how each is tested |
 | [Releasing](docs/RELEASING.md) | The release procedure: the pull request, the signed tag, what the workflow does, how to verify the result |
 | [Release archive](docs/release.md) | Version, changelog, and the release archive |

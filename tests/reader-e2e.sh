@@ -97,7 +97,10 @@ targets=$(q "SELECT id FROM plugin_smokeping_target" | jcount); series=$(q "SELE
 [ "$targets/$series" = "5/7" ] && result PASS rerun-idempotent "5 targets, 7 series" || result FAIL rerun-idempotent "$targets/$series"
 
 # 3. Duplicate start is refused while another reader holds the process slot.
-sleep 30 & holder=$!
+# The holder runs PHP with the reader's script path in its arguments: Cacti
+# 1.2.x (after 1.2.31) checks that a registered pid runs the same script, so a
+# bare sleep would count as a dead holder.
+php -r 'sleep(30);' "$P/poller_smokeping.php" & holder=$!
 php -r 'chdir("."); include("./include/cli_check.php"); include_once("./lib/poller.php"); db_execute_prepared("INSERT INTO processes (pid, tasktype, taskname, taskid, timeout, started, last_update) VALUES (?, \"smokeping\", \"reader\", 1, 600, NOW(), NOW())", array((int) $argv[1]));' "$holder"
 stamp=$(q "SELECT run_finished FROM plugin_smokeping_health" | jcell)
 sleep 1

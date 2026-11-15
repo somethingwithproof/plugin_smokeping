@@ -54,3 +54,12 @@ it('does nothing on a poller that is not the SmokePing poller', function () {
 	expect($GLOBALS['__smokeping_exec'])->toBe([])
 		->and($GLOBALS['__smokeping_log'])->toBe([]);
 });
+
+it('declares remote_poller so Cacti runs poller_bottom on a remote collector', function () {
+	// Cacti 1.2.31 runs poller_bottom on a poller other than 1 only for
+	// plugins whose capabilities include remote_poller:1 (#86).
+	$info = parse_ini_file(dirname(__DIR__, 2) . '/INFO', true);
+
+	expect($info['info']['capabilities'])->toContain('remote_collect:1')
+		->and($info['info']['capabilities'])->toContain('remote_poller:1');
+});

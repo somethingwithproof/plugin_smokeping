@@ -1,6 +1,6 @@
 # Cacti 1.2 SmokePing Plugin Plan
 
-Status: proposal, revision 3 (2026-11-13). Nothing described here as a plugin capability exists yet. Statements about SmokePing, Cacti core, Maint, Thold, and servcheck describe current upstream behavior and cite the file that was checked. Owner and estimates are not assigned; milestone 1 produces the estimates.
+Status: in development, plan revision 3 (2026-11-13). Phase 1 (observe mode) is implemented on main and released as the 1.0.0-rc.1 pre-release; phases 2 and 3 are planned and not started. Sections written in the future tense describe the plan, and the README and docs/install.md describe what the plugin does today. Statements about SmokePing, Cacti core, Maint, Thold, and servcheck describe current upstream behavior and cite the file that was checked. Owner and estimates are not assigned; milestone 1 produces the estimates.
 
 `plugin_smokeping` brings SmokePing latency and loss measurements into Cacti 1.2 as ordinary Cacti devices, data sources, and graphs, so operators see smoke graphs next to the device they belong to, under Cacti's own permissions, and alert on them with Thold and Maint.
 
@@ -42,10 +42,10 @@ Each phase ships to users. Later phases are re-estimated after the phase before 
 
 | Phase | Label | Scope | Depends on |
 |---|---|---|---|
-| 0 | Research | Compatibility matrix, Cacti and SmokePing behavior confirmation, graph template fidelity spike (milestone 1) | Nothing |
-| 1 | Planned | Observe mode on a SmokePing installation local to a Cacti poller: inventory import, devices, smoke graphs, summary data sources for Thold, Maint suppression, health page | Phase 0 |
-| 2 | Planned | Managed mode: Cacti-owned configuration namespace, ICMP and TCP probe profiles, revisions, validation, reload, rollback | Phase 1, security review |
-| 3 | Planned | Remote and distributed: SmokePing on a Cacti remote data collector, slaves as measurement locations | Phase 2 |
+| 0 | Research, in `docs/research`; some research issues remain open | Compatibility matrix, Cacti and SmokePing behavior confirmation, graph template fidelity spike (milestone 1) | Nothing |
+| 1 | Released as 1.0.0-rc.1 (pre-release) | Observe mode on a SmokePing installation local to a Cacti poller: inventory import, devices, smoke graphs, summary data sources for Thold, Maint suppression, health page | Phase 0 |
+| 2 | Planned, not started | Managed mode: Cacti-owned configuration namespace, ICMP and TCP probe profiles, revisions, validation, reload, rollback | Phase 1, security review |
+| 3 | Planned, not started | Remote and distributed: SmokePing on a Cacti remote data collector, slaves as measurement locations | Phase 2 |
 | - | Research | Coverage policies, service reports, public API and CLI, target-level maintenance fields, end-to-end canary, preserving history across observed-target renames | Demand after phase 1 |
 
 Summary data sources were a separate phase in revision 2. They need no Thold change, so they move into phase 1.
@@ -461,7 +461,7 @@ Phase 2 needs a security review covering the config writer, include file generat
 
 | Decision | Options | Needed before | Decided by |
 |---|---|---|---|
-| Smoke rendering | Cacti graph templates (proposed); fallback renderer | Milestone 2 | Milestone 1 fidelity results |
+| Smoke rendering | Cacti graph templates (accepted in decision 0003, fidelity confirmed); fallback renderer (contingency, #60) | Milestone 2 | Milestone 1 fidelity results |
 | Plugin-created devices | Template-marked devices visible everywhere (proposed); a hidden device class | Milestone 3 | Core maintainers |
 | Target-level maintenance | New Maint type with reason, ticket, owner, timezone fields; device-level only | After phase 1 | Maint maintainers |
 | Remote smoke graphs | Shared filesystem only (proposed); rrdcached; summary graphs only | Phase 3 | Milestone 1 rrdcached test |
@@ -494,7 +494,7 @@ Not scheduled; revisited after phase 1:
 
 ## Upstream process
 
-This repository holds the proposal and tracks its requirements as GitHub issues and milestones. Before code is proposed for the Cacti organization, open an issue there describing the problem, the phase plan, and the open decisions, and ask maintainers about the repository, name, plugin-created devices, and test harness. Maint changes are proposed as issues on the Maint repository first, then as separate pull requests there. No Thold change is needed.
+This repository holds the plan and the plugin code, and tracks its requirements as GitHub issues and milestones. Before code is proposed for the Cacti organization, open an issue there describing the problem, the phase plan, and the open decisions, and ask maintainers about the repository, name, plugin-created devices, and test harness. Maint changes are proposed as issues on the Maint repository first, then as separate pull requests there. No Thold change is needed.
 
 ## Changes from revision 2
 

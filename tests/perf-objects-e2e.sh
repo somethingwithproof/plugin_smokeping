@@ -74,7 +74,7 @@ time_page() {
 		out=$(curl -s -b "$JAR" -o "$WORK/body" -w '%{http_code} %{time_total}' "$BASE/$2")
 		if [ "${out%% *}" != 200 ] || grep -q 'login_username' "$WORK/body" || ! grep -q 'logout' "$WORK/body"; then
 			echo "$1=FAIL"
-			return
+			return 1
 		fi
 		echo "${out#* }" >> "$WORK/t"
 		i=$((i + 1))
@@ -83,22 +83,28 @@ time_page() {
 	echo
 }
 
-# stop <stage> <output>: a provisioning step failed, so the pages would be
-# timed on a partial population.
+# stop <stage> <output>: a step failed, so the numbers would describe a
+# partial or broken run.
 stop() {
 	echo "PERF series=$N stage=$1 FAILED $2"
 	exit 1
 }
 
+# pages <stage>: one PERF line for every page, or stop the run when an
+# answer was not the page.
 pages() {
 	login
-	echo "$(time_page devices host.php) $(time_page data_sources data_sources.php) $(time_page graphs graphs.php) $(time_page overview plugins/smokeping/smokeping.php)"
+	line="$(time_page devices host.php) $(time_page data_sources data_sources.php) $(time_page graphs graphs.php) $(time_page overview plugins/smokeping/smokeping.php)"
+	case "$line" in
+		*=FAIL*) stop "$1" "$line";;
+	esac
+	echo "PERF series=$N stage=$1 $line"
 }
 
 t0=$(now)
 dev=$(php $P/tests/bin/perf-provision.php devices "$N") || stop devices "$dev"
 echo "PERF series=$N stage=devices $dev wall_s=$(since "$t0")"
-echo "PERF series=$N stage=baseline $(pages)"
+pages baseline
 
 if [ "$MODE" = stock ]; then
 	# Stock graphs from a previous stock run are on devices reset removed; the
@@ -107,14 +113,14 @@ if [ "$MODE" = stock ]; then
 	t0=$(now)
 	obj=$(php $P/tests/bin/perf-provision.php stock 'Unix - Load Average' 'Linux - Memory Usage') || stop stock_objects "$obj"
 	echo "PERF series=$N stage=stock_objects $obj wall_s=$(since "$t0") rows='$(cell "SELECT CONCAT((SELECT COUNT(*) FROM data_template_rrd WHERE local_data_id > 0), ' data_template_rrd, ', (SELECT COUNT(*) FROM graph_templates_item WHERE local_graph_id > 0), ' graph items, ', (SELECT COUNT(*) FROM graph_local), ' graphs')")'"
-	echo "PERF series=$N stage=stock $(pages)"
+	pages stock
 	exit 0
 fi
 
 t0=$(now)
 obj=$(php $P/tests/bin/perf-provision.php objects) || stop objects "$obj"
 echo "PERF series=$N stage=objects $obj wall_s=$(since "$t0") rows='$(cell "SELECT CONCAT((SELECT COUNT(*) FROM data_template_rrd WHERE local_data_id > 0), ' data_template_rrd, ', (SELECT COUNT(*) FROM graph_templates_item WHERE local_graph_id > 0), ' graph items, ', (SELECT COUNT(*) FROM poller_item), ' poller items')")'"
-echo "PERF series=$N stage=provisioned $(pages)"
+pages provisioned
 
 # Two cycles: the first creates the RRD files, the second is a steady cycle.
 # poller_bottom starts the reader in the background, so each cycle waits for

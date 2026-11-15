@@ -367,7 +367,9 @@ jobs:
 
   # Every host-side runner under tests/ against a real Cacti and a MariaDB
   # service container. The runners start their own containers, on the service
-  # container's network, from the image built above.
+  # container's network, from the image built above. The smokeping runner
+  # also runs SmokePing 2.7.3, 2.8.2 and 2.9.0, and fidelity compares the
+  # graph templates with each, from distribution packages it builds.
   e2e:
     name: ${{ matrix.runner }} on Cacti ${{ matrix.cacti.name }}
     needs: e2e-image
@@ -377,10 +379,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [objects, permissions, alert, config, restore, release, failure, import]
+        runner: [objects, permissions, alert, config, restore, release, failure, import, reader, smokeping, fidelity]
         cacti:
           - { name: '1.2.31', ref: 'release/1.2.31' }
           - { name: '1.2.x', ref: '1.2.x' }
+        # The fidelity comparison is defined against Cacti 1.2.31.
+        exclude:
+          - runner: fidelity
+            cacti: { name: '1.2.x', ref: '1.2.x' }
 
     services:
       mariadb:
@@ -470,6 +476,7 @@ jobs:
         path: |
           ${{ runner.temp }}/e2e/runner.log
           ${{ runner.temp }}/e2e/log-*.txt
+          ${{ runner.temp }}/e2e/results-*.txt
           ${{ github.workspace }}/cacti/log/cacti.log
         if-no-files-found: ignore
 

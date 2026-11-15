@@ -4,7 +4,9 @@
 |---|---|---|
 | Unit and integration tests (Pest), PHPStan, PHP 8.0 entry-point lint, translation template check | CI, every pull request | Cacti checked out with the plugin under `plugins/`, MariaDB |
 | `tests/oracle/run.sh`: the plugin's reader of SmokePing's configuration against SmokePing's own parser (2.7.3, 2.8.2, 2.9.0) | CI | Docker |
-| The end-to-end runners, `tests/run-*-e2e.sh`: objects, permissions, alert, config, restore, release, failure, import | CI, on Cacti `release/1.2.31` and `1.2.x`; and locally | Docker, MariaDB, the test image |
+| The end-to-end runners, `tests/run-*-e2e.sh`: objects, permissions, alert, config, restore, release, failure, import, reader | CI, on Cacti `release/1.2.31` and `1.2.x`; and locally | Docker, MariaDB, the test image |
+| `tests/run-smokeping-e2e.sh`: the plugin against SmokePing 2.7.3, 2.8.2 and 2.9.0 running in containers, each measuring a target that answers and one that cannot | CI, on Cacti `release/1.2.31` and `1.2.x`; and locally | As above, plus network access to build the SmokePing images |
+| `tests/run-fidelity-e2e.sh` (`tests/fidelity/run.sh`): the graph templates against SmokePing's own graph definition in each package | CI, on Cacti `release/1.2.31`; and locally | As above |
 | `tests/docs-commands.sh`: the install guide's commands on a real distribution | CI, on Debian 13 and AlmaLinux 9; and locally | A privileged container |
 | `tests/release-tools-test.sh`, `tests/archive-policy-test.sh`: the release gate and the archive policy | CI; and locally | Git, a shell |
 | `tests/lint-workflows.sh`: actionlint and zizmor on the workflows | CI; and locally | Docker |
@@ -20,6 +22,8 @@ Each runner starts containers from the test image, so they all need Docker, a Ma
 docker build -t spm2-e2e tests/docker          # the test image: PHP 8.2, Cacti's extensions, rrdtool, SmokePing's package
 sh tests/run-config-e2e.sh <work-dir>          # or any other tests/run-*-e2e.sh
 ```
+
+The reader runner covers the fixture RRDs of every measurement state: normal, partial loss, complete loss, stopped collection, late slave data, a file that was never written, and a changed `step`. SmokePing will not start while a file's step differs from its configuration, so after a step change the file stops being written; the reader judges it on the configured step and reports it stale.
 
 The defaults describe the maintainer's machine: the network `cpt`, the MariaDB container `cpt-db`, the image `spm2-e2e`, the credentials in `../plugin-test-ws/docker/db.env`, and a Cacti 1.2.31 tree at `../plugin-test-ws/cores/1.2.31`. Everything is an environment variable, and CI sets them for its MariaDB service container:
 
@@ -48,7 +52,6 @@ with the three credentials exported from your keychain or a secret manager, neve
 
 - **The live suite** needs a SmokePing that is running and writing its files, root for a bind mount, and a network that answers pings from several places. It runs on the release host at the release checklist ([RELEASING.md](RELEASING.md)).
 - **The performance runs** of [performance.md](performance.md) measure one machine; their numbers are not portable to a shared runner.
-- **The graph fidelity comparison** (`tests/fidelity/run.sh`) needs one image per SmokePing package and runs when the graph templates change.
 
 ## The live suite
 

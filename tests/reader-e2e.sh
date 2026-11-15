@@ -164,5 +164,31 @@ read=$(q "SELECT series_read FROM plugin_smokeping_health" | jcell)
 after=$(find "$mount" -path "$mount/Big" -prune -o -type f -print0 | xargs -0 sha256sum | sort | sha256sum)
 [ "$before" = "$after" ] && result PASS rrd-untouched "fixture RRDs byte-identical" || result FAIL rrd-untouched
 
+# 8. A changed step. SmokePing fixes the step when it creates a file and will
+# not start while the configuration names another, so after an edit the file
+# stops being written. The reader reads the file and judges it on the step the
+# configuration names: a file last written 1.5 steps of 300 s ago is delayed
+# against 300 s and stale against 60 s.
+cp "$work/config.good" "$work/config"
+trash_dir "$mount/Big"
+php $P/tests/bin/make-fixture-rrds.php "$mount" "Europe/paris:300:20:delayed"
+step_state() {
+	php $P/poller_smokeping.php --inventory > /dev/null 2>&1
+	php -r '
+	chdir("."); include("./include/cli_check.php"); include_once("./plugins/smokeping/setup.php"); smokeping_boot();
+	$t   = (new Somethingwithproof\Smokeping\TargetRepository(false))->forPoller(1);
+	$t   = array_values(array_filter($t, fn ($x) => $x->path->value === "Europe/paris"))[0];
+	$obs = (new Somethingwithproof\Smokeping\ObservationRepository(false))->forTargets([$t->id->value])[$t->id->value] ?? [];
+	$o   = array_values(array_filter($obs, fn ($x) => $x->location === ""))[0];
+	$e   = new Somethingwithproof\Smokeping\FreshnessEvaluator(new Somethingwithproof\Smokeping\SystemClock(), 60);
+	echo $t->step, " ", $e->freshness($o)->value;'
+}
+row=$(step_state)
+[ "$row" = "300 delayed" ] && result PASS step-as-created "$row" || result FAIL step-as-created "$row"
+awk '/^\+\+ FPingNormal$/ { print; print "step = 60"; next } { print }' "$work/config.good" > "$work/config"
+row=$(step_state)
+[ "$row" = "60 stale" ] && result PASS step-changed "$row" || result FAIL step-changed "$row"
+cp "$work/config.good" "$work/config"
+
 trash_dir "$mount"; trash_dir "$work"
 exit $fail

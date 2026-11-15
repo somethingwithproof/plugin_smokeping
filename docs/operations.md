@@ -21,7 +21,7 @@ Each row of the SmokePing page combines independent dimensions. They are never m
 | Dimension | States | Evidence |
 |---|---|---|
 | Freshness | `current`, `delayed`, `stale`, `never` | The age of the RRD's last update (read with `rrdtool lastupdate`) against the target's `step`. Current: within one `step` plus the freshness allowance (default 60 s). Delayed: older, up to twice the `step`, which is SmokePing's heartbeat. Stale: beyond the heartbeat, when SmokePing's values have gone unknown. Never: the file is missing, or has had no update since it was created |
-| Execution | `completed`, `probe_error`, `unknown` | A round completed when it wrote a numeric loss. Stale or never-observed data says nothing about the last round, so it is `unknown`. `probe_error` is not set by this release: a round without a loss value is `unknown` |
+| Execution | `completed`, `probe_error`, `unknown` | A round completed when it wrote a numeric loss. Stale or never-observed data says nothing about the last round, so it is `unknown`. `probe_error` is never set: a probe that fails writes the same values as a target that does not answer ([research](research/probe-failures.md)) |
 | Condition | `within_policy`, `degraded`, `complete_loss`, `unknown` | From the last completed round. Complete loss is `loss` equal to `pings` with no median. Any loss below that is degraded. A stopped collector is never shown as loss: it goes stale and the condition is `unknown` |
 | Administrative | `enabled`, `disabled`, `archived` | The plugin's record of the target. A disabled or archived target is not read |
 | Maintenance | in or not in maintenance | Cacti's Maint plugin for the device |
@@ -67,6 +67,8 @@ These are the behaviors the release is qualified against ([failure qualification
 | Failure | Documented behavior |
 |---|---|
 | SmokePing's configuration unreadable or broken | The inventory fails with the parser's message on the Health page; the previous inventory stays in use and nothing is deleted |
+| A probe cannot run while SmokePing keeps going: its binary exits with an error, the source address is not on the host, fping rejects a parameter, or IPv6 is off for FPing6 | SmokePing writes complete loss for every target of the probe, the same values as targets that do not answer. Measurements show `complete_loss`. When every target of one probe shows complete loss at once, look in SmokePing's log for the probe's error |
+| A probe failure SmokePing detects: a missing binary, a parameter out of range, no raw socket for fping | SmokePing exits, at startup or at the first round. Every target goes `delayed`, then `stale`, as when SmokePing stops |
 | Hostnames in targets do not resolve (DNS failure) | SmokePing's probes fail and write loss; the plugin reads what SmokePing wrote. Measurements show `degraded` or `complete_loss`, not stale. The plugin itself does no name lookups |
 | SmokePing or its collector stops | Freshness goes `delayed`, then `stale`; `median` and `loss_pct` go unknown, `age` keeps growing. Never zero loss |
 | Clock skew between the Cacti and SmokePing hosts | Freshness compares the RRD's own update time with the Cacti host's clock, so skew shifts every age by the skew. A SmokePing host ahead of Cacti stamps rounds in the future, which read as `current`, and a collector that stops stays `current` until the skew has passed. A SmokePing host behind Cacti makes every series look older by the skew, and `stale` once it exceeds twice the `step`. Keep both hosts on NTP |

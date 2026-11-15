@@ -253,7 +253,7 @@ The plugin's `api_device_save` and `device_remove` hooks keep mappings consisten
 | Dimension | States | Evidence |
 |---|---|---|
 | Freshness | Current, delayed, stale, never observed | `lastupdate` against `step`: current within `step` plus an allowance; delayed up to `2 × step`; stale beyond the heartbeat; never observed when the file is absent or has no update since creation |
-| Execution | Completed, probe error, unknown | Completed rounds have a numeric `loss`. Milestone 1 records what each probe writes on failure |
+| Execution | Completed, probe error, unknown | Completed rounds have a numeric `loss`. A probe that fails while SmokePing runs writes complete loss, the same values as a target that does not answer, and a failure SmokePing detects stops it, which reads as stale ([research](research/probe-failures.md)). Probe error therefore has no RRD evidence; only SmokePing's log names it |
 | Observed condition | Within policy, degraded, complete loss | Complete loss is `loss = pings` with `median` unknown; a stopped collector has every data source unknown after the heartbeat |
 | Administrative | Enabled, disabled, archived | Plugin records |
 | Maintenance | In maintenance, not in maintenance | Maint's `is_device_in_maintenance` hook for the device |

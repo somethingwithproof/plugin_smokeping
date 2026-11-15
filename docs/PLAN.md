@@ -182,7 +182,7 @@ flowchart TB
     end
     subgraph SP["SmokePing"]
         D[SmokePing daemon] --> RRD[(RRD files, read-only to Cacti)]
-        CFG[Main config] -->|@include| INC
+        CFG[Main config] -->|"@include"| INC
         PU[systemd path unit] -->|reload| D
         REQ --> PU
     end

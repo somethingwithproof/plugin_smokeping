@@ -70,7 +70,7 @@ Out of scope: a plugin-owned alerting engine, a reporting engine, a custom daemo
 | [Alerting](docs/alerting.md) | Summary values, Thold durations, staleness, late data, overlap with SmokePing's alerts, Maint |
 | [Configuration format](docs/configuration-format.md) | YAML and XML export and import |
 | [Backup and restore](docs/backup-restore.md) | What to back up and how a restore resumes |
-| [Performance](docs/performance.md) | Local measurements at 100, 1,000, and 10,000 series. The release measurements and the supported series count are not published yet |
+| [Performance](docs/performance.md) | Local and release-runner measurements at 100, 1,000, and 10,000 series, and the supported series count: 10,000 per installation |
 | [Failure qualification](docs/failure-qualification.md) | The failure scenarios and how each is tested |
 | [Releasing](docs/RELEASING.md) | The release procedure: the pull request, the signed tag, what the workflow does, how to verify the result |
 | [Release archive](docs/release.md) | Version, changelog, and the release archive |

@@ -110,6 +110,16 @@ describe('SmokepingConfigParser', function () {
 			->and($t['a/b/c'])->toMatchArray(['pings' => 9, 'nomasterpoll' => true]);
 	});
 
+	it('inherits alerts down the tree, and an empty value clears them', function () {
+		$t = sp_targets(sp_config(
+			"probe = FPing\nmenu = m\ntitle = t\nalerts = someloss\n+ a\nhost = 192.0.2.1\n+ b\nalerts = someloss,bigloss\n++ c\nhost = 192.0.2.2\n+ d\nalerts =\n++ e\nhost = 192.0.2.3\n"
+		));
+
+		expect($t['a']['alerts'])->toBe('someloss')
+			->and($t['b/c']['alerts'])->toBe('someloss,bigloss')
+			->and($t['d/e']['alerts'])->toBe('');
+	});
+
 	it('inherits host for a probe whose target variables include it', function () {
 		$t = sp_targets(sp_config(
 			"probe = TraceroutePing\nmenu = m\ntitle = t\n+ a\nhost = 192.0.2.1\ndesthost = 192.0.2.9\n++ b\nmenu = child\n",

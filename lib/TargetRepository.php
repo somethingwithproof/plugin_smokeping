@@ -253,10 +253,10 @@ final class TargetRepository {
 
 	private function insert(Target $target, int $now): void {
 		$this->execute('INSERT INTO plugin_smokeping_target
-			(poller_id, path, host, probe, probe_desc, menu, title, slaves, nomasterpoll, step, pings, mode, admin_state, present, first_seen, last_seen)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)',
+			(poller_id, path, host, probe, probe_desc, alerts, menu, title, slaves, nomasterpoll, step, pings, mode, admin_state, present, first_seen, last_seen)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)',
 			[
-				$target->pollerId, $target->path->value, $target->host, $target->probe, $target->probeDesc, $target->menu, $target->title,
+				$target->pollerId, $target->path->value, $target->host, $target->probe, $target->probeDesc, $target->alerts, $target->menu, $target->title,
 				implode(' ', $target->slaves), (int) $target->noMasterPoll, $target->step, $target->pings,
 				$target->mode->value, $target->adminState->value, $now, $now,
 			]);
@@ -264,10 +264,10 @@ final class TargetRepository {
 
 	private function update(Target $target, int $now): void {
 		$this->execute('UPDATE plugin_smokeping_target
-			SET host = ?, probe = ?, probe_desc = ?, menu = ?, title = ?, slaves = ?, nomasterpoll = ?, step = ?, pings = ?, present = 1, last_seen = ?
+			SET host = ?, probe = ?, probe_desc = ?, alerts = ?, menu = ?, title = ?, slaves = ?, nomasterpoll = ?, step = ?, pings = ?, present = 1, last_seen = ?
 			WHERE id = ?',
 			[
-				$target->host, $target->probe, $target->probeDesc, $target->menu, $target->title, implode(' ', $target->slaves),
+				$target->host, $target->probe, $target->probeDesc, $target->alerts, $target->menu, $target->title, implode(' ', $target->slaves),
 				(int) $target->noMasterPoll, $target->step, $target->pings, $now, $target->id?->value,
 			]);
 	}

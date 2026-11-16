@@ -114,6 +114,29 @@ final class CactiObjectRepository {
 		return array_values(array_map(fn (array $row) => Row::string($row, 'description'), $rows));
 	}
 
+	/**
+	 * Paths of the poller's targets that alert in SmokePing (an alerts value
+	 * in its configuration) and have an enabled Thold threshold on one of
+	 * their summary data sources, so that one problem may notify twice. Null when
+	 * Thold is not installed.
+	 *
+	 * @return list<string>|null
+	 */
+	public function dualAlerting(int $pollerId): ?array {
+		if (!db_table_exists('thold_data', true, $this->connection)) {
+			return null;
+		}
+
+		$rows = Row::rows(db_fetch_assoc_prepared("SELECT DISTINCT t.path
+			FROM plugin_smokeping_target AS t
+			INNER JOIN plugin_smokeping_object AS o ON o.target_id = t.id AND o.state = 'summary'
+			INNER JOIN thold_data AS td ON td.local_data_id = o.local_data_id AND td.thold_enabled = 'on'
+			WHERE t.poller_id = ? AND t.present = 1 AND t.alerts <> ''
+			ORDER BY t.path", [$pollerId], true, $this->connection));
+
+		return array_values(array_map(fn (array $row) => Row::string($row, 'path'), $rows));
+	}
+
 	public function deviceOfGraph(int $localGraphId): int {
 		return (int) db_fetch_cell_prepared('SELECT host_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
 	}

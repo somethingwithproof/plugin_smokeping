@@ -123,8 +123,17 @@ msgid "SmokePing Targets of this Device"
 msgstr "このデバイスの SmokePing ターゲット"
 
 #: lib/HealthCheck.php
-msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
-msgstr "SmokePing データソースが存在するまで、SmokePing と Thold の両方でアラートが発生しているターゲットを一覧表示できません。"
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold がインストールされていないため、SmokePing と Thold の両方でアラートを出すターゲットはありません。"
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "SmokePing のアラートと有効な Thold しきい値の両方を持つターゲットはありません。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d 個のターゲットが SmokePing のアラートと有効な Thold しきい値の両方を持つため、1 つの問題で 2 回通知されることがあります。どちらかを削除する前に、アラート条件を比較してください: %s"
 
 #: lib/HealthCheck.php
 #, php-format
@@ -1205,3 +1214,6 @@ msgstr "提案が受付中でないか、変更権限のないデバイスまた
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
 msgstr "提案を却下しました。"
+
+#~ msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
+#~ msgstr "SmokePing データソースが存在するまで、SmokePing と Thold の両方でアラートが発生しているターゲットを一覧表示できません。"

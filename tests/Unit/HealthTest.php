@@ -151,7 +151,6 @@ describe('HealthCheck', function () {
 
 		expect($levels['reader'])->toBe(HealthLevel::Unknown)
 			->and($levels['inventory'])->toBe(HealthLevel::Unknown)
-			->and($levels['dual_alerting'])->toBe(HealthLevel::Unknown)
 			->and($levels['php_binary'])->toBe(HealthLevel::Ok);
 
 		expect(Health::fromRow(['poller_id' => 1, 'inventory_status' => 'bogus'])->inventoryStatus)->toBe(InventoryStatus::Never);
@@ -169,6 +168,37 @@ describe('HealthCheck', function () {
 			->and($overrun['reader'])->toBe(HealthLevel::Warning)
 			->and(levels($broken)['inventory'])->toBe(HealthLevel::Error)
 			->and($broken[2]->message)->toContain('unknown section');
+	});
+
+	it('lists targets that alert in both SmokePing and Thold', function () {
+		$many = array_map(fn (int $i) => "Net/t$i", range(1, 12));
+		$both = HealthCheck::dualAlerting($many);
+
+		expect(HealthCheck::dualAlerting(null)->level)->toBe(HealthLevel::Ok)
+			->and(HealthCheck::dualAlerting([])->level)->toBe(HealthLevel::Ok)
+			->and(HealthCheck::dualAlerting(['Europe/paris'])->message)->toContain('1 targets')->toContain('Europe/paris')
+			->and($both->level)->toBe(HealthLevel::Warning)
+			->and($both->message)->toContain('12 targets')->toContain('Net/t10, ...')->not->toContain('Net/t11');
+	});
+
+	it('reads the dual-alerting targets of a poller, and none without Thold', function () {
+		$GLOBALS['__smokeping_db_queries']      = [];
+		$GLOBALS['__smokeping_db_assoc']        = [['path' => 'Europe/paris'], ['path' => 'Net/core']];
+		$GLOBALS['__smokeping_db_table_exists'] = fn (string $table) => $table === 'thold_data';
+
+		$paths = (new Somethingwithproof\Smokeping\CactiObjectRepository(false))->dualAlerting(3);
+		$query = end($GLOBALS['__smokeping_db_queries']);
+
+		expect($paths)->toBe(['Europe/paris', 'Net/core'])
+			->and($query['params'])->toBe([3])
+			->and($query['sql'])->toContain("td.thold_enabled = 'on'")->toContain("t.alerts <> ''");
+
+		$GLOBALS['__smokeping_db_table_exists'] = false;
+
+		expect((new Somethingwithproof\Smokeping\CactiObjectRepository(false))->dualAlerting(3))->toBeNull();
+
+		$GLOBALS['__smokeping_db_table_exists'] = true;
+		$GLOBALS['__smokeping_db_assoc']        = [];
 	});
 
 	it('reports an unusable PHP binary', function (string $binary) {

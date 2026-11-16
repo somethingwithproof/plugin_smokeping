@@ -126,7 +126,16 @@ msgid "SmokePing Targets of this Device"
 msgstr ""
 
 #: lib/HealthCheck.php
-msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
 msgstr ""
 
 #: lib/HealthCheck.php

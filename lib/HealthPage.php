@@ -45,6 +45,7 @@ final class HealthPage {
 			[HealthCheck::configFile($settings->configFile, $readerHost, $settings->pollerId)],
 			[HealthCheck::templates($this->templates->present(), $this->templates->failure())],
 			[HealthCheck::devicePollers($this->cacti->summaryDevicesOffPoller($settings->pollerId), $settings->pollerId)],
+			[HealthCheck::dualAlerting($this->cacti->dualAlerting($settings->pollerId))],
 			$this->mount->check($settings->mountPath, $rraPath, $expected)
 		);
 

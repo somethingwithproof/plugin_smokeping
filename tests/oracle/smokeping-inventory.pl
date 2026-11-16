@@ -147,6 +147,7 @@ sub inventory {
 				step         => int_or_null($step_for->($properties, $parent)),
 				pings        => int_or_null($pings_for->($node, $properties, $parent)),
 				probe_desc   => $probe_desc->($module, $properties),
+				alerts       => $node->{alerts} // '',
 			};
 		}
 

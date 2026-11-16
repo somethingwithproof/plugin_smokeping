@@ -107,6 +107,17 @@ if (!function_exists('db_fetch_assoc_prepared')) {
 	}
 }
 
+// Whether db_table_exists() finds a table: a bool, or a callable given the name.
+$GLOBALS['__smokeping_db_table_exists'] = true;
+
+if (!function_exists('db_table_exists')) {
+	function db_table_exists($table, $log = true, $db_conn = false) {
+		$exists = $GLOBALS['__smokeping_db_table_exists'];
+
+		return $exists instanceof Closure ? $exists($table) : (bool) $exists;
+	}
+}
+
 if (!function_exists('db_fetch_row_prepared')) {
 	function db_fetch_row_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
 		return $GLOBALS['__smokeping_db_row'];

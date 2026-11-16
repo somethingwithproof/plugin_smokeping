@@ -42,7 +42,7 @@ The loss column reads `lost/pings` of the last round, and the median is in milli
 | `visibility` | The files the inventory lists are visible through the mount | Warning, naming how many are missing |
 | `templates` | The SmokePing templates are imported | Error with the cause; fix it and use **Retry Template Import** |
 | `device_pollers` | Every device with summary data sources is polled by the reader's poller | Error naming the devices: their summary values and alerts have no data until they are polled by that poller |
-| `dual_alerting` | (not yet reported) | |
+| `dual_alerting` | No target has both a SmokePing `alerts` value and an enabled Thold threshold on its summary data source | Warning naming up to 10 targets: a problem that meets both alerts' conditions notifies twice. The check does not compare the conditions; a Thold `age` threshold, for example, can fire when no SmokePing loss alert does. Compare them before removing the target's SmokePing alert or disabling its threshold. OK when Thold is not installed |
 
 ## Typical situations
 

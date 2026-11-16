@@ -123,8 +123,17 @@ msgid "SmokePing Targets of this Device"
 msgstr "Destinos de SmokePing de este dispositivo"
 
 #: lib/HealthCheck.php
-msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
-msgstr "Los destinos que alertan tanto en SmokePing como en Thold no se pueden listar hasta que existan fuentes de datos de SmokePing."
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold no está instalado, así que ningún objetivo alerta en SmokePing y en Thold a la vez."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Ningún objetivo tiene a la vez una alerta de SmokePing y un umbral de Thold habilitado."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d objetivos tienen a la vez una alerta de SmokePing y un umbral de Thold habilitado, así que un problema puede notificar dos veces. Compare sus condiciones de alerta antes de quitar alguna: %s"
 
 #: lib/HealthCheck.php
 #, php-format
@@ -1205,3 +1214,6 @@ msgstr "La propuesta no está abierta, o implica un dispositivo o sondeador que 
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
 msgstr "Se descartó la propuesta."
+
+#~ msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
+#~ msgstr "Los destinos que alertan tanto en SmokePing como en Thold no se pueden listar hasta que existan fuentes de datos de SmokePing."

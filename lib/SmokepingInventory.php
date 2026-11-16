@@ -32,7 +32,7 @@ namespace Somethingwithproof\Smokeping;
  */
 final class SmokepingInventory {
 	/**
-	 * @return array{format: int, smokeping: string, datadir: string, step: ?int, pings: ?int, targets: list<array{path: string, host: string, probe: string, menu: string, title: string, slaves: list<string>, nomasterpoll: bool, step: ?int, pings: ?int, probe_desc: ?string}>}
+	 * @return array{format: int, smokeping: string, datadir: string, step: ?int, pings: ?int, targets: list<array{path: string, host: string, probe: string, menu: string, title: string, slaves: list<string>, nomasterpoll: bool, step: ?int, pings: ?int, probe_desc: ?string, alerts: string}>}
 	 */
 	public static function document(SmokepingSection $root): array {
 		$general  = $root->child('General');
@@ -66,6 +66,7 @@ final class SmokepingInventory {
 					'step'         => self::intOrNull($step),
 					'pings'        => self::intOrNull($pings),
 					'probe_desc'   => $module === null ? null : ProbeDescription::of($module, $props),
+					'alerts'       => $node->value('alerts') ?? '',
 				];
 			}
 

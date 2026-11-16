@@ -132,8 +132,8 @@ msgstr "没有目标同时具有 SmokePing 告警和已启用的 Thold 阈值。
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so a breach notifies twice: %s"
-msgstr "%d 个目标同时具有 SmokePing 告警和已启用的 Thold 阈值，因此一次越限会通知两次：%s"
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d 个目标同时具有 SmokePing 告警和已启用的 Thold 阈值，因此一个问题可能会通知两次。删除任何一个之前，请先比较它们的告警条件：%s"
 
 #: lib/HealthCheck.php
 #, php-format

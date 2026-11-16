@@ -117,7 +117,7 @@ final class CactiObjectRepository {
 	/**
 	 * Paths of the poller's targets that alert in SmokePing (an alerts value
 	 * in its configuration) and have an enabled Thold threshold on one of
-	 * their summary data sources, so that a breach notifies twice. Null when
+	 * their summary data sources, so that one problem may notify twice. Null when
 	 * Thold is not installed.
 	 *
 	 * @return list<string>|null

@@ -284,7 +284,7 @@ function config(Rng $r, string $env): array {
 	$add('');
 
 	$used = [];
-	$tree = function (int $level, string $ctx, bool $hostInherited) use (&$tree, $r, $add, &$used, $probeNames, $fork, $slaves, $comment, $env): void {
+	$tree = function (int $level, string $ctx, bool $hostInherited) use (&$tree, $r, $add, &$used, $probeNames, $fork, $slaves, $alerts, $comment, $env): void {
 		$count = $level === 2 ? $r->int(1, 5) : $r->int(0, max(0, 4 - $level + 1));
 		$names = [];
 		for ($i = 0; $i < $count; $i++) {
@@ -510,7 +510,13 @@ function break_config(Rng $r, array $lines, int $kind): array {
 
 			return [$lines, 'probe after host'];
 		case 9:
-			$insertAfter($targets + 3, '+ bad.section');
+			// After a whole line: a line ending in a backslash continues into
+			// the next, which would take the section line as value text.
+			$at = $targets + 3;
+			while (isset($lines[$at]) && str_ends_with(rtrim($lines[$at], ' '), '\\')) {
+				$at++;
+			}
+			$insertAfter($at, '+ bad.section');
 
 			return [$lines, 'bad section name'];
 		case 10:

@@ -133,8 +133,8 @@ msgstr "Kein Ziel hat sowohl einen SmokePing-Alarm als auch einen aktivierten Th
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so a breach notifies twice: %s"
-msgstr "%d Ziele haben sowohl einen SmokePing-Alarm als auch einen aktivierten Thold-Schwellenwert, daher löst eine Überschreitung zwei Benachrichtigungen aus: %s"
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d Ziele haben sowohl einen SmokePing-Alarm als auch einen aktivierten Thold-Schwellenwert, daher kann ein Problem zwei Benachrichtigungen auslösen. Vergleichen Sie die Alarmbedingungen, bevor Sie einen entfernen: %s"
 
 #: lib/HealthCheck.php
 #, php-format

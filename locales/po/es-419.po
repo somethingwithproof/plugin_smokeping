@@ -132,8 +132,8 @@ msgstr "Ningún objetivo tiene a la vez una alerta de SmokePing y un umbral de T
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so a breach notifies twice: %s"
-msgstr "%d objetivos tienen a la vez una alerta de SmokePing y un umbral de Thold habilitado, así que una infracción notifica dos veces: %s"
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d objetivos tienen a la vez una alerta de SmokePing y un umbral de Thold habilitado, así que un problema puede notificar dos veces. Compare sus condiciones de alerta antes de quitar alguna: %s"
 
 #: lib/HealthCheck.php
 #, php-format

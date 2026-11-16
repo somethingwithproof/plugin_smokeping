@@ -38,8 +38,8 @@ final class HealthCheck {
 	}
 
 	/**
-	 * Targets that alert in SmokePing and in Thold notify twice for one
-	 * breach (docs/alerting.md).
+	 * Targets that alert in SmokePing and in Thold may notify twice for one
+	 * problem, when both alerts' conditions hold (docs/alerting.md).
 	 *
 	 * @param list<string>|null $paths from CactiObjectRepository::dualAlerting(); null without Thold
 	 */
@@ -52,7 +52,7 @@ final class HealthCheck {
 			return new Finding('dual_alerting', HealthLevel::Ok, __('No target has both a SmokePing alert and an enabled Thold threshold.', 'smokeping'));
 		}
 
-		return new Finding('dual_alerting', HealthLevel::Warning, __('%d targets have both a SmokePing alert and an enabled Thold threshold, so a breach notifies twice: %s', count($paths), implode(', ', array_slice($paths, 0, 10)) . (count($paths) > 10 ? ', ...' : ''), 'smokeping'));
+		return new Finding('dual_alerting', HealthLevel::Warning, __('%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s', count($paths), implode(', ', array_slice($paths, 0, 10)) . (count($paths) > 10 ? ', ...' : ''), 'smokeping'));
 	}
 
 	public static function templates(bool $present, ?TemplateFailure $failure): Finding {

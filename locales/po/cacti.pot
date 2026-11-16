@@ -126,6 +126,25 @@ msgid "SmokePing Targets of this Device"
 msgstr ""
 
 #: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr ""
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr ""
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr ""
+
+#: lib/HealthCheck.php
 msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
 msgstr ""
 
@@ -835,6 +854,26 @@ msgstr ""
 
 #: lib/Settings.php
 msgid "Seconds past one step for which a measurement still counts as current."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr ""
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr ""
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
 msgstr ""
 
 #: lib/Settings.php

@@ -203,6 +203,30 @@ final class ObjectRepository {
 		return array_map(fn (array $row) => Row::int($row, 'local_graph_id'), $rows);
 	}
 
+	/**
+	 * Smoke graphs, live or archived, made from one of the given graph
+	 * templates, in graph order after $after, leaving out graphs whose last
+	 * template change failed (recordTemplateFailure()).
+	 *
+	 * @param list<int> $templateIds
+	 * @return list<array{local_graph_id: int, graph_template_id: int}>
+	 */
+	public function graphsOnTemplates(array $templateIds, int $limit, int $after = 0): array {
+		if ($templateIds === []) {
+			return [];
+		}
+
+		$rows = Row::rows(db_fetch_assoc_prepared('SELECT o.local_graph_id, gl.graph_template_id
+			FROM plugin_smokeping_object AS o
+			INNER JOIN graph_local AS gl ON gl.id = o.local_graph_id
+			WHERE gl.graph_template_id IN (' . implode(', ', array_fill(0, count($templateIds), '?')) . ')
+				AND o.state IN (?, ?) AND o.template_failed = 0 AND o.local_graph_id > ?
+			ORDER BY o.local_graph_id
+			LIMIT ' . max(0, $limit), array_merge($templateIds, [self::ACTIVE, self::ARCHIVED, $after]), true, $this->connection));
+
+		return array_map(fn (array $row) => ['local_graph_id' => Row::int($row, 'local_graph_id'), 'graph_template_id' => Row::int($row, 'graph_template_id')], $rows);
+	}
+
 	public function recordTemplateVersion(int $localGraphId, int $version): bool {
 		return db_execute_prepared('UPDATE plugin_smokeping_object SET template_version = ?, template_failed = 0 WHERE local_graph_id = ?', [$version, $localGraphId], true, $this->connection) !== false;
 	}

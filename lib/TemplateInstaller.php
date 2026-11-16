@@ -31,7 +31,9 @@ namespace Somethingwithproof\Smokeping;
  * upgrade re-imports only when the file changed.
  */
 final class TemplateInstaller {
-	public const VERSION = 3;
+	// Version 4 adds the smoke graph templates with SmokePing 2.7's loss
+	// colors; the other templates are as in version 3 (Schema 7).
+	public const VERSION = 4;
 
 	public const SETTING = 'smokeping_templates_version';
 
@@ -53,8 +55,27 @@ final class TemplateInstaller {
 	) {
 	}
 
-	public static function graphTemplateName(int $pings): string {
-		return sprintf('SmokePing Smoke (%d pings)', $pings);
+	public static function graphTemplateName(int $pings, LossColors $colors = LossColors::Current): string {
+		return $colors === LossColors::Legacy
+			? sprintf('SmokePing Smoke (%d pings, 2.7 loss colors)', $pings)
+			: sprintf('SmokePing Smoke (%d pings)', $pings);
+	}
+
+	/**
+	 * Every smoke graph template, for each ping count and loss color table.
+	 *
+	 * @return list<string>
+	 */
+	public static function smokeGraphTemplateNames(): array {
+		$names = [];
+
+		foreach (self::PINGS as $pings) {
+			foreach (LossColors::cases() as $colors) {
+				$names[] = self::graphTemplateName($pings, $colors);
+			}
+		}
+
+		return $names;
 	}
 
 	public function isCurrent(): bool {
@@ -138,7 +159,7 @@ final class TemplateInstaller {
 			return 'The SmokePing templates are missing after import';
 		}
 
-		$names = array_merge(array_map(self::graphTemplateName(...), self::PINGS), [self::SUMMARY_TEMPLATE]);
+		$names = array_merge(self::smokeGraphTemplateNames(), [self::SUMMARY_TEMPLATE]);
 
 		if ($this->objects->graphTemplateVdefItems($names) < preg_match_all('/<vdef_id>hash_18/', $xml)) {
 			return 'The SmokePing graph templates are missing their VDEFs after import';
@@ -208,8 +229,8 @@ final class TemplateInstaller {
 			return false;
 		}
 
-		foreach (self::PINGS as $pings) {
-			if ($this->objects->graphTemplateCount(self::graphTemplateName($pings)) !== 1) {
+		foreach (self::smokeGraphTemplateNames() as $name) {
+			if ($this->objects->graphTemplateCount($name) !== 1) {
 				return false;
 			}
 		}

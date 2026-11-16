@@ -64,7 +64,23 @@ function gtu_cacti(int $problems = 0): void {
 	$GLOBALS['__smokeping_db_cell'] = fn (string $sql) => str_contains($sql, 'FROM graph_local') ? 5 : $problems;
 }
 
-function gtu_provisioner(): SmokeProvisioner {
+/**
+ * Cacti with the smoke graph templates installed: N pings at id N, the 2.7
+ * loss color variant at 100 + N, and $problems for the template match check.
+ */
+function gtu_styled_cacti(int $problems = 0): void {
+	$GLOBALS['__smokeping_db_cell'] = function (string $sql, array $params) use ($problems) {
+		if (str_contains($sql, 'FROM graph_templates WHERE name')) {
+			preg_match('/\((\d+) pings(, 2\.7 loss colors)?\)/', (string) $params[0], $m);
+
+			return (int) $m[1] + (isset($m[2]) ? 100 : 0);
+		}
+
+		return $problems;
+	};
+}
+
+function gtu_provisioner(Somethingwithproof\Smokeping\LossColors $colors = Somethingwithproof\Smokeping\LossColors::Current): SmokeProvisioner {
 	// retemplateDue() includes Cacti's template.php and variables.php; the
 	// functions it calls are the stubs above.
 	$core = sys_get_temp_dir() . '/gtu-core-' . getmypid();
@@ -75,7 +91,7 @@ function gtu_provisioner(): SmokeProvisioner {
 		touch($core . '/variables.php');
 	}
 
-	return new SmokeProvisioner(Settings::fromRow([], '/rra'), '/rra', $core, false, new ObjectRepository(false), new CactiObjectRepository(false), new SystemClock(), null);
+	return new SmokeProvisioner(Settings::fromRow([], '/rra'), '/rra', $core, false, new ObjectRepository(false), new CactiObjectRepository(false), new SystemClock(), null, $colors);
 }
 
 beforeEach(function () {
@@ -179,6 +195,54 @@ describe('CactiObjectRepository::retemplateGraph', function () {
 
 		expect($repository->graphTemplateVdefItems(['A', 'B']))->toBe(6)
 			->and($repository->graphTemplateVdefItems([]))->toBe(0);
+	});
+});
+
+describe('SmokeProvisioner::restyleDue', function () {
+	it('moves graphs on the other colors\' templates to the configured ones, in one transaction each', function () {
+		$GLOBALS['__smokeping_db_assoc'] = [['local_graph_id' => '4', 'graph_template_id' => '20'], ['local_graph_id' => '9', 'graph_template_id' => '10']];
+		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
+		gtu_styled_cacti();
+
+		$counts = gtu_provisioner(Somethingwithproof\Smokeping\LossColors::Legacy)->restyleDue(200);
+		$query  = array_values(array_filter($GLOBALS['__smokeping_db_queries'], fn (array $q) => str_contains($q['sql'], 'graph_template_id IN')))[0];
+
+		expect($counts)->toBe(['restyled' => 2, 'failed' => 0, 'last' => 9])
+			->and($query['params'])->toBe([10, 20, 30, 'active', 'archived', 0])
+			->and($GLOBALS['__gtu_changed'])->toBe([[4, 120, true], [9, 110, true]])
+			->and(gtu_writes('SET template_version'))->toBe([])
+			->and($GLOBALS['__gtu_titles'])->toBe([4, 9]);
+	});
+
+	it('goes back to the current colors from the 2.7 templates', function () {
+		$GLOBALS['__smokeping_db_assoc'] = [['local_graph_id' => '4', 'graph_template_id' => '130']];
+		$GLOBALS['__smokeping_db_row']   = ['title' => 't', 't_title' => 'on'];
+		gtu_styled_cacti();
+
+		expect(gtu_provisioner()->restyleDue(200)['restyled'])->toBe(1)
+			->and($GLOBALS['__gtu_changed'])->toBe([[4, 30, true]]);
+	});
+
+	it('marks a graph that does not match the new template as failed, so it is passed over', function () {
+		$GLOBALS['__smokeping_db_assoc']             = [['local_graph_id' => '4', 'graph_template_id' => '20']];
+		$GLOBALS['__smokeping_db_row']               = ['title' => 't', 't_title' => 'on'];
+		$GLOBALS['__smokeping_options']['smokeping_templates_version'] = '4';
+		gtu_styled_cacti(1);
+
+		$counts = gtu_provisioner(Somethingwithproof\Smokeping\LossColors::Legacy)->restyleDue(200);
+
+		expect($counts)->toBe(['restyled' => 0, 'failed' => 1, 'last' => 4])
+			->and(gtu_writes('SET template_failed = ? WHERE')[0]['params'])->toBe([4, 4])
+			->and($GLOBALS['__gtu_titles'])->toBe([]);
+
+		unset($GLOBALS['__smokeping_options']['smokeping_templates_version']);
+	});
+
+	it('does nothing before the templates are imported', function () {
+		$GLOBALS['__smokeping_db_queries'] = [];
+
+		expect(gtu_provisioner(Somethingwithproof\Smokeping\LossColors::Legacy)->restyleDue(200))->toBe(['restyled' => 0, 'failed' => 0, 'last' => 0])
+			->and(array_filter($GLOBALS['__smokeping_db_queries'], fn (array $q) => str_contains($q['sql'], 'graph_template_id IN')))->toBe([]);
 	});
 });
 

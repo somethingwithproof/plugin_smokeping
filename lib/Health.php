@@ -36,6 +36,9 @@ final readonly class Health {
 		public InventoryStatus $inventoryStatus,
 		public string $inventoryError,
 		public int $inventoryTargets,
+		// The SmokePing version the reader found with the last inventory, such
+		// as 2.007003; '' when it found none.
+		public string $smokepingVersion = '',
 	) {
 	}
 
@@ -63,6 +66,7 @@ final readonly class Health {
 			inventoryStatus: InventoryStatus::tryFrom(Row::string($row, 'inventory_status')) ?? InventoryStatus::Never,
 			inventoryError: Row::string($row, 'inventory_error'),
 			inventoryTargets: Row::int($row, 'inventory_targets', 0, 0),
+			smokepingVersion: Row::string($row, 'smokeping_version'),
 		);
 	}
 }

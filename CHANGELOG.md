@@ -11,7 +11,8 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 - The smoke graph legend shows the median's standard deviation, am/s, and SmokePing's probe line, as SmokePing's does. The probe line comes from a port of each SmokePing probe's description, compared with SmokePing's own. Schema 5 stores the description (#81).
 - Graphs made from earlier templates are brought to the installed ones by the main poller, 200 per cycle, or all at once with `cli/smokeping.php upgrade-graphs`. Each keeps its title and upper limit (#81).
 - The SmokePing targets page shows whether each target's device is in a Maint maintenance window, from Maint's `is_device_in_maintenance` hook (#31).
-- The health page lists targets that alert in both SmokePing and Thold, so one breach notifies twice. The inventory now records each target's SmokePing `alerts`; schema 6 stores them (#32).
+- The health page lists targets that alert in both SmokePing and Thold, where one problem may notify twice. The inventory now records each target's SmokePing `alerts`; schema 6 stores them (#32).
+- Smoke graph templates with SmokePing 2.7's loss colors, which match 2.7.3's graphs (Ubuntu 22.04). The Loss Colors setting picks them; Automatic, the default, follows the SmokePing version the reader finds in `Smokeping.pm`, which schema 7 records. The main poller moves smoke graphs to the configured colors, 200 per cycle, and `upgrade-graphs` moves them all. The health page shows the colors in use and why (#34).
 
 ### Changed
 
@@ -19,6 +20,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ### Fixed
 
+- The shipped template export put the summary input's values on the 30-ping smoke data template instead of the summary data template (#34).
 - The reader now starts on a remote data collector. `INFO` declares `remote_poller:1`, which Cacti 1.2.31 needs before it runs the `poller_bottom` hook on a remote poller (#86).
 - The link beside a device's graphs shows keyboard focus in Cacti's dark and modern themes, where focusing it changed nothing on screen (#40).
 - The confirm screen of a bulk add counts the graph items Cacti creates: 50 per 20-ping smoke graph and 5 per summary graph, 550,000 at 10,000 series. It showed about half that (#42, #81).

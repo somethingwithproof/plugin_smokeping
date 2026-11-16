@@ -45,9 +45,9 @@ if (getenv('SMOKEPING_TEST_DATABASE') !== 'disposable') {
 
 list(, $pings, $rrdFile, $start, $end, $upper) = $argv;
 
-// SMOKEPING_TEMPLATE_SUFFIX selects the test-only 2.7 loss level variant.
-$suffix     = (string) getenv('SMOKEPING_TEMPLATE_SUFFIX');
-$templateId = (int) db_fetch_cell_prepared('SELECT id FROM graph_templates WHERE name = ?', array("SmokePing Smoke ($pings pings)$suffix"));
+// SMOKEPING_LOSS_COLORS=2.7 selects the variant with SmokePing 2.7's loss colors.
+$name       = getenv('SMOKEPING_LOSS_COLORS') === '2.7' ? "SmokePing Smoke ($pings pings, 2.7 loss colors)" : "SmokePing Smoke ($pings pings)";
+$templateId = (int) db_fetch_cell_prepared('SELECT id FROM graph_templates WHERE name = ?', array($name));
 $deviceTpl  = (int) db_fetch_cell_prepared("SELECT id FROM host_template WHERE name = 'SmokePing Target'");
 
 if ($templateId === 0 || $deviceTpl === 0) {

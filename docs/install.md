@@ -146,6 +146,7 @@ Open **Console > Configuration > Settings > SmokePing** and check:
 | SmokePing Configuration File | `/etc/smokeping/config` unless you moved it |
 | SmokePing Data Directory | `DATADIR`, as SmokePing sees it |
 | Cacti Mount of the Data Directory | The mount point from step 3; the default is `<rra_path>/smokeping` |
+| Loss Colors | Automatic, unless SmokePing runs where the reader cannot see its `Smokeping.pm` and is 2.7: then SmokePing 2.7. See [loss colors](provisioning.md#loss-colors) |
 
 Then open **SmokePing Health** on the server of the SmokePing poller. The configuration row reads the file at once and shows the number of targets, or the first error with its file and line. After the next poller cycle every row should be OK: the PHP binary, the configuration, the reader, the inventory, the mount, and the templates. To run the first inventory and reader at once instead of waiting for the poller:
 

@@ -42,6 +42,9 @@ final class SmokeProvisioner {
 		private readonly CactiObjectRepository $cacti,
 		private readonly Clock $clock,
 		private readonly ?RrdReader $rrd = null,
+		// The loss colors new smoke graphs draw, and restyleDue() moves graphs
+		// to (LossColors::resolve()).
+		private readonly LossColors $lossColors = LossColors::Current,
 	) {
 	}
 
@@ -299,7 +302,7 @@ final class SmokeProvisioner {
 			return $relative;
 		}
 
-		$templateId = $this->cacti->graphTemplateId(TemplateInstaller::graphTemplateName($target->pings));
+		$templateId = $this->cacti->graphTemplateId(TemplateInstaller::graphTemplateName($target->pings, $this->lossColors));
 
 		if ($templateId === 0) {
 			return ProvisionResult::skipped(__('The smoke graph template is not installed.', 'smokeping'));
@@ -514,6 +517,66 @@ final class SmokeProvisioner {
 			// a place in every later batch; upgrade-graphs clears it and retries.
 			Log::warning(sprintf('Could not bring graph %d to the SmokePing templates version %d; it keeps its earlier items until upgrade-graphs is run again', $localGraphId, $installedVersion));
 			$this->objects->recordTemplateFailure($localGraphId, $installedVersion);
+			$counts['failed']++;
+		}
+
+		return $counts;
+	}
+
+	/**
+	 * Move smoke graphs drawn with the other loss colors to the templates of
+	 * $this->lossColors, a batch at a time after graph $after, as
+	 * retemplateDue() does. Each graph keeps its title, limit and items'
+	 * data; only the loss levels change. A graph that fails is marked and
+	 * passed over until upgrade-graphs clears the mark.
+	 *
+	 * @return array{restyled: int, failed: int, last: int}
+	 */
+	public function restyleDue(int $batch, int $after = 0): array {
+		include_once($this->coreLibrary . '/template.php');
+		include_once($this->coreLibrary . '/variables.php');
+
+		$counts = ['restyled' => 0, 'failed' => 0, 'last' => $after];
+		$to     = [];
+
+		foreach (TemplateInstaller::PINGS as $pings) {
+			$from = $this->cacti->graphTemplateId(TemplateInstaller::graphTemplateName($pings, $this->lossColors->other()));
+			$into = $this->cacti->graphTemplateId(TemplateInstaller::graphTemplateName($pings, $this->lossColors));
+
+			if ($from > 0 && $into > 0) {
+				$to[$from] = $into;
+			}
+		}
+
+		foreach ($this->objects->graphsOnTemplates(array_keys($to), $batch, $after) as $graph) {
+			$localGraphId   = $graph['local_graph_id'];
+			$counts['last'] = $localGraphId;
+			$into           = $to[$graph['graph_template_id']];
+
+			try {
+				$done = $this->cacti->transaction(function () use ($localGraphId, $into): bool {
+					if (!$this->cacti->retemplateGraph($localGraphId, $into)) {
+						return false;
+					}
+
+					$this->objects->syncProbeLines($localGraphId);
+
+					return true;
+				});
+			} catch (\Throwable $e) {
+				Log::warning(sprintf('Changing the loss colors of graph %d failed: %s', $localGraphId, $e->getMessage()));
+				$done = false;
+			}
+
+			if ($done) {
+				update_graph_title_cache($localGraphId);
+				$counts['restyled']++;
+
+				continue;
+			}
+
+			Log::warning(sprintf('Could not change graph %d to SmokePing %s loss colors; it keeps its colors until upgrade-graphs is run again', $localGraphId, $this->lossColors->value));
+			$this->objects->recordTemplateFailure($localGraphId, max(1, (int) read_config_option(TemplateInstaller::SETTING)));
 			$counts['failed']++;
 		}
 

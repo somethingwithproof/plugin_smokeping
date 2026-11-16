@@ -302,6 +302,12 @@ switch ($action) {
 		db_execute('ALTER TABLE plugin_smokeping_object DROP COLUMN sized_limit, DROP COLUMN sized_at');
 
 		break;
+	case 'set_template_version':
+		// local_graph_id:version, as an earlier templates version left it.
+		list($graph, $version) = explode(':', $argument);
+		db_execute_prepared('UPDATE plugin_smokeping_object SET template_version = ? WHERE local_graph_id = ?', array((int) $version, (int) $graph));
+
+		break;
 	case 'query':
 		// Read-only inspection for the shell-driven checks.
 		if (stripos(ltrim($argument), 'SELECT') !== 0) {

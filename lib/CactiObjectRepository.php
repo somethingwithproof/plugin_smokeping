@@ -266,9 +266,14 @@ final class CactiObjectRepository {
 	 * template here, because a legend item reads the VDEFs of others by their
 	 * position, and the title is put back. The caller includes lib/template.php
 	 * and runs this in a transaction.
+	 *
+	 * With $toTemplateId the graph moves to that graph template instead, which
+	 * must draw the same data template: the loss color variants
+	 * (SmokeProvisioner::restyleDue()). Cacti finds each new item's data
+	 * source by name, and the check below confirms the graph matches it.
 	 */
-	public function retemplateGraph(int $localGraphId): bool {
-		$templateId = (int) db_fetch_cell_prepared('SELECT graph_template_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
+	public function retemplateGraph(int $localGraphId, int $toTemplateId = 0): bool {
+		$templateId = $toTemplateId > 0 ? $toTemplateId : (int) db_fetch_cell_prepared('SELECT graph_template_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
 		$title      = db_fetch_row_prepared('SELECT title, t_title FROM graph_templates_graph WHERE local_graph_id = ?', [$localGraphId], true, $this->connection);
 
 		if ($templateId === 0 || !is_array($title) || $title === []) {
@@ -294,7 +299,10 @@ final class CactiObjectRepository {
 
 	/**
 	 * Whether the graph has exactly one item made from each of its template's
-	 * items and every VDEF its items use exists. change_graph_template()
+	 * items, every VDEF its items use exists, and every item whose template
+	 * item draws a data source still has one: change_graph_template() maps
+	 * data sources by name and leaves an item unbound when none matches.
+	 * change_graph_template()
 	 * returns true even when an item insert failed, so this is the check that
 	 * the upgrade happened.
 	 */
@@ -308,7 +316,11 @@ final class CactiObjectRepository {
 					WHERE gi.local_graph_id = ? AND ti.id IS NULL)
 				+ (SELECT COUNT(*) FROM graph_templates_item AS gi
 					LEFT JOIN vdef AS v ON v.id = gi.vdef_id
-					WHERE gi.local_graph_id = ? AND gi.vdef_id > 0 AND v.id IS NULL)', [$templateId, $localGraphId, $templateId, $localGraphId, $localGraphId], '', true, $this->connection);
+					WHERE gi.local_graph_id = ? AND gi.vdef_id > 0 AND v.id IS NULL)
+				+ (SELECT COUNT(*) FROM graph_templates_item AS gi
+					INNER JOIN graph_templates_item AS ti ON ti.id = gi.local_graph_template_item_id
+					WHERE gi.local_graph_id = ? AND ti.task_item_id > 0 AND gi.task_item_id = 0)',
+			[$templateId, $localGraphId, $templateId, $localGraphId, $localGraphId, $localGraphId], '', true, $this->connection);
 
 		if ((int) $problems !== 0) {
 			Log::warning(sprintf('Graph %d does not match its graph template %d after the upgrade (%d items differ)', $localGraphId, $templateId, (int) $problems));

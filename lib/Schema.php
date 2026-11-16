@@ -29,7 +29,7 @@ namespace Somethingwithproof\Smokeping;
  * whether the tables exist.
  */
 final class Schema {
-	public const VERSION = 6;
+	public const VERSION = 7;
 
 	/** Settings removed by schema 3, when the plugin stopped running Perl. */
 	private const RETIRED_SETTINGS = ['smokeping_perl_binary', 'smokeping_lib_dir'];
@@ -139,6 +139,24 @@ final class Schema {
 			return false;
 		}
 
+		// Schema 7: the health table gains the SmokePing version the reader
+		// found, which picks the smoke graphs' loss colors (LossColors).
+		db_add_column('plugin_smokeping_health', self::smokepingVersionColumn(), true, $this->connection);
+
+		if ((int) db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?', ['plugin_smokeping_health', 'smokeping_version'], '', true, $this->connection) !== 1) {
+			Log::error(sprintf('Unable to add the smokeping_version column to plugin_smokeping_health; schema left at version %d', $from));
+
+			return false;
+		}
+
+		// Templates version 4 only adds templates, so a graph that follows
+		// version 3 follows version 4 and need not be re-templated.
+		if ($from > 0 && $from < 7 && db_execute_prepared('UPDATE plugin_smokeping_object SET template_version = 4 WHERE template_version = 3', [], true, $this->connection) === false) {
+			Log::error(sprintf('Unable to record templates version 4 on existing graphs; schema left at version %d', $from));
+
+			return false;
+		}
+
 		// Nothing recorded who set the limits of graphs made before schema 4,
 		// and size-graphs replaced hand-set limits until then, so the plugin
 		// takes each current limit as its own. sized_at stays 0, which makes
@@ -231,6 +249,16 @@ final class Schema {
 	 */
 	private static function alertsColumn(): array {
 		return ['name' => 'alerts', 'type' => 'varchar(255)', 'NULL' => false, 'default' => ''];
+	}
+
+	/**
+	 * The SmokePing version the reader found, such as 2.007003; '' when it
+	 * found none.
+	 *
+	 * @return array{name: string, type: string, NULL: bool, default: string}
+	 */
+	private static function smokepingVersionColumn(): array {
+		return ['name' => 'smokeping_version', 'type' => 'varchar(16)', 'NULL' => false, 'default' => ''];
 	}
 
 	/**
@@ -374,6 +402,7 @@ final class Schema {
 					['name' => 'inventory_status', 'type' => 'varchar(16)', 'NULL' => false, 'default' => 'never'],
 					['name' => 'inventory_error', 'type' => 'varchar(1024)', 'NULL' => false, 'default' => ''],
 					['name' => 'inventory_targets', 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'],
+					self::smokepingVersionColumn(),
 				],
 				'primary' => 'poller_id',
 			],

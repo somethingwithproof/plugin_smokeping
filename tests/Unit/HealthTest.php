@@ -181,6 +181,26 @@ describe('HealthCheck', function () {
 			->and($both->message)->toContain('12 targets')->toContain('Net/t10, ...')->not->toContain('Net/t11');
 	});
 
+	it('reads the dual-alerting targets of a poller, and none without Thold', function () {
+		$GLOBALS['__smokeping_db_queries']      = [];
+		$GLOBALS['__smokeping_db_assoc']        = [['path' => 'Europe/paris'], ['path' => 'Net/core']];
+		$GLOBALS['__smokeping_db_table_exists'] = fn (string $table) => $table === 'thold_data';
+
+		$paths = (new Somethingwithproof\Smokeping\CactiObjectRepository(false))->dualAlerting(3);
+		$query = end($GLOBALS['__smokeping_db_queries']);
+
+		expect($paths)->toBe(['Europe/paris', 'Net/core'])
+			->and($query['params'])->toBe([3])
+			->and($query['sql'])->toContain("td.thold_enabled = 'on'")->toContain("t.alerts <> ''");
+
+		$GLOBALS['__smokeping_db_table_exists'] = false;
+
+		expect((new Somethingwithproof\Smokeping\CactiObjectRepository(false))->dualAlerting(3))->toBeNull();
+
+		$GLOBALS['__smokeping_db_table_exists'] = true;
+		$GLOBALS['__smokeping_db_assoc']        = [];
+	});
+
 	it('reports an unusable PHP binary', function (string $binary) {
 		expect(HealthCheck::phpBinary($binary)->level)->toBe(HealthLevel::Error);
 	})->with(['', '/nonexistent/php', __FILE__]);

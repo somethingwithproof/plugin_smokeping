@@ -132,16 +132,16 @@ msgstr ""
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
 msgstr ""
 
 #: lib/HealthCheck.php
-msgid "The reader found no SmokePing version, so smoke graphs are set to the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
 msgstr ""
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The reader found SmokePing %s, so smoke graphs are set to its loss colors."
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
 msgstr ""
 
 #: lib/HealthCheck.php

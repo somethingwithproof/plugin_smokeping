@@ -38,7 +38,8 @@ final class HealthCheck {
 	}
 
 	/**
-	 * Which loss colors the smoke graphs are set to, and why (LossColors).
+	 * Which loss colors the Loss Colors setting selects, and why
+	 * (LossColors). Graphs still on the other colors move later.
 	 *
 	 * @param string $setting the Loss Colors setting
 	 * @param string $version the SmokePing version the reader found, '' for none
@@ -60,17 +61,17 @@ final class HealthCheck {
 				));
 			}
 
-			return new Finding('loss_colors', HealthLevel::Ok, __('Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks.', $colors->value, 'smokeping'));
+			return new Finding('loss_colors', HealthLevel::Ok, __('The Loss Colors setting selects SmokePing %s loss colors for smoke graphs.', $colors->value, 'smokeping'));
 		}
 
 		if ($detected === null) {
 			return new Finding('loss_colors', HealthLevel::Unknown, __(
-				'The reader found no SmokePing version, so smoke graphs are set to the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7.',
+				'The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7.',
 				'smokeping'
 			));
 		}
 
-		return new Finding('loss_colors', HealthLevel::Ok, __('The reader found SmokePing %s, so smoke graphs are set to its loss colors.', $shown, 'smokeping'));
+		return new Finding('loss_colors', HealthLevel::Ok, __('The reader found SmokePing %s, so the Loss Colors setting selects its loss colors.', $shown, 'smokeping'));
 	}
 
 	/**

@@ -130,17 +130,17 @@ msgstr "Die Einstellung „Verlustfarben“ verlangt die Verlustfarben von Smoke
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
-msgstr "Smoke-Graphen sind auf die Verlustfarben von SmokePing %s eingestellt, wie die Einstellung „Verlustfarben“ es verlangt."
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Die Einstellung „Verlustfarben“ wählt für Smoke-Graphen die Verlustfarben von SmokePing %s."
 
 #: lib/HealthCheck.php
-msgid "The reader found no SmokePing version, so smoke graphs are set to the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
-msgstr "Der Leser hat keine SmokePing-Version gefunden, daher sind Smoke-Graphen auf die Verlustfarben von SmokePing 2.8 und neuer eingestellt. Ist SmokePing 2.7, stellen Sie „Verlustfarben“ auf SmokePing 2.7."
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Der Leser hat keine SmokePing-Version gefunden, daher wählt die Einstellung „Verlustfarben“ die Verlustfarben von SmokePing 2.8 und neuer. Ist SmokePing 2.7, stellen Sie „Verlustfarben“ auf SmokePing 2.7."
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The reader found SmokePing %s, so smoke graphs are set to its loss colors."
-msgstr "Der Leser hat SmokePing %s gefunden, daher sind Smoke-Graphen auf dessen Verlustfarben eingestellt."
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Der Leser hat SmokePing %s gefunden, daher wählt die Einstellung „Verlustfarben“ dessen Verlustfarben."
 
 #: lib/HealthCheck.php
 msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
@@ -1254,6 +1254,10 @@ msgstr "Der Vorschlag ist nicht offen, oder er betrifft ein Zielsystem oder eine
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
 msgstr "Der Vorschlag wurde verworfen."
+
+#, php-format
+#~ msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
+#~ msgstr "Smoke-Graphen sind auf die Verlustfarben von SmokePing %s eingestellt, wie die Einstellung „Verlustfarben“ es verlangt."
 
 #~ msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
 #~ msgstr "Ziele, die sowohl in SmokePing als auch in Thold alarmieren, können erst aufgelistet werden, wenn SmokePing-Datenquellen existieren."

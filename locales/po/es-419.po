@@ -129,17 +129,17 @@ msgstr "La opción Colores de pérdida pide los colores de pérdida de SmokePing
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
-msgstr "Las gráficas de humo están configuradas con los colores de pérdida de SmokePing %s, como pide la opción Colores de pérdida."
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "La opción Colores de pérdida selecciona los colores de pérdida de SmokePing %s para las gráficas de humo."
 
 #: lib/HealthCheck.php
-msgid "The reader found no SmokePing version, so smoke graphs are set to the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
-msgstr "El lector no encontró ninguna versión de SmokePing, así que las gráficas de humo están configuradas con los colores de pérdida de SmokePing 2.8 y posteriores. Si SmokePing es 2.7, ponga Colores de pérdida en SmokePing 2.7."
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "El lector no encontró ninguna versión de SmokePing, así que la opción Colores de pérdida selecciona los colores de pérdida de SmokePing 2.8 y posteriores. Si SmokePing es 2.7, ponga Colores de pérdida en SmokePing 2.7."
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The reader found SmokePing %s, so smoke graphs are set to its loss colors."
-msgstr "El lector encontró SmokePing %s, así que las gráficas de humo están configuradas con sus colores de pérdida."
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "El lector encontró SmokePing %s, así que la opción Colores de pérdida selecciona sus colores de pérdida."
 
 #: lib/HealthCheck.php
 msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
@@ -1253,6 +1253,10 @@ msgstr "La propuesta no está abierta, o implica un dispositivo o sondeador que 
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
 msgstr "Se descartó la propuesta."
+
+#, php-format
+#~ msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
+#~ msgstr "Las gráficas de humo están configuradas con los colores de pérdida de SmokePing %s, como pide la opción Colores de pérdida."
 
 #~ msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
 #~ msgstr "Los destinos que alertan tanto en SmokePing como en Thold no se pueden listar hasta que existan fuentes de datos de SmokePing."

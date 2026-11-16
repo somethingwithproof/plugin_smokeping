@@ -129,17 +129,17 @@ msgstr "損失色の設定は SmokePing %s の損失色を指定しています�
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "Smoke graphs draw SmokePing %s loss colors, as the Loss Colors setting asks."
-msgstr "損失色の設定どおり、スモークグラフは SmokePing %s の損失色で描画されます。"
+msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
+msgstr "損失色の設定どおり、スモークグラフは SmokePing %s の損失色に設定されています。"
 
 #: lib/HealthCheck.php
-msgid "The reader found no SmokePing version, so smoke graphs draw the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
-msgstr "リーダーは SmokePing のバージョンを検出しなかったため、スモークグラフは SmokePing 2.8 以降の損失色で描画されます。SmokePing が 2.7 の場合は、損失色を SmokePing 2.7 に設定してください。"
+msgid "The reader found no SmokePing version, so smoke graphs are set to the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "リーダーは SmokePing のバージョンを検出しなかったため、スモークグラフは SmokePing 2.8 以降の損失色に設定されています。SmokePing が 2.7 の場合は、損失色を SmokePing 2.7 に設定してください。"
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The reader found SmokePing %s, so smoke graphs draw its loss colors."
-msgstr "リーダーが SmokePing %s を検出したため、スモークグラフはその損失色で描画されます。"
+msgid "The reader found SmokePing %s, so smoke graphs are set to its loss colors."
+msgstr "リーダーが SmokePing %s を検出したため、スモークグラフはその損失色に設定されています。"
 
 #: lib/HealthCheck.php
 msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."

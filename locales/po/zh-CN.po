@@ -129,17 +129,17 @@ msgstr "丢包颜色设置要求使用 SmokePing %s 的丢包颜色，但读取�
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "Smoke graphs draw SmokePing %s loss colors, as the Loss Colors setting asks."
-msgstr "按照丢包颜色设置，烟雾图使用 SmokePing %s 的丢包颜色绘制。"
+msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
+msgstr "按照丢包颜色设置，烟雾图设为使用 SmokePing %s 的丢包颜色。"
 
 #: lib/HealthCheck.php
-msgid "The reader found no SmokePing version, so smoke graphs draw the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
-msgstr "读取程序未找到 SmokePing 版本，因此烟雾图使用 SmokePing 2.8 及更高版本的丢包颜色绘制。如果 SmokePing 是 2.7，请将丢包颜色设为 SmokePing 2.7。"
+msgid "The reader found no SmokePing version, so smoke graphs are set to the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "读取程序未找到 SmokePing 版本，因此烟雾图设为使用 SmokePing 2.8 及更高版本的丢包颜色。如果 SmokePing 是 2.7，请将丢包颜色设为 SmokePing 2.7。"
 
 #: lib/HealthCheck.php
 #, php-format
-msgid "The reader found SmokePing %s, so smoke graphs draw its loss colors."
-msgstr "读取程序找到了 SmokePing %s，因此烟雾图使用其丢包颜色绘制。"
+msgid "The reader found SmokePing %s, so smoke graphs are set to its loss colors."
+msgstr "读取程序找到了 SmokePing %s，因此烟雾图设为使用其丢包颜色。"
 
 #: lib/HealthCheck.php
 msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."

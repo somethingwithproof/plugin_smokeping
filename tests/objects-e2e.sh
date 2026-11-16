@@ -185,6 +185,22 @@ current=$(tpl_name)
 	&& result PASS loss-colors-auto-restores "$current with no SmokePing found; $out" \
 	|| result FAIL loss-colors-auto-restores "rc $rc, template '$current', item difference $(matches): $out"
 
+# A restyle that would leave an item without its data source is refused:
+# with the median renamed, change_graph_template() finds no data source of
+# that name and leaves the new item unbound. The graph keeps its template.
+ds_name() { DS_NAME="$1" DS_ID="${rrd:-0}" php -r 'chdir("/cacti"); include("./include/cli_check.php"); db_execute_prepared("UPDATE data_template_rrd SET data_source_name = ? WHERE id = ?", [getenv("DS_NAME"), (int) getenv("DS_ID")]);'; }
+rrd=$(q "SELECT dtr.id FROM graph_templates_item AS gi INNER JOIN data_template_rrd AS dtr ON dtr.id = gi.task_item_id WHERE gi.local_graph_id = ${gr:-0} AND dtr.data_source_name = 'median' LIMIT 1" | jcell)
+ds_name median_x
+$L set_setting "smokeping_loss_colors=2.7" >/dev/null
+out=$(php $P/cli/smokeping.php upgrade-graphs 2>&1); rc=$?
+kept=$(tpl_name); unbound=$(q "SELECT COUNT(*) FROM graph_templates_item AS gi INNER JOIN graph_templates_item AS ti ON ti.id = gi.local_graph_template_item_id WHERE gi.local_graph_id = ${gr:-0} AND ti.task_item_id > 0 AND gi.task_item_id = 0" | jcell)
+[ -n "$rrd" ] && [ $rc -eq 1 ] && [ "$kept" = "SmokePing Smoke (20 pings)" ] && [ "$unbound" = 0 ] \
+	&& result PASS loss-colors-unbound-item-refused "graph keeps $kept with every item bound; $out" \
+	|| result FAIL loss-colors-unbound-item-refused "data source item '$rrd', rc $rc, template '$kept', $unbound unbound items: $out"
+ds_name median
+$L set_setting "smokeping_loss_colors=auto" >/dev/null
+php $P/cli/smokeping.php upgrade-graphs >/dev/null 2>&1
+
 # Poller and boost ignore it: input method None means no poller_item rows.
 row=$(q "SELECT COUNT(*) FROM poller_item WHERE local_data_id = ${ds:-0}" | jcell)
 [ "$row" = "0" ] && result PASS not-polled "no poller_item rows" || result FAIL not-polled "$row rows"

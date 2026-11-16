@@ -320,9 +320,9 @@ if ($smokeping_command === 'size-graphs' && $smokeping_paths === []) {
 }
 
 if ($smokeping_command === 'upgrade-graphs' && $smokeping_paths === []) {
-	$smokeping_retemplater = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
+	$smokeping_retemplater = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader(), smokeping_loss_colors());
 	$smokeping_version     = (int) read_config_option(\Somethingwithproof\Smokeping\TemplateInstaller::SETTING);
-	$smokeping_totals      = ['upgraded' => 0, 'failed' => 0];
+	$smokeping_totals      = ['upgraded' => 0, 'restyled' => 0, 'failed' => 0];
 	$smokeping_after       = 0;
 
 	// Graphs that failed before are tried again, once each. Each batch starts
@@ -338,7 +338,18 @@ if ($smokeping_command === 'upgrade-graphs' && $smokeping_paths === []) {
 		$smokeping_after               = $smokeping_batch['last'];
 	} while ($smokeping_moved);
 
-	print sprintf('Upgraded %d graphs to templates version %d; %d failed (see the Cacti log)', $smokeping_totals['upgraded'], $smokeping_version, $smokeping_totals['failed']) . PHP_EOL;
+	// Then the graphs drawn with the other loss colors (LossColors).
+	$smokeping_after = 0;
+
+	do {
+		$smokeping_batch = $smokeping_retemplater->restyleDue(\Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH, $smokeping_after);
+		$smokeping_totals['restyled'] += $smokeping_batch['restyled'];
+		$smokeping_totals['failed']  += $smokeping_batch['failed'];
+		$smokeping_moved              = $smokeping_batch['last'] > $smokeping_after;
+		$smokeping_after              = $smokeping_batch['last'];
+	} while ($smokeping_moved);
+
+	print sprintf('Upgraded %d graphs to templates version %d and changed %d to the configured loss colors; %d failed (see the Cacti log)', $smokeping_totals['upgraded'], $smokeping_version, $smokeping_totals['restyled'], $smokeping_totals['failed']) . PHP_EOL;
 
 	exit($smokeping_totals['failed'] > 0 ? 1 : 0);
 }
@@ -359,7 +370,8 @@ $smokeping_provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner(
 	new \Somethingwithproof\Smokeping\ObjectRepository(false),
 	new \Somethingwithproof\Smokeping\CactiObjectRepository(false),
 	new \Somethingwithproof\Smokeping\SystemClock(),
-	smokeping_rrd_reader()
+	smokeping_rrd_reader(),
+	smokeping_loss_colors()
 );
 
 $smokeping_found = [];

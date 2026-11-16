@@ -123,6 +123,25 @@ msgid "SmokePing Targets of this Device"
 msgstr "Destinos de SmokePing de este dispositivo"
 
 #: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "La opción Colores de pérdida pide los colores de pérdida de SmokePing %s, pero el lector encontró SmokePing %s. Póngala en Automático, salvo que las gráficas deban diferir de las de SmokePing."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "Smoke graphs draw SmokePing %s loss colors, as the Loss Colors setting asks."
+msgstr "Las gráficas de humo dibujan los colores de pérdida de SmokePing %s, como pide la opción Colores de pérdida."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so smoke graphs draw the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "El lector no encontró ninguna versión de SmokePing, así que las gráficas de humo dibujan los colores de pérdida de SmokePing 2.8 y posteriores. Si SmokePing es 2.7, ponga Colores de pérdida en SmokePing 2.7."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so smoke graphs draw its loss colors."
+msgstr "El lector encontró SmokePing %s, así que las gráficas de humo dibujan sus colores de pérdida."
+
+#: lib/HealthCheck.php
 msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
 msgstr "Thold no está instalado, así que ningún objetivo alerta en SmokePing y en Thold a la vez."
 
@@ -833,6 +852,26 @@ msgstr "Margen de actualidad"
 #: lib/Settings.php
 msgid "Seconds past one step for which a measurement still counts as current."
 msgstr "Segundos posteriores a un paso durante los cuales una medición aún se considera actual."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Colores de pérdida"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Qué colores de pérdida de SmokePing dibujan las gráficas de humo. SmokePing 2.7 dibuja niveles de pérdida distintos de los de 2.8 y posteriores. Automático sigue la versión de SmokePing que el lector encuentra junto a SmokePing, mostrada en la página de estado, y usa 2.8 y posteriores cuando no encuentra ninguna."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Automático"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 y posteriores"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
 
 #: lib/Settings.php
 msgid "Uninstall"

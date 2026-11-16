@@ -161,6 +161,18 @@ final readonly class Settings {
 				'max_length'    => '5',
 				'size'          => '5',
 			],
+			// Not in NAMES: the configuration file does not carry it.
+			LossColors::SETTING => [
+				'friendly_name' => __('Loss Colors', 'smokeping'),
+				'description'   => __('Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none.', 'smokeping'),
+				'method'        => 'drop_array',
+				'default'       => LossColors::AUTO,
+				'array'         => [
+					LossColors::AUTO              => __('Automatic', 'smokeping'),
+					LossColors::Current->value    => __('SmokePing 2.8 and later', 'smokeping'),
+					LossColors::Legacy->value     => __('SmokePing 2.7', 'smokeping'),
+				],
+			],
 			'smokeping_header_uninstall' => [
 				'friendly_name' => __('Uninstall', 'smokeping'),
 				'method'        => 'spacer',

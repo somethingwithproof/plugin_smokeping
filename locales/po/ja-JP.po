@@ -123,6 +123,25 @@ msgid "SmokePing Targets of this Device"
 msgstr "このデバイスの SmokePing ターゲット"
 
 #: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "損失色の設定は SmokePing %s の損失色を指定していますが、リーダーが検出したのは SmokePing %s です。グラフを SmokePing と異なるものにする場合を除き、自動に設定してください。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "Smoke graphs draw SmokePing %s loss colors, as the Loss Colors setting asks."
+msgstr "損失色の設定どおり、スモークグラフは SmokePing %s の損失色で描画されます。"
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so smoke graphs draw the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "リーダーは SmokePing のバージョンを検出しなかったため、スモークグラフは SmokePing 2.8 以降の損失色で描画されます。SmokePing が 2.7 の場合は、損失色を SmokePing 2.7 に設定してください。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so smoke graphs draw its loss colors."
+msgstr "リーダーが SmokePing %s を検出したため、スモークグラフはその損失色で描画されます。"
+
+#: lib/HealthCheck.php
 msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
 msgstr "Thold がインストールされていないため、SmokePing と Thold の両方でアラートを出すターゲットはありません。"
 
@@ -833,6 +852,26 @@ msgstr "鮮度の許容値"
 #: lib/Settings.php
 msgid "Seconds past one step for which a measurement still counts as current."
 msgstr "1 ステップを超えても、測定値を最新とみなす秒数です。"
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "損失色"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "スモークグラフが描画する SmokePing の損失色です。SmokePing 2.7 は 2.8 以降と異なる損失レベルを描画します。自動は、リーダーが SmokePing の隣で検出し、ヘルスページに表示される SmokePing のバージョンに従い、検出できない場合は 2.8 以降を使用します。"
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "自動"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 以降"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
 
 #: lib/Settings.php
 msgid "Uninstall"

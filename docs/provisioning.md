@@ -79,6 +79,15 @@ php plugins/smokeping/cli/smokeping.php upgrade-graphs
 
 The upgrade sets each graph's items as the template has them, so changes made by hand to a plugin graph's items are replaced. After the upgrade the plugin checks that the graph has exactly the template's items and that every VDEF they use exists. A graph that fails keeps its old items and its old version, and the Cacti log names it. The poller does not try it again. `upgrade-graphs` tries every such graph once more on each run, and exits 1 if any still fails.
 
+## Loss colors
+
+SmokePing 2.7 colors packet loss with seven fixed levels; 2.8 and later use levels by share of pings and add a level for complete loss. The plugin ships smoke graph templates for both, over the same data sources, and both match SmokePing's own graphs ([graph fidelity](research/graph-fidelity.md)). **Loss Colors** in the SmokePing settings picks one:
+
+- **Automatic** (the default) follows the SmokePing version the reader finds in `Smokeping.pm` beside SmokePing (`/usr/share/perl5`, `/usr/share/smokeping`, `/opt/smokeping/lib`, or `/usr/local/smokeping/lib`), recorded with each inventory. Below 2.8 it uses the 2.7 colors. When the reader finds no version, for example when SmokePing runs in another container, it uses 2.8 and later.
+- **SmokePing 2.8 and later** or **SmokePing 2.7** sets the colors whatever the reader finds.
+
+The health page's `loss_colors` row shows which colors are in use and why. When the colors change, by the setting or after an upgrade of SmokePing, the main poller moves the smoke graphs to the other templates, 200 per cycle, keeping each graph's title, upper limit, and data. `upgrade-graphs` moves them all at once. A graph that fails keeps its colors and is retried by the next `upgrade-graphs`, as above.
+
 ## Re-linking a renamed target
 
 SmokePing names a target's file after its place in the configuration tree, so renaming or moving a node starts a new, empty file. When an import sees a path disappear and a new path with the same host and probe appear, it records a proposal and changes nothing. **Review** on the inventory page opens a confirm screen. Re-link moves the smoke graph and the summary data source to the new target, moves the device mapping with them, and keeps the old file's history readable in an archived graph. **Dismiss Proposal** closes it without a change.

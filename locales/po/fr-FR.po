@@ -124,6 +124,25 @@ msgid "SmokePing Targets of this Device"
 msgstr "Cibles SmokePing de cet équipement"
 
 #: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Le paramètre Couleurs de perte demande les couleurs de perte de SmokePing %s, mais le lecteur a trouvé SmokePing %s. Réglez-le sur Automatique, sauf si les graphes doivent différer de ceux de SmokePing."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "Smoke graphs draw SmokePing %s loss colors, as the Loss Colors setting asks."
+msgstr "Les graphes de fumée dessinent les couleurs de perte de SmokePing %s, comme le demande le paramètre Couleurs de perte."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so smoke graphs draw the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Le lecteur n'a trouvé aucune version de SmokePing, donc les graphes de fumée dessinent les couleurs de perte de SmokePing 2.8 et suivantes. Si SmokePing est en 2.7, réglez Couleurs de perte sur SmokePing 2.7."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so smoke graphs draw its loss colors."
+msgstr "Le lecteur a trouvé SmokePing %s, donc les graphes de fumée dessinent ses couleurs de perte."
+
+#: lib/HealthCheck.php
 msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
 msgstr "Thold n'est pas installé, donc aucune cible n'alerte à la fois dans SmokePing et dans Thold."
 
@@ -834,6 +853,26 @@ msgstr "Tolérance de fraîcheur"
 #: lib/Settings.php
 msgid "Seconds past one step for which a measurement still counts as current."
 msgstr "Nombre de secondes au-delà d'un pas pendant lesquelles une mesure est encore considérée comme actuelle."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Couleurs de perte"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Les couleurs de perte de SmokePing que dessinent les graphes de fumée. SmokePing 2.7 dessine d'autres niveaux de perte que 2.8 et suivantes. Automatique suit la version de SmokePing que le lecteur trouve à côté de SmokePing, affichée sur la page d'état, et utilise 2.8 et suivantes s'il n'en trouve aucune."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Automatique"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 et suivantes"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
 
 #: lib/Settings.php
 msgid "Uninstall"

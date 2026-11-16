@@ -200,4 +200,21 @@ result INFO loss-after-collector-stops "loss_pct state while the round is delaye
 cycle 0
 [ "$(notices "$age_id" $ST_NOTIFYRS)" = 1 ] && result PASS thold-recovers-on-age "restoral notification once rounds arrive again" || result FAIL thold-recovers-on-age "$(notices "$age_id" $ST_NOTIFYRS) restorals, row $(thold_row "$age_id")"
 
+# 6. Loss colors (#34): the reader finds SmokePing 2.7.3 beside it, records
+# it with the inventory, and the main poller moves the smoke graph to the
+# template with 2.7's loss colors. Last, because it changes the graph.
+smoke=$(q "SELECT o.local_graph_id FROM plugin_smokeping_object AS o INNER JOIN plugin_smokeping_target AS t ON t.id = o.target_id WHERE t.path = 'Alert/gateway' AND o.state = 'active'" | jcell)
+tpl_name() { q "SELECT gt.name FROM graph_local AS gl INNER JOIN graph_templates AS gt ON gt.id = gl.graph_template_id WHERE gl.id = ${smoke:-0}" | jcell; }
+mkdir -p /usr/share/perl5
+printf 'package Smokeping;\n\n$VERSION = "2.007003";\n' > /usr/share/perl5/Smokeping.pm
+php $P/poller_smokeping.php --inventory >/dev/null 2>&1
+found=$(q "SELECT smokeping_version FROM plugin_smokeping_health WHERE poller_id = 1" | jcell)
+php $P/poller_smokeping.php >/dev/null 2>&1
+[ -n "$smoke" ] && [ "$found" = 2.007003 ] && [ "$(tpl_name)" = "SmokePing Smoke (20 pings, 2.7 loss colors)" ] \
+	&& result PASS loss-colors-follow-detected-smokeping "found $found; graph $smoke on $(tpl_name)" \
+	|| result FAIL loss-colors-follow-detected-smokeping "graph '$smoke', found '$found', template '$(tpl_name)'"
+health=$(php -r 'chdir("/cacti"); include("./include/cli_check.php"); include_once("./plugins/smokeping/setup.php"); smokeping_boot(); $h = (new Somethingwithproof\Smokeping\HealthRepository(false))->forPoller(1); $f = Somethingwithproof\Smokeping\HealthCheck::lossColors((string) read_config_option("smokeping_loss_colors"), $h->smokepingVersion); echo $f->level->value, " ", $f->message;' 2>/dev/null)
+case "$health" in ok*2.7.3*) result PASS health-loss-colors "$health" ;; *) result FAIL health-loss-colors "$health" ;; esac
+rm -f /usr/share/perl5/Smokeping.pm
+
 exit $fail

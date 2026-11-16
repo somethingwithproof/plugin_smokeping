@@ -112,7 +112,7 @@ final class ReaderJob {
 			return [true, false];
 		}
 
-		$this->health->recordInventory($this->pollerId, $now, InventoryStatus::Ok, implode('; ', $plan->warnings), count($inventory->targets));
+		$this->health->recordInventory($this->pollerId, $now, InventoryStatus::Ok, implode('; ', $plan->warnings), count($inventory->targets), $inventory->smokepingVersion);
 
 		Log::info(sprintf('Inventory on poller %d: %d targets, %d added, %d changed, %d gone, %d re-link proposals', $this->pollerId, count($inventory->targets), count($plan->added), count($plan->changed), count($plan->disappeared), count($plan->proposals)));
 

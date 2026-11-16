@@ -266,9 +266,14 @@ final class CactiObjectRepository {
 	 * template here, because a legend item reads the VDEFs of others by their
 	 * position, and the title is put back. The caller includes lib/template.php
 	 * and runs this in a transaction.
+	 *
+	 * With $toTemplateId the graph moves to that graph template instead, which
+	 * must draw the same data template: the loss color variants
+	 * (SmokeProvisioner::restyleDue()). Cacti finds each new item's data
+	 * source by name, and the check below confirms the graph matches it.
 	 */
-	public function retemplateGraph(int $localGraphId): bool {
-		$templateId = (int) db_fetch_cell_prepared('SELECT graph_template_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
+	public function retemplateGraph(int $localGraphId, int $toTemplateId = 0): bool {
+		$templateId = $toTemplateId > 0 ? $toTemplateId : (int) db_fetch_cell_prepared('SELECT graph_template_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
 		$title      = db_fetch_row_prepared('SELECT title, t_title FROM graph_templates_graph WHERE local_graph_id = ?', [$localGraphId], true, $this->connection);
 
 		if ($templateId === 0 || !is_array($title) || $title === []) {

@@ -71,7 +71,7 @@ describe('Schema::migrate to versions 5 and 6', function () {
 
 		expect((new Schema(false))->migrate())->toBeTrue()
 			->and($GLOBALS['__schema_columns'])->toContain('plugin_smokeping_target.probe_desc', 'plugin_smokeping_object.template_version', 'plugin_smokeping_object.template_failed')
-			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '6']);
+			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '7']);
 	});
 
 	it('leaves the version alone when a column cannot be added', function () {
@@ -86,9 +86,22 @@ describe('Schema::migrate to versions 5 and 6', function () {
 
 		expect((new Schema(false))->migrate())->toBeTrue()
 			->and($GLOBALS['__schema_columns'])->toContain('plugin_smokeping_target.alerts')
-			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '6']);
+			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '7']);
 
 		schema_database(5, ['plugin_smokeping_target.alerts']);
+
+		expect((new Schema(false))->migrate())->toBeFalse();
+	});
+
+	it('adds the SmokePing version column at version 7 and moves version 3 graphs to templates version 4', function () {
+		schema_database(6);
+
+		expect((new Schema(false))->migrate())->toBeTrue()
+			->and($GLOBALS['__schema_columns'])->toContain('plugin_smokeping_health.smokeping_version')
+			->and(array_filter($GLOBALS['__smokeping_db_exec'], fn (array $w) => str_contains($w['sql'], 'SET template_version = 4 WHERE template_version = 3')))->toHaveCount(1)
+			->and(end($GLOBALS['__smokeping_db_exec'])['params'])->toBe(['smokeping_schema_version', '7']);
+
+		schema_database(6, ['plugin_smokeping_health.smokeping_version']);
 
 		expect((new Schema(false))->migrate())->toBeFalse();
 	});
@@ -97,6 +110,7 @@ describe('Schema::migrate to versions 5 and 6', function () {
 		$tables = Schema::tables();
 
 		expect(array_column($tables['plugin_smokeping_target']['columns'], 'name'))->toContain('probe_desc', 'alerts')
-			->and(array_column($tables['plugin_smokeping_object']['columns'], 'name'))->toContain('template_version', 'template_failed');
+			->and(array_column($tables['plugin_smokeping_object']['columns'], 'name'))->toContain('template_version', 'template_failed')
+			->and(array_column($tables['plugin_smokeping_health']['columns'], 'name'))->toContain('smokeping_version');
 	});
 });

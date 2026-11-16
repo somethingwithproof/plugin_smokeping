@@ -46,6 +46,7 @@ final class HealthPage {
 			[HealthCheck::templates($this->templates->present(), $this->templates->failure())],
 			[HealthCheck::devicePollers($this->cacti->summaryDevicesOffPoller($settings->pollerId), $settings->pollerId)],
 			[HealthCheck::dualAlerting($this->cacti->dualAlerting($settings->pollerId))],
+			[HealthCheck::lossColors((string) read_config_option(LossColors::SETTING), $health->smokepingVersion)],
 			$this->mount->check($settings->mountPath, $rraPath, $expected)
 		);
 

@@ -38,6 +38,32 @@ final class HealthCheck {
 	}
 
 	/**
+	 * Which loss colors the smoke graphs draw, and why (LossColors).
+	 *
+	 * @param string $setting the Loss Colors setting
+	 * @param string $version the SmokePing version the reader found, '' for none
+	 */
+	public static function lossColors(string $setting, string $version): Finding {
+		$colors   = LossColors::resolve($setting, $version);
+		$detected = LossColors::ofVersion($version);
+		$shown    = LossColors::displayVersion($version);
+
+		if (LossColors::tryFrom($setting) !== null) {
+			if ($detected !== null && $detected !== $colors) {
+				return new Finding('loss_colors', HealthLevel::Warning, __('The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing\'s.', $colors->value, $shown, 'smokeping'));
+			}
+
+			return new Finding('loss_colors', HealthLevel::Ok, __('Smoke graphs draw SmokePing %s loss colors, as the Loss Colors setting asks.', $colors->value, 'smokeping'));
+		}
+
+		if ($detected === null) {
+			return new Finding('loss_colors', HealthLevel::Unknown, __('The reader found no SmokePing version, so smoke graphs draw the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7.', 'smokeping'));
+		}
+
+		return new Finding('loss_colors', HealthLevel::Ok, __('The reader found SmokePing %s, so smoke graphs draw its loss colors.', $shown, 'smokeping'));
+	}
+
+	/**
 	 * Targets that alert in SmokePing and in Thold may notify twice for one
 	 * problem, when both alerts' conditions hold (docs/alerting.md).
 	 *

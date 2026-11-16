@@ -94,7 +94,7 @@ $smokeping_job = new \Somethingwithproof\Smokeping\ReaderJob(
 try {
 	$smokeping_result = $smokeping_job->run($smokeping_inventory);
 
-	$smokeping_provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner($smokeping_settings, $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
+	$smokeping_provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner($smokeping_settings, $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false), new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader(), smokeping_loss_colors());
 
 	// Size the graphs that are a day or more past their last sizing, a few
 	// per cycle, unless the read used up its budget (see GraphScale).
@@ -113,6 +113,14 @@ try {
 
 			if ($smokeping_retemplated['upgraded'] + $smokeping_retemplated['failed'] > 0) {
 				cacti_log(sprintf('SMOKEPING TEMPLATES: Upgraded:%d Failed:%d', $smokeping_retemplated['upgraded'], $smokeping_retemplated['failed']), false, 'SMOKEPING', POLLER_VERBOSITY_MEDIUM);
+			}
+
+			// Graphs drawn with the other loss colors, after a change of the
+			// setting or of the SmokePing version the reader found.
+			$smokeping_restyled = $smokeping_provisioner->restyleDue(\Somethingwithproof\Smokeping\SmokeProvisioner::RETEMPLATE_BATCH);
+
+			if ($smokeping_restyled['restyled'] + $smokeping_restyled['failed'] > 0) {
+				cacti_log(sprintf('SMOKEPING LOSS COLORS: Changed:%d Failed:%d', $smokeping_restyled['restyled'], $smokeping_restyled['failed']), false, 'SMOKEPING', POLLER_VERBOSITY_MEDIUM);
 			}
 		}
 

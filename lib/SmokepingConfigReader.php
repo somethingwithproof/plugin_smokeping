@@ -27,10 +27,12 @@ namespace Somethingwithproof\Smokeping;
 final class SmokepingConfigReader implements InventoryReader {
 	/**
 	 * @param list<string> $allowedDirectories
+	 * @param list<string> $versionFiles where to look for Smokeping.pm (SmokepingVersion)
 	 */
 	public function __construct(
 		private readonly string $configFile,
 		private readonly array $allowedDirectories = [],
+		private readonly array $versionFiles = SmokepingVersion::PATHS,
 	) {
 	}
 
@@ -45,7 +47,11 @@ final class SmokepingConfigReader implements InventoryReader {
 			throw new InventoryError(mb_substr($e->getMessage(), 0, 900));
 		}
 
-		return Inventory::fromDocument(SmokepingInventory::document($root), $pollerId);
+		$inventory = Inventory::fromDocument(SmokepingInventory::document($root), $pollerId);
+
+		// The parser knows the configuration, not the SmokePing that reads it;
+		// the reader runs beside that SmokePing, so it can look for it.
+		return new Inventory(SmokepingVersion::detect($this->versionFiles), $inventory->datadir, $inventory->targets, $inventory->warnings);
 	}
 
 	/**

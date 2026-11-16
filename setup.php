@@ -64,6 +64,16 @@ function smokeping_refuse_unsupported_php(): bool {
 	return true;
 }
 
+/**
+ * The loss colors the smoke graphs draw: the setting, or on Automatic the
+ * version of the SmokePing the reader found (LossColors::resolve()).
+ */
+function smokeping_loss_colors(): \Somethingwithproof\Smokeping\LossColors {
+	$version = (new \Somethingwithproof\Smokeping\HealthRepository(false))->forPoller(smokeping_settings()->pollerId)->smokepingVersion;
+
+	return \Somethingwithproof\Smokeping\LossColors::resolve((string) read_config_option(\Somethingwithproof\Smokeping\LossColors::SETTING), $version);
+}
+
 function smokeping_settings(): \Somethingwithproof\Smokeping\Settings {
 	global $config;
 
@@ -393,7 +403,7 @@ function smokeping_import_service(bool $webUser = false): \Somethingwithproof\Sm
 	$objects     = new \Somethingwithproof\Smokeping\ObjectRepository(false);
 	$settings    = smokeping_settings();
 	$rrdProxy    = read_config_option('storage_location') != 0;
-	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner($settings, $config['rra_path'], $config['library_path'], $rrdProxy, $objects, $cacti, new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader());
+	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner($settings, $config['rra_path'], $config['library_path'], $rrdProxy, $objects, $cacti, new \Somethingwithproof\Smokeping\SystemClock(), smokeping_rrd_reader(), smokeping_loss_colors());
 	$repository  = new \Somethingwithproof\Smokeping\ConfigRepository(false, $config['rra_path']);
 
 	return new \Somethingwithproof\Smokeping\SmokepingImportService(
@@ -418,7 +428,7 @@ function smokeping_target_actions(): \Somethingwithproof\Smokeping\TargetActions
 	$objects = new \Somethingwithproof\Smokeping\ObjectRepository(false);
 	$clock   = new \Somethingwithproof\Smokeping\SystemClock();
 
-	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, $objects, $cacti, $clock, smokeping_rrd_reader());
+	$provisioner = new \Somethingwithproof\Smokeping\SmokeProvisioner(smokeping_settings(), $config['rra_path'], $config['library_path'], read_config_option('storage_location') != 0, $objects, $cacti, $clock, smokeping_rrd_reader(), smokeping_loss_colors());
 
 	return new \Somethingwithproof\Smokeping\TargetActions($provisioner, new \Somethingwithproof\Smokeping\TargetRepository(false), $objects, $cacti, $config['library_path'], $clock);
 }

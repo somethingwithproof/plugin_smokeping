@@ -48,16 +48,19 @@ final class HealthRepository {
 			[$started, $finished, $duration, $total, $read, (int) $overrun, (int) $overrun, $finished, $pollerId], true, $this->connection);
 	}
 
-	public function recordInventory(int $pollerId, int $at, InventoryStatus $status, string $error, int $targets): void {
+	public function recordInventory(int $pollerId, int $at, InventoryStatus $status, string $error, int $targets, string $smokepingVersion = ''): void {
 		$this->ensureRow($pollerId);
 
-		// A failed run keeps the previous target count: the stored inventory is
-		// still the one from the last successful run.
+		// A failed run keeps the previous target count and SmokePing version:
+		// the stored inventory is still the one from the last successful run.
+		$ok = (int) ($status === InventoryStatus::Ok);
+
 		db_execute_prepared('UPDATE plugin_smokeping_health
 			SET inventory_at = ?, inventory_status = ?, inventory_error = ?,
-				inventory_targets = IF(? = 1, ?, inventory_targets)
+				inventory_targets = IF(? = 1, ?, inventory_targets),
+				smokeping_version = IF(? = 1, ?, smokeping_version)
 			WHERE poller_id = ?',
-			[$at, $status->value, mb_substr($error, 0, 1024), (int) ($status === InventoryStatus::Ok), $targets, $pollerId], true, $this->connection);
+			[$at, $status->value, mb_substr($error, 0, 1024), $ok, $targets, $ok, mb_substr($smokepingVersion, 0, 16), $pollerId], true, $this->connection);
 	}
 
 	private function ensureRow(int $pollerId): void {

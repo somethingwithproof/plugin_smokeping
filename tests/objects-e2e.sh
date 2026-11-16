@@ -166,6 +166,25 @@ row=$(q "SELECT COUNT(*) FROM plugin_smokeping_mapping WHERE host_id = ${dev:-0}
 rendered=$($L render "${gr:-0}" | res)
 [ "$rendered" = image ] && result PASS graph-renders "an image from the plugin-created graph" || result FAIL graph-renders "$rendered"
 
+# The Loss Colors setting moves the graph to the template with SmokePing 2.7's
+# loss colors and back (#34), keeping its title, limit and data.
+tpl_name() { q "SELECT gt.name FROM graph_local AS gl INNER JOIN graph_templates AS gt ON gt.id = gl.graph_template_id WHERE gl.id = ${gr:-0}" | jcell; }
+matches() { q "SELECT (SELECT COUNT(*) FROM graph_templates_item WHERE local_graph_id = ${gr:-0}) - (SELECT COUNT(*) FROM graph_templates_item AS gi INNER JOIN graph_local AS gl ON gl.graph_template_id = gi.graph_template_id WHERE gl.id = ${gr:-0} AND gi.local_graph_id = 0)" | jcell; }
+before_graph=$(q "SELECT title_cache, upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+$L set_setting "smokeping_loss_colors=2.7" >/dev/null
+out=$(php $P/cli/smokeping.php upgrade-graphs 2>&1); rc=$?
+legacy=$(tpl_name); legacy_rendered=$($L render "${gr:-0}" | res)
+after_graph=$(q "SELECT title_cache, upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
+[ $rc -eq 0 ] && [ "$legacy" = "SmokePing Smoke (20 pings, 2.7 loss colors)" ] && [ "$(matches)" = 0 ] && [ "$after_graph" = "$before_graph" ] && [ "$legacy_rendered" = image ] \
+	&& result PASS loss-colors-setting-restyles "$legacy; $after_graph; $out" \
+	|| result FAIL loss-colors-setting-restyles "rc $rc, template '$legacy', item difference $(matches), graph '$before_graph' to '$after_graph', render $legacy_rendered: $out"
+$L set_setting "smokeping_loss_colors=auto" >/dev/null
+out=$(php $P/cli/smokeping.php upgrade-graphs 2>&1); rc=$?
+current=$(tpl_name)
+[ $rc -eq 0 ] && [ "$current" = "SmokePing Smoke (20 pings)" ] && [ "$(matches)" = 0 ] && [ "$($L render "${gr:-0}" | res)" = image ] \
+	&& result PASS loss-colors-auto-restores "$current with no SmokePing found; $out" \
+	|| result FAIL loss-colors-auto-restores "rc $rc, template '$current', item difference $(matches): $out"
+
 # Poller and boost ignore it: input method None means no poller_item rows.
 row=$(q "SELECT COUNT(*) FROM poller_item WHERE local_data_id = ${ds:-0}" | jcell)
 [ "$row" = "0" ] && result PASS not-polled "no poller_item rows" || result FAIL not-polled "$row rows"

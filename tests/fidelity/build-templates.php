@@ -220,56 +220,60 @@ $cdefClip = sp_cdef('SmokePing smoke clip', $clip);
 
 $exports = array();
 
-// The second pass builds the test-only variant with SmokePing 2.7.3's loss
-// colors; it is not part of the export.
+// The second pass builds the variant with SmokePing 2.7's loss colors
+// (LossColors). It draws the same data template as the first.
 foreach (array(10, 20, 30) as $pings) {
 foreach (array(false, true) as $legacy) {
-	$suffix = $legacy ? ' [2.7 loss levels]' : '';
+	$suffix = $legacy ? ' (2.7 loss colors)' : '';
 	$half = intdiv($pings, 2);
 
-	/* ---- data template ---- */
+	/* ---- data template, once per ping count ---- */
 
-	$dtName = "SmokePing Smoke ($pings pings)$suffix";
-	$dtId   = sp_save('data_template', array('hash' => sp_hash('data_template', $dtName), 'name' => $dtName));
+	if (!$legacy) {
 
-	$dtdId = (int) db_fetch_cell_prepared('SELECT id FROM data_template_data WHERE data_template_id = ? AND local_data_id = 0', array($dtId));
-	sql_save(array(
-		'id'                          => $dtdId,
-		'data_template_id'            => $dtId,
-		'local_data_id'               => 0,
-		'local_data_template_data_id' => 0,
-		'data_input_id'               => 0,
-		'name'                        => '|host_description| - SmokePing',
-		'active'                      => 'on',
-		'rrd_step'                    => 300,
-		'data_source_profile_id'      => 1,
-	), 'data_template_data');
+		$dtName = "SmokePing Smoke ($pings pings)$suffix";
+		$dtId   = sp_save('data_template', array('hash' => sp_hash('data_template', $dtName), 'name' => $dtName));
 
-	$items = array('uptime' => 'U', 'loss' => (string) $pings, 'median' => 'U');
+		$dtdId = (int) db_fetch_cell_prepared('SELECT id FROM data_template_data WHERE data_template_id = ? AND local_data_id = 0', array($dtId));
+		sql_save(array(
+			'id'                          => $dtdId,
+			'data_template_id'            => $dtId,
+			'local_data_id'               => 0,
+			'local_data_template_data_id' => 0,
+			'data_input_id'               => 0,
+			'name'                        => '|host_description| - SmokePing',
+			'active'                      => 'on',
+			'rrd_step'                    => 300,
+			'data_source_profile_id'      => 1,
+		), 'data_template_data');
 
-	for ($i = 1; $i <= $pings; $i++) {
-		$items["ping$i"] = 'U';
-	}
+		$items = array('uptime' => 'U', 'loss' => (string) $pings, 'median' => 'U');
 
-	$dsId = array();
+		for ($i = 1; $i <= $pings; $i++) {
+			$items["ping$i"] = 'U';
+		}
 
-	foreach ($items as $name => $maximum) {
-		$dsId[$name] = sp_save('data_template_rrd', array(
-			'hash'                => sp_hash('data_template_item', "$dtName:$name"),
-			'data_template_id'    => $dtId,
-			'local_data_id'       => 0,
-			'rrd_maximum'         => $maximum,
-			'rrd_minimum'         => '0',
-			'rrd_heartbeat'       => 600,
-			'data_source_type_id' => 1,
-			'data_source_name'    => $name,
-			'data_input_field_id' => 0,
-		));
+		$dsId = array();
+
+		foreach ($items as $name => $maximum) {
+			$dsId[$name] = sp_save('data_template_rrd', array(
+				'hash'                => sp_hash('data_template_item', "$dtName:$name"),
+				'data_template_id'    => $dtId,
+				'local_data_id'       => 0,
+				'rrd_maximum'         => $maximum,
+				'rrd_minimum'         => '0',
+				'rrd_heartbeat'       => 600,
+				'data_source_type_id' => 1,
+				'data_source_name'    => $name,
+				'data_input_field_id' => 0,
+			));
+		}
 	}
 
 	/* ---- graph items, in the order that fixes the DEF names ---- */
 
-	$gtName = "SmokePing Smoke ($pings pings)$suffix";
+	// The names TemplateInstaller::graphTemplateName() gives.
+	$gtName = $legacy ? "SmokePing Smoke ($pings pings, 2.7 loss colors)" : "SmokePing Smoke ($pings pings)";
 	$gtId   = sp_save('graph_templates', array('hash' => sp_hash('graph_template', $gtName), 'name' => $gtName));
 
 	$gtgId = (int) db_fetch_cell_prepared('SELECT id FROM graph_templates_graph WHERE graph_template_id = ? AND local_graph_id = 0', array($gtId));
@@ -423,9 +427,7 @@ foreach (array(false, true) as $legacy) {
 	db_execute_prepared('DELETE FROM graph_template_input_defs WHERE graph_template_input_id = ?', array($inputId));
 	db_execute_prepared('INSERT INTO graph_template_input_defs (graph_template_input_id, graph_template_item_id) VALUES (?, ?)', array($inputId, $medianItem));
 
-	if (!$legacy) {
-		$exports[] = $gtId;
-	}
+	$exports[] = $gtId;
 }
 }
 

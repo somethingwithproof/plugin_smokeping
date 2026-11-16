@@ -58,7 +58,7 @@ sh "$PLUGIN/tests/ensure-db.sh" "$SP_DB_NAME" "$CACTI_CORE" "$DB_ENV"
 mkdir -p "$WORK/fx" "$WORK/cacti" "$WORK/cacti-legacy"
 
 cacti() {
-	e2e_docker -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_TEMPLATE_SUFFIX \
+	e2e_docker -e SP_DB_NAME="$SP_DB_NAME" -e SMOKEPING_LOSS_COLORS \
 		-v "$CACTI_CORE":/cacti -v "$PLUGIN":/cacti/plugins/smokeping -v "$WORK/fx":/cacti/rra/smokeping -v "$WORK":/work -w /cacti "$E2E_IMAGE" sh -c "$*"
 }
 
@@ -70,17 +70,17 @@ while read -r pings name start end max; do
 done < "$WORK/ranges.txt"
 
 # SmokePing 2.7.3 uses different loss colors (see docs/research/graph-fidelity.md),
-# so its gating comparison is against the test-only variant with those levels.
+# so its gating comparison is against the shipped variant with those colors.
 while read -r pings name start end max; do
 	(
-		export SMOKEPING_TEMPLATE_SUFFIX=' [2.7 loss levels]'
+		export SMOKEPING_LOSS_COLORS=2.7
 		cacti "php plugins/smokeping/tests/fidelity/cacti-args.php $pings p$pings.rrd $start $end $max > /work/cacti-legacy/p$pings-$name.args" 2>/dev/null
 	)
 done < "$WORK/ranges.txt"
 
 # One run per packaged SmokePing. ubuntu runs twice: against the shipped
 # template (recorded, expected to differ in the loss overlay only) and against
-# the 2.7 variant (gating).
+# the 2.7 loss color variant (gating).
 status=0
 
 for run in ubuntu-legacy ubuntu debian fedora; do

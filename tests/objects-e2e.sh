@@ -205,7 +205,9 @@ ds_name median
 $L set_setting "smokeping_loss_colors=auto" >/dev/null
 php $P/cli/smokeping.php upgrade-graphs >/dev/null 2>&1
 row=$($L loss_colors_row | res)
-case "$row" in *"smoke graphs"*) result FAIL health-loss-colors-done "$row" ;; *) result PASS health-loss-colors-done "no graph left on the other colors: $row" ;; esac
+# Automatic with no SmokePing found selects 2.8 and later (Unknown), and no
+# graph is left on the 2.7 templates.
+case "$row" in "unknown The reader found no SmokePing version"*) case "$row" in *"smoke graphs"*) result FAIL health-loss-colors-done "$row" ;; *) result PASS health-loss-colors-done "no graph left on the other colors: $row" ;; esac ;; *) result FAIL health-loss-colors-done "not the expected row: '$row'" ;; esac
 
 # Poller and boost ignore it: input method None means no poller_item rows.
 row=$(q "SELECT COUNT(*) FROM poller_item WHERE local_data_id = ${ds:-0}" | jcell)

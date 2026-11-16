@@ -124,6 +124,16 @@ msgstr "このデバイスの SmokePing ターゲット"
 
 #: lib/HealthCheck.php
 #, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "%d 個のスモークグラフはまだ別の色で描画されています。メインポーラーは 1 サイクルあたり最大 200 個を切り替えます。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "%d 個のスモークグラフを切り替えられませんでした。upgrade-graphs を実行して再試行し、原因は Cacti ログで確認してください。"
+
+#: lib/HealthCheck.php
+#, php-format
 msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
 msgstr "損失色の設定は SmokePing %s の損失色を指定していますが、リーダーが検出したのは SmokePing %s です。グラフを SmokePing と異なるものにする場合を除き、自動に設定してください。"
 

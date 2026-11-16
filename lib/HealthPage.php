@@ -30,6 +30,16 @@ final class HealthPage {
 	) {
 	}
 
+	/**
+	 * The loss_colors row, with the smoke graphs still on the other colors.
+	 */
+	private function lossColors(string $smokepingVersion): Finding {
+		$setting = (string) read_config_option(LossColors::SETTING);
+		$left    = $this->cacti->graphsOnOtherLossColors(LossColors::resolve($setting, $smokepingVersion));
+
+		return HealthCheck::lossColors($setting, $smokepingVersion, $left['pending'], $left['failed']);
+	}
+
 	public function render(Settings $settings, string $rraPath, string $phpBinary, bool $readerHost): void {
 		$health   = $this->health->forPoller($settings->pollerId);
 		$expected = [];
@@ -46,7 +56,7 @@ final class HealthPage {
 			[HealthCheck::templates($this->templates->present(), $this->templates->failure())],
 			[HealthCheck::devicePollers($this->cacti->summaryDevicesOffPoller($settings->pollerId), $settings->pollerId)],
 			[HealthCheck::dualAlerting($this->cacti->dualAlerting($settings->pollerId))],
-			[HealthCheck::lossColors((string) read_config_option(LossColors::SETTING), $health->smokepingVersion)],
+			[$this->lossColors($health->smokepingVersion)],
 			$this->mount->check($settings->mountPath, $rraPath, $expected)
 		);
 

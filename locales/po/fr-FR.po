@@ -125,6 +125,16 @@ msgstr "Cibles SmokePing de cet équipement"
 
 #: lib/HealthCheck.php
 #, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "%d graphes de fumée dessinent encore les autres couleurs ; l'agent de collecte principal en change jusqu'à 200 par cycle."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "%d graphes de fumée n'ont pas pu être changés ; lancez upgrade-graphs pour réessayer, et consultez la cause dans le journal de Cacti."
+
+#: lib/HealthCheck.php
+#, php-format
 msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
 msgstr "Le paramètre Couleurs de perte demande les couleurs de perte de SmokePing %s, mais le lecteur a trouvé SmokePing %s. Réglez-le sur Automatique, sauf si les graphes doivent différer de ceux de SmokePing."
 

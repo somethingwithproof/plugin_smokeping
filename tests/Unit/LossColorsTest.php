@@ -17,6 +17,7 @@
  * more details.
  */
 
+use Somethingwithproof\Smokeping\CactiObjectRepository;
 use Somethingwithproof\Smokeping\HealthCheck;
 use Somethingwithproof\Smokeping\HealthRepository;
 use Somethingwithproof\Smokeping\InventoryStatus;
@@ -214,5 +215,58 @@ describe('the stored SmokePing version and the restyle query', function () {
 
 		expect($query['sql'])->toContain('gl.graph_template_id IN (?, ?)')->toContain('o.template_failed = 0')->toContain('LIMIT 5')
 			->and($query['params'])->toBe([110, 120, 'active', 'archived', 3]);
+	});
+});
+
+describe('restyle progress on the loss_colors row', function () {
+	beforeEach(function () {
+		$GLOBALS['__smokeping_db_queries'] = [];
+		$GLOBALS['__smokeping_db_row']     = [];
+		$GLOBALS['__smokeping_db_cell']    = 0;
+	});
+
+	it('names graphs still to move without changing the level', function () {
+		$row = HealthCheck::lossColors('2.7', '', 3, 0);
+
+		expect($row->level)->toBe(HealthLevel::Ok)
+			->and($row->message)->toContain('3 smoke graphs still draw the other colors')
+			->not->toContain('could not be moved');
+	});
+
+	it('warns about graphs whose move failed, even when no version was found', function () {
+		$failed  = HealthCheck::lossColors('2.7', '', 0, 2);
+		$unknown = HealthCheck::lossColors(LossColors::AUTO, '', 1, 1);
+		$warned  = HealthCheck::lossColors('2.7', '2.009000', 0, 1);
+
+		expect($failed->level)->toBe(HealthLevel::Warning)
+			->and($failed->message)->toContain('2 smoke graphs could not be moved')->toContain('upgrade-graphs')
+			->and($unknown->level)->toBe(HealthLevel::Warning)
+			->and($unknown->message)->toContain('1 smoke graphs still draw')->toContain('1 smoke graphs could not be moved')
+			->and($warned->level)->toBe(HealthLevel::Warning)
+			->and($warned->message)->toContain('2.9.0');
+	});
+
+	it('says nothing more once every graph has moved', function () {
+		expect(HealthCheck::lossColors('2.7', '', 0, 0)->message)->not->toContain('smoke graphs still')->not->toContain('could not be moved');
+	});
+
+	it('counts graphs on the other colors\' templates, split by failure', function () {
+		// Templates 110, 120 and 130 exist for the other (2.8) colors.
+		$GLOBALS['__smokeping_db_cell'] = fn (string $sql, array $params) => str_contains($sql, 'FROM graph_templates WHERE name')
+			? (preg_match('/^SmokePing Smoke \((\d+) pings\)$/', (string) $params[0], $m) === 1 ? 100 + (int) $m[1] : 0)
+			: 0;
+		$GLOBALS['__smokeping_db_row'] = ['pending' => '4', 'failed' => '1'];
+
+		expect((new CactiObjectRepository(false))->graphsOnOtherLossColors(LossColors::Legacy))->toBe(['pending' => 4, 'failed' => 1]);
+
+		$query = end($GLOBALS['__smokeping_db_queries']);
+
+		expect($query['sql'])->toContain('gl.graph_template_id IN (?, ?, ?)')
+			->and($query['params'])->toBe([110, 120, 130, 'active', 'archived']);
+	});
+
+	it('counts nothing when the other templates are not imported', function () {
+		expect((new CactiObjectRepository(false))->graphsOnOtherLossColors(LossColors::Current))->toBe(['pending' => 0, 'failed' => 0])
+			->and($GLOBALS['__smokeping_db_queries'])->toBe([]);
 	});
 });

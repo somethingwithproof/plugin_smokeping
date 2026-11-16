@@ -38,13 +38,34 @@ final class HealthCheck {
 	}
 
 	/**
-	 * Which loss colors the Loss Colors setting selects, and why
-	 * (LossColors). Graphs still on the other colors move later.
+	 * Which loss colors the Loss Colors setting selects and why (LossColors),
+	 * then how many smoke graphs still draw the other colors: those the main
+	 * poller has yet to move, and those whose move failed, which wait for
+	 * upgrade-graphs (SmokeProvisioner::restyleDue()).
 	 *
 	 * @param string $setting the Loss Colors setting
 	 * @param string $version the SmokePing version the reader found, '' for none
+	 * @param int    $pending graphs on the other colors' templates, not failed
+	 * @param int    $failed  graphs on the other colors' templates whose move failed
 	 */
-	public static function lossColors(string $setting, string $version): Finding {
+	public static function lossColors(string $setting, string $version, int $pending = 0, int $failed = 0): Finding {
+		$selected = self::lossColorsSelected($setting, $version);
+		$message  = $selected->message;
+		$level    = $selected->level;
+
+		if ($pending > 0) {
+			$message .= ' ' . __('%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle.', $pending, 'smokeping');
+		}
+
+		if ($failed > 0) {
+			$message .= ' ' . __('%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause.', $failed, 'smokeping');
+			$level    = $level === HealthLevel::Ok || $level === HealthLevel::Unknown ? HealthLevel::Warning : $level;
+		}
+
+		return new Finding('loss_colors', $level, $message);
+	}
+
+	private static function lossColorsSelected(string $setting, string $version): Finding {
 		$colors   = LossColors::resolve($setting, $version);
 		$detected = LossColors::ofVersion($version);
 		$shown    = LossColors::displayVersion($version);

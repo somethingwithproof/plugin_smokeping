@@ -124,6 +124,16 @@ msgstr "此设备的 SmokePing 目标"
 
 #: lib/HealthCheck.php
 #, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "%d 个烟雾图仍使用另一组颜色；主轮询器每个周期最多切换 200 个。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "%d 个烟雾图无法切换；请运行 upgrade-graphs 重试，并在 Cacti 日志中查看原因。"
+
+#: lib/HealthCheck.php
+#, php-format
 msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
 msgstr "丢包颜色设置要求使用 SmokePing %s 的丢包颜色，但读取程序找到的是 SmokePing %s。除非图形应与 SmokePing 的不同，否则请将其设为自动。"
 

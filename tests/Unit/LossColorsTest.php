@@ -18,8 +18,11 @@
  */
 
 use Somethingwithproof\Smokeping\HealthCheck;
+use Somethingwithproof\Smokeping\HealthRepository;
+use Somethingwithproof\Smokeping\InventoryStatus;
 use Somethingwithproof\Smokeping\HealthLevel;
 use Somethingwithproof\Smokeping\LossColors;
+use Somethingwithproof\Smokeping\ObjectRepository;
 use Somethingwithproof\Smokeping\SmokepingConfigReader;
 use Somethingwithproof\Smokeping\SmokepingVersion;
 use Somethingwithproof\Smokeping\TemplateInstaller;
@@ -162,5 +165,54 @@ describe('The shipped smoke templates', function () {
 
 		expect($inputs)->toBe(['SmokePing Smoke (10 pings)' => 0, 'SmokePing Smoke (20 pings)' => 0, 'SmokePing Smoke (30 pings)' => 0])
 			->and($summary)->toBeGreaterThan(0);
+	});
+});
+
+describe('the stored SmokePing version and the restyle query', function () {
+	beforeEach(function () {
+		$GLOBALS['__smokeping_db_fail']    = null;
+		$GLOBALS['__smokeping_db_exec']    = [];
+		$GLOBALS['__smokeping_db_queries'] = [];
+		$GLOBALS['__smokeping_db_assoc']   = [];
+		$GLOBALS['__smokeping_db_row']     = [];
+	});
+
+	it('records the version with a successful inventory and keeps it on a failed one', function () {
+		$health = new HealthRepository(false);
+		$health->recordInventory(1, 100, InventoryStatus::Ok, '', 12, '2.007003');
+		$health->recordInventory(1, 200, InventoryStatus::Error, 'unreadable', 0, '');
+
+		$updates = array_values(array_filter($GLOBALS['__smokeping_db_exec'], fn (array $e) => str_starts_with($e['sql'], 'UPDATE plugin_smokeping_health')));
+
+		expect($updates)->toHaveCount(2)
+			->and($updates[0]['sql'])->toContain('smokeping_version = IF(? = 1, ?, smokeping_version)')
+			->and(array_slice($updates[0]['params'], 3))->toBe([1, 12, 1, '2.007003', 1])
+			->and(array_slice($updates[1]['params'], 3))->toBe([0, 0, 0, '', 1]);
+	});
+
+	it('reads the stored version back, and none for a poller never read', function () {
+		$GLOBALS['__smokeping_db_row'] = ['poller_id' => '1', 'smokeping_version' => '2.008002'];
+
+		expect((new HealthRepository(false))->forPoller(1)->smokepingVersion)->toBe('2.008002');
+
+		$GLOBALS['__smokeping_db_row'] = [];
+
+		expect((new HealthRepository(false))->forPoller(1)->smokepingVersion)->toBe('');
+	});
+
+	it('lists graphs on the given templates after a graph, and nothing for no templates', function () {
+		$objects = new ObjectRepository(false);
+
+		expect($objects->graphsOnTemplates([], 10))->toBe([])
+			->and($GLOBALS['__smokeping_db_queries'])->toBe([]);
+
+		$GLOBALS['__smokeping_db_assoc'] = [['local_graph_id' => '7', 'graph_template_id' => '110']];
+
+		expect($objects->graphsOnTemplates([110, 120], 5, 3))->toBe([['local_graph_id' => 7, 'graph_template_id' => 110]]);
+
+		$query = end($GLOBALS['__smokeping_db_queries']);
+
+		expect($query['sql'])->toContain('gl.graph_template_id IN (?, ?)')->toContain('o.template_failed = 0')->toContain('LIMIT 5')
+			->and($query['params'])->toBe([110, 120, 'active', 'archived', 3]);
 	});
 });

@@ -89,7 +89,6 @@ unit=$(systemd-escape --path --suffix=mount "$RRA/smokeping")
 cat > "/etc/systemd/system/$unit" <<EOF
 [Unit]
 Description=Read-only view of SmokePing's data directory for Cacti
-After=local-fs.target
 
 [Mount]
 What=$DATADIR
@@ -168,7 +167,7 @@ Run the reader where it can see both things from the start of this guide.
 
   ```sh
   docker run -d --name cacti \
-    -v /var/lib/smokeping:/var/www/html/rra/smokeping:ro \
+    -v /var/lib/smokeping:/var/www/html/cacti/rra/smokeping:ro \
     -v /etc/smokeping:/etc/smokeping:ro \
     my-cacti-image
   ```
@@ -182,7 +181,7 @@ Run the reader where it can see both things from the start of this guide.
       volumes:
         - type: bind
           source: /var/lib/smokeping
-          target: /var/www/html/rra/smokeping
+          target: /var/www/html/cacti/rra/smokeping
           read_only: true
   ```
 
@@ -195,4 +194,4 @@ Cacti's RRD cleaner (**Utilities > RRD Cleaner**) walks the whole RRA path, so i
 
 ## Upgrading and removing
 
-Replace the plugin directory with the new release and open the Plugins page or wait for the next poller cycle; the plugin migrates its tables and templates and records the new version only after every step succeeds, so an interrupted upgrade is finished by the next one. Disabling the plugin stops its jobs and leaves SmokePing's files alone. Uninstalling writes a YAML export of the plugin's configuration first, to the Backup Directory setting or else `cache/smokeping/` in the Cacti directory (random file name, mode `0600`, and the path is shown to you), drops the plugin's tables unless **Keep Plugin Tables on Uninstall** is set, and never touches SmokePing's files or configuration.
+Replace the plugin directory with the new release and open the Plugins page or wait for the next poller cycle; the plugin migrates its tables and templates and records the new version only after every step succeeds, so an interrupted upgrade is finished by the next one. Disabling the plugin stops its jobs and leaves SmokePing's files alone. **Before uninstalling, export the configuration yourself and verify that the backup is readable and complete.** Uninstall attempts a YAML export of the plugin's configuration to the Backup Directory setting or else `cache/smokeping/` in the Cacti directory (random file name, mode `0600`, and the path is shown on success). If the export fails, a warning is logged and shown, but uninstall continues. It drops the plugin's tables unless **Keep Plugin Tables on Uninstall** is set, and never touches SmokePing's files or configuration.

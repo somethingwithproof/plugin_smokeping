@@ -1,4 +1,4 @@
-<!-- Source: docs/install.md; SHA256: e34f1d8f977816ea5db5b7d14ea9669aedf82aefa9a0c534178c5612dbb2edf1 -->
+<!-- Source: docs/install.md; SHA256: 0d075ea04065badbbe1a97434609b979a10cb760b6f483e6cb7f8bc4768a214e -->
 
 <a id="installing-the-smokeping-plugin"></a>
 # تثبيت إضافة SmokePing
@@ -99,7 +99,6 @@ unit=$(systemd-escape --path --suffix=mount "$RRA/smokeping")
 cat > "/etc/systemd/system/$unit" <<EOF
 [Unit]
 Description=Read-only view of SmokePing's data directory for Cacti
-After=local-fs.target
 
 [Mount]
 What=$DATADIR
@@ -183,7 +182,7 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 
   ```sh
   docker run -d --name cacti \
-    -v /var/lib/smokeping:/var/www/html/rra/smokeping:ro \
+    -v /var/lib/smokeping:/var/www/html/cacti/rra/smokeping:ro \
     -v /etc/smokeping:/etc/smokeping:ro \
     my-cacti-image
   ```
@@ -197,7 +196,7 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
       volumes:
         - type: bind
           source: /var/lib/smokeping
-          target: /var/www/html/rra/smokeping
+          target: /var/www/html/cacti/rra/smokeping
           read_only: true
   ```
 
@@ -212,4 +211,4 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 <a id="upgrading-and-removing"></a>
 ## الترقية والإزالة
 
-استبدل دليل الإضافة بالإصدار الجديد وافتح Plugins أو انتظر الدورة التالية؛ ترحّل الجداول والقوالب ولا تسجل الإصدار إلا بعد نجاح كل خطوة، فتُستكمل الترقية المنقطعة في التالية. يعطل إيقاف الإضافة مهامها ويترك ملفات SmokePing. يكتب إلغاء التثبيت أولًا تصدير YAML لإعدادها إلى Backup Directory أو `cache/smokeping/` في Cacti (اسم عشوائي، وضع `0600`، والمسار معروض)، ويسقط الجداول ما لم يُضبط **Keep Plugin Tables on Uninstall**، ولا يمس ملفات SmokePing أو إعداده.
+استبدل دليل الإضافة بالإصدار الجديد وافتح Plugins أو انتظر الدورة التالية؛ ترحّل الجداول والقوالب ولا تسجل الإصدار إلا بعد نجاح كل خطوة، فتُستكمل الترقية المنقطعة في التالية. يوقف تعطيل الإضافة مهامها ويترك ملفات SmokePing. **قبل إلغاء التثبيت، صدّر الإعداد بنفسك وتحقق من أن النسخة الاحتياطية قابلة للقراءة وكاملة.** يحاول إلغاء التثبيت تصدير إعداد الإضافة بصيغة YAML إلى Backup Directory أو `cache/smokeping/` في Cacti (اسم عشوائي، وضع `0600`، والمسار معروض عند النجاح). إذا فشل التصدير، يُسجّل تحذير ويُعرض، لكن إلغاء التثبيت يستمر. تُحذف جداول الإضافة ما لم يُضبط **Keep Plugin Tables on Uninstall**، ولا تُمس ملفات SmokePing أو إعداداته مطلقًا.

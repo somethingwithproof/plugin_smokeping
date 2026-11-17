@@ -1,4 +1,4 @@
-<!-- Source: docs/backup-restore.md; SHA256: c0c5f5817de19e00bdaff571d69546d2c905683b183bfcffb3c7f776db9fa730 -->
+<!-- Source: docs/backup-restore.md; SHA256: 207870441692d0fe99eba5579416d47337e5762874edd1110a0acfad11e18e3f -->
 
 <a id="backup-and-restore"></a>
 # 备份与恢复
@@ -23,7 +23,7 @@
 
 ```sh
 # The Cacti database (use your own credentials file or option file, not a password on the command line)
-mariadb-dump --single-transaction --defaults-extra-file=/root/.cacti-backup.cnf cacti > cacti.sql
+mariadb-dump --defaults-extra-file=/root/.cacti-backup.cnf --single-transaction cacti > cacti.sql
 
 # SmokePing's configuration, with its included files
 tar -czf smokeping-config.tgz -C /etc/smokeping .
@@ -90,7 +90,7 @@ Cacti 数据库丢失且只剩导出时，可以不依赖数据库恢复插件�
 <a id="uninstalling"></a>
 ## 卸载
 
-卸载会先写入 YAML 导出（参见[安装指南](install.md#upgrading-and-removing)），绝不触碰 SmokePing 文件，因此卸载后从该导出恢复与上述情况相同。
+卸载会尝试导出 YAML（参见[安装指南](install.md#upgrading-and-removing)），但导出失败不会阻止卸载。**卸载前，请自行导出配置，并验证备份可读且完整。** 卸载绝不触碰 SmokePing 文件；请按上述方法从已验证的导出恢复。
 
 <a id="verification"></a>
 ## 验证

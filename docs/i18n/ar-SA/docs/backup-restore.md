@@ -1,4 +1,4 @@
-<!-- Source: docs/backup-restore.md; SHA256: c0c5f5817de19e00bdaff571d69546d2c905683b183bfcffb3c7f776db9fa730 -->
+<!-- Source: docs/backup-restore.md; SHA256: 207870441692d0fe99eba5579416d47337e5762874edd1110a0acfad11e18e3f -->
 
 <a id="backup-and-restore"></a>
 # النسخ الاحتياطي والاستعادة
@@ -23,7 +23,7 @@
 
 ```sh
 # The Cacti database (use your own credentials file or option file, not a password on the command line)
-mariadb-dump --single-transaction --defaults-extra-file=/root/.cacti-backup.cnf cacti > cacti.sql
+mariadb-dump --defaults-extra-file=/root/.cacti-backup.cnf --single-transaction cacti > cacti.sql
 
 # SmokePing's configuration, with its included files
 tar -czf smokeping-config.tgz -C /etc/smokeping .
@@ -90,7 +90,7 @@ php /var/www/html/cacti/plugins/smokeping/cli/smokeping.php export --file=/var/b
 <a id="uninstalling"></a>
 ## إلغاء التثبيت
 
-يكتب إلغاء التثبيت تصدير YAML أولًا (راجع [دليل التثبيت](install.md#upgrading-and-removing)) ولا يمس ملفات SmokePing مطلقًا، لذا يعمل إلغاء التثبيت ثم الاستعادة من ذلك التصدير كالحالة السابقة.
+يحاول إلغاء التثبيت تصدير YAML (راجع [دليل التثبيت](install.md#upgrading-and-removing))، لكنه لا يتوقف إذا فشل التصدير. **قبل إلغاء التثبيت، صدّر الإعداد بنفسك وتحقق من أن النسخة الاحتياطية قابلة للقراءة وكاملة.** لا يمس إلغاء التثبيت ملفات SmokePing مطلقًا؛ استعد من التصدير الذي تحققت منه كما في الحالة أعلاه.
 
 <a id="verification"></a>
 ## التحقق

@@ -1,4 +1,4 @@
-<!-- Source: docs/install.md; SHA256: e34f1d8f977816ea5db5b7d14ea9669aedf82aefa9a0c534178c5612dbb2edf1 -->
+<!-- Source: docs/install.md; SHA256: 0d075ea04065badbbe1a97434609b979a10cb760b6f483e6cb7f8bc4768a214e -->
 
 <a id="installing-the-smokeping-plugin"></a>
 # 安装 SmokePing 插件
@@ -99,7 +99,6 @@ unit=$(systemd-escape --path --suffix=mount "$RRA/smokeping")
 cat > "/etc/systemd/system/$unit" <<EOF
 [Unit]
 Description=Read-only view of SmokePing's data directory for Cacti
-After=local-fs.target
 
 [Mount]
 What=$DATADIR
@@ -183,7 +182,7 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 
   ```sh
   docker run -d --name cacti \
-    -v /var/lib/smokeping:/var/www/html/rra/smokeping:ro \
+    -v /var/lib/smokeping:/var/www/html/cacti/rra/smokeping:ro \
     -v /etc/smokeping:/etc/smokeping:ro \
     my-cacti-image
   ```
@@ -197,7 +196,7 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
       volumes:
         - type: bind
           source: /var/lib/smokeping
-          target: /var/www/html/rra/smokeping
+          target: /var/www/html/cacti/rra/smokeping
           read_only: true
   ```
 
@@ -212,4 +211,4 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 <a id="upgrading-and-removing"></a>
 ## 升级与移除
 
-用新版替换插件目录，打开 Plugins 页面或等待下一采集周期；插件迁移表及模板，仅在每步成功后记录新版，因此下一次会完成中断升级。禁用停止任务，不动 SmokePing 文件。卸载先将自身配置导出为 YAML，写入 Backup Directory 或 Cacti 的 `cache/smokeping/`（随机文件名、`0600`、向您显示路径），除非设置 **Keep Plugin Tables on Uninstall** 否则删除插件表，绝不触碰 SmokePing 文件或配置。
+用新版替换插件目录，打开 Plugins 页面或等待下一采集周期；插件迁移表及模板，仅在每步成功后记录新版，因此下一次会完成中断升级。禁用停止任务，不动 SmokePing 文件。**卸载前，请自行导出配置，并验证备份可读且完整。** 卸载会尝试将插件配置导出为 YAML，写入 Backup Directory 或 Cacti 的 `cache/smokeping/`（随机文件名、模式 `0600`，成功后显示路径）。如果导出失败，会记录并显示警告，但卸载仍会继续。除非设置 **Keep Plugin Tables on Uninstall**，否则删除插件表；绝不触碰 SmokePing 文件或配置。

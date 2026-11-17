@@ -323,8 +323,15 @@ function smokeping_config_settings(): void {
  * @return array<string, mixed>
  */
 function smokeping_draw_navigation_text($nav) {
+	global $current_user;
+
 	if (!smokeping_boot()) {
 		return $nav;
+	}
+
+	// Refresh settings after core restores cookie or Basic authentication.
+	if (get_current_page() === 'settings.php' && (PHP_SAPI === 'cli' || ($current_user['enabled'] ?? '') === 'on')) {
+		smokeping_config_settings();
 	}
 
 	return array_merge($nav, \Somethingwithproof\Smokeping\Pages::navigation());

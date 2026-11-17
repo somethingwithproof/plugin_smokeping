@@ -784,7 +784,7 @@ msgstr ""
 msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
 msgstr ""
 
-#: lib/OperatorPage.php lib/Pages.php
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
 msgid "SmokePing Operations"
 msgstr ""
 

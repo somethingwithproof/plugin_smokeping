@@ -93,7 +93,8 @@ jobs:
       run: rm -rf ci-tools
 
     - name: Unit tests with coverage
-      run: '"$CACTI_PEST_BIN" --configuration=phpunit.xml --coverage-clover=build/coverage/clover.xml'
+      # PCOV otherwise selects lib/ and misses the procedural entry points.
+      run: 'php -d pcov.directory=. "$CACTI_PEST_BIN" --configuration=phpunit.xml --coverage-clover=build/coverage/clover.xml'
 
     # workflow_dispatch does not infer the branch, so the context is checked
     # before it reaches the scanner's arguments.

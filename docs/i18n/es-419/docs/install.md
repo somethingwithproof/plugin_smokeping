@@ -1,4 +1,4 @@
-<!-- Source: docs/install.md; SHA256: e34f1d8f977816ea5db5b7d14ea9669aedf82aefa9a0c534178c5612dbb2edf1 -->
+<!-- Source: docs/install.md; SHA256: 0d075ea04065badbbe1a97434609b979a10cb760b6f483e6cb7f8bc4768a214e -->
 
 <a id="installing-the-smokeping-plugin"></a>
 # Instalar el complemento SmokePing
@@ -99,7 +99,6 @@ unit=$(systemd-escape --path --suffix=mount "$RRA/smokeping")
 cat > "/etc/systemd/system/$unit" <<EOF
 [Unit]
 Description=Read-only view of SmokePing's data directory for Cacti
-After=local-fs.target
 
 [Mount]
 What=$DATADIR
@@ -183,7 +182,7 @@ Ejecute el lector donde vea ambas cosas indicadas al principio.
 
   ```sh
   docker run -d --name cacti \
-    -v /var/lib/smokeping:/var/www/html/rra/smokeping:ro \
+    -v /var/lib/smokeping:/var/www/html/cacti/rra/smokeping:ro \
     -v /etc/smokeping:/etc/smokeping:ro \
     my-cacti-image
   ```
@@ -197,7 +196,7 @@ Ejecute el lector donde vea ambas cosas indicadas al principio.
       volumes:
         - type: bind
           source: /var/lib/smokeping
-          target: /var/www/html/rra/smokeping
+          target: /var/www/html/cacti/rra/smokeping
           read_only: true
   ```
 
@@ -212,4 +211,4 @@ El limpiador (**Utilities > RRD Cleaner**) recorre todo RRA, por lo que enumera 
 <a id="upgrading-and-removing"></a>
 ## Actualizar y quitar
 
-Sustituya el directorio por la nueva publicación y abra Plugins o espere al sondeo; migra tablas y plantillas y registra versión solo al completar todos los pasos, por lo que la siguiente ejecución termina una actualización interrumpida. Deshabilitar detiene los trabajos y deja archivos SmokePing intactos. Desinstalar exporta primero la configuración a YAML en Backup Directory o `cache/smokeping/` de Cacti (nombre aleatorio, modo `0600`, ruta mostrada), elimina tablas salvo que esté activo **Keep Plugin Tables on Uninstall**, y nunca toca archivos ni configuración SmokePing.
+Sustituya el directorio por la nueva publicación y abra Plugins o espere al sondeo; migra tablas y plantillas y registra la versión solo al completar todos los pasos, por lo que la siguiente ejecución termina una actualización interrumpida. Deshabilitar detiene los trabajos y deja los archivos SmokePing intactos. **Antes de desinstalar, exporte la configuración usted mismo y verifique que el respaldo sea legible y esté completo.** La desinstalación intenta exportar la configuración del complemento a YAML en Backup Directory o `cache/smokeping/` de Cacti (nombre aleatorio, modo `0600`, ruta mostrada si tiene éxito). Si la exportación falla, se registra y muestra una advertencia, pero la desinstalación continúa. Elimina las tablas salvo que esté activo **Keep Plugin Tables on Uninstall**, y nunca toca los archivos ni la configuración de SmokePing.

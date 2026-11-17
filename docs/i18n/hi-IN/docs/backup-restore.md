@@ -1,4 +1,4 @@
-<!-- Source: docs/backup-restore.md; SHA256: c0c5f5817de19e00bdaff571d69546d2c905683b183bfcffb3c7f776db9fa730 -->
+<!-- Source: docs/backup-restore.md; SHA256: 207870441692d0fe99eba5579416d47337e5762874edd1110a0acfad11e18e3f -->
 
 <a id="backup-and-restore"></a>
 # बैकअप और बहाली
@@ -23,7 +23,7 @@
 
 ```sh
 # The Cacti database (use your own credentials file or option file, not a password on the command line)
-mariadb-dump --single-transaction --defaults-extra-file=/root/.cacti-backup.cnf cacti > cacti.sql
+mariadb-dump --defaults-extra-file=/root/.cacti-backup.cnf --single-transaction cacti > cacti.sql
 
 # SmokePing's configuration, with its included files
 tar -czf smokeping-config.tgz -C /etc/smokeping .
@@ -90,7 +90,7 @@ Cacti डेटाबेस खो जाए और केवल निर्य
 <a id="uninstalling"></a>
 ## अनइंस्टॉल करना
 
-अनइंस्टॉल पहले YAML निर्यात लिखता है ([स्थापना मार्गदर्शिका](install.md#upgrading-and-removing) देखें) और SmokePing फ़ाइलें कभी नहीं छूता, इसलिए अनइंस्टॉल के बाद उस निर्यात से बहाली ऊपर वाले मामले जैसी है।
+अनइंस्टॉल YAML निर्यात का प्रयास करता है ([स्थापना मार्गदर्शिका](install.md#upgrading-and-removing) देखें), लेकिन निर्यात विफल होने पर भी रुकता नहीं। **अनइंस्टॉल से पहले स्वयं कॉन्फ़िगरेशन निर्यात करें और सत्यापित करें कि बैकअप पढ़ने योग्य और पूर्ण है।** अनइंस्टॉल SmokePing फ़ाइलें कभी नहीं छूता; ऊपर बताए तरीके से अपने सत्यापित निर्यात से बहाली करें।
 
 <a id="verification"></a>
 ## सत्यापन

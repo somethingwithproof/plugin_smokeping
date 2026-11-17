@@ -1,4 +1,4 @@
-<!-- Source: docs/install.md; SHA256: e34f1d8f977816ea5db5b7d14ea9669aedf82aefa9a0c534178c5612dbb2edf1 -->
+<!-- Source: docs/install.md; SHA256: 0d075ea04065badbbe1a97434609b979a10cb760b6f483e6cb7f8bc4768a214e -->
 
 <a id="installing-the-smokeping-plugin"></a>
 # SmokePing प्लगइन स्थापित करना
@@ -99,7 +99,6 @@ unit=$(systemd-escape --path --suffix=mount "$RRA/smokeping")
 cat > "/etc/systemd/system/$unit" <<EOF
 [Unit]
 Description=Read-only view of SmokePing's data directory for Cacti
-After=local-fs.target
 
 [Mount]
 What=$DATADIR
@@ -183,7 +182,7 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 
   ```sh
   docker run -d --name cacti \
-    -v /var/lib/smokeping:/var/www/html/rra/smokeping:ro \
+    -v /var/lib/smokeping:/var/www/html/cacti/rra/smokeping:ro \
     -v /etc/smokeping:/etc/smokeping:ro \
     my-cacti-image
   ```
@@ -197,7 +196,7 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
       volumes:
         - type: bind
           source: /var/lib/smokeping
-          target: /var/www/html/rra/smokeping
+          target: /var/www/html/cacti/rra/smokeping
           read_only: true
   ```
 
@@ -212,4 +211,4 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 <a id="upgrading-and-removing"></a>
 ## अपग्रेड और हटाना
 
-नई रिलीज़ से प्लगइन डायरेक्टरी बदलकर Plugins पृष्ठ खोलें या अगला पोलर चक्र आने दें; तालिकाएँ/टेम्पलेट माइग्रेट करके सभी चरण सफल होने पर ही संस्करण दर्ज करता है, इसलिए बाधित अपग्रेड अगली बार पूरा होता है। निष्क्रिय करने से काम रुकते हैं, SmokePing फ़ाइलें नहीं बदलतीं। अनइंस्टॉल पहले Backup Directory या Cacti `cache/smokeping/` में YAML निर्यात लिखता है (यादृच्छिक नाम, `0600`, पथ दिखाया जाता है), **Keep Plugin Tables on Uninstall** न हो तो तालिकाएँ हटाता है, SmokePing फ़ाइलों और कॉन्फ़िगरेशन को कभी नहीं छूता।
+नई रिलीज़ से प्लगइन डायरेक्टरी बदलकर Plugins पृष्ठ खोलें या अगला पोलर चक्र आने दें; तालिकाएँ और टेम्पलेट माइग्रेट करके सभी चरण सफल होने पर ही संस्करण दर्ज करता है, इसलिए बाधित अपग्रेड अगली बार पूरा होता है। निष्क्रिय करने से काम रुकते हैं, SmokePing फ़ाइलें नहीं बदलतीं। **अनइंस्टॉल से पहले स्वयं कॉन्फ़िगरेशन निर्यात करें और सत्यापित करें कि बैकअप पढ़ने योग्य और पूर्ण है।** अनइंस्टॉल प्लगइन कॉन्फ़िगरेशन का YAML निर्यात Backup Directory या Cacti के `cache/smokeping/` में लिखने का प्रयास करता है (यादृच्छिक नाम, मोड `0600`, सफलता पर पथ दिखाया जाता है)। निर्यात विफल होने पर चेतावनी लॉग में दर्ज होती है और दिखाई जाती है, लेकिन अनइंस्टॉल जारी रहता है। **Keep Plugin Tables on Uninstall** सेट न हो तो प्लगइन की तालिकाएँ हटती हैं; SmokePing फ़ाइलें और कॉन्फ़िगरेशन कभी नहीं बदलते।

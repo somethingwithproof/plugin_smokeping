@@ -18,7 +18,7 @@ Take the database dump and the file copies at about the same time, so that the t
 
 ```sh
 # The Cacti database (use your own credentials file or option file, not a password on the command line)
-mariadb-dump --single-transaction --defaults-extra-file=/root/.cacti-backup.cnf cacti > cacti.sql
+mariadb-dump --defaults-extra-file=/root/.cacti-backup.cnf --single-transaction cacti > cacti.sql
 
 # SmokePing's configuration, with its included files
 tar -czf smokeping-config.tgz -C /etc/smokeping .
@@ -80,7 +80,7 @@ The export holds the plugin's settings, targets, and mappings. It holds no data 
 
 ## Uninstalling
 
-Uninstalling writes a YAML export first (see the [install guide](install.md#upgrading-and-removing)) and never touches SmokePing's files, so an uninstall followed by a restore from that export works like the case above.
+Uninstall attempts a YAML export (see the [install guide](install.md#upgrading-and-removing)), but a failed export does not stop it. **Before uninstalling, export the configuration yourself and verify that the backup is readable and complete.** Uninstall never touches SmokePing's files; restore from your verified export as in the case above.
 
 ## Verification
 

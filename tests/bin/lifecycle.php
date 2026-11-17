@@ -327,6 +327,10 @@ switch ($action) {
 		ob_end_clean();
 		print json_encode(db_fetch_assoc($argument)) . PHP_EOL;
 		exit(0);
+	case 'operator_roles':
+		include(__DIR__ . '/operator-roles.php');
+
+		break;
 	case 'state':
 		break;
 	default:

@@ -16,6 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr ""
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr ""
+
 #: lib/ActionOutcome.php
 #, php-format
 msgid "skipped, %s"
@@ -772,6 +780,58 @@ msgstr ""
 msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
 msgstr ""
 
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr ""
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "SmokePing Operations"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr ""
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr ""
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr ""
+
 #: lib/Pages.php
 msgid "SmokePing View"
 msgstr ""
@@ -1159,10 +1219,6 @@ msgid "No SmokePing targets are mapped to devices you can view."
 msgstr ""
 
 #: lib/ViewPage.php
-msgid "Master"
-msgstr ""
-
-#: lib/ViewPage.php
 msgid "In maintenance"
 msgstr ""
 
@@ -1265,4 +1321,12 @@ msgstr ""
 
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
+msgstr ""
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr ""
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
 msgstr ""

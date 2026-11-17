@@ -94,7 +94,7 @@ SmokePing names a target's file after its place in the configuration tree, so re
 
 ## Permissions
 
-The plugin has two realms. **SmokePing View** lets a user open the SmokePing page, which lists only targets mapped to devices the user is allowed to see, and follow the link from a device's graphs. **SmokePing Admin** opens the inventory and health pages and the actions above. An administrator whose device permissions are limited sees unmapped targets and the targets of the devices they may see.
+The plugin has three realms. **SmokePing View** lets a user open the SmokePing page, which lists only targets mapped to devices the user is allowed to see, and follow the link from a device's graphs. **SmokePing Operator** adds the Operations page and personal acknowledgments of current observations; it does not change measured health or suppress alerts. **SmokePing Admin** includes Operator access and opens the inventory and health pages and the actions above. An administrator whose device permissions are limited sees unmapped targets and the targets of the devices they may see.
 
 Graphs and data sources are ordinary Cacti objects, so Cacti's own graph and device permissions decide who sees them. Cacti's default permission method is permissive: a user is limited to some devices only when the device, graph, and graph template policies all deny. Permission changes apply on the user's next request.
 

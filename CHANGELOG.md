@@ -6,6 +6,8 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ### Added
 
+- SmokePing Operator realm and Operations page with current observations and personal acknowledgments. Existing administrators inherit Operator access; operators inherit monitoring access without configuration rights.
+
 - A supported series count: 10,000 per installation at 20 pings and a 300 s step, measured on the release runner with Cacti's management pages compared against the same number of stock Cacti graphs (#42).
 - Smoke graphs are sized again about once a day from their last day of data, by the same rule as at creation. The reader sizes at most 25 graphs per poller cycle and skips a cycle that used up its budget (#80).
 - The smoke graph legend shows the median's standard deviation, am/s, and SmokePing's probe line, as SmokePing's does. The probe line comes from a port of each SmokePing probe's description, compared with SmokePing's own. Schema 5 stores the description (#81).

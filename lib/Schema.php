@@ -36,6 +36,7 @@ final class Schema {
 
 
 	public const HOOKS = [
+		'auth_alternate_realms' => 'smokeping_auth_alternate_realms',
 		'config_arrays'            => 'smokeping_config_arrays',
 		'config_settings'          => 'smokeping_config_settings',
 		'draw_navigation_text'     => 'smokeping_draw_navigation_text',
@@ -193,6 +194,10 @@ final class Schema {
 
 	public function recordPluginVersion(string $version, string $author, string $homepage): void {
 		db_execute_prepared('UPDATE plugin_config SET version = ?, author = ?, webpage = ? WHERE directory = ?', [$version, $author, $homepage, self::PLUGIN], true, $this->connection);
+	}
+
+	public function pluginEnabled(): bool {
+		return (int) db_fetch_cell_prepared('SELECT status FROM plugin_config WHERE directory = ?', [self::PLUGIN], '', true, $this->connection) === 1;
 	}
 
 	public function hooksRegistered(): bool {

@@ -2,6 +2,9 @@
 
 How to read what the plugin shows, what each state means and what evidence it comes from, what to check when something looks wrong, and how the plugin behaves when its inputs fail. Installation is in [install](install.md), alerting in [alerting](alerting.md), backup in [backup and restore](backup-restore.md).
 
+See [Access roles](../README.md#access-roles) for the View, Operator and Admin
+permissions and personal triage behavior.
+
 ## Pages
 
 | Page | Realm | Shows |

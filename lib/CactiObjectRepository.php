@@ -115,6 +115,38 @@ final class CactiObjectRepository {
 	}
 
 	/**
+	 * How many live or archived smoke graphs are still on the templates of
+	 * the loss colors other than $selected, split into those the main poller
+	 * has yet to move and those whose last template change failed
+	 * (template_failed), for the health page.
+	 *
+	 * @return array{pending: int, failed: int}
+	 */
+	public function graphsOnOtherLossColors(LossColors $selected): array {
+		$templateIds = [];
+
+		foreach (TemplateInstaller::PINGS as $pings) {
+			$id = $this->graphTemplateId(TemplateInstaller::graphTemplateName($pings, $selected->other()));
+
+			if ($id > 0) {
+				$templateIds[] = $id;
+			}
+		}
+
+		if ($templateIds === []) {
+			return ['pending' => 0, 'failed' => 0];
+		}
+
+		$row = db_fetch_row_prepared('SELECT SUM(o.template_failed = 0) AS pending, SUM(o.template_failed > 0) AS failed
+			FROM plugin_smokeping_object AS o
+			INNER JOIN graph_local AS gl ON gl.id = o.local_graph_id
+			WHERE gl.graph_template_id IN (' . implode(', ', array_fill(0, count($templateIds), '?')) . ')
+				AND o.state IN (?, ?)', array_merge($templateIds, [ObjectRepository::ACTIVE, ObjectRepository::ARCHIVED]), true, $this->connection);
+
+		return ['pending' => (int) ($row['pending'] ?? 0), 'failed' => (int) ($row['failed'] ?? 0)];
+	}
+
+	/**
 	 * Paths of the poller's targets that alert in SmokePing (an alerts value
 	 * in its configuration) and have an enabled Thold threshold on one of
 	 * their summary data sources, so that one problem may notify twice. Null when

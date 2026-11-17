@@ -308,6 +308,15 @@ switch ($action) {
 		db_execute_prepared('UPDATE plugin_smokeping_object SET template_version = ? WHERE local_graph_id = ?', array((int) $version, (int) $graph));
 
 		break;
+	case 'loss_colors_row':
+		// The health page's loss_colors row, from the same calls the page makes.
+		$setting = (string) read_config_option(\Somethingwithproof\Smokeping\LossColors::SETTING);
+		$version = (new \Somethingwithproof\Smokeping\HealthRepository(false))->forPoller(1)->smokepingVersion;
+		$left    = (new \Somethingwithproof\Smokeping\CactiObjectRepository(false))->graphsOnOtherLossColors(\Somethingwithproof\Smokeping\LossColors::resolve($setting, $version));
+		$finding = \Somethingwithproof\Smokeping\HealthCheck::lossColors($setting, $version, $left['pending'], $left['failed']);
+		$result  = $finding->level->value . ' ' . $finding->message;
+
+		break;
 	case 'query':
 		// Read-only inspection for the shell-driven checks.
 		if (stripos(ltrim($argument), 'SELECT') !== 0) {

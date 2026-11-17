@@ -172,6 +172,8 @@ tpl_name() { q "SELECT gt.name FROM graph_local AS gl INNER JOIN graph_templates
 matches() { q "SELECT (SELECT COUNT(*) FROM graph_templates_item WHERE local_graph_id = ${gr:-0}) - (SELECT COUNT(*) FROM graph_templates_item AS gi INNER JOIN graph_local AS gl ON gl.graph_template_id = gi.graph_template_id WHERE gl.id = ${gr:-0} AND gi.local_graph_id = 0)" | jcell; }
 before_graph=$(q "SELECT title_cache, upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
 $L set_setting "smokeping_loss_colors=2.7" >/dev/null
+row=$($L loss_colors_row | res)
+case "$row" in "ok "*"1 smoke graphs still draw the other colors"*) result PASS health-loss-colors-pending "$row" ;; *) result FAIL health-loss-colors-pending "$row" ;; esac
 out=$(php $P/cli/smokeping.php upgrade-graphs 2>&1); rc=$?
 legacy=$(tpl_name); legacy_rendered=$($L render "${gr:-0}" | res)
 after_graph=$(q "SELECT title_cache, upper_limit FROM graph_templates_graph WHERE local_graph_id = ${gr:-0}" | jcell)
@@ -197,9 +199,15 @@ kept=$(tpl_name); unbound=$(q "SELECT COUNT(*) FROM graph_templates_item AS gi I
 [ -n "$rrd" ] && [ $rc -eq 1 ] && [ "$kept" = "SmokePing Smoke (20 pings)" ] && [ "$unbound" = 0 ] \
 	&& result PASS loss-colors-unbound-item-refused "graph keeps $kept with every item bound; $out" \
 	|| result FAIL loss-colors-unbound-item-refused "data source item '$rrd', rc $rc, template '$kept', $unbound unbound items: $out"
+row=$($L loss_colors_row | res)
+case "$row" in "warning "*"1 smoke graphs could not be moved"*) case "$row" in *"still draw"*) result FAIL health-loss-colors-failed "$row" ;; *) result PASS health-loss-colors-failed "$row" ;; esac ;; *) result FAIL health-loss-colors-failed "$row" ;; esac
 ds_name median
 $L set_setting "smokeping_loss_colors=auto" >/dev/null
 php $P/cli/smokeping.php upgrade-graphs >/dev/null 2>&1
+row=$($L loss_colors_row | res)
+# Automatic with no SmokePing found selects 2.8 and later (Unknown), and no
+# graph is left on the 2.7 templates.
+case "$row" in "unknown The reader found no SmokePing version"*) case "$row" in *"smoke graphs"*) result FAIL health-loss-colors-done "$row" ;; *) result PASS health-loss-colors-done "no graph left on the other colors: $row" ;; esac ;; *) result FAIL health-loss-colors-done "not the expected row: '$row'" ;; esac
 
 # Poller and boost ignore it: input method None means no poller_item rows.
 row=$(q "SELECT COUNT(*) FROM poller_item WHERE local_data_id = ${ds:-0}" | jcell)

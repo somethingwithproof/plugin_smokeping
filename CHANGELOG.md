@@ -12,7 +12,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 - Graphs made from earlier templates are brought to the installed ones by the main poller, 200 per cycle, or all at once with `cli/smokeping.php upgrade-graphs`. Each keeps its title and upper limit (#81).
 - The SmokePing targets page shows whether each target's device is in a Maint maintenance window, from Maint's `is_device_in_maintenance` hook (#31).
 - The health page lists targets that alert in both SmokePing and Thold, where one problem may notify twice. The inventory now records each target's SmokePing `alerts`; schema 6 stores them (#32).
-- Smoke graph templates with SmokePing 2.7's loss colors, which match 2.7.3's graphs (Ubuntu 22.04). The Loss Colors setting picks them; Automatic, the default, follows the SmokePing version the reader finds in `Smokeping.pm`, which schema 7 records. The main poller moves smoke graphs to the configured colors, 200 per cycle, and `upgrade-graphs` moves them all. The health page shows the colors in use and why (#34).
+- Smoke graph templates with SmokePing 2.7's loss colors, which match 2.7.3's graphs (Ubuntu 22.04). The Loss Colors setting picks them; Automatic, the default, follows the SmokePing version the reader finds in `Smokeping.pm`, which schema 7 records. The main poller moves smoke graphs to the configured colors, 200 per cycle, and `upgrade-graphs` moves them all. The health page shows the colors in use and why, and how many graphs are still to move or failed to move (#34).
 
 ### Changed
 

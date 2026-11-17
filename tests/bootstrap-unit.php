@@ -120,6 +120,8 @@ if (!function_exists('db_table_exists')) {
 
 if (!function_exists('db_fetch_row_prepared')) {
 	function db_fetch_row_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
+		$GLOBALS['__smokeping_db_queries'][] = ['sql' => $sql, 'params' => $params];
+
 		return $GLOBALS['__smokeping_db_row'];
 	}
 }

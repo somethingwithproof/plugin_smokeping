@@ -48,5 +48,8 @@ $smokeping_page = new \Somethingwithproof\Smokeping\ViewPage(
 );
 
 top_graph_header();
+if (api_plugin_user_realm_auth('smokeping_operator.php')) {
+	print '<p><a href="smokeping_operator.php">' . html_escape(__('SmokePing Operations', 'smokeping')) . '</a></p>';
+}
 $smokeping_page->render($smokeping_devices);
 bottom_footer();

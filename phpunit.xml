@@ -23,6 +23,10 @@
     <source>
         <include>
             <directory>lib</directory>
+            <file>setup.php</file>
+            <file>include/operator.php</file>
+            <file>smokeping_operator.php</file>
+            <file>smokeping.php</file>
         </include>
     </source>
 </phpunit>

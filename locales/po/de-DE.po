@@ -14,6 +14,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Master"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Vergleichen Sie Paketverlust und Latenz mit den SmokePing-Diagrammen und dem Wartungsstatus. Wenden Sie sich bei fehlenden Dateien, Importen und erneuten Verknüpfungen an einen Administrator."
+
 #: lib/ActionOutcome.php
 #, php-format
 msgid "skipped, %s"
@@ -770,6 +778,58 @@ msgstr "Alle %d erwarteten RRD-Dateien sind über den Mount sichtbar."
 msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
 msgstr "%d von %d erwarteten RRD-Dateien sind über den Mount nicht sichtbar, zum Beispiel %s."
 
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Prüfen Sie die unten aufgezeichneten Beobachtungen. Bestätigungen gelten nur für Ihre Sitzung, verfallen bei Änderungen der Beobachtungen und unterdrücken weder Alarme noch ändern sie den Zustandsstatus."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "SmokePing Operations"
+msgstr "SmokePing-Betrieb"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Aktionen"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Untersuchung"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Objekt"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Beobachtet (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Zustand"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Unbekannt oder veraltet"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Nie"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Bestätigt; Zustandsstatus unverändert."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Bestätigen"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Für Geräte, auf die Sie zugreifen dürfen, liegen keine Beobachtungen vor."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "SmokePing-Operator"
+
 #: lib/Pages.php
 msgid "SmokePing View"
 msgstr "SmokePing-Ansicht"
@@ -1157,10 +1217,6 @@ msgid "No SmokePing targets are mapped to devices you can view."
 msgstr "Keine SmokePing-Ziele sind Zielsystemen zugeordnet, die Sie sehen können."
 
 #: lib/ViewPage.php
-msgid "Master"
-msgstr "Master"
-
-#: lib/ViewPage.php
 msgid "In maintenance"
 msgstr "In Wartung"
 
@@ -1264,6 +1320,14 @@ msgstr "Der Vorschlag ist nicht offen, oder er betrifft ein Zielsystem oder eine
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
 msgstr "Der Vorschlag wurde verworfen."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Überwachungsansicht"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Die Beobachtungen konnten nicht gelesen werden. Bitten Sie einen Administrator, das Plugin-Protokoll zu prüfen."
 
 #, php-format
 #~ msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."

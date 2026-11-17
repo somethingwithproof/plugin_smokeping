@@ -87,13 +87,18 @@ function smokeping_settings(): \Somethingwithproof\Smokeping\Settings {
 }
 
 /**
- * Common start of every page script, after include/auth.php has authorized
- * the realm. Refuses on an unsupported PHP or a disabled plugin, because
- * Cacti keeps plugin realms registered while a plugin is disabled.
+ * Common start after include/auth.php establishes the user. Recheck the
+ * realm here because cookie and Basic login restore the user after the
+ * alternate-realms hook. Disabled plugins and unsupported runtimes refuse.
  */
 function smokeping_page_start(): bool {
 	if (smokeping_boot() && api_plugin_is_enabled('smokeping')) {
-		return true;
+		if (smokeping_page_allowed()) {
+			return true;
+		}
+		http_response_code(403);
+
+		return false;
 	}
 
 	top_header();
@@ -207,12 +212,14 @@ function smokeping_setup_hooks(): void {
 		include_once($config['library_path'] . '/poller.php');
 	}
 
+	$enabled = (new \Somethingwithproof\Smokeping\Schema(false))->pluginEnabled();
+
 	foreach (\Somethingwithproof\Smokeping\Schema::HOOKS as $hook => $function) {
-		api_plugin_register_hook('smokeping', $hook, $function, 'setup.php');
+		api_plugin_register_hook('smokeping', $hook, $function, 'setup.php', $enabled);
 	}
 
 	foreach (\Somethingwithproof\Smokeping\Pages::realms() as $realm) {
-		api_plugin_register_realm('smokeping', implode(',', $realm['files']), $realm['name'], true);
+		api_plugin_register_realm('smokeping', implode(',', $realm['files']), $realm['name'], $realm['files'] !== \Somethingwithproof\Smokeping\Pages::OPERATOR);
 	}
 }
 
@@ -299,6 +306,10 @@ function smokeping_show_tab(): void {
 function smokeping_config_settings(): void {
 	global $tabs, $settings, $config;
 
+	if (PHP_SAPI !== 'cli' && !api_plugin_user_realm_auth('smokeping_inventory.php')) {
+		return;
+	}
+
 	if (!smokeping_boot()) {
 		return;
 	}
@@ -312,8 +323,15 @@ function smokeping_config_settings(): void {
  * @return array<string, mixed>
  */
 function smokeping_draw_navigation_text($nav) {
+	global $current_user;
+
 	if (!smokeping_boot()) {
 		return $nav;
+	}
+
+	// Refresh settings after core restores cookie or Basic authentication.
+	if (get_current_page() === 'settings.php' && (PHP_SAPI === 'cli' || ($current_user['enabled'] ?? '') === 'on')) {
+		smokeping_config_settings();
 	}
 
 	return array_merge($nav, \Somethingwithproof\Smokeping\Pages::navigation());
@@ -642,4 +660,64 @@ function smokeping_poller_bottom(): void {
 	// docblock declares a string.
 	// @phpstan-ignore argument.type
 	exec_background($php, array('-q', __DIR__ . '/poller_smokeping.php', '--poller=' . (int) $config['poller_id']));
+}
+
+/** Resolve role inheritance against Cacti's current user and group grants. */
+function smokeping_auth_alternate_realms(): void {
+	global $user_auth_realm_filenames;
+
+	static $deferred = array();
+
+	foreach ($deferred as $file => $realm) {
+		$user_auth_realm_filenames[$file] = $realm;
+	}
+	$deferred = array();
+
+	if (!api_plugin_is_enabled('smokeping')) {
+		return;
+	}
+
+	if (empty($_SESSION['sess_user_id'])) {
+		// Core restores cookie and Basic authentication after this hook. Only
+		// these entrypoints defer the realm check to their post-auth guard.
+		$page = get_current_page();
+
+		if (in_array($page, array('smokeping.php', 'smokeping_operator.php'), true) && isset($user_auth_realm_filenames[$page])) {
+			$deferred[$page]                  = $user_auth_realm_filenames[$page];
+			$user_auth_realm_filenames[$page] = -1;
+		}
+
+		return;
+	}
+	$operator = 'smokeping_operator.php';
+	$admin = 'smokeping_inventory.php';
+	$files = array('smokeping.php');
+	$realm = $user_auth_realm_filenames[$admin] ?? 0;
+	if ($realm > 0 && is_realm_allowed($realm)) {
+		$files[] = $operator;
+	} else {
+		$realm = $user_auth_realm_filenames[$operator] ?? 0;
+		if ($realm <= 0 || !is_realm_allowed($realm)) {
+			return;
+		}
+	}
+	foreach ($files as $file) {
+		$user_auth_realm_filenames[$file] = $realm;
+	}
+}
+
+/** Recheck the authenticated user before a plugin page reads data or acts. */
+function smokeping_page_allowed(): bool {
+	global $current_user;
+
+	smokeping_auth_alternate_realms();
+	$userId    = $current_user['id'] ?? null;
+	$sessionId = $_SESSION['sess_user_id'] ?? null;
+
+	return (is_int($userId) || (is_string($userId) && ctype_digit($userId)))
+		&& (is_int($sessionId) || (is_string($sessionId) && ctype_digit($sessionId)))
+		&& (int) $userId > 0 && (int) $userId === (int) $sessionId
+		&& api_plugin_is_enabled('smokeping')
+		&& ($current_user['enabled'] ?? '') === 'on'
+		&& api_plugin_user_realm_auth(get_current_page());
 }

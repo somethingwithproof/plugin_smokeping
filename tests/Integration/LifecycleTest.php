@@ -29,7 +29,7 @@ const SMOKEPING_TABLES = [
 	'plugin_smokeping_target',
 ];
 
-const SMOKEPING_HOOKS = ['api_device_save', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top', 'top_graph_header_tabs', 'top_header_tabs'];
+const SMOKEPING_HOOKS = ['api_device_save', 'auth_alternate_realms', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top', 'top_graph_header_tabs', 'top_header_tabs'];
 
 beforeEach(function () {
 	lifecycle('reset');
@@ -43,7 +43,7 @@ afterAll(function () {
 	lifecycle('reset');
 });
 
-it('installs fresh with tracked tables, hooks, and both realms, leaving the plugin disabled', function () {
+it('installs fresh with tracked tables, hooks, and three realms, leaving the plugin disabled', function () {
 	$state = lifecycle('install');
 
 	expect($state['plugin']['status'])->toEqual('4')
@@ -53,8 +53,9 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 		->and($state['tracked'])->toBe(SMOKEPING_TABLES)
 		->and(array_keys($state['hooks']))->toBe(SMOKEPING_HOOKS)
 		->and($state['realms'])->toEqual([
-			'smokeping.php'                                => 'SmokePing View',
+			'smokeping.php' => 'SmokePing View',
 			'smokeping_inventory.php,smokeping_health.php,smokeping_config.php,smokeping_import.php' => 'SmokePing Admin',
+			'smokeping_operator.php' => 'SmokePing Operator',
 		])
 		->and($state['admin'])->toBe(2);
 
@@ -367,4 +368,24 @@ it('leaves SmokePing RRD files byte-identical across install, uninstall, and rei
 	unlink($rrd);
 	rmdir(dirname($rrd));
 	rmdir($dir);
+});
+
+it('preserves old grants and resolves the three roles through Cacti including groups', function () {
+	lifecycle('install');
+	lifecycle('enable');
+	$roles = lifecycle('operator_roles')['result'];
+	expect($roles['ids_preserved'])->toBeTrue()
+		->and($roles['viewer_grants'])->toBe([$roles['expected_view']])
+		->and($roles['hook_enabled'])->toBe(1)
+		->and($roles['viewer'])->toBe([true, false, false])
+		->and($roles['operator'])->toBe([true, true, false])
+		->and($roles['admin'])->toBe([true, true, true])
+		->and($roles['revoked'])->toBe([false, false, false])
+		->and($roles['group_operator'])->toBe([true, true, false])
+		->and($roles['disabled_group'])->toBe([false, false, false])
+		->and($roles['first_request']['viewer'])->toBe([[true, true, true], [true, false, true], [false, false, true]])
+		->and($roles['first_request']['operator'])->toBe([[true, true, true], [true, true, true], [false, false, true]])
+		->and($roles['first_request']['admin'])->toBe([[true, true, true], [true, true, true], [false, true, true]])
+		->and($roles['first_request']['revoked'])->toBe([false, false, false])
+		->and($roles['disabled_user'])->toBe([false, false, false]);
 });

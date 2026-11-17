@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: smokeping 1.0.0-rc.1\n"
 "Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
-"PO-Revision-Date: 2026-11-14 00:00+0000\n"
+"PO-Revision-Date: 2026-11-17 00:00+0000\n"
 "Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
 "Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
 "Language: zh-CN\n"
@@ -12,6 +13,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "主"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "将丢包和延迟与 SmokePing 图表及维护状态进行比较。文件缺失、导入和重新关联请交由管理员处理。"
 
 #: lib/ActionOutcome.php
 #, php-format
@@ -769,6 +778,58 @@ msgstr "预期的 %d 个 RRD 文件均可通过挂载访问。"
 msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
 msgstr "预期的 %d 个 RRD 文件中有 %d 个无法通过挂载访问，例如 %s。"
 
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "查看下方记录的观测结果。确认记录仅对当前会话中的您有效，在观测结果变化时失效，且不会抑制告警或更改健康状态。"
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "SmokePing Operations"
+msgstr "SmokePing 运维"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "操作"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "调查"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "对象"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "观测时间（UTC）"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "状态"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "未知或已过期"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "从未"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "已确认；健康状态未改变。"
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "确认"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "您有权访问的设备暂无观测结果。"
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "SmokePing 操作员"
+
 #: lib/Pages.php
 msgid "SmokePing View"
 msgstr "SmokePing 查看"
@@ -1156,10 +1217,6 @@ msgid "No SmokePing targets are mapped to devices you can view."
 msgstr "没有 SmokePing 目标映射到您可查看的设备。"
 
 #: lib/ViewPage.php
-msgid "Master"
-msgstr "主"
-
-#: lib/ViewPage.php
 msgid "In maintenance"
 msgstr "维护中"
 
@@ -1264,9 +1321,10 @@ msgstr "该建议未处于开放状态，或涉及您无权更改的设备或轮
 msgid "The proposal was dismissed."
 msgstr "该建议已被忽略。"
 
-#, php-format
-#~ msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
-#~ msgstr "按照丢包颜色设置，烟雾图设为使用 SmokePing %s 的丢包颜色。"
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "监控视图"
 
-#~ msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
-#~ msgstr "在 SmokePing 数据源存在之前，无法列出同时在 SmokePing 和 Thold 中告警的目标。"
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "无法读取观测结果。请联系管理员检查插件日志。"

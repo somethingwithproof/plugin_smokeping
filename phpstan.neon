@@ -23,6 +23,7 @@ parameters:
     paths:
         - lib
         - setup.php
+        - include/operator.php
     scanDirectories:
         - %env.CACTI_PATH%/lib
         - %env.CACTI_PATH%/include

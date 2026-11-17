@@ -369,7 +369,7 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. No ma
 - Classes live in `lib/*.php` under the `Somethingwithproof\Smokeping` namespace, one class per file, loaded by a small `spl_autoload_register()` loader registered only after the PHP version check. No Composer runtime dependency is added. Files stay at depth 2 or less because the gettext build and the POT check scan only `find . -maxdepth 2`.
 - Settings use the `config_settings` hook. Logging uses `cacti_log()` with a `SMOKEPING` tag. Forms rely on Cacti's csrf-magic.
 - Strings use the `smokeping` text domain in classes and shims, with a `locales/` directory and POT file.
-- Realms: two, "SmokePing View" and "SmokePing Admin", each a list of page files registered with `api_plugin_register_realm()`.
+- Realms: three, "SmokePing View", "SmokePing Operator" and "SmokePing Admin", each a list of page files registered with `api_plugin_register_realm()`.
 
 **Planned classes.** Names are illustrative; milestone 2 settles the final set.
 
@@ -512,5 +512,5 @@ This repository holds the plan and the plugin code, and tracks its requirements 
 - **Inventory script.** A short Perl CLI using `Smokeping::get_parser()`, as `smokeinfo` does, instead of a service. Superseded by decision 0009: a PHP parser, with the Perl script kept only as a test oracle.
 - **Managed probes narrowed** to ICMP and TCP because servcheck covers service checks.
 - **Reader uses Cacti's rrdtool pipe.** Cacti object row counts added to the performance section.
-- **Cacti idioms made explicit:** hook list, `config_settings`, `cacti_log()`, csrf-magic, two realms, text domain, template XML import, `varchar` enums, explicit database connections for remote code.
+- **Cacti idioms made explicit:** hook list, `config_settings`, `cacti_log()`, csrf-magic, three realms, text domain, template XML import, `varchar` enums, explicit database connections for remote code.
 - **Phases renumbered:** observe with alerting, managed, remote. Milestones and tests updated to match.

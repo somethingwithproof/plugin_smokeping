@@ -29,5 +29,5 @@ it('covers every shipped page script with exactly one realm', function () {
 
 	expect($covered)->toBe($scripts)
 		->and(array_unique($covered))->toBe($covered)
-		->and(array_column(Pages::realms(), 'name'))->toBe(['SmokePing View', 'SmokePing Admin']);
+		->and(array_column(Pages::realms(), 'name'))->toBe(['SmokePing Operator', 'SmokePing View', 'SmokePing Admin']);
 });

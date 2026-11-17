@@ -89,7 +89,6 @@ unit=$(systemd-escape --path --suffix=mount "$RRA/smokeping")
 cat > "/etc/systemd/system/$unit" <<EOF
 [Unit]
 Description=Read-only view of SmokePing's data directory for Cacti
-After=local-fs.target
 
 [Mount]
 What=$DATADIR
@@ -132,7 +131,7 @@ cd /var/www/html/cacti
 sudo -u www-data php cli/plugin_manage.php --plugin=smokeping --install --enable --allperms
 ```
 
-The directory must be named `smokeping`. Run the last command as the user that owns Cacti's files (`apache` on EL). `--allperms` gives the console administrator both plugin realms; other users get **SmokePing View** and **SmokePing Admin** from User Management. The plugin installs its tables and the SmokePing graph and host templates; if the template import fails it says so on the Health page and keeps working, and **Retry Template Import** there repeats it after you fix the cause.
+The directory must be named `smokeping`. Run the last command as the user that owns Cacti's files (`apache` on EL). `--allperms` gives the console administrator all three plugin realms; other users receive **SmokePing View**, **SmokePing Operator**, or **SmokePing Admin** through User Management. Operator includes View access, and Admin includes Operator access. The plugin installs its tables and the SmokePing graph and host templates; if the template import fails it says so on the Health page and keeps working, and **Retry Template Import** there repeats it after you fix the cause.
 
 On PHP older than 8.2 the install is refused with a message naming the required version, and the rest of Cacti is unaffected.
 
@@ -158,7 +157,7 @@ sudo -u www-data php plugins/smokeping/poller_smokeping.php --force --inventory
 
 ## Languages
 
-The plugin ships translations into Spanish (Spain, `es-ES`), French (`fr-FR`), German (`de-DE`), Simplified Chinese (`zh-CN`) and Japanese (`ja-JP`). Cacti shows them once language support is on (Configuration > Settings > General > Language Support) and a user picks the language. A Latin American Spanish catalog (`es-419`) ships as well, but Cacti 1.2 has no Latin American Spanish locale to select, so it takes effect only when Cacti adds one; until then, choose Spanish (`es-ES`).
+The plugin ships translations into Spanish (Spain, `es-ES`), French (`fr-FR`), German (`de-DE`), Simplified Chinese (`zh-CN`), Hindi (`hi-IN`), Arabic (`ar-SA`) and Japanese (`ja-JP`). Cacti shows them once language support is on (Configuration > Settings > General > Language Support) and a user picks the language. A Latin American Spanish catalog (`es-419`) ships as well, but Cacti 1.2 has no Latin American Spanish locale to select, so it takes effect only when Cacti adds one; until then, choose Spanish (`es-ES`).
 
 ## Containers
 
@@ -168,7 +167,7 @@ Run the reader where it can see both things from the start of this guide.
 
   ```sh
   docker run -d --name cacti \
-    -v /var/lib/smokeping:/var/www/html/rra/smokeping:ro \
+    -v /var/lib/smokeping:/var/www/html/cacti/rra/smokeping:ro \
     -v /etc/smokeping:/etc/smokeping:ro \
     my-cacti-image
   ```
@@ -182,7 +181,7 @@ Run the reader where it can see both things from the start of this guide.
       volumes:
         - type: bind
           source: /var/lib/smokeping
-          target: /var/www/html/rra/smokeping
+          target: /var/www/html/cacti/rra/smokeping
           read_only: true
   ```
 
@@ -195,4 +194,4 @@ Cacti's RRD cleaner (**Utilities > RRD Cleaner**) walks the whole RRA path, so i
 
 ## Upgrading and removing
 
-Replace the plugin directory with the new release and open the Plugins page or wait for the next poller cycle; the plugin migrates its tables and templates and records the new version only after every step succeeds, so an interrupted upgrade is finished by the next one. Disabling the plugin stops its jobs and leaves SmokePing's files alone. Uninstalling writes a YAML export of the plugin's configuration first, to the Backup Directory setting or else `cache/smokeping/` in the Cacti directory (random file name, mode `0600`, and the path is shown to you), drops the plugin's tables unless **Keep Plugin Tables on Uninstall** is set, and never touches SmokePing's files or configuration.
+Replace the plugin directory with the new release and open the Plugins page or wait for the next poller cycle; the plugin migrates its tables and templates and records the new version only after every step succeeds, so an interrupted upgrade is finished by the next one. Disabling the plugin stops its jobs and leaves SmokePing's files alone. **Before uninstalling, export the configuration yourself and verify that the backup is readable and complete.** Uninstall attempts a YAML export of the plugin's configuration to the Backup Directory setting or else `cache/smokeping/` in the Cacti directory (random file name, mode `0600`, and the path is shown on success). If the export fails, a warning is logged and shown, but uninstall continues. It drops the plugin's tables unless **Keep Plugin Tables on Uninstall** is set, and never touches SmokePing's files or configuration.

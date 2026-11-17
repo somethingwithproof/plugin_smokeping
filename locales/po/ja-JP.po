@@ -13,6 +13,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "マスター"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "パケット損失と遅延を SmokePing のグラフおよびメンテナンス状態と比較してください。ファイルの欠落、インポート、関連付けの修正は管理者に依頼してください。"
+
 #: lib/ActionOutcome.php
 #, php-format
 msgid "skipped, %s"
@@ -769,6 +777,58 @@ msgstr "想定される %d 個の RRD ファイルはすべてマウント経由
 msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
 msgstr "想定される %d 個の RRD ファイルのうち %d 個がマウント経由で参照できません(例: %s)。"
 
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "以下に記録された観測結果を確認してください。確認済みの記録はこのセッションの自分だけに適用され、観測結果が変わると失効します。アラートの抑制や健全性の変更は行いません。"
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "SmokePing Operations"
+msgstr "SmokePing 運用"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "操作"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "調査"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "対象"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "観測日時 (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "状態"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "不明または古い情報"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "未実施"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "確認済み。健全性に変更はありません。"
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "確認済みにする"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "アクセス権のあるデバイスの観測結果はありません。"
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "SmokePing オペレーター"
+
 #: lib/Pages.php
 msgid "SmokePing View"
 msgstr "SmokePing 表示"
@@ -1156,10 +1216,6 @@ msgid "No SmokePing targets are mapped to devices you can view."
 msgstr "表示可能なデバイスにマッピングされている SmokePing ターゲットはありません。"
 
 #: lib/ViewPage.php
-msgid "Master"
-msgstr "マスター"
-
-#: lib/ViewPage.php
 msgid "In maintenance"
 msgstr "メンテナンス中"
 
@@ -1263,6 +1319,14 @@ msgstr "提案が受付中でないか、変更権限のないデバイスまた
 #: smokeping_inventory.php
 msgid "The proposal was dismissed."
 msgstr "提案を却下しました。"
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "監視ビュー"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "観測結果を読み取れませんでした。管理者にプラグインのログを確認するよう依頼してください。"
 
 #, php-format
 #~ msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."

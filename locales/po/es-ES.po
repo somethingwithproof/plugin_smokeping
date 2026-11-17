@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: smokeping 1.0.0-rc.1\n"
 "Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
-"PO-Revision-Date: 2026-11-14 12:00+0000\n"
+"PO-Revision-Date: 2026-11-17 00:00+0000\n"
 "Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
 "Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
 "Language: es-ES\n"
@@ -12,6 +13,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Maestro"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Compare la pérdida y la latencia con los gráficos de SmokePing y el estado de mantenimiento. Solicite a un administrador que resuelva los archivos ausentes, las importaciones y la reasignación de vínculos."
 
 #: lib/ActionOutcome.php
 #, php-format
@@ -769,6 +778,58 @@ msgstr "Los %d archivos RRD esperados son visibles a través del montaje."
 msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
 msgstr "%d de %d archivos RRD esperados no son visibles a través del montaje, por ejemplo %s."
 
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Revise las observaciones registradas a continuación. Los acuses de recibo son personales y exclusivos de esta sesión, caducan cuando cambian las observaciones y no suprimen alertas ni modifican el estado de salud."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "SmokePing Operations"
+msgstr "Operaciones de SmokePing"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Acciones"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Investigación"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Objeto"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Observado (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Estado"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Desconocido o desactualizado"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Nunca"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Acuse de recibo registrado; estado de salud sin cambios."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Acusar recibo"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "No hay observaciones disponibles para los dispositivos a los que tiene acceso."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "Operador de SmokePing"
+
 #: lib/Pages.php
 msgid "SmokePing View"
 msgstr "Vista de SmokePing"
@@ -1156,10 +1217,6 @@ msgid "No SmokePing targets are mapped to devices you can view."
 msgstr "Ningún destino de SmokePing está asociado a dispositivos que usted pueda ver."
 
 #: lib/ViewPage.php
-msgid "Master"
-msgstr "Maestro"
-
-#: lib/ViewPage.php
 msgid "In maintenance"
 msgstr "En mantenimiento"
 
@@ -1264,9 +1321,10 @@ msgstr "La propuesta no está abierta, o implica un dispositivo o sondeador que 
 msgid "The proposal was dismissed."
 msgstr "Se descartó la propuesta."
 
-#, php-format
-#~ msgid "Smoke graphs are set to SmokePing %s loss colors, as the Loss Colors setting asks."
-#~ msgstr "Las gráficas de humo están configuradas con los colores de pérdida de SmokePing %s, como pide la opción Colores de pérdida."
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Vista de supervisión"
 
-#~ msgid "Targets alerting in both SmokePing and Thold cannot be listed until SmokePing data sources exist."
-#~ msgstr "Los destinos que alertan tanto en SmokePing como en Thold no se pueden listar hasta que existan fuentes de datos de SmokePing."
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "No se pudieron leer las observaciones. Pida a un administrador que revise el registro del complemento."

@@ -1,0 +1,19 @@
+{
+  "locales": [
+    "zh-CN",
+    "hi-IN",
+    "es-ES",
+    "es-419",
+    "ar-SA"
+  ],
+  "sources": [
+    "README.md",
+    "docs/install.md",
+    "docs/operations.md",
+    "docs/provisioning.md",
+    "docs/alerting.md",
+    "docs/backup-restore.md",
+    "docs/configuration-format.md",
+    "docs/performance.md"
+  ]
+}

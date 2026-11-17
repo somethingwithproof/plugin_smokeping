@@ -26,6 +26,7 @@ namespace Somethingwithproof\Smokeping;
  * page script the plugin ships must appear in exactly one realm below.
  */
 final class Pages {
+	public const OPERATOR = ['smokeping_operator.php'];
 	public const VIEW  = 'smokeping.php';
 	public const IMPORT = 'smokeping_import.php';
 	public const ADMIN  = ['smokeping_inventory.php', 'smokeping_health.php', 'smokeping_config.php', self::IMPORT];
@@ -35,6 +36,7 @@ final class Pages {
 	 */
 	public static function realms(): array {
 		return [
+			['name' => __('SmokePing Operator', 'smokeping'), 'files' => self::OPERATOR],
 			['name' => __('SmokePing View', 'smokeping'), 'files' => [self::VIEW]],
 			['name' => __('SmokePing Admin', 'smokeping'), 'files' => self::ADMIN],
 		];
@@ -44,7 +46,7 @@ final class Pages {
 	 * @return list<string>
 	 */
 	public static function files(): array {
-		return array_merge([self::VIEW], self::ADMIN);
+		return array_merge([self::VIEW], self::ADMIN, self::OPERATOR);
 	}
 
 	/**
@@ -56,6 +58,7 @@ final class Pages {
 	 */
 	public static function menu(): array {
 		return [
+			'smokeping_operator.php' => __('SmokePing Operations', 'smokeping'),
 			'smokeping_inventory.php' => __('SmokePing Inventory', 'smokeping'),
 			'smokeping_health.php'    => __('SmokePing Health', 'smokeping'),
 			'smokeping_config.php'    => __('SmokePing Configuration', 'smokeping'),

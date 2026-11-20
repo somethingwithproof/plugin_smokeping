@@ -498,3 +498,8 @@ it('revokes access between the check and the apply', function () {
 
 	expect(fn () => $service->apply($document, $plan->id(), 1, 1))->toThrow(ConfigException::class, 'do not cover every device');
 });
+
+it('leaves integer text with a trailing newline as a string for the check to report', function () {
+	expect(Somethingwithproof\Smokeping\ConfigSchema::coerce('int', '42'))->toBe(42)
+		->and(Somethingwithproof\Smokeping\ConfigSchema::coerce('int', "42\n"))->toBe("42\n");
+});

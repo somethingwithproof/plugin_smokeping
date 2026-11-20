@@ -51,7 +51,7 @@ final class SummaryScript {
 	 * @return array{target: int, location: string}|null
 	 */
 	public static function parse(string $series): ?array {
-		if (preg_match('/^([1-9][0-9]{0,9})~([-_.0-9a-zA-Z]{0,64})$/', $series, $match) !== 1) {
+		if (preg_match('/^([1-9][0-9]{0,9})~([-_.0-9a-zA-Z]{0,64})$/D', $series, $match) !== 1) {
 			return null;
 		}
 

@@ -125,7 +125,7 @@ final class SmokepingInventory {
 	}
 
 	private static function intOrNull(?string $value): ?int {
-		if ($value === null || preg_match('/^\d+$/', $value) !== 1) {
+		if ($value === null || preg_match('/^\d+$/D', $value) !== 1) {
 			return null;
 		}
 

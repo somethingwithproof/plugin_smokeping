@@ -53,16 +53,16 @@ final class YamlScalar {
 			return [self::BOOL, false];
 		}
 
-		if (preg_match('/^(0|-?[1-9][0-9]{0,17})$/', $text) === 1) {
+		if (preg_match('/^(0|-?[1-9][0-9]{0,17})$/D', $text) === 1) {
 			return [self::INT, (int) $text];
 		}
 
 		if (
-			preg_match('/^(y|n|yes|no|on|off)$/i', $text) === 1
-			|| preg_match('/^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$/', $text) === 1
+			preg_match('/^(y|n|yes|no|on|off)$/iD', $text) === 1
+			|| preg_match('/^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$/D', $text) === 1
 			|| preg_match('/^[-+]?0[xXoObB]/', $text) === 1
-			|| preg_match('/^[-+]?\.(inf|nan)$/i', $text) === 1
-			|| preg_match('/^[-+]?[0-9][0-9_]*(:[0-5]?[0-9])+(\.[0-9]*)?$/', $text) === 1
+			|| preg_match('/^[-+]?\.(inf|nan)$/iD', $text) === 1
+			|| preg_match('/^[-+]?[0-9][0-9_]*(:[0-5]?[0-9])+(\.[0-9]*)?$/D', $text) === 1
 			|| preg_match('/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/', $text) === 1
 			|| $text === '='
 			|| $text === '<<'

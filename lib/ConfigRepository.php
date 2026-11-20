@@ -54,15 +54,17 @@ final class ConfigRepository {
 	}
 
 	/**
-	 * Devices Cacti lists, which is what get_allowed_devices() returns for a
-	 * user with unrestricted device access. That function leaves disabled
-	 * devices out when the user's Hide Disabled setting is on, so $enabledOnly
-	 * must follow that setting or the two counts differ.
+	 * Ids of every device Cacti lists, disabled ones included. These are the
+	 * devices get_allowed_devices() returns for a user with unrestricted
+	 * device access when Hide Disabled is off.
+	 *
+	 * @return list<int>
 	 */
-	public function deviceCount(bool $enabledOnly = false): int {
-		$disabled = $enabledOnly ? " AND (disabled = '' OR disabled IS NULL)" : '';
+	public function deviceIds(): array {
+		$ids = array_map(static fn (array $row): int => (int) $row['id'], Row::rows(db_fetch_assoc_prepared("SELECT id FROM host WHERE id > 0 AND deleted = ''", [], true, $this->connection)));
+		sort($ids);
 
-		return (int) db_fetch_cell_prepared("SELECT COUNT(*) FROM host WHERE id > 0 AND deleted = ''" . $disabled, [], '', true, $this->connection);
+		return $ids;
 	}
 
 	/**

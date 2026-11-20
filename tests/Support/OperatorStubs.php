@@ -41,7 +41,10 @@ function api_plugin_user_realm_auth($filename = '') {
 }
 
 function get_allowed_devices($sql_where = '', $sql_order = 'description', $sql_limit = '', &$total_rows = 0, $user_id = 0, $device_id = 0) {
-	return $GLOBALS['__operator_devices'] ?? [];
+	$devices = $GLOBALS['__operator_devices'] ?? [];
+
+	// A closure stands in for Cacti's own filtering, such as Hide Disabled.
+	return $devices instanceof Closure ? $devices() : $devices;
 }
 
 function form_start($action, $id = '', $multipart = false) {

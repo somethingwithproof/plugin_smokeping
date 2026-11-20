@@ -401,15 +401,39 @@ function smokeping_config_service(bool $webUser = false): \Somethingwithproof\Sm
 
 /**
  * Whether the user's device permissions cover every device: only when
- * get_allowed_devices() returns every device Cacti lists. A user limited to
- * some devices, however many, is not unrestricted. Cacti drops disabled
- * devices from that list when the user's Hide Disabled setting (on by
- * default) is on, so the count drops them too.
+ * get_allowed_devices() returns the id of every device Cacti lists. A user
+ * limited to some devices, however many, is not unrestricted.
+ *
+ * get_allowed_devices() drops disabled devices while the user's Hide Disabled
+ * display setting is on (the default), which would hide a permission denied on
+ * a disabled device. It reads that setting from the session's cached user
+ * settings, so the check turns it off for the one call and restores it.
  */
 function smokeping_user_sees_every_device(\Somethingwithproof\Smokeping\ConfigRepository $repository): bool {
-	$allowed = get_allowed_devices();
+	$hadSettings = isset($_SESSION['sess_user_config_array']);
+	$saved       = $hadSettings ? $_SESSION['sess_user_config_array'] : null;
 
-	return is_array($allowed) && count($allowed) === $repository->deviceCount(read_user_setting('hide_disabled') == 'on');
+	$_SESSION['sess_user_config_array']                   = $hadSettings ? $saved : [];
+	$_SESSION['sess_user_config_array']['hide_disabled'] = '';
+
+	try {
+		$allowed = get_allowed_devices();
+	} finally {
+		if ($hadSettings) {
+			$_SESSION['sess_user_config_array'] = $saved;
+		} else {
+			unset($_SESSION['sess_user_config_array']);
+		}
+	}
+
+	if (!is_array($allowed)) {
+		return false;
+	}
+
+	$ids = array_map(static fn (array $device): int => (int) $device['id'], $allowed);
+	sort($ids);
+
+	return $ids === $repository->deviceIds();
 }
 
 /**

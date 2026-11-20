@@ -334,10 +334,10 @@ imp_preview() { # imp_preview <user> <file> -> the preview page
 	token=$(csrf "$1" $IMP)
 	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -F "__csrf_magic=$token" -F action=preview -F source=upload -F device_per=host -F poller=1 -F site=0 -F tree=-1 -F "tree_name=SmokePing Web" -F "smokeping_file=@$2" "$BASE/$IMP"
 }
-imp_apply() { # imp_apply <user> <plan> [no-token]
+imp_apply() { # imp_apply <user> <plan> [no-token]; the response body is kept in $WORK/imp-apply.out
 	token=$(csrf "$1" $IMP)
 	[ "${3:-}" = no-token ] && token=
-	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$2&source=upload&device_per=host&poller=1&site=0&tree=-1" --data-urlencode "tree_name=SmokePing Web" "$BASE/$IMP"
+	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -o "$WORK/imp-apply.out" --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$2&source=upload&device_per=host&poller=1&site=0&tree=-1" --data-urlencode "tree_name=SmokePing Web" "$BASE/$IMP"
 }
 
 page=$(imp_preview admin $WORK/imp.conf)
@@ -354,6 +354,7 @@ imp_apply admin "$plan" no-token
 imp_apply admin 0000000000000000
 imp_apply scoped "$plan"
 imp_apply restricted "$plan"
+check import-apply-refused-restricted-admin "an apply post is refused for device coverage, not as a stale plan" sh -c 'grep -q "do not cover every device" "$1"' x "$WORK/imp-apply.out"
 [ "$(imp_rows)" = "0 0 0 0" ] && result PASS import-apply-refusals "no token, a plan never shown, no realm, and limited devices all write nothing" || result FAIL import-apply-refusals "$(imp_rows)"
 page=$(imp_preview admin $WORK/imp.conf)
 plan=$(echo "$page" | sed -n 's/.*name=.plan. value=.\([0-9a-f]\{16\}\).*/\1/p' | head -1)

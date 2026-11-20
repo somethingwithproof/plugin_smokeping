@@ -412,9 +412,10 @@ function smokeping_config_service(bool $webUser = false): \Somethingwithproof\Sm
 function smokeping_user_sees_every_device(\Somethingwithproof\Smokeping\ConfigRepository $repository): bool {
 	$hadSettings = isset($_SESSION['sess_user_config_array']);
 	$saved       = $hadSettings ? $_SESSION['sess_user_config_array'] : null;
+	$override    = is_array($saved) ? $saved : [];
 
-	$_SESSION['sess_user_config_array']                   = $hadSettings ? $saved : [];
-	$_SESSION['sess_user_config_array']['hide_disabled'] = '';
+	$override['hide_disabled']          = '';
+	$_SESSION['sess_user_config_array'] = $override;
 
 	try {
 		$allowed = get_allowed_devices();
@@ -430,7 +431,7 @@ function smokeping_user_sees_every_device(\Somethingwithproof\Smokeping\ConfigRe
 		return false;
 	}
 
-	$ids = array_map(static fn (array $device): int => (int) $device['id'], $allowed);
+	$ids = array_map(static fn (mixed $device): int => is_array($device) ? (int) ($device['id'] ?? 0) : 0, $allowed);
 	sort($ids);
 
 	return $ids === $repository->deviceIds();

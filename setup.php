@@ -431,7 +431,7 @@ function smokeping_user_sees_every_device(\Somethingwithproof\Smokeping\ConfigRe
 		return false;
 	}
 
-	$ids = array_map(static fn (mixed $device): int => is_array($device) ? (int) ($device['id'] ?? 0) : 0, $allowed);
+	$ids = array_map(static fn (mixed $device): int => is_array($device) && isset($device['id']) && is_numeric($device['id']) ? (int) $device['id'] : 0, $allowed);
 	sort($ids);
 
 	return $ids === $repository->deviceIds();

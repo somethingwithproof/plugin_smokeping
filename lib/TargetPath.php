@@ -28,8 +28,8 @@ namespace Somethingwithproof\Smokeping;
  * name free of "..", slashes, and shell metacharacters.
  */
 final readonly class TargetPath {
-	private const SEGMENT  = '/^[-_0-9a-zA-Z]+$/';
-	private const LOCATION = '/^[-_0-9a-zA-Z][-_.0-9a-zA-Z]*$/';
+	private const SEGMENT  = '/^[-_0-9a-zA-Z]+$/D';
+	private const LOCATION = '/^[-_0-9a-zA-Z][-_.0-9a-zA-Z]*$/D';
 
 	private function __construct(public string $value) {
 	}

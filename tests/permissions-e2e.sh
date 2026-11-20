@@ -281,8 +281,9 @@ token=$(csrf restricted $INV)
 page_r=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-r.yaml" "$BASE/$CONF")
 check config-plan-refused-restricted-admin "an upload to check returns no plan" sh -c '! echo "$1" | grep -q "add    target\|Apply Import\|Plan " && echo "$1" | grep -q "do not cover every device"' x "$page_r"
 token=$(csrf restricted $INV)
-curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
-[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/restricted'" | jcell)" = 0 ] && result PASS config-apply-refused-restricted-admin "an apply post changes nothing" || result FAIL config-apply-refused-restricted-admin "a target was added"
+apply_r=$(curl -s -b $WORK/restricted.jar -c $WORK/restricted.jar --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF")
+check config-apply-refused-restricted-admin "an apply post is refused for device coverage, not as a bad plan" sh -c 'echo "$1" | grep -q "do not cover every device"' x "$apply_r"
+[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/restricted'" | jcell)" = 0 ] && result PASS config-apply-writes-nothing-restricted-admin "an apply post changes nothing" || result FAIL config-apply-writes-nothing-restricted-admin "a target was added"
 
 printf 'schema_version: 1\ntargets:\n  - path: Conf/new\n    host: conf.example\n' > $WORK/conf-new.yaml
 n0=$(q "SELECT COUNT(*) FROM plugin_smokeping_target" | jcell)
@@ -333,10 +334,11 @@ imp_preview() { # imp_preview <user> <file> -> the preview page
 	token=$(csrf "$1" $IMP)
 	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -F "__csrf_magic=$token" -F action=preview -F source=upload -F device_per=host -F poller=1 -F site=0 -F tree=-1 -F "tree_name=SmokePing Web" -F "smokeping_file=@$2" "$BASE/$IMP"
 }
-imp_apply() { # imp_apply <user> <plan> [no-token]
-	token=$(csrf "$1" $IMP)
-	[ "${3:-}" = no-token ] && token=
-	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$2&source=upload&device_per=host&poller=1&site=0&tree=-1" --data-urlencode "tree_name=SmokePing Web" "$BASE/$IMP"
+imp_apply() { # imp_apply <user> <plan> [no-token]; the response body is kept in $WORK/imp-apply.out
+	apply_user=$1; apply_plan=$2; apply_flag=${3:-}
+	token=$(csrf "$apply_user" $IMP)
+	[ "$apply_flag" = no-token ] && token=
+	curl -s -b "$WORK/$apply_user.jar" -c "$WORK/$apply_user.jar" -o "$WORK/imp-apply.out" --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$apply_plan&source=upload&device_per=host&poller=1&site=0&tree=-1" --data-urlencode "tree_name=SmokePing Web" "$BASE/$IMP"
 }
 
 page=$(imp_preview admin $WORK/imp.conf)
@@ -353,6 +355,7 @@ imp_apply admin "$plan" no-token
 imp_apply admin 0000000000000000
 imp_apply scoped "$plan"
 imp_apply restricted "$plan"
+check import-apply-refused-restricted-admin "an apply post is refused for device coverage, not as a stale plan" sh -c 'grep -q "do not cover every device" "$1"' x "$WORK/imp-apply.out"
 [ "$(imp_rows)" = "0 0 0 0" ] && result PASS import-apply-refusals "no token, a plan never shown, no realm, and limited devices all write nothing" || result FAIL import-apply-refusals "$(imp_rows)"
 page=$(imp_preview admin $WORK/imp.conf)
 plan=$(echo "$page" | sed -n 's/.*name=.plan. value=.\([0-9a-f]\{16\}\).*/\1/p' | head -1)

@@ -335,9 +335,10 @@ imp_preview() { # imp_preview <user> <file> -> the preview page
 	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -F "__csrf_magic=$token" -F action=preview -F source=upload -F device_per=host -F poller=1 -F site=0 -F tree=-1 -F "tree_name=SmokePing Web" -F "smokeping_file=@$2" "$BASE/$IMP"
 }
 imp_apply() { # imp_apply <user> <plan> [no-token]; the response body is kept in $WORK/imp-apply.out
-	token=$(csrf "$1" $IMP)
-	[ "${3:-}" = no-token ] && token=
-	curl -s -b "$WORK/$1.jar" -c "$WORK/$1.jar" -o "$WORK/imp-apply.out" --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$2&source=upload&device_per=host&poller=1&site=0&tree=-1" --data-urlencode "tree_name=SmokePing Web" "$BASE/$IMP"
+	apply_user=$1; apply_plan=$2; apply_flag=${3:-}
+	token=$(csrf "$apply_user" $IMP)
+	[ "$apply_flag" = no-token ] && token=
+	curl -s -b "$WORK/$apply_user.jar" -c "$WORK/$apply_user.jar" -o "$WORK/imp-apply.out" --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=$apply_plan&source=upload&device_per=host&poller=1&site=0&tree=-1" --data-urlencode "tree_name=SmokePing Web" "$BASE/$IMP"
 }
 
 page=$(imp_preview admin $WORK/imp.conf)

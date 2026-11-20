@@ -402,12 +402,14 @@ function smokeping_config_service(bool $webUser = false): \Somethingwithproof\Sm
 /**
  * Whether the user's device permissions cover every device: only when
  * get_allowed_devices() returns every device Cacti lists. A user limited to
- * some devices, however many, is not unrestricted.
+ * some devices, however many, is not unrestricted. Cacti drops disabled
+ * devices from that list when the user's Hide Disabled setting (on by
+ * default) is on, so the count drops them too.
  */
 function smokeping_user_sees_every_device(\Somethingwithproof\Smokeping\ConfigRepository $repository): bool {
 	$allowed = get_allowed_devices();
 
-	return is_array($allowed) && count($allowed) === $repository->deviceCount();
+	return is_array($allowed) && count($allowed) === $repository->deviceCount(read_user_setting('hide_disabled') == 'on');
 }
 
 /**

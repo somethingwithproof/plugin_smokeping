@@ -72,6 +72,15 @@ if (!function_exists('read_config_option')) {
 	}
 }
 
+// A per-user Cacti setting, as read_user_setting() returns it.
+$GLOBALS['__smokeping_user_settings'] = [];
+
+if (!function_exists('read_user_setting')) {
+	function read_user_setting($config_name, $default = false, $force = false, $user = 0) {
+		return $GLOBALS['__smokeping_user_settings'][$config_name] ?? $default;
+	}
+}
+
 // The purge sweep reads the purge queue; unit tests have no database. A test
 // fills $GLOBALS['__smokeping_purge_queue'] with queue rows and reads the
 // statements the code ran from $GLOBALS['__smokeping_db_exec'].

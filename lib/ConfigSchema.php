@@ -106,7 +106,7 @@ final class ConfigSchema {
 	 * look like its type stays a string, and the check reports it.
 	 */
 	public static function coerce(string $type, string $text): int|bool|string {
-		if ($type === 'int' && preg_match('/^-?[0-9]{1,18}$/', $text) === 1) {
+		if ($type === 'int' && preg_match('/^-?[0-9]{1,18}$/D', $text) === 1) {
 			return (int) $text;
 		}
 

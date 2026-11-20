@@ -96,7 +96,7 @@ function smokeping_cli_import_smokeping(array $options, $file, $apply, $confirm,
 	$service = smokeping_import_service();
 
 	foreach (array('device-template', 'poller', 'site', 'tree') as $name) {
-		if (isset($options[$name]) && !preg_match('/^[0-9]{1,9}$/', $options[$name])) {
+		if (isset($options[$name]) && !preg_match('/^[0-9]{1,9}$/D', $options[$name])) {
 			fwrite(STDERR, 'ERROR: --' . $name . ' must be a number' . PHP_EOL . $usage);
 
 			return 1;

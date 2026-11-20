@@ -39,7 +39,7 @@ enum LossColors: string {
 	 * 2.007003; null for a version that is not in that form.
 	 */
 	public static function ofVersion(string $version): ?self {
-		if (preg_match('/^(\d+)\.(\d{3})\d{3}$/', $version, $m) !== 1) {
+		if (preg_match('/^(\d+)\.(\d{3})\d{3}$/D', $version, $m) !== 1) {
 			return null;
 		}
 
@@ -59,7 +59,7 @@ enum LossColors: string {
 	 * 2.7.3; anything else unchanged.
 	 */
 	public static function displayVersion(string $version): string {
-		if (preg_match('/^(\d+)\.(\d{3})(\d{3})$/', $version, $m) !== 1) {
+		if (preg_match('/^(\d+)\.(\d{3})(\d{3})$/D', $version, $m) !== 1) {
 			return $version;
 		}
 

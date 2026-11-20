@@ -61,6 +61,7 @@ describe('LossColors', function () {
 		['3.000000', LossColors::Current],
 		['', null],
 		['2.8.2', null],
+		["2.007003\n", null],
 	]);
 
 	it('follows the setting, else the detected version, else 2.8 and later', function () {
@@ -72,7 +73,8 @@ describe('LossColors', function () {
 			->and(LossColors::resolve('bogus', ''))->toBe(LossColors::Current)
 			->and(LossColors::Legacy->other())->toBe(LossColors::Current)
 			->and(LossColors::displayVersion('2.007003'))->toBe('2.7.3')
-			->and(LossColors::displayVersion('odd'))->toBe('odd');
+			->and(LossColors::displayVersion('odd'))->toBe('odd')
+			->and(LossColors::displayVersion("2.007003\n"))->toBe("2.007003\n");
 	});
 
 	it('names a graph template per ping count and color table', function () {

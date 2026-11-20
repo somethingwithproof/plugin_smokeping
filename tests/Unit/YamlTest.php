@@ -19,6 +19,7 @@
 
 use Somethingwithproof\Smokeping\ConfigException;
 use Somethingwithproof\Smokeping\YamlReader;
+use Somethingwithproof\Smokeping\YamlScalar;
 use Somethingwithproof\Smokeping\YamlWriter;
 
 function smokeping_yaml(string $text): array {
@@ -288,3 +289,7 @@ it('fails only with a ConfigException on thousands of mutated and random inputs'
 	// Both outcomes must occur, or the corpus is not exercising the reader.
 	expect($ok)->toBeGreaterThan(100)->and($bad)->toBeGreaterThan(100);
 });
+
+it('classifies a scalar with a trailing newline as a plain string, not a number or ambiguous word', function (string $text) {
+	expect(YamlScalar::classify($text)[0])->toBe(YamlScalar::STRING);
+})->with(["12\n", "yes\n", "1.5\n", ".inf\n", "1:30\n"]);

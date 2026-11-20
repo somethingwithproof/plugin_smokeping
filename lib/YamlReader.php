@@ -463,7 +463,7 @@ final class YamlReader {
 			$digits = $e === 'x' ? 2 : ($e === 'u' ? 4 : 0);
 			$hex    = $digits > 0 ? substr($text, $i + 1, $digits) : '';
 
-			if ($digits === 0 || strlen($hex) !== $digits || preg_match('/^[0-9A-Fa-f]+$/', $hex) !== 1) {
+			if ($digits === 0 || strlen($hex) !== $digits || preg_match('/^[0-9A-Fa-f]+$/D', $hex) !== 1) {
 				throw new ConfigException(sprintf('Unknown escape "\\%s" in a double-quoted scalar', $e), $no);
 			}
 

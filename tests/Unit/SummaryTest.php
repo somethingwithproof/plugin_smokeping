@@ -97,6 +97,8 @@ describe('SummaryScript series', function () {
 		'space' => ['12~a b', null],
 		'shell' => ['12~$(id)', null],
 		'empty' => ['', null],
+		'trailing newline' => ["12~berlin\n", null],
+		'newline after separator' => ["12~\n", null],
 	]);
 
 	it('builds the key the data source stores', function () {

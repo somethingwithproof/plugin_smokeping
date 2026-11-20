@@ -54,11 +54,67 @@ final class ConfigRepository {
 	}
 
 	/**
-	 * Devices Cacti lists, which is what get_allowed_devices() returns for a
-	 * user with unrestricted device access.
+	 * Sorted ids of the devices a device permission condition allows, or null
+	 * when the query fails or a row has no numeric id. $sqlWhere is the WHERE
+	 * clause smokeping_allowed_device_ids() builds with Cacti's
+	 * get_policy_where(); the joins are those of get_allowed_devices() in
+	 * Cacti 1.2.31 and 1.2.x lib/auth.php, which the condition refers to.
+	 * The clause is SQL and is never built from request input.
+	 *
+	 * @return list<int>|null
 	 */
-	public function deviceCount(): int {
-		return (int) db_fetch_cell_prepared("SELECT COUNT(*) FROM host WHERE id > 0 AND deleted = ''", [], '', true, $this->connection);
+	public function allowedDeviceIds(string $sqlWhere): ?array {
+		$rows = db_fetch_assoc_prepared("SELECT DISTINCT h.id
+			FROM host AS h
+			LEFT JOIN graph_local AS gl
+			ON h.id = gl.host_id
+			LEFT JOIN graph_templates AS gt
+			ON gt.id = gl.graph_template_id
+			LEFT JOIN host_template AS ht
+			ON h.host_template_id = ht.id
+			$sqlWhere", [], true, $this->connection);
+
+		return self::sortedIds($rows);
+	}
+
+	/**
+	 * Ids of every device Cacti lists, disabled ones included. These are the
+	 * devices smokeping_allowed_device_ids() returns for a user with
+	 * unrestricted device access. Null when the query fails or a row has no
+	 * numeric id, so a failure never reads as "no devices".
+	 *
+	 * @return list<int>|null
+	 */
+	public function deviceIds(): ?array {
+		$rows = db_fetch_assoc_prepared("SELECT id FROM host WHERE id > 0 AND deleted = ''", [], true, $this->connection);
+
+		return self::sortedIds($rows);
+	}
+
+	/**
+	 * The sorted ids of a device query's rows, or null when the query failed
+	 * (Cacti returns false) or a row has no numeric id.
+	 *
+	 * @return list<int>|null
+	 */
+	private static function sortedIds(mixed $rows): ?array {
+		if (!is_array($rows)) {
+			return null;
+		}
+
+		$ids = [];
+
+		foreach ($rows as $row) {
+			if (!is_array($row) || !is_numeric($row['id'] ?? null)) {
+				return null;
+			}
+
+			$ids[] = (int) $row['id'];
+		}
+
+		sort($ids);
+
+		return $ids;
 	}
 
 	/**

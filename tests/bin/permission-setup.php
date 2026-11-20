@@ -32,6 +32,8 @@
  *           sees unmapped targets but only the mapped ones of device A
  * broad     View Graphs and SmokePing View, everything allowed by policy
  * norealm   View Graphs only, every device allowed by policy
+ * nodisabled the SmokePing admin realm, devices denied by policy; the suite
+ *           grants every device but a disabled one
  */
 
 chdir(dirname(__DIR__, 4));
@@ -70,6 +72,7 @@ $users = array(
 	'revoked' => array('policy' => 2, 'realms' => array(7, $viewRealm), 'devices' => array((int) $deviceA)),
 	'broad'   => array('policy' => 1, 'realms' => array(7, $viewRealm), 'devices' => array()),
 	'norealm' => array('policy' => 1, 'realms' => array(7), 'devices' => array()),
+	'nodisabled' => array('policy' => 2, 'realms' => array(7, $viewRealm, $adminRealm), 'devices' => array()),
 );
 
 foreach ($users as $name => $spec) {

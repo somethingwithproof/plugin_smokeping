@@ -137,9 +137,9 @@ has() { grep -q -- "$1"; }
 # token is turned away before the plugin's code runs.
 csrf() { get "$1" "$2" | sed -n "s/.*var csrfMagicToken='\([^']*\)'.*/\1/p" | head -1; }
 
-for u in admin restricted scoped revoked broad norealm; do login $u; done
+for u in admin restricted scoped revoked broad norealm nodisabled; do login $u; done
 title() { get "$1" index.php | grep -o '<title>[^<]*</title>' | head -1; }
-for u in admin restricted scoped revoked broad norealm; do
+for u in admin restricted scoped revoked broad norealm nodisabled; do
 	t=$(title $u)
 	# Users without console access land on a permission page after login; what matters is that the session exists.
 	case "$t" in *Login*) result FAIL "login-$u" "$t";; *) result PASS "login-$u" "$t";; esac
@@ -436,6 +436,41 @@ for loc in de-DE es-ES fr-FR ja-JP zh-CN; do
 done
 get admin "$HEALTH?language=en-US" > /dev/null
 $L set_setting "i18n_language_support=0" >/dev/null
+
+# ---- a disabled device: Hide Disabled must not decide who sees every device ----
+# Cacti's get_allowed_devices() leaves disabled devices out while the user's
+# Hide Disabled setting is on, its default, and reads that setting from
+# settings_user. The administrator, who may see every device, keeps export and
+# import with a disabled device present; a user granted every device but the
+# disabled one is refused them.
+$L make_devices "1:bulkoff" >/dev/null
+dev_off=$(q "SELECT id FROM host WHERE description = 'bulkoff1'" | ids_of)
+php -r 'chdir("/cacti"); include("./include/cli_check.php");
+	$off = (int) $argv[1];
+	db_execute_prepared("UPDATE host SET disabled = \"on\" WHERE id = ?", array($off));
+	db_execute("DELETE s FROM settings_user AS s INNER JOIN user_auth AS u ON u.id = s.user_id WHERE s.name = \"hide_disabled\" AND u.username IN (\"admin\", \"nodisabled\")");
+	db_execute_prepared("DELETE p FROM user_auth_perms AS p INNER JOIN user_auth AS u ON u.id = p.user_id WHERE u.username = \"nodisabled\"");
+	db_execute_prepared("INSERT INTO user_auth_perms (user_id, item_id, type) SELECT u.id, h.id, 3 FROM user_auth AS u, host AS h WHERE u.username = \"nodisabled\" AND h.id > 0 AND h.deleted = \"\" AND h.id <> ?", array($off));' "$dev_off"
+hide=$(php -r 'chdir("/cacti"); include("./include/cli_check.php"); echo read_user_setting("hide_disabled", false, false, 1);')
+[ -n "$dev_off" ] && [ "$hide" = on ] && [ "$(q "SELECT disabled FROM host WHERE id = $dev_off" | jcell)" = on ] && result PASS disabled-fixture "device $dev_off disabled, administrator's Hide Disabled on by default" || result FAIL disabled-fixture "device '$dev_off', hide_disabled '$hide'"
+
+check disabled-config-page-admin "export and import forms with a disabled device present" sh -c 'echo "$1" | grep -q "Export the SmokePing Configuration" && ! echo "$1" | grep -q "do not cover every device"' x "$(get admin $CONF)"
+token=$(conf_token admin)
+check disabled-config-export-admin "the export downloads" sh -c 'echo "$1" | grep -q "^schema_version: 1$"' x "$(curl -s -b $WORK/admin.jar -c $WORK/admin.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=yaml" "$BASE/$CONF")"
+check disabled-import-page-admin "the import form" sh -c 'echo "$1" | grep -q "Preview reads the configuration" && ! echo "$1" | grep -q "do not cover every device"' x "$(get admin $IMP)"
+
+check disabled-config-page-refused "no forms for a user denied only the disabled device" sh -c '! echo "$1" | grep -q "Import a SmokePing Configuration\|Export the SmokePing" && echo "$1" | grep -q "do not cover every device"' x "$(get nodisabled $CONF)"
+token=$(csrf nodisabled $INV)
+check disabled-config-export-refused "a POST to export returns no configuration" sh -c '! echo "$1" | grep -q "schema_version\|Perm/\|hostname" && echo "$1" | grep -q "do not cover every device"' x "$(curl -s -b $WORK/nodisabled.jar -c $WORK/nodisabled.jar --data-urlencode "__csrf_magic=$token" --data "action=export&format=yaml" "$BASE/$CONF")"
+printf 'schema_version: 1\ntargets:\n  - path: Conf/nodisabled\n    host: nodisabled.example\n' > $WORK/conf-nd.yaml
+token=$(csrf nodisabled $INV)
+check disabled-config-plan-refused "an upload to check returns no plan" sh -c '! echo "$1" | grep -q "add    target\|Apply Import\|Plan " && echo "$1" | grep -q "do not cover every device"' x "$(curl -s -b $WORK/nodisabled.jar -c $WORK/nodisabled.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-nd.yaml" "$BASE/$CONF")"
+token=$(csrf nodisabled $INV)
+curl -s -b $WORK/nodisabled.jar -c $WORK/nodisabled.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
+[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/nodisabled'" | jcell)" = 0 ] && result PASS disabled-config-apply-refused "an apply post changes nothing" || result FAIL disabled-config-apply-refused "a target was added"
+check disabled-import-page-refused "no import form" sh -c '! echo "$1" | grep -q "Preview reads the configuration" && echo "$1" | grep -q "do not cover every device"' x "$(get nodisabled $IMP)"
+check disabled-import-preview-refused "no import plan" sh -c '! echo "$1" | grep -q "Devices: \|imp.example" && echo "$1" | grep -q "do not cover every device"' x "$(imp_preview nodisabled $WORK/imp.conf)"
+[ -n "$dev_off" ] && $L remove_devices "$dev_off" >/dev/null 2>&1
 
 # Leave no devices behind.
 left=$(q "SELECT id FROM host WHERE description LIKE 'bulk%' OR id IN (SELECT host_id FROM plugin_smokeping_object)" 2>/dev/null | ids_of)

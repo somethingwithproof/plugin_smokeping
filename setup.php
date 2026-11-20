@@ -400,41 +400,95 @@ function smokeping_config_service(bool $webUser = false): \Somethingwithproof\Sm
 }
 
 /**
- * Whether the user's device permissions cover every device: only when
- * get_allowed_devices() returns the id of every device Cacti lists. A user
- * limited to some devices, however many, is not unrestricted.
- *
- * get_allowed_devices() drops disabled devices while the user's Hide Disabled
- * display setting is on (the default), which would hide a permission denied on
- * a disabled device. It reads that setting from the session's cached user
- * settings, so the check turns it off for the one call and restores it.
+ * Whether the user's device permissions cover every device: only when the
+ * devices they allow, disabled ones included, are exactly the devices Cacti
+ * lists. A user limited to some devices, however many, is not unrestricted,
+ * and any doubt about the allowed set counts as limited.
  */
 function smokeping_user_sees_every_device(\Somethingwithproof\Smokeping\ConfigRepository $repository): bool {
-	$hadSettings = isset($_SESSION['sess_user_config_array']);
-	$saved       = $hadSettings ? $_SESSION['sess_user_config_array'] : null;
-	$override    = is_array($saved) ? $saved : [];
+	$allowed = smokeping_allowed_device_ids($repository);
 
-	$override['hide_disabled']          = '';
-	$_SESSION['sess_user_config_array'] = $override;
+	return $allowed !== null && $allowed === $repository->deviceIds();
+}
 
-	try {
-		$allowed = get_allowed_devices();
-	} finally {
-		if ($hadSettings) {
-			$_SESSION['sess_user_config_array'] = $saved;
-		} else {
-			unset($_SESSION['sess_user_config_array']);
+/**
+ * Sorted ids of the devices the logged-in user's permissions allow, disabled
+ * devices included, or null when they cannot be worked out.
+ *
+ * This is Cacti's get_allowed_devices() without its Hide Disabled filter.
+ * get_allowed_devices() drops disabled devices while the user's Hide Disabled
+ * setting is on, the default, and reads that setting for the session user
+ * from settings_user (read_user_setting() with $user > 0 never consults the
+ * session), so it cannot be turned off for one call. The query is rebuilt
+ * from Cacti's own permission helpers instead. It mirrors get_allowed_devices()
+ * in lib/auth.php (Cacti 1.2.31 lines 2768-2870; the 1.2.x branch, as of
+ * this change, lines 2810-2912): the user from the session when
+ * auth_method > 0, get_simple_device_perms(), get_policy_where() over
+ * get_policies() unless the permissions are simple or authentication is off,
+ * and the same host, graph_local, graph_templates and host_template joins
+ * (ConfigRepository::allowedDeviceIds()). The helpers are called, not copied;
+ * review this function and that query when get_allowed_devices() changes.
+ *
+ * It refuses where Cacti would not: a missing helper, a session user that
+ * does not exist, a graph permission method other than 1-4 (for which
+ * get_policy_where() adds no condition), a policy row of the wrong shape, a
+ * failed query, or a non-numeric id gives null.
+ *
+ * @return list<int>|null
+ */
+function smokeping_allowed_device_ids(\Somethingwithproof\Smokeping\ConfigRepository $repository): ?array {
+	foreach (['read_config_option', 'auth_valid_user', 'get_simple_device_perms', 'get_policies', 'get_policy_where'] as $helper) {
+		if (!function_exists($helper)) {
+			return null;
 		}
 	}
 
-	if (!is_array($allowed)) {
-		return false;
+	$authMethod = read_config_option('auth_method');
+
+	if (!is_numeric($authMethod)) {
+		return null;
 	}
 
-	$ids = array_map(static fn (mixed $device): int => is_array($device) && isset($device['id']) && is_numeric($device['id']) ? (int) $device['id'] : 0, $allowed);
-	sort($ids);
+	$sqlWhere = "WHERE ((h.id > 0 AND h.deleted = '') OR h.id IS NULL)";
 
-	return $ids === $repository->deviceIds();
+	if ((int) $authMethod > 0) {
+		$userId = $_SESSION['sess_user_id'] ?? null;
+
+		if (!is_numeric($userId) || (int) $userId <= 0 || !auth_valid_user((int) $userId)) {
+			return null;
+		}
+
+		$userId = (int) $userId;
+
+		if (!get_simple_device_perms($userId)) {
+			$graphAuthMethod = read_config_option('graph_auth_method');
+			$policies        = get_policies($userId);
+
+			if (!is_numeric($graphAuthMethod) || !in_array((int) $graphAuthMethod, [1, 2, 3, 4], true) || !is_array($policies) || $policies === []) {
+				return null;
+			}
+
+			foreach ($policies as $policy) {
+				if (!is_array($policy) || !is_numeric($policy['id'] ?? null) || !isset($policy['type'])) {
+					return null;
+				}
+
+				foreach (['policy_graphs', 'policy_hosts', 'policy_graph_templates'] as $column) {
+					if (!array_key_exists($column, $policy)) {
+						return null;
+					}
+				}
+			}
+
+			$sqlWhere = get_policy_where((int) $graphAuthMethod, $policies, $sqlWhere);
+
+			if (!is_string($sqlWhere)) {
+				return null;
+			}
+		}
+	}
+
+	return $repository->allowedDeviceIds($sqlWhere);
 }
 
 /**

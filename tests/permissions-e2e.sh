@@ -466,8 +466,9 @@ printf 'schema_version: 1\ntargets:\n  - path: Conf/nodisabled\n    host: nodisa
 token=$(csrf nodisabled $INV)
 check disabled-config-plan-refused "an upload to check returns no plan" sh -c '! echo "$1" | grep -q "add    target\|Apply Import\|Plan " && echo "$1" | grep -q "do not cover every device"' x "$(curl -s -b $WORK/nodisabled.jar -c $WORK/nodisabled.jar -F "__csrf_magic=$token" -F action=check -F format=yaml -F "config_file=@$WORK/conf-nd.yaml" "$BASE/$CONF")"
 token=$(csrf nodisabled $INV)
-curl -s -b $WORK/nodisabled.jar -c $WORK/nodisabled.jar -o /dev/null --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF"
-[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/nodisabled'" | jcell)" = 0 ] && result PASS disabled-config-apply-refused "an apply post changes nothing" || result FAIL disabled-config-apply-refused "a target was added"
+apply_nd=$(curl -s -b $WORK/nodisabled.jar -c $WORK/nodisabled.jar --data-urlencode "__csrf_magic=$token" --data "action=apply&plan=0000000000000000" "$BASE/$CONF")
+check disabled-config-apply-refused "an apply post is refused for device coverage" sh -c 'echo "$1" | grep -q "do not cover every device"' x "$apply_nd"
+[ "$(q "SELECT COUNT(*) FROM plugin_smokeping_target WHERE path = 'Conf/nodisabled'" | jcell)" = 0 ] && result PASS disabled-config-apply-writes-nothing "an apply post changes nothing" || result FAIL disabled-config-apply-writes-nothing "a target was added"
 check disabled-import-page-refused "no import form" sh -c '! echo "$1" | grep -q "Preview reads the configuration" && echo "$1" | grep -q "do not cover every device"' x "$(get nodisabled $IMP)"
 check disabled-import-preview-refused "no import plan" sh -c '! echo "$1" | grep -q "Devices: \|imp.example" && echo "$1" | grep -q "do not cover every device"' x "$(imp_preview nodisabled $WORK/imp.conf)"
 [ -n "$dev_off" ] && $L remove_devices "$dev_off" >/dev/null 2>&1

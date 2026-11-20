@@ -74,6 +74,30 @@ final class ConfigRepository {
 			ON h.host_template_id = ht.id
 			$sqlWhere", [], true, $this->connection);
 
+		return self::sortedIds($rows);
+	}
+
+	/**
+	 * Ids of every device Cacti lists, disabled ones included. These are the
+	 * devices smokeping_allowed_device_ids() returns for a user with
+	 * unrestricted device access. Null when the query fails or a row has no
+	 * numeric id, so a failure never reads as "no devices".
+	 *
+	 * @return list<int>|null
+	 */
+	public function deviceIds(): ?array {
+		$rows = db_fetch_assoc_prepared("SELECT id FROM host WHERE id > 0 AND deleted = ''", [], true, $this->connection);
+
+		return self::sortedIds($rows);
+	}
+
+	/**
+	 * The sorted ids of a device query's rows, or null when the query failed
+	 * (Cacti returns false) or a row has no numeric id.
+	 *
+	 * @return list<int>|null
+	 */
+	private static function sortedIds(mixed $rows): ?array {
 		if (!is_array($rows)) {
 			return null;
 		}
@@ -88,20 +112,6 @@ final class ConfigRepository {
 			$ids[] = (int) $row['id'];
 		}
 
-		sort($ids);
-
-		return $ids;
-	}
-
-	/**
-	 * Ids of every device Cacti lists, disabled ones included. These are the
-	 * devices smokeping_allowed_device_ids() returns for a user with
-	 * unrestricted device access.
-	 *
-	 * @return list<int>
-	 */
-	public function deviceIds(): array {
-		$ids = array_map(static fn (array $row): int => (int) $row['id'], Row::rows(db_fetch_assoc_prepared("SELECT id FROM host WHERE id > 0 AND deleted = ''", [], true, $this->connection)));
 		sort($ids);
 
 		return $ids;

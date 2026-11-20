@@ -32,6 +32,8 @@ $GLOBALS['__dv_permitted']     = [];
 $GLOBALS['__dv_valid_user']    = true;
 $GLOBALS['__dv_policies']      = null;
 $GLOBALS['__dv_rows']          = null;
+$GLOBALS['__dv_all_rows']      = null;
+$GLOBALS['__dv_hosts']         = [1, 2, 3];
 
 const SMOKEPING_DV_DISABLED = [3];
 
@@ -70,7 +72,11 @@ if (!function_exists('get_policy_where')) {
 // h.disabled as get_allowed_devices() does under Hide Disabled. Any other
 // query is ConfigRepository::deviceIds(), every non-deleted host.
 function smokeping_dv_query(string $sql): mixed {
-	$ids = [1, 2, 3];
+	$ids = $GLOBALS['__dv_hosts'];
+
+	if (!str_contains($sql, 'DISTINCT h.id') && $GLOBALS['__dv_all_rows'] !== null) {
+		return $GLOBALS['__dv_all_rows'];
+	}
 
 	if (str_contains($sql, 'DISTINCT h.id')) {
 		if ($GLOBALS['__dv_rows'] !== null) {
@@ -117,6 +123,8 @@ beforeEach(function () {
 	$GLOBALS['__dv_valid_user']       = true;
 	$GLOBALS['__dv_policies']         = null;
 	$GLOBALS['__dv_rows']             = null;
+	$GLOBALS['__dv_all_rows']         = null;
+	$GLOBALS['__dv_hosts']            = [1, 2, 3];
 });
 
 afterEach(function () {
@@ -186,4 +194,21 @@ it('refuses when the allowed devices cannot be worked out', function (Closure $b
 	'a policy without its columns' => [fn () => $GLOBALS['__dv_policies'] = [['id' => 2, 'type' => 'user']]],
 	'a failed device query'       => [fn () => $GLOBALS['__dv_rows'] = false],
 	'a device row without an id'  => [fn () => $GLOBALS['__dv_rows'] = [['id' => '1'], ['id' => '2'], ['name' => 'x']]],
+	'a failed full device query'  => [fn () => $GLOBALS['__dv_all_rows'] = false],
+	'a full device row without an id' => [fn () => $GLOBALS['__dv_all_rows'] = [['id' => '1'], ['name' => 'x']]],
 ]);
+
+it('refuses a user allowed no devices when the full device query fails', function () {
+	smokeping_dv_user(false, []);
+	$GLOBALS['__dv_all_rows'] = false;
+
+	expect(smokeping_allowed_device_ids(new Somethingwithproof\Smokeping\ConfigRepository(false, '/var/www/cacti/rra')))->toBe([])
+		->and(smokeping_sees_every_device())->toBeFalse();
+});
+
+it('lets a user with the realm through when Cacti has no devices at all', function () {
+	smokeping_dv_user(false, []);
+	$GLOBALS['__dv_hosts'] = [];
+
+	expect(smokeping_sees_every_device())->toBeTrue();
+});

@@ -403,12 +403,17 @@ function smokeping_config_service(bool $webUser = false): \Somethingwithproof\Sm
  * Whether the user's device permissions cover every device: only when the
  * devices they allow, disabled ones included, are exactly the devices Cacti
  * lists. A user limited to some devices, however many, is not unrestricted,
- * and any doubt about the allowed set counts as limited.
+ * and a failure to read either set counts as limited.
+ *
+ * With no devices at all, both sets are empty and every user with the realm
+ * passes: there is no device name to export or to hide, and refusing would
+ * block the import that first populates a new Cacti.
  */
 function smokeping_user_sees_every_device(\Somethingwithproof\Smokeping\ConfigRepository $repository): bool {
 	$allowed = smokeping_allowed_device_ids($repository);
+	$every   = $repository->deviceIds();
 
-	return $allowed !== null && $allowed === $repository->deviceIds();
+	return $allowed !== null && $every !== null && $allowed === $every;
 }
 
 /**

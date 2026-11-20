@@ -56,7 +56,7 @@ describe('TargetPath', function () {
 
 	it('rejects paths that could escape the data directory or are not section names', function (string $path) {
 		expect(fn () => TargetPath::fromString($path))->toThrow(InvalidArgumentException::class);
-	})->with(['', '/a', 'a/', 'a//b', '../a', 'a/../b', 'a.b', 'a b', 'a;b', str_repeat('a', 256)]);
+	})->with(['', '/a', 'a/', 'a//b', '../a', 'a/../b', 'a.b', 'a b', 'a;b', "gw1\n", "Europe/gw1\n", "Europe\n/gw1", str_repeat('a', 256)]);
 
 	it('maps the master and slave locations to SmokePing file names', function () {
 		$path = TargetPath::fromString('Europe/gw1');
@@ -68,7 +68,7 @@ describe('TargetPath', function () {
 	it('refuses location names that are not slave names', function (string $location) {
 		expect(TargetPath::isLocation($location))->toBeFalse()
 			->and(fn () => TargetPath::fromString('a')->rrdFile('/m', $location))->toThrow(InvalidArgumentException::class);
-	})->with(['.', '..', '.hidden', 'a/b', 'a~b', 'a b']);
+	})->with(['.', '..', '.hidden', 'a/b', 'a~b', 'a b', "sydney\n"]);
 });
 
 describe('TargetId', function () {

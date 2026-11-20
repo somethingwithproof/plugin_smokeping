@@ -75,7 +75,7 @@ $smokeping_posted   = isset_request_var('sections') ? get_nfilter_request_var('s
 
 if (is_array($smokeping_posted)) {
 	foreach ($smokeping_posted as $smokeping_section) {
-		if (is_string($smokeping_section) && preg_match('/^[-_0-9a-zA-Z]+(\/[-_0-9a-zA-Z]+)*$/', $smokeping_section)) {
+		if (is_string($smokeping_section) && preg_match('/^[-_0-9a-zA-Z]+(\/[-_0-9a-zA-Z]+)*$/D', $smokeping_section)) {
 			$smokeping_sections[] = $smokeping_section;
 		}
 	}

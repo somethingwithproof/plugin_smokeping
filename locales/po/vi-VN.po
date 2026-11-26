@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: vi-VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Chính"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "So sánh mất gói và độ trễ với các đồ thị SmokePing và trạng thái bảo trì. Chuyển tiếp các tệp bị thiếu, việc nhập và liên kết lại lên quản trị viên."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "đã bỏ qua, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (mặc định)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "Cấu hình SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Quyền thiết bị của bạn không bao gồm mọi thiết bị, vì vậy bạn không thể xuất hoặc nhập cấu hình SmokePing. Hãy yêu cầu quản trị viên có quyền truy cập vào tất cả thiết bị."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "Xuất cấu hình SmokePing"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "Bản xuất chứa cài đặt plugin, các mục tiêu SmokePing mà plugin đã đọc và thiết bị được ánh xạ tương ứng theo tên máy chủ và mô tả của thiết bị. Bản xuất không chứa nguồn dữ liệu, đồ thị, tệp RRD hoặc thông tin xác thực."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "Tải xuống"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "Nhập cấu hình SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "Việc chọn tệp chỉ để kiểm tra tệp đó. Màn hình tiếp theo sẽ liệt kê mọi thay đổi mà tệp sẽ thực hiện và không có gì được ghi cho đến khi bạn xác nhận danh sách đó. Thao tác nhập chỉ thêm mới và cập nhật; nó không bao giờ xóa mục tiêu hoặc di chuyển ánh xạ, và không bao giờ tạo tệp RRD hay tác động đến thư mục dữ liệu SmokePing."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "Kiểm tra tệp"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "Kiểm tra nhập"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "Không có dữ liệu nào được ghi."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "Quay lại"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "Không thể nhập tệp cho đến khi các lỗi này được khắc phục. Không có dữ liệu nào được ghi."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "Bản cài đặt hiện tại đã khớp với tệp. Không có gì để nhập."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "Kế hoạch %s. Việc áp dụng sẽ thực hiện chính xác các thay đổi này trong một giao dịch. Nếu tệp hoặc bản cài đặt đã thay đổi kể từ lần kiểm tra này, việc nhập sẽ bị từ chối và bạn phải kiểm tra lại."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "Áp dụng nhập"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "Hủy"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "Thêm mục tiêu SmokePing"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "không có mục tiêu SmokePing nào khớp"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "Nhấp vào Tiếp tục để thêm các mục tiêu SmokePing có máy chủ trùng với tên máy chủ của từng thiết bị đã chọn. Mỗi mục tiêu sẽ có một đồ thị tóm tắt để cảnh báo và một đồ thị smoke khi dữ liệu của SmokePing có thể vẽ được. Thiết bị không bao giờ được tạo tại đây."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "%d mục tiêu khớp."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "%d đối tượng đã được tạo hoặc ánh xạ, %d đã bỏ qua."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "Thiết bị này có các mục tiêu SmokePing, nhưng trình đọc điền giá trị tóm tắt của chúng chạy trên poller %d còn thiết bị được lưu trên poller %d. Các giá trị tóm tắt và cảnh báo sẽ dừng cho đến khi thiết bị được gán lại cho poller %d."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "Mục tiêu SmokePing của thiết bị này"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "%d đồ thị smoke vẫn vẽ các màu khác; poller chính chuyển đổi tối đa 200 đồ thị mỗi chu kỳ."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "Không thể chuyển đổi %d đồ thị smoke; hãy chạy upgrade-graphs để thử lại và xem nhật ký Cacti để biết nguyên nhân."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Cài đặt Màu mất gói yêu cầu màu mất gói của SmokePing %s, nhưng trình đọc phát hiện SmokePing %s. Hãy đặt thành Tự động trừ khi các đồ thị cần hiển thị khác với SmokePing."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Cài đặt Màu mất gói chọn màu mất gói của SmokePing %s cho các đồ thị smoke."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Trình đọc không tìm thấy phiên bản SmokePing, nên cài đặt Màu mất gói chọn màu mất gói của SmokePing 2.8 trở về sau. Nếu là SmokePing 2.7, hãy đặt Màu mất gói thành SmokePing 2.7."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Trình đọc phát hiện SmokePing %s, nên cài đặt Màu mất gói chọn màu mất gói của phiên bản đó."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold chưa được cài đặt, nên không có mục tiêu nào cảnh báo trên cả SmokePing và Thold."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Không có mục tiêu nào có cả cảnh báo SmokePing và ngưỡng Thold đang bật."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d mục tiêu có cả cảnh báo SmokePing và ngưỡng Thold đang bật, nên một sự cố có thể thông báo hai lần. Hãy so sánh điều kiện cảnh báo của chúng trước khi xóa một trong hai: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "Nhập các mẫu SmokePing thất bại và sẽ không tự động thử lại: %s Hãy dùng Nhập lại mẫu sau khi khắc phục nguyên nhân."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "Các mẫu SmokePing chưa được nhập. Hãy dùng Nhập lại mẫu."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "Các mẫu SmokePing đã được nhập."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "Mọi thiết bị có nguồn dữ liệu tóm tắt đều được thăm dò bởi poller của trình đọc."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "%d thiết bị có nguồn dữ liệu tóm tắt nhưng không được thăm dò bởi poller %d (nơi chạy trình đọc), nên giá trị tóm tắt và cảnh báo của chúng không có dữ liệu: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "Cấu hình SmokePing được đọc trên poller %d, không phải trên máy chủ này; hàng kiểm kê hiển thị kết quả của lần đọc gần nhất."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "Không thể đọc cấu hình SmokePing %s: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "Cấu hình SmokePing %s liệt kê %d mục tiêu; %d mục bị bỏ qua: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "Cấu hình SmokePing %s liệt kê %d mục tiêu."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "Cài đặt đường dẫn tệp nhị phân PHP bị trống hoặc không phải là tệp thực thi, nên trình đọc không thể khởi động."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "Trình đọc khởi động bằng %s."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "Trình đọc chưa hoàn thành lần chạy nào trên poller này."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "Lần chạy trình đọc gần nhất đã kết thúc cách đây %d giây, vượt quá ba chu kỳ poller."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "Trình đọc đã đọc %d trên %d chuỗi trong %.1f giây và đã vượt quá giới hạn thời gian %d lần."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "Trình đọc đã đọc %d trên %d chuỗi trong %.1f giây, cách đây %d giây."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "Chưa có kiểm kê nào được đọc trên poller này."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "Lần kiểm kê gần nhất đã thất bại cách đây %d giây và bản kiểm kê trước đó vẫn đang được sử dụng: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "Bản kiểm kê đã liệt kê %d mục tiêu cách đây %d giây."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "Tình trạng SmokePing cho Poller %d"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "Kiểm tra"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "Chi tiết"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "Trạng thái"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "Nhập lại mẫu"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "OK"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "Cảnh báo"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "Lỗi"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "Không rõ"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d giây trước"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "chưa bao giờ"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "Nhập cấu hình SmokePing"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "Tệp SmokePing đã cấu hình được đọc cùng với các tệp mà nó bao gồm từ thư mục riêng của nó. Tệp tải lên chỉ được đọc độc lập: không được phép dùng @include trong tệp đó."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "Tệp đã cấu hình, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "Tệp tải lên, không có @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "Tệp đã tải lên"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "Chỉ dành cho tệp tải lên: cấu hình SmokePing có kích thước tối đa 4 MiB."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "Thiết bị"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "Một thiết bị cho mỗi máy chủ SmokePing sẽ nhóm các mục tiêu thăm dò cùng một máy chủ. Thiết bị đã có tên máy chủ đó trên poller đã chọn sẽ được sử dụng thay vì tạo thiết bị mới."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "Một thiết bị cho mỗi máy chủ SmokePing"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "Một thiết bị cho mỗi mục tiêu SmokePing"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "Mẫu thiết bị"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "Mẫu cho các thiết bị mà thao tác nhập tạo ra."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "Poller"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "Poller của các thiết bị mới. Đây phải là poller chạy trình đọc SmokePing, nếu không các nguồn dữ liệu tóm tắt của chúng sẽ không có dữ liệu."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "Địa điểm"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "Địa điểm của các thiết bị mới."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "Không có"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "Cây đồ thị"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "Phản chiếu phân cấp SmokePing thành cây đồ thị: mỗi phần trở thành một nhánh và mỗi thiết bị là một máy chủ dưới nhánh của các mục tiêu tương ứng. Các nhánh và máy chủ hiện có sẽ được tái sử dụng."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "Một cây mới, đặt tên bên dưới"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "Không phản chiếu"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "Tên cây mới"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "Chỉ dành cho cây mới. Cây đã có tên này sẽ được sử dụng."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "Xem trước sẽ đọc cấu hình và liệt kê những gì thao tác nhập sẽ tạo. Không có gì được ghi cho đến khi bạn xác nhận danh sách đó ở màn hình tiếp theo và các tệp của chính SmokePing không bao giờ bị ghi đè."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "Xem trước"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "Ghi chú"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "Mức"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "Thông báo"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "Các phần SmokePing"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "Nhập"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "Phần"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "Mục tiêu"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "Chưa có phần nào được chọn, nên mọi mục tiêu đều được chọn. Hãy đánh dấu các phần và cập nhật bản xem trước để chỉ nhập những phần đó."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "Chỉ các mục tiêu trong những phần được đánh dấu mới được chọn."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "Cập nhật xem trước"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "Tạo"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "Dùng thiết bị %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "Đã được ánh xạ tới thiết bị %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "Bỏ qua: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "Thiết bị: %d sẽ tạo, %d hiện có sẽ dùng, %d đã ánh xạ, %d đã bỏ qua"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "Hành động"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "Mô tả"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "Tên máy chủ"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "Mục tiêu SmokePing"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "Không có thiết bị."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "Tóm tắt"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "máy chính"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "Đồ thị: %d sẽ tạo, %d đã tồn tại"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "Đồ thị"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "Vị trí"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "Mục tiêu SmokePing"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "Không có đồ thị nào để tạo."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "Lý do"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "Chỉ dữ liệu tóm tắt: %d mục tiêu"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "Nhánh"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "Thiết bị"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "Cây đồ thị: %d nhánh, %d mục thiết bị"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "Ước tính"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "Tải ước tính"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "Không thể nhập cấu hình cho đến khi các lỗi trên được khắc phục. Không có dữ liệu nào được ghi."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "Mọi mục tiêu đã chọn đều đã có trong Cacti. Không có gì để nhập."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "Kế hoạch %s. Thao tác nhập sẽ tạo chính xác những gì được liệt kê ở trên thông qua các chức năng thiết bị, đồ thị và cây của Cacti. Nếu cấu hình SmokePing hoặc Cacti thay đổi kể từ bản xem trước này, việc nhập sẽ bị từ chối và bạn phải xem trước lại."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s và %d mục khác"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "Thêm %s vào Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "Mục tiêu SmokePing %s (máy chủ %s) chưa có thiết bị Cacti. Hãy chọn hành động thực hiện."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "Tạo thiết bị mới từ mẫu Mục tiêu SmokePing"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "Ánh xạ tới một thiết bị hiện có"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "Dù theo cách nào, mục tiêu cũng sẽ nhận được một đồ thị tóm tắt để cảnh báo và một đồ thị smoke khi dữ liệu của SmokePing có thể vẽ được. Cacti không bao giờ ghi vào các tệp của SmokePing."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "Thêm"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "Xác nhận liên kết lại"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing không còn liệt kê %s nữa. %s có cùng máy chủ (%s) và đầu dò (%s). SmokePing sẽ bắt đầu một tệp mới, trống cho đường dẫn mới."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "Việc liên kết lại sẽ chuyển đồ thị smoke và nguồn dữ liệu tóm tắt sang mục tiêu mới cùng với ánh xạ thiết bị tương ứng. Tệp cũ vẫn giữ lại lịch sử trong một đồ thị lưu trữ. Không có gì bị xóa."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "Thiết bị %d được ánh xạ tới mục tiêu cũ."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "Bỏ qua đề xuất"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "Liên kết lại"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "Đã mất"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "Có mặt"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "Chưa ánh xạ"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Thêm vào Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "Kiểm kê SmokePing"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "Máy chủ"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "Kiểm kê"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "Ánh xạ"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "Tên"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "Đường dẫn"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "Đầu dò"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "Máy phụ"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "Bước / Số lần ping"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "Chưa có mục tiêu nào được nhập trên poller này."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "Xem xét"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "Đề xuất liên kết lại"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "Đường dẫn đã biến mất"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "Đường dẫn mới"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "Không có đề xuất liên kết lại nào."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "%d chuỗi: khoảng %.1f gói tin thăm dò mỗi giây và %.2f lượt cập nhật RRD mỗi giây trong SmokePing."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti nhận khoảng %d hàng nguồn dữ liệu và %d hàng mục đồ thị."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "Điểm gắn kết SmokePing %s không tồn tại. Hãy gắn kết thư mục dữ liệu của SmokePing tại đó ở chế độ chỉ đọc."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s nằm trong đường dẫn RRA và không truy cập qua liên kết tượng trưng (symlink)."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Người dùng Cacti có thể ghi vào %s. Các tệp RRD của SmokePing phải ở chế độ chỉ đọc đối với Cacti."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "Điểm gắn kết SmokePing %s không nằm trong đường dẫn RRA của Cacti %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Đường dẫn RRA của Cacti %s không tồn tại."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "Điểm gắn kết SmokePing %s chứa một đoạn trống, \".\" hoặc \"..\"."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "Điểm gắn kết SmokePing %s được truy cập qua một liên kết tượng trưng (symlink), điều mà Cacti từ chối. Hãy dùng bind mount chỉ đọc để thay thế."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "Không thể đọc bảng gắn kết, nên không thể xác nhận điểm gắn kết ở chế độ chỉ đọc."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s nằm trên một điểm gắn kết chỉ đọc."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s nằm trên điểm gắn kết có thể ghi %s. Hãy gắn kết thư mục dữ liệu của SmokePing ở chế độ chỉ đọc."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "Chưa có bản kiểm kê nào, nên chưa dự kiến có tệp RRD nào."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "Tất cả %d tệp RRD dự kiến đều hiển thị qua điểm gắn kết."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "%d trên %d tệp RRD dự kiến không hiển thị qua điểm gắn kết, ví dụ %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Xem lại các quan sát đã ghi nhận bên dưới. Xác nhận chỉ áp dụng riêng cho phiên này, hết hạn khi các quan sát thay đổi và không bao giờ ẩn cảnh báo hay thay đổi tình trạng."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "Vận hành SmokePing"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Thao tác"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Điều tra"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Đối tượng"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Quan sát lúc (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Trạng thái"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Không xác định hoặc cũ"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Chưa bao giờ"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Đã xác nhận; tình trạng không thay đổi."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Xác nhận"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Không có quan sát nào cho các thiết bị bạn có quyền truy cập."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "Người vận hành SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "Xem SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "Quản trị SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "Tình trạng SmokePing"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "cả hai mục tiêu phải nằm trên poller chạy trình đọc"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "mục tiêu mới đã được ánh xạ tới thiết bị %d"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "mục tiêu cũ có các nguồn dữ liệu trên thiết bị %d mà nó không được ánh xạ tới"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "Nguồn SmokePing"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "Poller SmokePing"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Poller Cacti chạy trên máy chủ SmokePing hoặc dùng chung hệ thống tệp với máy chủ này. Chỉ poller này mới đọc dữ liệu SmokePing."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "Tệp cấu hình SmokePing"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "Tệp cấu hình SmokePing chính, được đọc bởi poller chạy trình đọc. Plugin đọc tệp này cùng các tệp được nhúng kèm bằng trình phân tích cú pháp riêng và không bao giờ ghi vào chúng. Các tệp nhúng kèm phải nằm trong thư mục của tệp này."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "Thư mục dữ liệu SmokePing"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "Giá trị datadir từ cấu hình của SmokePing, theo cách SmokePing nhận diện."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "Điểm gắn kết Cacti của thư mục dữ liệu"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "Điểm gắn kết bind hoặc NFS chỉ đọc của thư mục dữ liệu SmokePing bên trong đường dẫn RRA của Cacti. Cacti chỉ đọc các tệp RRD bên trong đường dẫn RRA của nó và không bao giờ đọc qua liên kết tượng trưng (symlink)."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "Trình đọc"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "Quỹ thời gian trình đọc"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "Số giây mà một lần chạy trình đọc có thể dành để đọc các tệp RRD trước khi dừng và tiếp tục ở chu kỳ poller tiếp theo."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "Khoảng thời gian kiểm kê"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "Số giây tối thiểu giữa các lần chạy kiểm kê. Quá trình kiểm kê cũng chạy khi tệp cấu hình thay đổi."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "Ngưỡng dung sai độ mới"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "Số giây vượt quá một bước (step) mà phép đo vẫn được tính là hiện hành."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Màu mức mất gói"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Bảng màu mức mất gói của SmokePing mà đồ thị smoke vẽ. SmokePing 2.7 vẽ các mức mất gói khác với phiên bản 2.8 trở về sau. Tự động sẽ theo phiên bản SmokePing mà trình đọc tìm thấy cạnh SmokePing, được hiển thị trên trang trạng thái sức khỏe, và sử dụng phiên bản 2.8 trở về sau nếu không tìm thấy."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Tự động"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 trở về sau"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Gỡ cài đặt"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Giữ các bảng của plugin khi gỡ cài đặt"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "Khi được chọn, việc gỡ cài đặt plugin sẽ giữ lại các bảng kiểm kê, ánh xạ và trạng thái sức khỏe. Các tệp SmokePing sẽ không bao giờ bị xóa trong cả hai trường hợp."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "Thư mục sao lưu"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "Nơi quá trình gỡ cài đặt ghi bản xuất cấu hình của plugin. Để trống để sử dụng thư mục cache/smokeping của Cacti, được plugin bảo vệ bằng quy tắc từ chối tất cả. Thư mục được thiết lập tại đây phải đã tồn tại, có thể ghi được và nằm ngoài thư mục gốc web; nếu không thể ghi được thì sẽ không có bản xuất nào được ghi."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "Mục tiêu chưa được lưu."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "Mục tiêu gửi %d gói ping mỗi lượt. Đồ thị smoke chỉ tồn tại cho 10, 20 và 30; mục tiêu này chỉ có dữ liệu tóm tắt."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti lưu các tệp RRD trên một RRDproxy, nơi các tệp của SmokePing không tồn tại. Chỉ có dữ liệu tóm tắt khả dụng."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "Thiết bị được thăm dò bởi poller %d, nhưng trình đọc điền các giá trị tóm tắt lại chạy trên poller %d. Hãy gán thiết bị cho poller %d."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "Mẫu đồ thị tóm tắt chưa được cài đặt."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "Mẫu dữ liệu tóm tắt chưa được cài đặt."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti đã không tạo đồ thị tóm tắt."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "Cả hai mục tiêu phải được lưu trước."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "Mục tiêu cũ không có nguồn dữ liệu smoke để di chuyển."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "Tệp RRD %s không hiển thị thông qua điểm gắn kết SmokePing."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "Tệp RRD %s phân giải ra ngoài điểm gắn kết SmokePing."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "Mẫu đồ thị smoke chưa được cài đặt."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti đã không tạo đồ thị smoke."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti không chấp nhận đường dẫn SmokePing cho một nguồn dữ liệu."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "Một quá trình nhập cấu hình SmokePing khác đang chạy, nên không có gì được nhập. Hãy kiểm tra lại khi quá trình đó kết thúc."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "Cấu hình hoặc bản cài đặt đã thay đổi kể từ lần kiểm tra, nên không có gì được nhập. Hãy kiểm tra lại."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "Việc phản chiếu vào cây đồ thị cần có quyền chỉnh sửa cây."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "Không thể lưu trữ các mục tiêu; hãy xem nhật ký Cacti. Không có thay đổi nào khác được thực hiện."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: đã bỏ qua, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: đã bỏ qua, Cacti đã không tạo thiết bị"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: đã tạo thiết bị %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: đã bỏ qua, mục tiêu chưa được lưu trữ"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: đã có trong Cacti trên thiết bị %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "Không thể tạo cây đồ thị %s."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "đã tạo cây đồ thị %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "không thể tạo nhánh cây %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "nhánh cây %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "không thể thêm thiết bị %d vào cây"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "thiết bị %d dưới nhánh cây %s"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "mục tiêu chưa được lưu"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "đã được ánh xạ tới thiết bị %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti đã không tạo thiết bị"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "đã tạo thiết bị %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "trong lúc đó mục tiêu đã được ánh xạ tới thiết bị khác; thiết bị %d không có đồ thị SmokePing"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "trong lúc đó mục tiêu đã được ánh xạ tới thiết bị khác"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "đã ánh xạ tới thiết bị %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "đồ thị tóm tắt %d cho %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "không có bản tóm tắt cho %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "đồ thị smoke %d cho %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "không có đồ thị smoke cho %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "%d thiết bị chưa được xử lý trong thời gian cho phép. Hãy chạy lại thao tác cho chúng; các thiết bị đã thêm sẽ được bỏ qua."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "Giới hạn thời gian"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "không có mục tiêu SmokePing chưa ánh xạ nào có máy chủ %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "đề xuất không còn mở"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "mục tiêu mới đã được ánh xạ tới một thiết bị khác"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "đồ thị smoke %d hiện đọc tệp mới; tệp cũ vẫn có thể vẽ đồ thị trong một đồ thị được lưu trữ"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "nguồn dữ liệu tóm tắt %d theo dõi mục tiêu mới"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "thiết bị %d được ánh xạ tới mục tiêu mới"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "Điều kiện"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "Độ mới"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "Cập nhật lần cuối"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "Mất gói"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Bảo trì"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "Trung vị"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "Mục tiêu"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "Không có mục tiêu SmokePing nào được ánh xạ tới các thiết bị bạn có thể xem."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "Đang bảo trì"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Không"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "Chưa từng quan sát"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Plugin SmokePing yêu cầu PHP %s trở lên. Máy chủ này đang chạy PHP %s, vì vậy plugin chưa được cài đặt hoặc bật."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "Plugin SmokePing chưa được bật."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "Plugin SmokePing yêu cầu PHP %s trở lên."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "Cấu hình SmokePing đã được xuất ra %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "Cấu hình SmokePing chưa được xuất; hãy xem nhật ký SmokePing. Quá trình gỡ cài đặt vẫn tiếp tục."
+
+#: setup.php
+msgid "Management"
+msgstr "Quản lý"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "Nhập/Xuất"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "Bạn không có quyền thêm mục tiêu SmokePing."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "Không có tệp nào được tải lên, hoặc tệp lớn hơn mức máy chủ chấp nhận."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "Không có bản nhập đã kiểm tra nào để áp dụng. Hãy kiểm tra lại tệp."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "Cấu hình đã được nhập."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "Không thể nhập các mẫu SmokePing. Hãy xem bảng trạng thái sức khỏe."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Quyền thiết bị của bạn không bao gồm mọi thiết bị, vì vậy bạn không thể nhập cấu hình SmokePing. Hãy nhờ quản trị viên có quyền truy cập tất cả thiết bị."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "Đặt tên cho cây đồ thị mới, hoặc chọn một cây hiện có hoặc không chọn cây nào."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "Tệp đã tải lên lớn hơn 4 MiB."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "Không thể đọc cấu hình SmokePing, nên không có gì được nhập: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "Không có bản nhập đã xem trước nào để áp dụng. Hãy xem trước lại."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "và %d mục nữa; hãy xem nhật ký Cacti"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "Cấu hình SmokePing đã được nhập."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "Chọn một mục tiêu trên poller này và, để ánh xạ nó, hãy chọn một thiết bị bạn có quyền thay đổi."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "Đề xuất không mở, hoặc liên quan đến thiết bị hay poller mà bạn không được phép thay đổi."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "Đề xuất đã bị bỏ qua."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Chế độ xem giám sát"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Không thể đọc các quan sát. Hãy yêu cầu quản trị viên kiểm tra nhật ký plugin."

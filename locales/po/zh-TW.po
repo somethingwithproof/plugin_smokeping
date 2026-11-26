@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: zh-TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "主節點"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "將遺失率與延遲與 SmokePing 圖表及維護狀態進行比較。若發生遺漏檔案、匯入或重新連結需求，請回報給管理員處理。"
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "已略過，%s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML（預設）"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "SmokePing 設定"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "您的裝置權限未涵蓋所有裝置，因此無法匯出或匯入 SmokePing 設定。請洽詢擁有所有裝置存取權限的管理員。"
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "匯出 SmokePing 設定"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "匯出內容包含外掛程式設定、外掛程式已讀取的 SmokePing 目標，以及每個目標依裝置主機名稱與描述所對應的裝置。其中不包含任何資料來源、圖表、RRD 檔案或憑證。"
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "下載"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "匯入 SmokePing 設定"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "選擇檔案只會進行檢查。下一個畫面將列出檔案會進行的所有變更，在您確認該清單之前不會寫入任何內容。匯入僅會新增與更新；絕不會刪除目標或移動對應關係，也絕不會建立 RRD 檔案或更動 SmokePing 資料目錄。"
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "檢查檔案"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "匯入檢查"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "未寫入任何內容。"
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "返回"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "在修正這些錯誤前無法匯入檔案。未寫入任何內容。"
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "目前安裝狀態已與檔案相符。沒有需要匯入的項目。"
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "計畫 %s。套用後將在單一交易中執行上述完全一致的變更。若自此檢查後檔案或安裝狀態有所變更，系統將拒絕匯入，您需重新檢查。"
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "套用匯入"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "取消"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "新增 SmokePing 目標"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "沒有相符的 SmokePing 目標"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "按一下「繼續」以新增主機為各所選裝置主機名稱的 SmokePing 目標。每個目標皆會建立一個用於警報的摘要圖表；當 SmokePing 資料可繪製時，亦會建立一個 Smoke 圖表。此處絕不會建立裝置。"
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "%d 個目標相符。"
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "已建立或對應 %d 個物件，略過 %d 個。"
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "此裝置具有 SmokePing 目標，但填入其摘要數值的讀取程式執行於輪詢器 %d，而此裝置儲存在輪詢器 %d。在裝置重新指派至輪詢器 %d 之前，摘要數值與警報將會停止更新。"
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "此裝置的 SmokePing 目標"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "仍有 %d 張 Smoke 圖表繪製其他色彩；主輪詢器每個週期最多轉換 200 張。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "有 %d 張 Smoke 圖表無法移動；請執行 upgrade-graphs 以重試，並參閱 Cacti 日誌以了解原因。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "「遺失率色彩」設定指定使用 SmokePing %s 遺失率色彩，但讀取程式偵測到 SmokePing %s。除非圖表應與 SmokePing 不同，否則請將其設為「自動」。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "「遺失率色彩」設定已為 Smoke 圖表選取 SmokePing %s 遺失率色彩。"
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "讀取程式未偵測到 SmokePing 版本，因此「遺失率色彩」設定選取 SmokePing 2.8 及更新版本的遺失率色彩。若 SmokePing 為 2.7，請將「遺失率色彩」設為 SmokePing 2.7。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "讀取程式偵測到 SmokePing %s，因此「遺失率色彩」設定選取該版本的遺失率色彩。"
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "未安裝 Thold，因此沒有目標同時在 SmokePing 與 Thold 中發出警報。"
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "沒有目標同時具有 SmokePing 警報與已啟用的 Thold 閾值。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d 個目標同時具有 SmokePing 警報與已啟用的 Thold 閾值，因此同一問題可能會通知兩次。在移除任一項目之前，請先比較其警報條件：%s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "SmokePing 範本匯入失敗，且不會自動重試：%s 請在修正原因後使用「重試範本匯入」。"
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "尚未匯入 SmokePing 範本。請使用「重試範本匯入」。"
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "已匯入 SmokePing 範本。"
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "每個具有摘要資料來源的裝置皆由讀取程式所在的輪詢器進行輪詢。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "%d 台裝置具有摘要資料來源，但並非由執行讀取程式的輪詢器 %d 進行輪詢，因此其摘要數值與警報沒有資料：%s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "SmokePing 設定是在輪詢器 %d 上讀取，而非在此伺服器上；清單列顯示其上次讀取的結果。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "無法讀取 SmokePing 設定 %s：%s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "SmokePing 設定 %s 列出了 %d 個目標；略過 %d 筆項目：%s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "SmokePing 設定 %s 列出了 %d 個目標。"
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "PHP 執行檔路徑設定為空白或不是可執行檔，因此讀取程式無法啟動。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "讀取程式以 %s 啟動。"
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "讀取程式尚未在此輪詢器上完成過一次執行。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "上次讀取程式執行於 %d 秒前完成，已超過三個輪詢器間隔。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "讀取程式讀取了 %d 個（共 %d 個）時間序列，耗時 %.1f 秒，且已超出時間預算 %d 次。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "讀取程式讀取了 %d 個（共 %d 個）時間序列，耗時 %.1f 秒，於 %d 秒前完成。"
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "尚未在此輪詢器上讀取過任何清單。"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "上次清單讀取於 %d 秒前失敗，目前仍沿用前一份清單：%s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "清單列出了 %d 個目標（於 %d 秒前）。"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "輪詢器 %d 的 SmokePing 健康狀態"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "檢查項目"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "詳細資訊"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "狀態"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "重試範本匯入"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "正常"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "警告"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "錯誤"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "未知"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d 秒前"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "從未"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "匯入 SmokePing 設定"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "組態設定"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "已設定的 SmokePing 檔案會從其所在目錄連同其包含的檔案一併讀取。上傳的檔案則會單獨讀取：其中不允許使用 @include。"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "已設定的檔案：%s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "上傳的檔案（不含 @include）"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "上傳的檔案"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "僅適用於上傳的檔案：最大 4 MiB 的 SmokePing 設定。"
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "裝置"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "「每個 SmokePing 主機一個裝置」會將探測同一主機的目標分組。若所選輪詢器上已有相同主機名稱的裝置，將直接使用該裝置而非建立新裝置。"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "每個 SmokePing 主機一個裝置"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "每個 SmokePing 目標一個裝置"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "裝置範本"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "匯入所建立裝置的範本。"
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "輪詢器"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "新裝置所屬的輪詢器。這必須是執行 SmokePing 讀取程式的輪詢器，否則其摘要資料來源將不會取得資料。"
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "站台"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "新裝置所屬的站台。"
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "無"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "圖表樹"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "將 SmokePing 階層架構鏡像至圖表樹：每個區段成為一個分支，而每個裝置則成為其目標所在分支下的主機。現有的分支與主機將會重複使用。"
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "新建圖表樹（名稱如下）"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "不鏡像"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "新圖表樹名稱"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "僅適用於新圖表樹。若已有此名稱的圖表樹，將直接使用該圖表樹。"
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "「預覽」會讀取設定並列出匯入將建立的項目。在您於下一個畫面確認該清單之前不會寫入任何內容，且絕不會寫入 SmokePing 本身的檔案。"
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "預覽"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "備註"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "層級"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "訊息"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "SmokePing 區段"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "匯入"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "區段"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "目標"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "未勾選任何區段，因此已選取所有目標。勾選區段並更新預覽即可僅匯入這些區段。"
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "僅選取已勾選區段中的目標。"
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "更新預覽"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "建立"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "使用裝置 %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "已對應至裝置 %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "略過：%s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "裝置：%d 個待建立、%d 個使用現有、%d 個已對應、%d 個已略過"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "操作"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "描述"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "主機名稱"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "SmokePing 目標"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "無裝置。"
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "摘要"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "主節點"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "圖表：%d 張待建立、%d 張已存在"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "圖表"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "位置"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "SmokePing 目標"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "沒有需要建立的圖表。"
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "原因"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "僅摘要資料：%d 個目標"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "分支"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "裝置"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "圖表樹：%d 個分支、%d 筆裝置項目"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "估計"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "預估負載"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "確認"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "在修正上述錯誤前無法匯入設定。未寫入任何內容。"
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "所有選取的目標皆已存在於 Cacti 中。沒有需要匯入的項目。"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "計畫 %s。匯入將透過 Cacti 的裝置、圖表與圖表樹功能建立上述完全一致的項目。若自此預覽後 SmokePing 設定或 Cacti 有所變更，系統將拒絕匯入，您需重新預覽。"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s 以及其他 %d 項"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "將 %s 新增至 Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "SmokePing 目標 %s（主機 %s）沒有對應的 Cacti 裝置。請選擇處理方式。"
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "從 SmokePing 目標範本建立新裝置"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "對應至現有裝置"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "無論採用哪種方式，該目標皆會取得一個用於警報的摘要圖表；當 SmokePing 資料可繪製時，亦會取得一個 Smoke 圖表。Cacti 絕不會寫入 SmokePing 的檔案。"
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "新增"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "確認重新連結"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing 已不再列出 %s。%s 具有相同的主機（%s）與探測器（%s）。SmokePing 會為新路徑建立一個新的空白檔案。"
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "重新連結會將 Smoke 圖表與摘要資料來源一併移動至新目標，並更新裝置對應關係。舊檔案會將其歷史紀錄保留在封存圖表中。不會刪除任何項目。"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "裝置 %d 已對應至舊目標。"
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "忽略建議"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "重新連結"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "已消失"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "存在"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "未對應"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "新增至 Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "SmokePing 清單"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "主機"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "清單"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "對應"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "名稱"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "路徑"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "探測器"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "從屬節點"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "間隔 / Ping 次數"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "尚未在此輪詢器上匯入任何目標。"
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "審查"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "重新連結提案"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "已消失的路徑"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "新路徑"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "沒有重新連結建議。"
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "%d 個時間序列：SmokePing 中每秒約有 %.1f 個探測封包及每秒 %.2f 次 RRD 更新。"
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti 約會產生 %d 筆資料來源列與 %d 筆圖表項目列。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "SmokePing 掛載點 %s 不存在。請將 SmokePing 的資料目錄以唯讀方式掛載至該處。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s 位於 RRA 路徑內，且非透過符號連結存取。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Cacti 使用者可寫入 %s。SmokePing 的 RRD 檔案對 Cacti 必須為唯讀。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "SmokePing 掛載點 %s 不在 Cacti RRA 路徑 %s 內。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Cacti RRA 路徑 %s 不存在。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "SmokePing 掛載點 %s 包含空白、\".\" 或 \"..\" 路徑區段。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "SmokePing 掛載點 %s 是透過符號連結存取，Cacti 不允許此方式。請改用唯讀繫結掛載（bind mount）。"
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "無法讀取掛載表，因此無法確認該掛載是否為唯讀。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s 位於唯讀掛載上。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s 位於可寫入的掛載 %s 上。請將 SmokePing 的資料目錄以唯讀方式掛載。"
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "尚無清單，因此未預期任何 RRD 檔案。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "所有預期的 %d 個 RRD 檔案皆可透過該掛載點存取。"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "有 %d 個（共 %d 個）預期的 RRD 檔案無法透過該掛載點存取，例如 %s。"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "請檢視下方已記錄的觀測項目。確認狀態僅適用於目前的工作階段，會在觀測項目變更時失效，且永遠不會抑制警示或變更健康狀態。"
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "SmokePing 操作"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "動作"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "調查"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "物件"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "觀測時間 (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "狀態"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "未知或已過時"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "從未"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "已確認；健康狀態不變。"
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "確認"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "您可存取的裝置目前沒有可用的觀測項目。"
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "SmokePing 操作員"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "SmokePing 檢視"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "SmokePing 管理"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "SmokePing 健康狀態"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "兩個目標皆必須位於執行讀取程式的輪詢器上"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "新目標已對應至裝置 %d"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "舊目標在裝置 %d 上有資料來源，但該目標並未對應至該裝置"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "SmokePing 來源"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "SmokePing 輪詢器"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "在 SmokePing 主機上執行或與其共用檔案系統的 Cacti 輪詢器。只有此輪詢器會讀取 SmokePing 資料。"
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "SmokePing 設定檔"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "主要 SmokePing 設定檔，由執行讀取程式的輪詢器讀取。此外掛程式會使用其自有剖析器讀取該檔案及其包含的檔案，且絕不會寫入這些檔案。包含的檔案必須位於此檔案的目錄內。"
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "SmokePing 資料目錄"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "SmokePing 設定中的 datadir（依 SmokePing 所見的路徑）。"
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "資料目錄的 Cacti 掛載點"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "SmokePing 資料目錄在 Cacti RRA 路徑內的唯讀 bind 或 NFS 掛載。Cacti 僅會讀取其 RRA 路徑內的 RRD 檔案，絕不會透過符號連結讀取。"
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "讀取器"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "讀取器時間預算"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "單次讀取程式執行在停止並於下一個輪詢器週期繼續之前，最多可花費於讀取 RRD 檔案的秒數。"
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "盤點間隔"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "兩次盤點執行之間的最短秒數。當設定檔變更時也會執行盤點。"
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "新鮮度容許時間"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "超過一個步進間隔後，測量值仍被視為有效的秒數。"
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "遺失色彩"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Smoke 圖表要繪製哪個 SmokePing 版本的遺失色彩。SmokePing 2.7 繪製的遺失層級與 2.8 及更新版本不同。「自動」會依讀取程式在 SmokePing 旁找到的版本（顯示於健康狀態頁面）為準，若找不到則使用 2.8 及更新版本。"
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "自動"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 及更新版本"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "解除安裝"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "解除安裝時保留外掛程式資料表"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "勾選後，解除安裝此外掛程式時會保留其盤點、對應與健康狀態資料表。無論是否勾選，SmokePing 檔案皆絕不會被移除。"
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "備份目錄"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "解除安裝時寫入外掛程式設定匯出檔的位置。保留空白則使用 Cacti 的 cache/smokeping 目錄，外掛程式會以全部拒絕（deny-all）規則保護該目錄。此處設定的目錄必須已存在、可寫入且位於網站根目錄之外；若無法寫入則不會寫入匯出檔。"
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "尚未儲存該目標。"
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "該目標每輪傳送 %d 次 ping。Smoke 圖表僅支援 10、20 與 30；目前僅有摘要資料。"
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti 將 RRD 檔案存放在 RRDproxy 上，而該處不存在 SmokePing 的檔案。僅提供摘要資料。"
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "此裝置由輪詢器 %d 輪詢，但填入摘要數值的讀取程式執行於輪詢器 %d。請將此裝置指派給輪詢器 %d。"
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "尚未安裝摘要圖表範本。"
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "尚未安裝摘要資料範本。"
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti 未建立摘要圖表。"
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "必須先儲存兩個目標。"
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "舊目標沒有可移動的 smoke 資料來源。"
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "無法透過 SmokePing 掛載點看見 RRD 檔案 %s。"
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "RRD 檔案 %s 解析至 SmokePing 掛載點之外。"
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "尚未安裝 smoke 圖表範本。"
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti 未建立 smoke 圖表。"
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti 不接受資料來源使用該 SmokePing 路徑。"
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "另一個 SmokePing 設定匯入作業正在執行，因此未匯入任何項目。請於完成後再行檢查。"
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "自檢查以來設定或安裝狀態已變更，因此未匯入任何項目。請重新檢查。"
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "鏡像至圖樹需要編輯圖樹的權限。"
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "無法儲存目標；請參閱 Cacti 日誌。其他項目皆未變更。"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s：已略過，%s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s：已略過，Cacti 未建立裝置"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s：已建立裝置 %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s：已略過，未儲存目標"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s：已存在於 Cacti 的裝置 %d 上"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "無法建立圖樹 %s。"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "已建立圖樹 %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "無法建立圖樹分支 %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "圖樹分支 %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "無法將裝置 %d 新增至圖樹"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "裝置 %d（位於圖樹分支 %s 下）"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "尚未儲存該目標"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "已對應至裝置 %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti 未建立裝置"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "已建立裝置 %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "該目標在此期間已對應至另一個裝置；裝置 %d 沒有 SmokePing 圖表"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "該目標在此期間已對應至另一個裝置"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "已對應至裝置 %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "摘要圖表 %d（用於 %s）"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "%s 無摘要：%s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "smoke 圖表 %d（用於 %s）"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "%s 無 smoke 圖表：%s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "有 %d 台裝置未能在允許的時間內處理完畢。請針對這些裝置再次執行此動作；已新增的裝置將會略過。"
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "時間限制"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "沒有主機為 %s 的未對應 SmokePing 目標"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "該建議已不再開啟"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "新目標已對應至另一個裝置"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "smoke 圖表 %d 現在讀取新檔案；舊檔案仍保留於封存圖表中供繪圖使用"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "摘要資料來源 %d 跟隨新目標"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "裝置 %d 已對應至新目標"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "狀況"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "時效性"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "最後更新"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "遺失"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "維護"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "中位數"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "目標"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "沒有 SmokePing 目標對應至您可檢視的裝置。"
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "維護中"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "否"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "從未觀測"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "SmokePing 外掛程式需要 PHP %s 或更新版本。此伺服器執行 PHP %s，因此未安裝或啟用此外掛程式。"
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "SmokePing 外掛程式尚未啟用。"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "SmokePing 外掛程式需要 PHP %s 或更新版本。"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "已將 SmokePing 設定匯出至 %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "未匯出 SmokePing 設定；請參閱 SmokePing 日誌。解除安裝已繼續執行。"
+
+#: setup.php
+msgid "Management"
+msgstr "管理"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "匯入/匯出"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "您沒有新增 SmokePing 目標的權限。"
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "未上傳檔案，或檔案大小超過伺服器可接受的上限。"
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "沒有已檢查的匯入項目可套用。請重新檢查檔案。"
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "已匯入設定。"
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "SmokePing 範本匯入失敗。請參閱健康狀態資料表。"
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "您的裝置權限未涵蓋所有裝置，因此無法匯入 SmokePing 設定。請洽詢具有所有裝置存取權限的管理員。"
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "請為新圖樹命名，或選擇現有圖樹或不選擇圖樹。"
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "上傳的檔案大於 4 MiB。"
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "無法讀取 SmokePing 設定，因此未匯入任何項目：%s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "沒有已預覽的匯入項目可套用。請重新預覽。"
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "還有另外 %d 筆；請參閱 Cacti 日誌"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "已匯入 SmokePing 設定。"
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "請選擇此輪詢器上的目標，若要進行對應，請選擇您有權限變更的裝置。"
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "該建議未開啟，或涉及您無權限變更的裝置或輪詢器。"
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "已忽略該建議。"
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "監控檢視"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "無法讀取觀測紀錄。請聯繫管理員檢查外掛程式日誌。"

@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: hr-HR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Glavni čvor"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Usporedite gubitke i latenciju sa SmokePing grafovima te stanjem održavanja. Nedostajuće datoteke, uvoze i ponovno povezivanje proslijedite administratoru."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "preskočeno, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (zadano)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "Konfiguracija SmokePinga"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Vaše ovlasti za uređaje ne obuhvaćaju sve uređaje pa ne možete izvesti ni uvesti konfiguraciju SmokePinga. Obratite se administratoru s pristupom svim uređajima."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "Izvezi konfiguraciju SmokePinga"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "Izvoz sadrži postavke dodatka, SmokePing ciljeve koje je dodatak očitao te podatke o tome kojem je uređaju svaki cilj pridružen prema nazivu računala i opisu uređaja. Ne sadrži izvore podataka, grafove, RRD datoteke ni vjerodajnice."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "Preuzmi"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "Uvezi konfiguraciju SmokePinga"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "Odabirom datoteke provodi se samo njezina provjera. Na sljedećem zaslonu prikazan je popis svih promjena koje bi datoteka izvršila, a ništa se ne zapisuje dok ne potvrdite taj popis. Uvoz dodaje i ažurira zapise; nikada ne briše cilj niti premješta pridruživanje, i nikada ne stvara RRD datoteku niti dira mapu s podacima SmokePinga."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "Provjeri datoteku"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "Provjera uvoza"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "Ništa nije zapisano."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "Natrag"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "Datoteku nije moguće uvesti dok se ove pogreške ne isprave. Ništa nije zapisano."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "Instalacija već odgovara datoteci. Nema ničega za uvoz."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "Plan %s. Primjenom se provode točno ove promjene u jednoj transakciji. Ako su se datoteka ili instalacija promijenile od ove provjere, uvoz će biti odbijen te trebate ponoviti provjeru."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "Primijeni uvoz"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "Odustani"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "Dodaj ciljeve SmokePinga"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "nema odgovarajućeg cilja SmokePinga"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "Kliknite Nastavi za dodavanje ciljeva SmokePinga čiji poslužitelj odgovara nazivu računala svakog odabranog uređaja. Svaki cilj dobiva sažeti graf za uzbunjivanje i, kada se podaci SmokePinga mogu prikazati grafom, smoke graf. Uređaji se ovdje nikada ne stvaraju."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "Broj podudarnih ciljeva: %d."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "Stvoreno ili pridruženo objekata: %d, preskočeno: %d."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "Ovaj uređaj ima ciljeve SmokePinga, ali čitač koji popunjava njihove sažete vrijednosti radi na polleru %d, dok je uređaj spremljen na poller %d. Sažete vrijednosti i upozorenja prestaju stizati dok uređaj ponovno ne dodijelite polleru %d."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "Ciljevi SmokePinga za ovaj uređaj"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "Smoke grafovi koji još iscrtavaju drugu paletu boja (%d); glavni poller premješta do 200 po ciklusu."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "Nije bilo moguće premjestiti smoke grafove (%d); pokrenite naredbu upgrade-graphs za ponovni pokušaj te provjerite dnevnik sustava Cacti radi uzroka."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Postavka Boje gubitaka traži boje gubitaka za SmokePing %s, no čitač je pronašao SmokePing %s. Postavite na Automatski osim ako grafovi trebaju odstupati od izvornih grafova SmokePinga."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Postavka Boje gubitaka odabire boje gubitaka inačice SmokePing %s za smoke grafove."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Čitač nije pronašao inačicu SmokePinga pa postavka Boje gubitaka odabire boje gubitaka za SmokePing 2.8 i novije. Ako koristite SmokePing 2.7, postavite Boje gubitaka na SmokePing 2.7."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Čitač je pronašao SmokePing %s pa postavka Boje gubitaka odabire njegove boje gubitaka."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold nije instaliran pa nijedan cilj ne šalje upozorenja istodobno u SmokePingu i Tholdu."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Nijedan cilj nema istodobno upozorenje SmokePinga i omogućen prag u Tholdu."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "Ciljevi (%d) imaju i upozorenje SmokePinga i omogućen prag u Tholdu pa jedan problem može pokrenuti dvostruku obavijest. Usporedite njihove uvjete upozoravanja prije uklanjanja jednog od njih: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "Uvoz predložaka SmokePinga nije uspio i ne ponavlja se automatski: %s Nakon otklanjanja uzroka upotrijebite Ponovi uvoz predložaka."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "Predlošci SmokePinga nisu uvezeni. Upotrijebite Ponovi uvoz predložaka."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "Predlošci SmokePinga su uvezeni."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "Svaki uređaj sa sažetim izvorima podataka ispituje poller na kojem radi čitač."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "Uređaji (%d) imaju sažete izvore podataka, ali ih ne ispituje poller %d na kojem radi čitač, pa njihove sažete vrijednosti i upozorenja nemaju podatke: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "Konfiguracija SmokePinga čita se na polleru %d, a ne na ovom poslužitelju; redak inventara prikazuje ishod njegova posljednjeg očitavanja."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "Konfiguraciju SmokePinga %s nije moguće očitati: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "Konfiguracija SmokePinga %s navodi %d ciljeva; preskočeno je %d unosa: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "Konfiguracija SmokePinga %s navodi %d ciljeva."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "Postavka putanje do izvršne PHP datoteke je prazna ili nije izvršna datoteka pa se čitač ne može pokrenuti."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "Čitač se pokreće naredbom %s."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "Čitač još nije dovršio nijedno pokretanje na ovom polleru."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "Posljednje pokretanje čitača završilo je prije %d s, što prelazi tri intervala pollera."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "Čitač je očitao %d od %d nizova za %.1f s i prekoračio vremenski okvir %d puta."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "Čitač je očitao %d od %d nizova za %.1f s, prije %d s."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "Na ovom polleru još nije očitan inventar."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "Posljednje očitavanje inventara nije uspjelo prije %d s pa je prethodni još u uporabi: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "Inventar je popisao %d ciljeva prije %d s."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "Ispravnost SmokePinga za poller %d"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "Provjera"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "Pojedinosti"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "Stanje"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "Ponovi uvoz predložaka"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "U redu"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "Upozorenje"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "Pogreška"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "Nepoznato"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "prije %d s"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "nikada"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "Uvoz konfiguracije SmokePinga"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "Konfiguracija"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "Konfigurirana datoteka SmokePinga čita se zajedno s uključenim datotekama iz vlastite mape. Prenesena datoteka čita se zasebno: @include u njoj nije dopušten."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "Konfigurirana datoteka, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "Prenesena datoteka, bez @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "Prenesena datoteka"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "Samo za prenesenu datoteku: konfiguracija SmokePinga veličine do najviše 4 MiB."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "Uređaji"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "Mogućnost jedan uređaj po računalu SmokePinga grupira ciljeve koji ispituju isto računalo. Uređaj koji već ima taj naziv računala na odabranom polleru upotrebljava se umjesto stvaranja novog."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "Jedan uređaj po računalu SmokePinga"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "Jedan uređaj po cilju SmokePinga"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "Predložak uređaja"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "Predložak uređaja koje uvoz stvara."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "Poller"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "Poller za nove uređaje. Mora biti poller na kojem radi čitač SmokePinga jer inače njihovi sažeti izvori podataka neće primati podatke."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "Lokacija"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "Lokacija novih uređaja."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "Ništa"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "Stablo grafova"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "Zrcali hijerarhiju SmokePinga u stablo grafova: svaki odjeljak postaje grana, a svaki uređaj računalo pod granom svojih ciljeva. Postojeće grane i računala ponovno se koriste."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "Novo stablo s nazivom navedenim u nastavku"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "Ne zrcali"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "Naziv novog stabla"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "Samo za novo stablo. Upotrebljava se stablo koje već ima ovaj naziv."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "Pretpregled očitava konfiguraciju i prikazuje popis svega što bi uvoz stvorio. Ništa se ne zapisuje dok taj popis ne potvrdite na sljedećem zaslonu, a izvorne datoteke SmokePinga nikada se ne mijenjaju."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "Pretpregled"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "Napomena"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "Razina"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "Poruka"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "Odjeljci SmokePinga"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "Uvoz"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "Odjeljak"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "Ciljevi"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "Nijedan odjeljak nije označen pa su odabrani svi ciljevi. Označite odjeljke i osvježite pretpregled kako biste uvezli samo njih."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "Odabrani su samo ciljevi unutar označenih odjeljaka."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "Osvježi pretpregled"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "Stvori"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "Upotrijebi uređaj %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "Već pridruženo uređaju %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "Preskoči: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "Uređaji: %d za stvaranje, %d postojećih za uporabu, %d već pridruženo, %d preskočeno"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "Radnja"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "Opis"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "Naziv računala"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "Ciljevi SmokePinga"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "Nema uređaja."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "Sažeti"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "glavni"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "Grafovi: %d za stvaranje, %d već postoji"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "Graf"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "Lokacija"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "Cilj SmokePinga"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "Nema grafova za stvaranje."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "Razlog"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "Samo sažeti podaci: %d ciljeva"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "Grana"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "Uređaj"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "Stablo grafova: %d grana, %d unosa uređaja"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "Procjena"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "Procijenjeno opterećenje"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "Potvrdi"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "Konfiguraciju nije moguće uvesti dok se gornje pogreške ne isprave. Ništa nije zapisano."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "Svaki odabrani cilj već postoji u sustavu Cacti. Nema ničega za uvoz."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "Plan %s. Uvoz stvara točno ono što je navedeno gore pomoću funkcija sustava Cacti za uređaje, grafove i stabla. Ako su se konfiguracija SmokePinga ili Cacti promijenili od ovog pretpregleda, uvoz će biti odbijen te trebate ponoviti pretpregled."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s i još %d"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "Dodaj %s u Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "Cilj SmokePinga %s (računalo %s) nema uređaj u sustavu Cacti. Odaberite što učiniti s njim."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "Stvori novi uređaj iz predloška SmokePing Target"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "Pridruži ga postojećem uređaju"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "U oba slučaja cilj dobiva sažeti graf za uzbunjivanje i, kada se podaci SmokePinga mogu prikazati grafom, smoke graf. Cacti nikada ne zapisuje u datoteke SmokePinga."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "Dodaj"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "Potvrdi ponovno povezivanje"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing više ne navodi %s. Putanja %s ima isto računalo (%s) i sondu (%s). SmokePing za novu putanju započinje novu, praznu datoteku."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "Ponovno povezivanje premješta smoke graf i sažeti izvor podataka na novi cilj, zajedno s pridruživanjem uređaja. Stara datoteka zadržava svoju povijest u arhiviranom grafu. Ništa se ne briše."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "Uređaj %d pridružen je starom cilju."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "Odbaci prijedlog"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "Ponovno poveži"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "Uklonjeno"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "Prisutno"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "Nepridruženo"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Dodaj u Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "Inventar SmokePinga"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "Računalo"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "Inventar"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "Pridruživanje"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "Naziv"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "Putanja"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "Sonda"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "Podređeni čvorovi"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "Korak / Pingovi"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "Na ovom polleru još nema uvezenih ciljeva."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "Pregledaj"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "Prijedlozi za ponovno povezivanje"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "Nestala putanja"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "Nova putanja"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "Nema prijedloga za ponovno povezivanje."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "Nizovi (%d): oko %.1f paketa sonde u sekundi i %.2f ažuriranja RRD datoteka u sekundi u SmokePingu."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti dobiva oko %d redaka izvora podataka i %d redaka stavki grafa."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "Točka montiranja SmokePinga %s ne postoji. Montirajte tamo mapu s podacima SmokePinga u načinu samo za čitanje."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s nalazi se unutar RRA putanje i ne pristupa mu se putem simboličke veze."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Korisnik sustava Cacti može pisati u %s. RRD datoteke SmokePinga moraju biti dostupne sustavu Cacti samo za čitanje."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "Točka montiranja SmokePinga %s nije unutar RRA putanje sustava Cacti %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "RRA putanja sustava Cacti %s ne postoji."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "Točka montiranja SmokePinga %s sadrži prazan segment, \".\" ili \"..\"."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "Točki montiranja SmokePinga %s pristupa se putem simboličke veze, što Cacti odbija. Umjesto toga upotrijebite bind montiranje samo za čitanje."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "Nije moguće pročitati tablicu montiranja pa nije bilo moguće potvrditi da je montiranje samo za čitanje."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s nalazi se na montiranju samo za čitanje."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s nalazi se na montiranju s pravom pisanja %s. Montirajte mapu s podacima SmokePinga u načinu samo za čitanje."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "Još nema inventara pa se RRD datoteke ne očekuju."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "Sve očekivane RRD datoteke (%d) vidljive su kroz točku montiranja."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "%d od %d očekivanih RRD datoteka nije vidljivo kroz točku montiranja, primjerice %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Pregledajte zabilježena opažanja u nastavku. Potvrde vrijede samo za vašu trenutnu sesiju, istječu kada se opažanja promijene te nikada ne prigušuju upozorenja niti mijenjaju status ispravnosti."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "Operacije SmokePinga"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Radnje"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Ispitivanje"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Objekt"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Opaženo (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Stanje"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Nepoznato ili zastarjelo"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Nikada"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Potvrđeno; ispravnost je nepromijenjena."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Potvrdi"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Nema dostupnih opažanja za uređaje kojima smijete pristupiti."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "Operater SmokePinga"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "Pregled SmokePinga"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "Administrator SmokePinga"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "Ispravnost SmokePinga"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "oba cilja moraju biti na polleru na kojem radi čitač"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "novi cilj već je pridružen uređaju %d"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "stari cilj ima izvore podataka na uređaju %d kojem nije pridružen"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "Izvor SmokePinga"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "Poller SmokePinga"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Poller sustava Cacti koji radi na poslužitelju SmokePing ili s njim dijeli datotečni sustav. Samo ovaj poller čita podatke SmokePinga."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "Konfiguracijska datoteka SmokePinga"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "Glavna konfiguracijska datoteka SmokePinga koju čita poller na kojem radi čitač. Dodatak je čita zajedno s datotekama koje uključuje pomoću vlastitog raščlanjivača i nikada u njih ne zapisuje. Uključene datoteke moraju ostati unutar mape ove datoteke."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "Mapa s podacima SmokePinga"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "Parametar datadir iz konfiguracije SmokePinga, kako ga SmokePing vidi."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "Montiranje mape s podacima u sustavu Cacti"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "Bind ili NFS montiranje mape s podacima SmokePinga samo za čitanje unutar RRA putanje sustava Cacti. Cacti čita RRD datoteke samo unutar svoje RRA putanje i nikada putem simboličke veze."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "Čitač"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "Vremenski okvir čitača"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "Broj sekundi koliko jedno pokretanje čitača smije utrošiti na čitanje RRD datoteka prije nego što se zaustavi i nastavi u sljedećem ciklusu pollera."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "Interval inventara"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "Najmanji broj sekundi između pokretanja inventara. Inventar se pokreće i kada se konfiguracijska datoteka promijeni."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "Dopuštena svježina"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "Broj sekundi nakon jednog koraka tijekom kojega se mjerenje još smatra aktualnim."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Boje gubitaka"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Koje boje gubitaka SmokePinga iscrtavaju smoke grafovi. SmokePing 2.7 prikazuje drukčije razine gubitaka od inačice 2.8 i novijih. Mogućnost Automatski prati inačicu SmokePinga koju čitač pronađe uz SmokePing, prikazanu na stranici ispravnosti, a upotrebljava 2.8 i novije kada je ne pronađe."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Automatski"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 i novije"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Uklanjanje"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Zadrži tablice dodatka pri uklanjanju"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "Kada je označeno, uklanjanje dodatka zadržava njegove tablice inventara, pridruživanja i ispravnosti. Datoteke SmokePinga ni u kojem slučaju se ne brišu."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "Mapa za sigurnosne kopije"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "Odredište kamo uklanjanje zapisuje izvoz konfiguracije dodatka. Ostavite prazno kako bi se koristila mapa cache/smokeping sustava Cacti koju dodatak štiti pravilom zabrane pristupa za sve. Ovdje zadana mapa mora već postojati, imati dopuštenje za pisanje i biti izvan korijenske web mape; ako pisanje nije dopušteno, izvoz se ne zapisuje."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "Cilj još nije spremljen."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "Cilj šalje %d pingova po krugu. Smoke grafovi postoje samo za 10, 20 i 30; dostupni su samo sažeti podaci."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti pohranjuje RRD datoteke na poslužitelju RRDproxy, gdje datoteke SmokePinga ne postoje. Dostupni su samo sažeti podaci."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "Uređaj ispituje poller %d, no čitač koji popunjava sažete vrijednosti radi na polleru %d. Dodijelite uređaj polleru %d."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "Predložak sažetog grafa nije instaliran."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "Predložak sažetih podataka nije instaliran."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti nije stvorio sažeti graf."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "Oba cilja najprije moraju biti spremljena."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "Stari cilj nema smoke izvor podataka za premještanje."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "RRD datoteka %s nije vidljiva kroz točku montiranja SmokePinga."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "RRD datoteka %s razrješava se izvan točke montiranja SmokePinga."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "Predložak smoke grafa nije instaliran."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti nije stvorio smoke graf."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti ne prihvaća putanju SmokePinga za izvor podataka."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "U tijeku je drugi uvoz konfiguracije SmokePinga pa ništa nije uvezeno. Provjerite ponovno kada dovrši."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "Konfiguracija ili instalacija promijenile su se od provjere pa ništa nije uvezeno. Provjerite ponovno."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "Zrcaljenje u stablo grafova zahtijeva dopuštenje za uređivanje stabala."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "Ciljeve nije bilo moguće pohraniti; provjerite dnevnik sustava Cacti. Ništa drugo nije promijenjeno."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: preskočeno, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: preskočeno, Cacti nije stvorio uređaj"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: stvoren uređaj %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: preskočeno, cilj nije pohranjen"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: već u sustavu Cacti na uređaju %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "Stablo grafova %s nije bilo moguće stvoriti."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "stvoreno stablo grafova %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "granu stabla %s nije bilo moguće stvoriti"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "grana stabla %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "uređaj %d nije bilo moguće dodati u stablo"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "uređaj %d pod granom stabla %s"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "cilj još nije spremljen"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "već pridruženo uređaju %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti nije stvorio uređaj"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "stvoren uređaj %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "cilj je u međuvremenu pridružen drugom uređaju; uređaj %d nema grafove SmokePinga"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "cilj je u međuvremenu pridružen drugom uređaju"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "pridruženo uređaju %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "sažeti graf %d za %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "nema sažetka za %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "smoke graf %d za %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "nema smoke grafa za %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "Uređaji (%d) nisu obrađeni u dopuštenom vremenu. Pokrenite radnju ponovno za njih; već dodani uređaji bit će preskočeni."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "Vremensko ograničenje"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "nijedan nepridruženi cilj SmokePinga nema računalo %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "prijedlog više nije otvoren"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "novi cilj pridružen je drugom uređaju"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "smoke graf %d sada čita novu datoteku; stara datoteka ostaje dostupna za prikaz u arhiviranom grafu"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "sažeti izvor podataka %d prati novi cilj"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "uređaj %d pridružen je novom cilju"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "Uvjet"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "Svježina"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "Posljednje ažuriranje"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "Gubitak"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Održavanje"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "Medijan"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "Cilj"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "Nema ciljeva SmokePinga pridruženih uređajima koje smijete pregledavati."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "U održavanju"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Ne"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "Nikada nije opaženo"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Dodatak SmokePing zahtijeva PHP %s ili noviji. Ovaj poslužitelj pokreće PHP %s pa dodatak nije instaliran niti omogućen."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "Dodatak SmokePing nije omogućen."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "Dodatak SmokePing zahtijeva PHP %s ili noviji."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "Konfiguracija SmokePinga izvezena je u %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "Konfiguracija SmokePinga nije izvezena; pogledajte dnevnik SmokePinga. Uklanjanje je nastavljeno."
+
+#: setup.php
+msgid "Management"
+msgstr "Upravljanje"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "Uvoz/Izvoz"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "Nemate ovlasti za dodavanje ciljeva SmokePinga."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "Datoteka nije prenesena ili premašuje najveću dopuštenu veličinu poslužitelja."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "Nema provjerenog uvoza za primjenu. Ponovno provjerite datoteku."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "Konfiguracija je uvezena."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "Uvoz predložaka SmokePinga nije uspio. Pogledajte tablicu ispravnosti."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Vaše ovlasti za uređaje ne obuhvaćaju sve uređaje pa ne možete uvesti konfiguraciju SmokePinga. Obratite se administratoru s pristupom svim uređajima."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "Zadajte naziv novog stabla grafova ili odaberite postojeće stablo odnosno bez stabla."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "Prenesena datoteka veća je od 4 MiB."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "Konfiguraciju SmokePinga nije moguće očitati pa ništa nije uvezeno: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "Nema pretpregledanog uvoza za primjenu. Ponovite pretpregled."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "i još %d; pogledajte dnevnik sustava Cacti"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "Konfiguracija SmokePinga je uvezena."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "Odaberite cilj na ovom polleru i, za pridruživanje, uređaj koji smijete mijenjati."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "Prijedlog nije otvoren ili obuhvaća uređaj odnosno poller koji ne smijete mijenjati."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "Prijedlog je odbačen."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Prikaz nadzora"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Opažanja nije bilo moguće pročitati. Zamolite administratora da provjeri dnevnik dodatka."

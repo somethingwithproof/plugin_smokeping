@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: so-SO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Master"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Isbarbar dhig luminta iyo daahitaanka iyadoo la adeegsanayo jaantusyada SmokePing iyo xaaladda dayactirka. U gudbi maamulaha faylasha maqan, soo-dejinta iyo dib-u-xidhidda."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "la dhaafay, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (caadi)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "Dejinta SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Ogolaanshahaaga qalabku ma daboolayo qalab kasta, markaa ma dhoofin kartid ama ma soo dejin kartid dejinta SmokePing. Weydii maamule leh gelitaanka dhammaan qalabka."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "Dhoofi Dejinta SmokePing"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "Dhoofintu waxay haysaa dejimaha plugin-ka, bartilmaameedyada SmokePing ee plugin-ku akhriyay, iyo qalabka mid walba lagu xidhay, iyadoo loo eegayo magaca martida iyo sharraxaadda qalabka. Ma hayso il xog, jaantus, fayl RRD, ama aqoonsi sir ah."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "Soo deji"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "Soo deji Dejinta SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "Doorashada faylku way hubisaa oo keliya. Shaashadda xigta waxay taxdaa isbeddel kasta oo faylku samayn lahaa, waxbana lama qoro ilaa aad xaqiijiso liiskaas. Soo-dejintu way ku dartaa wayna cusboonaysiisaa; weligeed ma tirtirto bartilmaameed ama ma rarto xidhmo, weligeedna ma abuurto fayl RRD ama ma taabato galka xogta SmokePing."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "Hubi Faylka"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "Hubinta Soo-dejinta"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "Waxba lama qorin."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "Dib u noqo"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "Faylka lama soo dejin karo ilaa khaladaadkan la saxo. Waxba lama qorin."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "Rakibaadda hore ayay ula mid tahay faylka. Ma jiro wax la soo dejiyo."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "Qorshaha %s. Dhaqan-gelintu waxay samaysaa isbeddelladan oo dhan hal mar. Haddii faylka ama rakibaadda isbeddeleen tan iyo hubintan, soo-dejinta waa la diidaa waxaadna hubisaa mar kale."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "Dhaqan-geli Soo-dejinta"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "Jooji"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "Ku dar Bartilmaameedyada SmokePing"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "ma jiro bartilmaameed SmokePing oo u dhigma"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "Guji Sii wad si aad ugu darto bartilmaameedyada SmokePing ee martigaliyohoodu yahay magaca martida ee qalab kasta oo la doortay. Bartilmaameed kasta wuxuu helaa jaantus kooban oo digniinta ah, iyo marka xogta SmokePing la sawiri karo, jaantus qiiq ah. Qalabka halkan laguma abuuro."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "%d bartilmaameed ayaa u dhigma."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "%d shay ayaa la abuuray ama la xidhay, %d waa la dhaafay."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "Qalabkani wuxuu leeyahay bartilmaameedyada SmokePing, laakiin akhristaha buuxiya qiimahooda kooban wuxuu ka shaqeeyaa poller %d qalabkana waxaa lagu kaydiyay poller %d. Qiimayaasha kooban iyo digniinaha way istaagaan ilaa qalabka mar kale loo qoondeeyo poller %d."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "Bartilmaameedyada SmokePing ee Qalabkan"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "%d jaantusyo qiiq ah ayaa weli sawira midabada kale; poller-ka weyn wuxuu guuraa ilaa 200 meertadiiba."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "%d jaantusyo qiiq ah lama guurin karin; orod upgrade-graphs si aad mar kale isugu daydo, oo ka eeg diiwaanka Cacti sababta."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Dejinta Loss Colors waxay codsanaysaa midabada luminta ee SmokePing %s, laakiin akhristuhu wuxuu helay SmokePing %s. Ku deji Automatic haddii aanay jaantusyadu ka duwanaanayn kuwa SmokePing."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Dejinta Loss Colors waxay u doorataa midabada luminta ee SmokePing %s jaantusyada qiiqa."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Akhristuhu ma helin nooca SmokePing, markaa dejinta Loss Colors waxay doorataa midabada luminta ee SmokePing 2.8 iyo wixii ka dambeeya. Haddii SmokePing yahay 2.7, ku deji Loss Colors SmokePing 2.7."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Akhristuhu wuxuu helay SmokePing %s, markaa dejinta Loss Colors waxay doorataa midabadiisa luminta."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold lama rakibin, markaa ma jiro bartilmaameed ka diga labada SmokePing iyo Thold."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Ma jiro bartilmaameed leh labadaba digniinta SmokePing iyo xadka Thold ee shidan."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d bartilmaameed waxay leeyihiin labadaba digniinta SmokePing iyo xadka Thold ee shidan, markaa hal dhibaato waxay ogeysiin kartaa laba jeer. Isbarbar dhig shuruudahooda digniinta ka hor intaadan midna ka saarin: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "Qaababka SmokePing way ku guuldarraysteen inay soo degaan si toos ahna dib looguma isku dayo: %s Isticmaal Retry Template Import ka dib marka la saxo sababta."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "Qaababka SmokePing lama soo dejin. Isticmaal Retry Template Import."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "Qaababka SmokePing waa la soo dejiyay."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "Qalab kasta oo leh ilaha xogta kooban waxaa codka ka qaada poller-ka akhristaha."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "%d qalab waxay leeyihiin ilaha xogta kooban laakiin kama cod-qaado poller %d, kaas oo wada akhristaha, markaa qiimahooda kooban iyo digniinahoodu xog ma leh: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "Dejinta SmokePing waxaa lagu akhriyaa poller %d, ee maaha server-kan; safka diiwaanka alaabta wuxuu muujinayaa natiijada akhriskii ugu dambeeyay."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "Dejinta SmokePing %s lama akhrin karo: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "Dejinta SmokePing %s waxay taxdaa %d bartilmaameed; %d gelitaan waa la dhaafay: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "Dejinta SmokePing %s waxay taxdaa %d bartilmaameed."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "Dejinta jidka faylka PHP way madhan tahay ama maaha fayl la fulin karo, markaa akhristuhu ma bilaabi karo."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "Akhristuhu wuxuu ku bilaabmaa %s."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "Akhristuhu ma dhammaystirin orod poller-kan."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "Orodkii ugu dambeeyay ee akhristuhu wuxuu dhammaaday %d ilbiriqsi ka hor, taas oo ka badan saddex jeer muddada poller-ka."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "Akhristuhu wuxuu akhriyay %d ka mid ah %d taxane %.1f ilbiriqsi gudahood wuxuuna dhaafay miisaaniyadda waqtigiisa %d jeer."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "Akhristuhu wuxuu akhriyay %d ka mid ah %d taxane %.1f ilbiriqsi gudahood, %d ilbiriqsi ka hor."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "Wax diiwaan alaab ah lagama akhrin poller-kan."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "Diiwaankii ugu dambeeyay wuxuu ku guuldarraystay %d ilbiriqsi ka hor kii horena weli waa la isticmaalayaa: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "Diiwaanku wuxuu taxay %d bartilmaameed %d ilbiriqsi ka hor."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "Caafimaadka SmokePing ee Poller %d"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "Hubinta"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "Faahfaahin"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "Xaaladda"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "Isku day Mar kale Soo-dejinta Qaabka"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "Hagaag"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "Digniin"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "Khalad"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "Aan la aqoon"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d ilbiriqsi ka hor"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "marnaba"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "Soo deji Dejinta SmokePing"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "Dejinta"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "Faylka SmokePing ee la dejiyay waxaa lala akhriyaa faylasha uu ku daro, iyadoo laga soo qaado galkiisa. Faylka la soo geliyay keligiis ayaa la akhriyaa: @include looma ogola gudihiisa."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "Faylka la dejiyay, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "Fayl la soo geliyay, oo aan lahayn @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "Faylka la Soo geliyay"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "Kaliya fayl la soo geliyay: dejinta SmokePing ee ugu badnaan 4 MiB."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "Qalabka"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "Hal qalab marti SmokePing kasta wuxuu kooxeeyaa bartilmaameedyada baadha isku hal marti. Qalab hore u leh magaca martida ee poller-ka la doortay ayaa la isticmaalaa halkii mid cusub la samayn lahaa."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "Hal qalab marti SmokePing kasta"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "Hal qalab bartilmaameed SmokePing kasta"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "Qaabka Qalabka"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "Qaabka qalabka ay soo-dejintu abuurto."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "Poller"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "Poller-ka qalabka cusub. Waa inuu ahaadaa poller-ka wada akhristaha SmokePing, haddii kale ilaha xogtooda kooban wax xog ah ma helaan."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "Goobta"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "Goobta qalabka cusub."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "Waxba"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "Geedka Jaantuska"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "U ekeysii kala sarreynta SmokePing geed jaantus: qayb kasta waxay noqotaa laan, qalab kastana marti hoos yimaada laanta bartilmaameedyadiisa. Laamaha iyo martida jira dib ayaa loo isticmaalaa."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "Geed cusub, hoos ku magacaaban"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "Ha u ekeysiin"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "Magaca Geedka Cusub"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "Kaliya geed cusub. Geed hore u leh magacan ayaa la isticmaalaa."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "Horudhacu wuxuu akhriyaa dejinta wuxuuna taxaa waxa soo-dejintu abuuri lahayd. Waxba lama qoro ilaa aad xaqiijiso liiskaas shaashadda xigta, faylasha SmokePing laftoodana weligood lama qoro."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "Horudhac"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "Ogeysiis"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "Heerka"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "Fariin"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "Qaybaha SmokePing"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "Soo deji"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "Qaybta"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "Bartilmaameedyada"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "Qayb lama calaamadin, markaa bartilmaameed kasta waa la doortay. Calaamadee qaybaha oo cusboonaysii horudhaca si aad kuwaas oo keliya u soo dejiso."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "Kaliya bartilmaameedyada ku jira qaybaha la calaamadeeyay ayaa la doortay."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "Cusboonaysii Horudhaca"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "Abuur"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "Isticmaal qalabka %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "Hore ayaa loogu xidhay qalabka %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "Dhaaf: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "Qalabka: %d la abuurayo, %d jira oo la isticmaalayo, %d hore loo xidhay, %d la dhaafay"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "Tallaabada"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "Sharaxaad"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "Magaca Martida"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "Bartilmaameedyada SmokePing"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "Ma jiro qalab."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Qiiq"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "Soo koobid"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "master"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "Jaantusyada: %d la abuurayo, %d hore u jira"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "Jaantus"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "Goobta"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "Bartilmaameedka SmokePing"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "Ma jiro jaantus la abuurayo."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "Sababta"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "Xogta Kooban Oo Keliya: %d bartilmaameed"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "Laan"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "Qalabka"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "Geedka Jaantuska: %d laamood, %d gelitaan qalab"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "Qiyaas"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "Culayska la Qiyaasay"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "Xaqiiji"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "Dejinta lama soo dejin karo ilaa khaladaadka kore la saxo. Waxba lama qorin."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "Bartilmaameed kasta oo la doortay hore ayuu ugu jiraa Cacti. Ma jiro wax la soo dejiyo."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "Qorshaha %s. Soo-dejintu waxay abuurtaa waxa kor ku taxan iyadoo loo marayo hawlaha qalabka, jaantuska, iyo geedka ee Cacti. Haddii dejinta SmokePing ama Cacti isbeddeleen tan iyo horudhacan, soo-dejinta waa la diidaa waxaadna eegtaa horudhaca mar kale."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s iyo %d dheeraad ah"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "Ku dar %s Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "Bartilmaameedka SmokePing %s (martida %s) ma laha qalab Cacti ah. Dooro waxa laga samaynayo."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "Ka abuur qalab cusub qaabka Bartilmaameedka SmokePing"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "Ku xidh qalab jira"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "Si kastaba ha ahaatee bartilmaameedku wuxuu helaa jaantus kooban oo digniinta ah, iyo marka xogta SmokePing la sawiri karo, jaantus qiiq ah. Cacti weligii ma qoro faylasha SmokePing."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "Ku dar"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "Xaqiiji Dib-u-xidhidda"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing mar dambe ma taxo %s. %s wuxuu leeyahay isku hal marti (%s) iyo baadhitaan (%s). SmokePing wuxuu bilaabaa fayl cusub oo madhan jid cusub."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "Dib-u-xidhidda waxay u rartaa jaantuska qiiqa iyo isha xogta kooban bartilmaameedka cusub iyo xidhmada qalabka iyaga la socda. Faylkii hore wuxuu ku hayaa taariikhdiisa jaantus kaydsan. Waxba lama tirtiro."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "Qalabka %d waxaa lagu xidhay bartilmaameedkii hore."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "Iska dhaaf Soo-jeedinta"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "Dib u xidh"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "Maqan"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "Jooga"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "Aan ku xirnayn"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Ku dar Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "Diiwaanka SmokePing"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "Marti"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "Diiwaan"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "Xidhid"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "Magaca"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "Jid"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "Baadhitaan"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "Ku-xigeenno"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "Tallaabo / Pings"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "Wax bartilmaameed ah lagama soo dejin poller-kan."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "Dib-u-eegis"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "Soo-jeedinnada Dib-u-xirista"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "Jidka Lumay"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "Jidka Cusub"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "Ma jiraan soo-jeedinno dib-u-xidhid ah."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "%d taxane: qiyaastii %.1f xidhmooyin baadhitaan ilbiriqsigiiba iyo %.2f cusboonaysiin RRD ilbiriqsigiiba gudaha SmokePing."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti wuxuu helaa qiyaastii %d safaf ilo xog ah iyo %d safaf walxo jaantus ah."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "Meel-ku-xidhka SmokePing %s ma jiro. Ku xidh galka xogta SmokePing halkaas si akhris-keliya ah."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s wuxuu ku jiraa jidka RRA lagumana gaadho symlink."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Isticmaalaha Cacti wuu ku qori karaa %s. Faylasha RRD ee SmokePing waa inay Cacti u ahaadaan akhris-keliya."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "Meel-ku-xidhka SmokePing %s kuma jiro gudaha jidka RRA ee Cacti %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Jidka RRA ee Cacti %s ma jiro."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "Meel-ku-xidhka SmokePing %s wuxuu ka kooban yahay qayb madhan, \".\" ama \"..\"."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "Meel-ku-xidhka SmokePing %s waxaa lagu gaadhaa symlink, taas oo Cacti diido. Isticmaal bind mount akhris-keliya ah beddelkeeda."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "Suurtogal ma aha in la akhriyo shaxda meel-ku-xidhka, markaa meel-ku-xidhka lama xaqiijin karin inuu yahay akhris-keliya."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s wuxuu ku yaallaa meel lagu rakibay oo akhris-kaliya ah."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s wuxuu ku yaallaa meel-ku-xidh la qori karo %s. Ku xidh galka xogta SmokePing si akhris-keliya ah."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "Weli diiwaan ma jiro, markaa faylal RRD lama filayo."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "Dhammaan %d faylasha RRD ee la filayo waxaa laga arki karaa meel-ku-xidhka."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "%d ka mid ah %d faylasha RRD ee la filayo lagama arko meel-ku-xidhka, tusaale ahaan %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Dib u eeg kormeerada hoos ku diiwaangashan. Aqoonsiyadu waxay u gaar yihiin fadhigan, waxay dhacaan marka kormeeradu isbeddelaan, marna ma joojiyaan digniinaha mana beddelaan caafimaadka."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "Hawlgallada SmokePing"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Ficilada"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Baaritaan"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Shay"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "La Kormeeray (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Xaaladda"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Aan la garanayn ama duugoobay"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Marna"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "La qiray; caafimaadku isma beddelin."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Qir"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Ma jiraan kormeero loo heli karo qalabka aad geli karto."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "Hawl-wadeenka SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "Muuqaalka SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "Maamulka SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "Caafimaadka SmokePing"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "labada bartilmaameed waa inay ku yaallaan poller-ka wada akhristaha"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "bartilmaameedka cusub hore ayaa loogu xidhay qalabka %d"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "bartilmaameedkii hore wuxuu leeyahay ilo xog oo ku yaal qalabka %d, kaas oo aan lagu xidhin"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "Isha SmokePing"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "Poller-ka SmokePing"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Poller-ka Cacti ee ka shaqeeya, ama la wadaaga nidaamka faylasha, martigeliyaha SmokePing. Kaliya poller-kan ayaa akhriya xogta SmokePing."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "Faylka Dejinta SmokePing"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "Faylka ugu weyn ee dejinta SmokePing, oo uu akhriyo poller-ka wada akhriyaha. Kordhintu waxay ku akhridaa isaga iyo faylasha uu ku daro falanqeeye u gaar ah, mana qorto weligeed. Faylasha lagu daray waa inay ku jiraan galka faylkan gudihiisa."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "Galka Xogta SmokePing"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "Galka xogta (datadir) ee ka yimid dejinta SmokePing, sida SmokePing u arko."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "Ku-xidhka Cacti ee Galka Xogta"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "Ku-xidh akhris-kaliya (bind ama NFS) oo ah galka xogta SmokePing ee ku dhex jira waddada RRA ee Cacti. Cacti wuxuu kaliya akhriyaa faylasha RRD ee ku dhex jira waddadiisa RRA, mana maro xidhiidh-tilmaan (symlink)."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "Akhriye"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "Miisaaniyadda Waqtiga Akhriyaha"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "Ilbiriqsiyada uu hal hawl-akhriye ku bixin karo akhrinta faylasha RRD ka hor inta uusan istaagin oo uusan dib uga bilaaban wareegga poller-ka xiga."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "Muddada U Dhexeysa Tirakoobka"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "Ilbiriqsiyada ugu yar ee u dhexeeya hawlaha tirakoobka. Tirakoobku wuxuu sidoo kale shaqeeyaa marka faylka dejintu isbeddelo."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "Oggolaanshaha Cusboonaanta"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "Ilbiriqsiyada dhaafsiisan hal tallaabo oo cabbirku weli u xisaabmo mid hadda ah."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Midabada Lumidda"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Midabada lumidda SmokePing ee ay sawiraan garaafyada smoke. SmokePing 2.7 wuxuu sawiraa heerar lumid oo ka duwan 2.8 iyo wixii ka dambeeya. Toos ah (Automatic) wuxuu raacaa nooca SmokePing ee akhriyuhu ka helo SmokePing agtiisa, kaas oo ka muuqda bogga caafimaadka, wuxuuna adeegsadaa 2.8 iyo wixii ka dambeeya marka uusan waxba helin."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Toos ah"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 iyo wixii ka dambeeya"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Ka saar"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Ilaali Jadwalka Plugin-ka Marka La Saarayo"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "Marka la calaamadeeyo, ka-saarista kordhintu waxay ilaalisaa miisaskeeda tirakoobka, ku-meelaynta, iyo caafimaadka. Faylasha SmokePing weligood lama tirtiro labada xaaladoodba."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "Galka Kaydinta"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "Meesha ay ka-saaristu ku qorto dhoofinta dejinta kordhinta. Bannaana u dhaaf si aad u isticmaasho galka cache/smokeping ee Cacti, kaas oo kordhintu ku ilaaliso xeerka diidmada dhammaan. Galka halkan lagu dejiyo waa inuu hore u jiro, la qori karo, kana baxsanaado xididka webka; marka aan la qori karin wax dhoofin ah lama qoro."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "Bartilmaameedka weli lama kaydin."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "Bartilmaameedku wuxuu diraa %d ping wareeg kasta. Garaafyada smoke waxay u jiraan oo keliya 10, 20, iyo 30; wuxuu leeyahay xog soo-koobid ah oo keliya."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti wuxuu faylasha RRD ku hayaa RRDproxy, halkaas oo faylasha SmokePing aysan ka jirin. Kaliya xogta soo-koobidda ayaa la heli karaa."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "Qalabka waxaa xogta ka ururiya poller-ka %d, laakiin akhriyaha buuxiya qiimaha soo-koobidda wuxuu ku shaqeeyaa poller-ka %d. Ku qor qalabka poller-ka %d."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "Qaab-dhismeedka garaafka soo-koobidda lama rakibin."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "Qaab-dhismeedka xogta soo-koobidda lama rakibin."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti ma abuurin garaafka soo-koobidda."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "Labada bartilmaameedba waa in marka hore la kaydiyaa."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "Bartilmaameedkii hore ma laha il xog smoke ah oo la raro."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "Faylka RRD ee %s kama muuqdo ku-xidhka SmokePing dhexdiisa."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "Faylka RRD ee %s wuxuu u furmaa meel ka baxsan ku-xidhka SmokePing."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "Qaab-dhismeedka garaafka smoke lama rakibin."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti ma abuurin garaafka smoke."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti ma aqbalo waddada SmokePing ee isha xogta."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "Soo-dejinta kale ee dejinta SmokePing ayaa socota, sidaas darteed waxba lama soo dejin. Mar kale hubi marka ay dhammaato."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "Dejinta ama rakibaadda ayaa isbeddeshay tan iyo markii la hubiyay, sidaas darteed waxba lama soo dejin. Mar kale hubi."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "Ku-dayashada geedka garaafyada waxay u baahan tahay ogolaansho lagu tafatirayo geedaha."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "Bartilmaameedyada lama kaydin karin; eeg diiwaanka Cacti. Wax kale lama beddelin."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: waa laga booday, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: waa laga booday, Cacti ma abuurin qalabka"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: waxaa la abuuray qalabka %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: waa laga booday, bartilmaameedka lama kaydin"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: horay ayuu ugu jiray Cacti qalabka %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "Geedka garaafyada ee %s lama abuuri karin."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "waxaa la abuuray geedka garaafyada %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "laanta geedka %s lama abuuri karin"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "laanta geedka %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "qalabka %d laguma dari karin geedka"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "qalabka %d oo hoos taga laanta geedka %s"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "bartilmaameedka weli lama kaydin"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "horay ayaa loogu meeleeyay qalabka %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti ma abuurin qalabka"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "waxaa la abuuray qalabka %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "bartilmaameedka waxaa intii lagu jiray loo meeleeyay qalab kale; qalabka %d ma laha garaafyo SmokePing"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "bartilmaameedka waxaa intii lagu jiray loo meeleeyay qalab kale"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "waxaa loo meeleeyay qalabka %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "garaafka soo-koobidda %d ee %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "ma jiro soo-koobid loogu talagalay %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "garaafka smoke %d ee %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "ma jiro garaaf smoke loogu talagalay %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "%d qalab ayaan lagu farsamayn waqtiga la oggol yahay. Mar kale u wad falka iyaga; qalabyada horay loogu daray waa laga boodayaa."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "Xadka waqtiga"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "ma jiro bartilmaameed SmokePing oo aan la meelayn oo leh martigeliyaha %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "soo-jeedintu hadda ma furna"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "bartilmaameedka cusub waxaa loo meeleeyay qalab kale"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "garaafka smoke %d wuxuu hadda akhriyaa faylka cusub; faylkii hore wuxuu ku sii jirayaa mid garaaf ahaan loo sawiri karo garaaf la kaydiyay"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "isha xogta soo-koobidda %d waxay raacdaa bartilmaameedka cusub"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "qalabka %d waxaa loo meeleeyay bartilmaameedka cusub"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "Xaaladda"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "Cusboonaanta"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "Cusboonaysiintii Ugu Dambaysay"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "Lumidda"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Dayactirka"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "Dhexdhexaadka"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "Bartilmaameed"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "Ma jiraan bartilmaameedyo SmokePing oo loo meeleeyay qalabyo aad arki karto."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "Dayactir ku jira"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Maya"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "Weligii lama arag"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Kordhinta SmokePing waxay u baahan tahay PHP %s ama ka dambeeya. Adeegahan wuxuu wadaa PHP %s, sidaas darteed kordhinta lama rakibin lamana hawlgelin."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "Kordhinta SmokePing lama hawlgelin."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "Kordhinta SmokePing waxay u baahan tahay PHP %s ama ka dambeeya."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "Dejinta SmokePing waxaa loo dhoofiyay %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "Dejinta SmokePing lama dhoofin; eeg diiwaanka SmokePing. Ka-saaristu way sii socotay."
+
+#: setup.php
+msgid "Management"
+msgstr "Maamulka"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "Soo-dejinta/Dhoofinta"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "Ma lihid ogolaansho aad ku darto bartilmaameedyada SmokePing."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "Fayl lama soo gelin, ama wuu ka weyn yahay inta adeeguhu aqbalo."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "Ma jirto soo-dejin la hubiyay oo la dabaqo. Mar kale hubi faylka."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "Dejinta waa la soo dejiyay."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "Qaab-dhismeedyada SmokePing way ku guuldarraysteen in la soo dejiyo. Eeg miiska caafimaadka."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Ogolaanshahaaga qalabku ma daboolaan qalab kasta, sidaas darteed ma soo dejin kartid dejinta SmokePing. Weydii maamule leh gelitaanka dhammaan qalabyada."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "Magacaw geedka garaafyada cusub, ama dooro geed jira ama wax geed ah ha dooran."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "Faylka la soo geliyay wuxuu ka weyn yahay 4 MiB."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "Dejinta SmokePing lama akhrin karo, sidaas darteed waxba lama soo dejin: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "Ma jirto soo-dejin horay loo eegay oo la dabaqo. Mar kale horay u eeg."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "iyo %d kale; eeg diiwaanka Cacti"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "Dejinta SmokePing waa la soo dejiyay."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "Dooro bartilmaameed ku jira poller-kan iyo, si aad u meelayso, qalab aad beddeli karto."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "Soo-jeedintu ma furna, ama waxay ku lug leedahay qalab ama poller aadan beddeli karin."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "Soo-jeedinta waa la iska diiday."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Muuqaalka kormeerka"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Kormeerada lama akhrin karin. Weydiiso maamulaha inuu hubiyo diiwaanka plugin-ka."

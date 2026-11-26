@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: ig-NG\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Isi"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Tụnyere mfu na igbu oge na eserese SmokePing na ọnọdụ mmezi. Zigara onye nchịkwa okwu gbasara faịlụ ndị na-efu, mbubata na njikọ ọzọ."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "a wụfuru, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (ndabere)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "Nhazi SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Ikike ngwaọrụ gị anaghị ekpuchi ngwaọrụ niile, ya mere ị gaghị enwe ike ibupụta ma ọ bụ ibubata nhazi SmokePing. Jụọ onye nchịkwa nwere ikike ịnweta ngwaọrụ niile."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "Bupụta Nhazi SmokePing"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "Mbupụta ahụ nwere ntọala plugin, ebumnuche SmokePing ndị plugin gụrụ, na ngwaọrụ nke ọ bụla jikọrọ ya na ya, site na aha host na nkọwa ngwaọrụ ahụ. Ọ nweghị isi mmalite data, eserese, faịlụ RRD, ma ọ bụ nzere."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "Budata"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "Bubata Nhazi SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "Ịhọrọ faịlụ na-enyocha ya naanị. Ihuenyo na-esote na-edepụta mgbanwe niile faịlụ ahụ ga-eme, a gaghịkwa ede ihe ọ bụla ruo mgbe ị kwadoro ndepụta ahụ. Mbubata na-agbakwunye ma na-emelite; ọ dịghị mgbe ọ na-ehichapụ ebumnuche ma ọ bụ ebufe njikọ, ọ dịghịkwa mgbe ọ na-eke faịlụ RRD ma ọ bụ emetụ ndekọ data SmokePing."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "Nyochaa Faịlụ"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "Nyocha Mbubata"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "Edeghị ihe ọ bụla."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "Azụ"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "Enweghị ike ibubata faịlụ ahụ ruo mgbe e doziri mperi ndị a. Edeghị ihe ọ bụla."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "Nwụnye ahụ dakọtara na faịlụ ahụ ugbua. Enweghị ihe a ga-ebubata."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "Atụmatụ %s. Itinye ya na-eme kpọmkwem mgbanwe ndị a n'otu usoro ọrụ. Ọ bụrụ na faịlụ ahụ ma ọ bụ nwụnye ahụ gbanwere kemgbe nyocha a, a ga-ajụ mbubata ahụ ma ị ga-enyocha ọzọ."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "Tinye Mbubata"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "Kagbuo"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "Tinye Ebumnuche SmokePing"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "enweghị ebumnuche SmokePing dabara"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "Pịa Gaa n'ihu ka ị tinye ebumnuche SmokePing ndị host ha bụ aha host nke ngwaọrụ ọ bụla a họọrọ. Ebumnuche ọ bụla na-enweta eserese nchịkọta maka mkpu na, mgbe enwere ike ise data SmokePing, eserese smoke. A naghị eke ngwaọrụ ebe a."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "Ebumnuche %d dabara."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "E kere ma ọ bụ jikọọ ihe %d, a wụfuru %d."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "Ngwaọrụ a nwere ebumnuche SmokePing, mana ngwa ọgụgụ na-ejupụta uru nchịkọta ha na-agba ọsọ na poller %d ma e chekwara ngwaọrụ ahụ na poller %d. Uru nchịkọta na mkpu na-akwụsị ruo mgbe e kenyere ngwaọrụ ahụ na poller %d ọzọ."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "Ebumnuche SmokePing nke Ngwaọrụ a"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "Eserese smoke %d ka na-ese agba ndị ọzọ; isi poller na-ebufe ruo 200 n'otu okirikiri."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "Enweghị ike ibufe eserese smoke %d; gbaa upgrade-graphs ka ị nwaa ha ọzọ, ma lee ndekọ Cacti maka ihe kpatara ya."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Ntọala Loss Colors na-arịọ agba mfu SmokePing %s, mana ngwa ọgụgụ chọtara SmokePing %s. Tọọ ya ka ọ bụrụ Akpaka ma ọ bụrụ na eserese ekwesịghị ịdị iche na nke SmokePing."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Ntọala Loss Colors na-ahọrọ agba mfu SmokePing %s maka eserese smoke."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Ngwa ọgụgụ ahụghị ụdị SmokePing ọ bụla, ya mere ntọala Loss Colors na-ahọrọ agba mfu nke SmokePing 2.8 na nke na-abịa n'ihu. Ọ bụrụ na SmokePing bụ 2.7, tọọ Loss Colors ka ọ bụrụ SmokePing 2.7."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Ngwa ọgụgụ chọtara SmokePing %s, ya mere ntọala Loss Colors na-ahọrọ agba mfu ya."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Etinyebeghị Thold, ya mere ọ nweghị ebumnuche na-enye mkpu na ma SmokePing ma Thold."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Ọ nweghị ebumnuche nwere ma mkpu SmokePing ma oke Thold agbanyere."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "Ebumnuche %d nwere ma mkpu SmokePing ma oke Thold agbanyere, ya mere otu nsogbu nwere ike izipu ọkwa ugboro abụọ. Tụnyere ọnọdụ mkpu ha tupu iwepụ nke ọ bụla: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "Ndebiri SmokePing dara n'ibubata ma a naghị anwa ha ọzọ na akpaka: %s Jiri Nwaa Mbubata Ndebiri Ọzọ mgbe i dozisịrị ihe kpatara ya."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "Ebubatabeghị ndebiri SmokePing. Jiri Nwaa Mbubata Ndebiri Ọzọ."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "Ebubatara ndebiri SmokePing."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "Poller nke ngwa ọgụgụ na-eme poll ngwaọrụ ọ bụla nwere isi mmalite data nchịkọta."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "Ngwaọrụ %d nwere isi mmalite data nchịkọta mana poller %d anaghị eme ha poll, nke na-agba ngwa ọgụgụ, ya mere uru nchịkọta ha na mkpu ha enweghị data: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "A na-agụ nhazi SmokePing na poller %d, ọ bụghị na sava a; ahịrị ndepụta ngwa na-egosi nsonaazụ nke ọgụgụ ikpeazụ ya."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "Enweghị ike ịgụ nhazi SmokePing %s: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "Nhazi SmokePing %s depụtara ebumnuche %d; a wụfuru ntinye %d: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "Nhazi SmokePing %s depụtara ebumnuche %d."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "Ntọala ụzọ PHP binary tọgbọ chakoo ma ọ bụ abụghị faịlụ na-agba ọsọ, ya mere ngwa ọgụgụ enweghị ike ịmalite."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "Ngwa ọgụgụ na-amalite na %s."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "Ngwa ọgụgụ emechaabeghị otu ọgụgụ na poller a."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "Ọgụgụ ikpeazụ nke ngwa ọgụgụ gwụrụ sekọnd %d gara aga, karịa oge etiti poller atọ."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "Ngwa ọgụgụ gụrụ %d n'ime usoro %d na sekọnd %.1f ma gabiga oke oge e nyere ya ugboro %d."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "Ngwa ọgụgụ gụrụ %d n'ime usoro %d na sekọnd %.1f, sekọnd %d gara aga."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "Agụbeghị ndepụta ngwa ọ bụla na poller a."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "Ndepụta ngwa ikpeazụ dara sekọnd %d gara aga ma nke gara aga ka dị n'ọrụ: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "Ndepụta ngwa depụtara ebumnuche %d sekọnd %d gara aga."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "Ahụike SmokePing maka Poller %d"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "Nyocha"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "Nkọwa"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "Ọnọdụ"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "Nwaa Mbubata Ndebiri Ọzọ"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "Ọ dị mma"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "Ịdọ aka ná ntị"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "Njehie"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "Amaghị"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d s gara aga"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "ọ dịtụbeghị"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "Bubata Nhazi SmokePing"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "Nhazi"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "A na-agụ faịlụ SmokePing a haziri tinyere faịlụ ndị o tinyere, site na ndekọ nke ya. A na-agụ faịlụ e bulitere naanị ya: anaghị ekwe ka @include dị na ya."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "Faịlụ a haziri, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "Faịlụ e bulitere, na-enweghị @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "Faịlụ e Bulitere"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "Naanị maka faịlụ e bulitere: nhazi SmokePing nke kacha elu bụ 4 MiB."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "Ngwaọrụ"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "Otu ngwaọrụ maka otu host SmokePing na-achịkọta ebumnuche ndị na-enyocha otu host ahụ. A na-eji ngwaọrụ nwere aha host ahụ ugbua na poller a họọrọ kama nke ọhụrụ."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "Otu ngwaọrụ maka host SmokePing ọ bụla"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "Otu ngwaọrụ maka ebumnuche SmokePing ọ bụla"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "Ndebiri Ngwaọrụ"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "Ndebiri nke ngwaọrụ ndị mbubata ahụ na-eke."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "Poller"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "Poller nke ngwaọrụ ọhụrụ. Ọ ga-abụrịrị poller na-agba ngwa ọgụgụ SmokePing, ma ọ bụghị ya, isi mmalite data nchịkọta ha agaghị enweta data."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "Saịtị"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "Saịtị nke ngwaọrụ ọhụrụ."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "Ọ dịghị"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "Osisi Eserese"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "Yie usoro SmokePing n'ime osisi eserese: ngalaba ọ bụla na-aghọ alaka, ngwaọrụ ọ bụla na-aghọ host n'okpuru alaka nke ebumnuche ya. A na-eji alaka na host ndị dị adị eme ihe ọzọ."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "Osisi ọhụrụ, a kpọrọ aha n'okpuru"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "Eyila"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "Aha Osisi Ọhụrụ"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "Naanị maka osisi ọhụrụ. A na-eji osisi nwere aha a ugbua eme ihe."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "Nlele mbụ na-agụ nhazi ahụ ma depụta ihe mbubata ga-eke. A naghị ede ihe ọ bụla ruo mgbe ị kwadoro ndepụta ahụ na ihuenyo na-esote, ọ dịghịkwa mgbe a na-ede faịlụ SmokePing n'onwe ya."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "Nlele Mbụ"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "Ndetu"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "Ọkwa"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "Ozi"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "Ngalaba SmokePing"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "Bubata"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "Ngalaba"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "Ebumnuche"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "Ọ nweghị ngalaba a kanyere akara, ya mere a họọrọ ebumnuche niile. Kaa akara na ngalaba ma melite nlele mbụ ka ibubata naanị ndị ahụ."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "Naanị ebumnuche dị na ngalaba ndị a kanyere akara ka a họọrọ."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "Melite Nlele Mbụ"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "Kepụta"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "Jiri ngwaọrụ %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "Ejikọrọ ya na ngwaọrụ %d ugbua"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "Wụfuo: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "Ngwaọrụ: %d a ga-eke, %d dị adị a ga-eji, %d ejikọrọ ugbua, %d a wụfuru"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "Omume"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "Nkọwa"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "Aha Host"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "Ebumnuche SmokePing"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "Enweghị ngwaọrụ."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "Nchịkọta"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "master"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "Eserese: %d a ga-eke, %d dị adị ugbua"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "Eserese"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "Ebe"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "Ebumnuche SmokePing"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "Enweghị eserese a ga-eke."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "Ihe kpatara ya"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "Naanị Data Nchịkọta: ebumnuche %d"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "Alaka"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "Ngwaọrụ"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "Osisi Eserese: alaka %d, ntinye ngwaọrụ %d"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "Atụmatụ"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "Ibu A Tụrụ Anya"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "Kwenye"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "Enweghị ike ibubata nhazi ahụ ruo mgbe e doziri mperi ndị dị n'elu. Edeghị ihe ọ bụla."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "Ebumnuche ọ bụla a họọrọ adịla na Cacti ugbua. Enweghị ihe a ga-ebubata."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "Atụmatụ %s. Mbubata na-eke kpọmkwem ihe e depụtara n'elu site na ọrụ ngwaọrụ, eserese, na osisi nke Cacti. Ọ bụrụ na nhazi SmokePing ma ọ bụ Cacti gbanwere kemgbe nlele mbụ a, a ga-ajụ mbubata ahụ ma ị ga-eme nlele mbụ ọzọ."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s na %d ndị ọzọ"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "Tinye %s na Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "Ebumnuche SmokePing %s (host %s) enweghị ngwaọrụ Cacti. Họrọ ihe ị ga-eme ya."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "Kee ngwaọrụ ọhụrụ site na ndebiri Ebumnuche SmokePing"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "Jikọọ ya na ngwaọrụ dị adị"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "N'ụzọ ọ bụla ebumnuche ahụ na-enweta eserese nchịkọta maka mkpu na, mgbe enwere ike ise data SmokePing, eserese smoke. Cacti anaghị ede faịlụ SmokePing."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "Tinye"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "Kwado Njikọ Ọzọ"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing anaghịzi edepụta %s. %s nwere otu host (%s) na probe (%s). SmokePing na-amalite faịlụ ọhụrụ tọgbọ chakoo maka ụzọ ọhụrụ."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "Njikọ ọzọ na-ebufe eserese smoke na isi mmalite data nchịkọta gaa na ebumnuche ọhụrụ yana njikọ ngwaọrụ ha. Faịlụ ochie ahụ na-edobe akụkọ ihe mere eme ya n'eserese echekwara. A naghị ehichapụ ihe ọ bụla."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "Ejikọrọ ngwaọrụ %d na ebumnuche ochie ahụ."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "Wepụ Atụmatụ"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "Jikọọ Ọzọ"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "Apụọla"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "Dị"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "Atụghị"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Tinye na Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "Ndepụta Ngwa SmokePing"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "Host"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "Ndepụta Ngwa"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "Njikọ"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "Aha"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "Ụzọ"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "Probe"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "Slaves"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "Nzọụkwụ / Ping"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "Ebubatabeghị ebumnuche ọ bụla na poller a."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "Nlele"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "Atụmatụ Njikọghachi"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "Ụzọ Furu Efu"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "Ụzọ Ọhụrụ"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "Enweghị atụmatụ njikọ ọzọ."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "Usoro %d: ihe dịka ngwugwu probe %.1f kwa sekọnd na mmelite RRD %.2f kwa sekọnd na SmokePing."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti na-enweta ihe dịka ahịrị isi mmalite data %d na ahịrị ihe eserese %d."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "Ebe mount SmokePing %s adịghị. Jikọọ ndekọ data SmokePing n'ebe ahụ dị ka naanị ọgụgụ."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s dị n'ime ụzọ RRA ma a naghị eru ya site na symlink."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Onye ọrụ Cacti nwere ike ide ihe na %s. Faịlụ RRD nke SmokePing ga-abụrịrị naanị ọgụgụ nye Cacti."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "Ebe mount SmokePing %s adịghị n'ime ụzọ RRA nke Cacti %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Ụzọ RRA nke Cacti %s adịghị."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "Ebe mount SmokePing %s nwere akụkụ tọgbọ chakoo, \".\" ma ọ bụ \"..\"."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "A na-eru ebe mount SmokePing %s site na symlink, nke Cacti na-ajụ. Jiri bind mount naanị ọgụgụ kama."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "Enweghị ike ịgụ tebụl mount, ya mere enweghị ike ịkwado na mount ahụ bụ naanị ọgụgụ."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s dị na mount naanị ọgụgụ."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s dị na mount a na-ede ihe %s. Jikọọ ndekọ data SmokePing dị ka naanị ọgụgụ."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "Enwebeghị ndepụta ngwa, ya mere a naghị atụ anya faịlụ RRD ọ bụla."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "Faịlụ RRD %d niile a tụrụ anya ha pụtara ìhè site na mount ahụ."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "Faịlụ RRD %d n'ime %d a tụrụ anya ha apụtaghị ìhè site na mount ahụ, dịka ọmụmaatụ %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Nyochaa nchọpụta edere n'okpuru ebe a. Nkweta bụ maka oge nnọkọ a naanị, ha na-agwụ mgbe nchọpụta gbanwere, ma ha anaghị egbochi ọkwa ịdọ aka ná ntị ma ọ bụ gbanwee ahụike."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "Ọrụ SmokePing"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Omume"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Nnyocha"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Ihe"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Achọpụtara (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Ọnọdụ"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Amaghị ma ọ bụ ochie"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Ọ dịtụbeghị"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Ekwetala; ahụike agbanweghị."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Kweta"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Enweghị nchọpụta dị maka ngwaọrụ ndị ị nwere ike ịnweta."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "Onye Ọrụ SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "Nlele SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "Nchịkwa SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "Ahụike SmokePing"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "ebumnuche abụọ ahụ ga-adịrịrị na poller nke na-agba ngwa ọgụgụ"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "ejikọrọ ebumnuche ọhụrụ ahụ na ngwaọrụ %d ugbua"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "ebumnuche ochie ahụ nwere isi mmalite data na ngwaọrụ %d, nke ejikọghị ya na ya"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "Isi Iyi SmokePing"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "Poller SmokePing"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Poller Cacti nke na-arụ ọrụ n'elu, ma ọ bụ na-ekekọrịta sistemụ faịlụ ya na, igwe SmokePing. Naanị poller a na-agụ data SmokePing."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "Faịlụ Nhazi SmokePing"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "Isi faịlụ nhazi SmokePing, nke poller na-arụ ọrụ ihe ọgụgụ na-agụ. Plọgin a na-agụ ya na faịlụ ndị ọ gụnyere site na iji ngwa nyocha ya n'onwe ya ma ọ dịghị mgbe ọ na-ede ihe n'ime ha. Ihe ndị a gụnyere ga-anọrịrị n'ime ndekọ faịlụ a."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "Ndekọ Data SmokePing"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "Ndekọ datadir sitere na nhazi SmokePing, dịka SmokePing si ahụ ya."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "Njikọ Mount Cacti nke Ndekọ Data"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "Njikọ bind ma ọ bụ NFS nke naanị ọgụgụ nke ndekọ data SmokePing n'ime ụzọ RRA nke Cacti. Cacti na-agụ naanị faịlụ RRD dị n'ime ụzọ RRA ya ma ọ dịghị mgbe ọ na-agụ site na symlink."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "Ngwa Ọgụgụ"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "Oke Oge Ngwa Ọgụgụ"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "Sekọnd ole otu ọrụ ihe ọgụgụ nwere ike iji gụọ faịlụ RRD tupu ọ kwụsị ma maliteghachi n'usoro poller na-esote."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "Oge Ndepụta Nchịkọta"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "Sekọnd kacha nta dị n'etiti ọrụ ndepụta nchịkọta. Ndepụta nchịkọta na-arụkwa ọrụ mgbe faịlụ nhazi gbanwere."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "Oge Nnabata Ọhụrụ"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "Sekọnd gafere otu nzọụkwụ nke nha ka na-agụ dịka nke ugbu a."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Agba Mfu"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Agba mfu SmokePing nke ihe osise anwụrụ na-ese. SmokePing 2.7 na-ese ọkwa mfu dị iche na 2.8 na nke ndị na-esote. Nke Akpaaka na-eso ụdị SmokePing nke ihe ọgụgụ hụrụ n'akụkụ SmokePing, nke egosiri na ibe ahụike, ma na-eji 2.8 na nke ndị na-esote mgbe ọ hụghị nke ọ bụla."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Nke Akpaaka"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 na nke ndị na-esote"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Wepụ"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Debe Tebụl Mgbakwunye Mgbe A Na-ewepụ"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "Mgbe akara dị na ya, iwepụ plọgin a na-edebe tebụl ndepụta nchịkọta, nkwekọ, na ahụike ya. A naghị ewepụ faịlụ SmokePing ma ọlị n'ụzọ ọ bụla."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "Ndekọ Nchekwa Ndabere"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "Ebe iwepụ plọgin na-ede mbupụ nke nhazi plọgin ahụ. Hapụ ya ka ọ tọgbọ chakoo iji jiri ndekọ cache/smokeping nke Cacti, nke plọgin ahụ na-echebe site na iwu deny-all. Ndekọ a họọrọ ebe a ga-adịrịrị adị, nwee ike ide ihe na ya, ma dịrị n'èzí mgbọrọgwụ webụ; mgbe a na-enweghị ike ide ihe na ya, a naghị ede mbupụ ọ bụla."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "Echekwabeghị ebe mgbaru ọsọ ahụ."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "Ebe mgbaru ọsọ ahụ na-eziga ping %d n'otu agba. Ihe osise anwụrụ dị naanị maka 10, 20, na 30; o nwere naanị data nchịkọta."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti na-edebe faịlụ RRD na RRDproxy, ebe faịlụ SmokePing adịghị. Naanị data nchịkọta dị."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "Poller %d na-enyocha ngwaọrụ a, mana ihe ọgụgụ na-ejupụta ọnụọgụgụ nchịkọta na-arụ ọrụ na poller %d. Kenye ngwaọrụ ahụ na poller %d."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "Etinyeghị ndebiri ihe osise nchịkọta."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "Etinyeghị ndebiri data nchịkọta."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti emepụtaghị ihe osise nchịkọta."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "A ga-echekwa ebe mgbaru ọsọ abụọ ahụ mbụ."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "Ebe mgbaru ọsọ ochie enweghị isi iyi data anwụrụ a ga-ebugharị."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "A naghị ahụ faịlụ RRD %s site na njikọ mount SmokePing."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "Faịlụ RRD %s na-eduga n'èzí njikọ mount SmokePing."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "Etinyeghị ndebiri ihe osise anwụrụ."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti emepụtaghị ihe osise anwụrụ."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti anaghị anabata ụzọ SmokePing maka isi iyi data."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "Mbubata nhazi SmokePing ọzọ na-aga n'ihu, ya mere ebubataghị ihe ọ bụla. Lelee ọzọ mgbe ọ gwụchara."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "Nhazi ma ọ bụ ntinye gbanwere kemgbe nyocha ahụ, ya mere ebubataghị ihe ọ bụla. Lelee ọzọ."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "Igosi n'ime osisi ihe osise chọrọ ikike idezi osisi."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "Enweghị ike ịchekwa ebe mgbaru ọsọ ndị ahụ; lee ndekọ Cacti. Enweghị ihe ọzọ agbanwere."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: awụfere ya, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: awụfere ya, Cacti emepụtaghị ngwaọrụ ahụ"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: mepụtara ngwaọrụ %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: awụfere ya, echekwaghị ebe mgbaru ọsọ ahụ"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: ọ dịlarị na Cacti na ngwaọrụ %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "Enweghị ike imepụta osisi ihe osise %s."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "mepụtara osisi ihe osise %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "enweghị ike imepụta alaka osisi %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "alaka osisi %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "enweghị ike itinye ngwaọrụ %d n'osisi ahụ"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "ngwaọrụ %d n'okpuru alaka osisi %s"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "echekwebeghị ebe mgbaru ọsọ ahụ"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "ekwekọrịtarala na ngwaọrụ %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti emepụtaghị ngwaọrụ ahụ"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "mepụtara ngwaọrụ %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "ekwekọrịtara ebe mgbaru ọsọ ahụ na ngwaọrụ ọzọ ka ọ dị ugbu a; ngwaọrụ %d enweghị ihe osise SmokePing"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "ekwekọrịtara ebe mgbaru ọsọ ahụ na ngwaọrụ ọzọ ka ọ dị ugbu a"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "ekwekọrịtara na ngwaọrụ %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "ihe osise nchịkọta %d maka %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "enweghị nchịkọta maka %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "ihe osise anwụrụ %d maka %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "enweghị ihe osise anwụrụ maka %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "Ahazighị ngwaọrụ %d n'ime oge e nyere. Mee omume ahụ ọzọ maka ha; a na-awụfe ngwaọrụ ndị etinyerelarị."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "Oke oge"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "ọ dịghị ebe mgbaru ọsọ SmokePing a na-ekwekọbeghị nke nwere igwe %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "atụmatụ ahụ emepeghịzi"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "ekwekọrịtara ebe mgbaru ọsọ ọhụrụ ahụ na ngwaọrụ ọzọ"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "ihe osise anwụrụ %d na-agụ faịlụ ọhụrụ ahụ ugbu a; faịlụ ochie na-anọgide na-ese n'ihe osise echekwara"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "isi iyi data nchịkọta %d na-eso ebe mgbaru ọsọ ọhụrụ ahụ"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "ekwekọrịtara ngwaọrụ %d na ebe mgbaru ọsọ ọhụrụ ahụ"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "Ọnọdụ"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "Ịdị Ọhụrụ"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "Mmelite Ikpeazụ"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "Mfu"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Ndozi"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "Etiti"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "Ebumnuche"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "Enweghị ebe mgbaru ọsọ SmokePing ekwekọrịtara na ngwaọrụ ndị ị nwere ike ile."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "N'ime ndozi"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Mba"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "Ahụtụbeghị ya"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Plọgin SmokePing chọrọ PHP %s ma ọ bụ nke ọhụrụ karịa. Sava a na-agba PHP %s, ya mere etinyeghị ma ọ bụ mee ka plọgin ahụ rụọ ọrụ."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "Emeghị ka plọgin SmokePing rụọ ọrụ."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "Plọgin SmokePing chọrọ PHP %s ma ọ bụ nke ọhụrụ karịa."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "Ebupụrụ nhazi SmokePing gaa na %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "Ebupụghị nhazi SmokePing; lee ndekọ SmokePing. Iwepụ plọgin ahụ gara n'ihu."
+
+#: setup.php
+msgid "Management"
+msgstr "Njikwa"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "Mbubata/Mbupụ"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "Ị nweghị ikike itinye ebe mgbaru ọsọ SmokePing."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "Ọ dịghị faịlụ e bulitere, ma ọ bụ na ọ karịrị oke sava na-anabata."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "Enweghị mbubata e nyochara iji tinye n'ọrụ. Nyochaa faịlụ ahụ ọzọ."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "Ebubatala nhazi ahụ."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "Ndebiri SmokePing enweghị ike ibubata. Lee tebụl ahụike."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Ikike ngwaọrụ gị anaghị ekpuchi ngwaọrụ niile, ya mere ị gaghị enwe ike ibubata nhazi SmokePing. Jụọ onye nchịkwa nwere ohere ịnweta ngwaọrụ niile."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "Kpọọ osisi ihe osise ọhụrụ ahụ aha, ma ọ bụ họrọ osisi dị adị ma ọ bụ enweghị osisi."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "Faịlụ e bulitere karịrị 4 MiB."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "Enweghị ike ịgụ nhazi SmokePing, ya mere ebubataghị ihe ọ bụla: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "Enweghị mbubata e lelere tupu oge iji tinye n'ọrụ. Lelee ya tupu oge ọzọ."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "na %d ndị ọzọ; lee ndekọ Cacti"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "Ebubatala nhazi SmokePing."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "Họrọ ebe mgbaru ọsọ na poller a na, iji kwekọrịta ya, ngwaọrụ ị nwere ike ịgbanwe."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "Atụmatụ ahụ emepeghị, ma ọ bụ na ọ gụnyere ngwaọrụ ma ọ bụ poller ị na-enweghị ike ịgbanwe."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "E wepụrụ atụmatụ ahụ."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Nlere nleba anya"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Enweghị ike ịgụ nchọpụta ndị ahụ. Gwa onye nchịkwa ka ọ lelee ndekọ mgbakwunye ahụ."

@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: am-ET\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "ዋና"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "ኪሳራንና መዘግየትን ከSmokePing ግራፎችና ከጥገና ሁኔታ ጋር ያወዳድሩ። የጎደሉ ፋይሎችን፣ ማስገባቶችንና ዳግም ማገናኘትን ለአስተዳዳሪ ያሳውቁ።"
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "ተዘሏል፣ %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (ነባሪ)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "የSmokePing ውቅር"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "የመሣሪያ ፈቃዶችዎ ሁሉንም መሣሪያ ስለማይሸፍኑ የSmokePing ውቅርን መላክ ወይም ማስገባት አይችሉም። የሁሉም መሣሪያዎች መዳረሻ ያለውን አስተዳዳሪ ይጠይቁ።"
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "የSmokePing ውቅርን ላክ"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "መላኪያው የፕለጊን ቅንብሮችን፣ ፕለጊኑ ያነበባቸውን የSmokePing ዒላማዎች፣ እና እያንዳንዱ ከየትኛው መሣሪያ ጋር እንደተዛመደ በመሣሪያው አስተናጋጅ ስምና መግለጫ ይይዛል። ምንም የውሂብ ምንጭ፣ ግራፍ፣ RRD ፋይል ወይም የማረጋገጫ መረጃ አይይዝም።"
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "አውርድ"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "የSmokePing ውቅርን አስገባ"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "ፋይል መምረጥ መፈተሽ ብቻ ነው። ቀጣዩ ማያ ገጽ ፋይሉ የሚያደርገውን እያንዳንዱን ለውጥ ይዘረዝራል፣ እና እርስዎ ያንን ዝርዝር እስኪያረጋግጡ ድረስ ምንም ነገር አይጻፍም። ማስገባት ይጨምራል እንዲሁም ያዘምናል፤ በፍጹም ዒላማን አይሰርዝም ወይም ጥምረትን አያንቀሳቅስም፣ እንዲሁም የRRD ፋይል አይፈጥርም ወይም የSmokePing ውሂብ ማውጫን አይነካም።"
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "ፋይሉን ፈትሽ"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "የማስገባት ፍተሻ"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "ምንም ነገር አልተጻፈም።"
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "ተመለስ"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "እነዚህ ስህተቶች እስኪስተካከሉ ድረስ ፋይሉን ማስገባት አይቻልም። ምንም ነገር አልተጻፈም።"
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "መጫኛው ከፋይሉ ጋር ቀድሞውኑ ይዛመዳል። የሚገባ ምንም ነገር የለም።"
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "ዕቅድ %s። መተግበር እነዚህን ለውጦች በትክክል በአንድ ግብይት ያደርጋል። ከዚህ ፍተሻ ወዲህ ፋይሉ ወይም መጫኛው ከተቀየረ ማስገባቱ ውድቅ ይሆናል እና እንደገና ይፈትሻሉ።"
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "ማስገባቱን ተግብር"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "ተወው"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "የSmokePing ዒላማዎችን ጨምር"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "የሚዛመድ የSmokePing ዒላማ የለም"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "አስተናጋጁ የእያንዳንዱ የተመረጠ መሣሪያ አስተናጋጅ ስም የሆነውን የSmokePing ዒላማዎች ለመጨመር ቀጥል የሚለውን ጠቅ ያድርጉ። እያንዳንዱ ዒላማ ለማንቂያ የሚሆን የማጠቃለያ ግራፍ እና የSmokePing ውሂብ በግራፍ መሳል ሲቻል የsmoke ግራፍ ያገኛል። መሣሪያዎች እዚህ በፍጹም አይፈጠሩም።"
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "%d ዒላማዎች ይዛመዳሉ።"
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "%d ነገሮች ተፈጥረዋል ወይም ተዛምደዋል፣ %d ተዘለዋል።"
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "ይህ መሣሪያ የSmokePing ዒላማዎች አሉት፣ ነገር ግን የማጠቃለያ እሴቶቻቸውን የሚሞላው አንባቢ በpoller %d ላይ ይሰራል እና መሣሪያው በpoller %d ላይ ተቀምጧል። መሣሪያው እንደገና ለpoller %d እስኪመደብ ድረስ የማጠቃለያ እሴቶችና ማንቂያዎች ይቆማሉ።"
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "የዚህ መሣሪያ የSmokePing ዒላማዎች"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "%d የsmoke ግራፎች አሁንም ሌሎቹን ቀለሞች ይስላሉ፤ ዋናው poller በአንድ ዑደት እስከ 200 ያንቀሳቅሳል።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "%d የsmoke ግራፎችን ማንቀሳቀስ አልተቻለም፤ እንደገና ለመሞከር upgrade-graphs ያሂዱ፣ እና ምክንያቱን ለማወቅ የCacti መዝገብን ይመልከቱ።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "የኪሳራ ቀለሞች (Loss Colors) ቅንብር የSmokePing %s የኪሳራ ቀለሞችን ይጠይቃል፣ ነገር ግን አንባቢው SmokePing %s አግኝቷል። ግራፎቹ ከSmokePing መለየት ካለባቸው በስተቀር ወደ ራስ-ሰር (Automatic) ያቀናብሩት።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "የኪሳራ ቀለሞች (Loss Colors) ቅንብር ለsmoke ግራፎች የSmokePing %s የኪሳራ ቀለሞችን ይመርጣል።"
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "አንባቢው ምንም የSmokePing ስሪት ስላላገኘ የኪሳራ ቀለሞች (Loss Colors) ቅንብር የSmokePing 2.8 እና ከዚያ በኋላ ያሉትን የኪሳራ ቀለሞች ይመርጣል። SmokePing 2.7 ከሆነ የኪሳራ ቀለሞችን ወደ SmokePing 2.7 ያቀናብሩ።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "አንባቢው SmokePing %s ስላገኘ የኪሳራ ቀለሞች (Loss Colors) ቅንብር የእሱን የኪሳራ ቀለሞች ይመርጣል።"
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold ስላልተጫነ የትኛውም ዒላማ በSmokePing እና በThold ሁለቱም ላይ አያስጠነቅቅም።"
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "ምንም ዒላማ ሁለቱንም የSmokePing ማንቂያ እና የነቃ የThold ገደብ የለውም።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d ዒላማዎች ሁለቱንም የSmokePing ማንቂያ እና የነቃ የThold ገደብ ስላላቸው አንድ ችግር ሁለት ጊዜ ሊያሳውቅ ይችላል። አንዱን ከማስወገድዎ በፊት የማንቂያ ሁኔታዎቻቸውን ያወዳድሩ፦ %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "የSmokePing አብነቶች መግባት አልቻሉም እና በራስ-ሰር እንደገና አይሞከሩም፦ %s ምክንያቱን ካስተካከሉ በኋላ «የአብነት ማስገባትን እንደገና ሞክር»ን ይጠቀሙ።"
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "የSmokePing አብነቶች አልገቡም። «የአብነት ማስገባትን እንደገና ሞክር»ን ይጠቀሙ።"
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "የSmokePing አብነቶች ገብተዋል።"
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "የማጠቃለያ ውሂብ ምንጮች ያለው እያንዳንዱ መሣሪያ በአንባቢው poller ይጠየቃል።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "%d መሣሪያዎች የማጠቃለያ ውሂብ ምንጮች አሏቸው ነገር ግን አንባቢውን በሚያሄደው poller %d አይጠየቁም፣ ስለዚህ የማጠቃለያ እሴቶቻቸውና ማንቂያዎቻቸው ምንም ውሂብ የላቸውም፦ %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "የSmokePing ውቅር የሚነበበው በpoller %d ላይ እንጂ በዚህ አገልጋይ ላይ አይደለም፤ የዝርዝር ረድፉ የመጨረሻ ንባቡን ውጤት ያሳያል።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "የSmokePing ውቅር %s ሊነበብ አልቻለም፦ %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "የSmokePing ውቅር %s %d ዒላማዎችን ይዘረዝራል፤ %d ግቤቶች ተዘለዋል፦ %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "የSmokePing ውቅር %s %d ዒላማዎችን ይዘረዝራል።"
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "የPHP ሁለትዮሽ ፋይል መንገድ ቅንብር ባዶ ነው ወይም የሚፈጸም ፋይል አይደለም፣ ስለዚህ አንባቢው መጀመር አይችልም።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "አንባቢው በ%s ይጀምራል።"
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "አንባቢው በዚህ poller ላይ አንድም ሩጫ አላጠናቀቀም።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "የመጨረሻው የአንባቢ ሩጫ ከ%d ሰከንዶች በፊት ተጠናቋል፣ ይህም ከሦስት የpoller ክፍተቶች በላይ ነው።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "አንባቢው %d ከ%d ተከታታዮችን በ%.1f ሰከንዶች ውስጥ አንብቧል እና የጊዜ በጀቱን %d ጊዜ አልፏል።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "አንባቢው %d ከ%d ተከታታዮችን በ%.1f ሰከንዶች ውስጥ ከ%d ሰከንዶች በፊት አንብቧል።"
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "በዚህ poller ላይ ምንም ዝርዝር አልተነበበም።"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "የመጨረሻው ዝርዝር ከ%d ሰከንዶች በፊት አልተሳካም እና የቀድሞው አሁንም ጥቅም ላይ ውሏል፦ %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "ዝርዝሩ %d ዒላማዎችን ከ%d ሰከንዶች በፊት ዘርዝሯል።"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "የPoller %d SmokePing ጤና"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "ፍተሻ"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "ዝርዝር"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "ሁኔታ"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "የአብነት ማስገባትን እንደገና ሞክር"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "እሺ"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "ማስጠንቀቂያ"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "ስህተት"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "ያልታወቀ"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "ከ%d ሰከንድ በፊት"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "በፍጹም"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "የSmokePing ውቅርን አስገባ"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "ውቅረት"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "የተዋቀረው የSmokePing ፋይል ከራሱ ማውጫ ውስጥ ካካተታቸው ፋይሎች ጋር አብሮ ይነበባል። የተሰቀለ ፋይል በራሱ ብቻ ይነበባል፦ @include በውስጡ አይፈቀድም።"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "የተዋቀረው ፋይል፣ %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "የተሰቀለ ፋይል፣ ያለ @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "የተሰቀለ ፋይል"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "ለተሰቀለ ፋይል ብቻ፦ ቢበዛ 4 MiB የሆነ የSmokePing ውቅር።"
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "መሣሪያዎች"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "በአንድ የSmokePing አስተናጋጅ አንድ መሣሪያ ተመሳሳይ አስተናጋጅን የሚፈትሹ ዒላማዎችን ይመድባል። በተመረጠው poller ላይ ቀድሞውኑ የአስተናጋጁ ስም ያለው መሣሪያ ከአዲስ ይልቅ ጥቅም ላይ ይውላል።"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "በአንድ የSmokePing አስተናጋጅ አንድ መሣሪያ"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "በአንድ የSmokePing ዒላማ አንድ መሣሪያ"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "የመሣሪያ አብነት"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "ማስገባቱ የሚፈጥራቸው መሣሪያዎች አብነት።"
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "ሰብሳቢ"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "የአዳዲስ መሣሪያዎች poller። የSmokePing አንባቢን የሚያሄድ poller መሆን አለበት፣ አለበለዚያ የማጠቃለያ ውሂብ ምንጮቻቸው ምንም ውሂብ አያገኙም።"
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "ጣቢያ"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "የአዳዲስ መሣሪያዎች ጣቢያ።"
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "ምንም"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "የግራፍ ዛፍ"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "የSmokePing ተዋረድን ወደ ግራፍ ዛፍ አንጸባርቅ፦ እያንዳንዱ ክፍል ቅርንጫፍ ይሆናል፣ እና እያንዳንዱ መሣሪያ በዒላማዎቹ ቅርንጫፍ ሥር አስተናጋጅ ይሆናል። ነባር ቅርንጫፎችና አስተናጋጆች እንደገና ጥቅም ላይ ይውላሉ።"
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "አዲስ ዛፍ፣ ከዚህ በታች የተሰየመ"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "አታንጸባርቅ"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "አዲስ የዛፍ ስም"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "ለአዲስ ዛፍ ብቻ። ቀድሞውኑ ይህ ስም ያለው ዛፍ ጥቅም ላይ ይውላል።"
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "ቅድመ-እይታ ውቅሩን ያነባል እና ማስገባቱ የሚፈጥረውን ይዘረዝራል። በቀጣዩ ማያ ገጽ ላይ ያንን ዝርዝር እስኪያረጋግጡ ድረስ ምንም ነገር አይጻፍም፣ እና የSmokePing የራሱ ፋይሎች በፍጹም አይጻፉም።"
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "ቅድመ-እይታ"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "ማስታወሻ"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "ደረጃ"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "መልእክት"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "የSmokePing ክፍሎች"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "አስገባ"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "ክፍል"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "ዒላማዎች"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "ምንም ክፍል ስላልተመረጠ እያንዳንዱ ዒላማ ተመርጧል። እነዚያን ብቻ ለማስገባት ክፍሎችን ይምረጡ እና ቅድመ-እይታውን ያዘምኑ።"
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "በተመረጡት ክፍሎች ውስጥ ያሉ ዒላማዎች ብቻ ተመርጠዋል።"
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "ቅድመ-እይታን አዘምን"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "ፍጠር"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "መሣሪያ %dን ተጠቀም"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "ቀድሞውኑ ከመሣሪያ %d ጋር ተዛምዷል"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "ዝለል፦ %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "መሣሪያዎች፦ %d የሚፈጠሩ፣ %d ጥቅም ላይ የሚውሉ ነባሮች፣ %d ቀድሞውኑ የተዛመዱ፣ %d የተዘለሉ"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "እርምጃ"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "መግለጫ"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "የአስተናጋጅ ስም"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "የSmokePing ዒላማዎች"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "ምንም መሣሪያ የለም።"
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "ማጠቃለያ"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "ዋና"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "ግራፎች፦ %d የሚፈጠሩ፣ %d ቀድሞውኑ ያሉ"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "ግራፍ"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "ቦታ"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "የSmokePing ዒላማ"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "የሚፈጠር ምንም ግራፍ የለም።"
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "ምክንያት"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "የማጠቃለያ ውሂብ ብቻ፦ %d ዒላማዎች"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "ቅርንጫፍ"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "መሣሪያ"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "የግራፍ ዛፍ፦ %d ቅርንጫፎች፣ %d የመሣሪያ ግቤቶች"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "ግምት"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "የተገመተ ጭነት"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "አረጋግጥ"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "ከላይ ያሉት ስህተቶች እስኪስተካከሉ ድረስ ውቅሩን ማስገባት አይቻልም። ምንም ነገር አልተጻፈም።"
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "እያንዳንዱ የተመረጠ ዒላማ ቀድሞውኑ በCacti ውስጥ አለ። የሚገባ ምንም ነገር የለም።"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "ዕቅድ %s። ማስገባት ከላይ የተዘረዘረውን በትክክል በCacti የመሣሪያ፣ የግራፍ እና የዛፍ ተግባራት በኩል ይፈጥራል። ከዚህ ቅድመ-እይታ ወዲህ የSmokePing ውቅር ወይም Cacti ከተቀየረ ማስገባቱ ውድቅ ይሆናል እና እንደገና ቅድመ-እይታ ያደርጋሉ።"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s እና %d ተጨማሪ"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "%sን ወደ Cacti ጨምር"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "የSmokePing ዒላማ %s (አስተናጋጅ %s) የCacti መሣሪያ የለውም። ምን ማድረግ እንዳለብዎ ይምረጡ።"
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "ከSmokePing Target አብነት አዲስ መሣሪያ ፍጠር"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "ከነባር መሣሪያ ጋር አዛምደው"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "በሁለቱም መንገድ ዒላማው ለማንቂያ የሚሆን የማጠቃለያ ግራፍ እና የSmokePing ውሂብ በግራፍ መሳል ሲቻል የsmoke ግራፍ ያገኛል። Cacti የSmokePing ፋይሎችን በፍጹም አይጽፍም።"
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "ጨምር"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "ዳግም ማገናኘትን አረጋግጥ"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing ከአሁን በኋላ %sን አይዘረዝርም። %s ተመሳሳይ አስተናጋጅ (%s) እና መፈተሻ (%s) አለው። SmokePing ለአዲስ መንገድ አዲስ ባዶ ፋይል ይጀምራል።"
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "ዳግም ማገናኘት የsmoke ግራፉን እና የማጠቃለያ ውሂብ ምንጩን ወደ አዲሱ ዒላማ፣ ከእነሱም ጋር የመሣሪያ ጥምረቱን ያንቀሳቅሳል። የድሮው ፋይል ታሪኩን በተመዘገበ ግራፍ ውስጥ ያቆያል። ምንም ነገር አይሰረዝም።"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "መሣሪያ %d ከድሮው ዒላማ ጋር ተዛምዷል።"
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "ሐሳቡን አሰናብት"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "ዳግም አገናኝ"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "ጠፍቷል"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "ያለ"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "ያልተዛመደ"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "ወደ Cacti ጨምር"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "የSmokePing ዝርዝር"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "አስተናጋጅ"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "ዝርዝር"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "ጥምረት"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "ስም"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "መንገድ"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "መፈተሻ"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "ተከታዮች"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "ደረጃ / ፒንጎች"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "በዚህ poller ላይ ምንም ዒላማዎች አልገቡም።"
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "ግምገማ"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "ዳግም የማገናኘት ጥቆማዎች"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "የጠፋ መንገድ"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "አዲስ መንገድ"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "ምንም የዳግም ማገናኘት ሐሳቦች የሉም።"
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "%d ተከታታዮች፦ በSmokePing ውስጥ በሰከንድ ወደ %.1f የሚጠጉ የመፈተሻ ፓኬቶች እና በሰከንድ %.2f የRRD ዝማኔዎች።"
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti ወደ %d የሚጠጉ የውሂብ ምንጭ ረድፎች እና %d የግራፍ ንጥል ረድፎች ያገኛል።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "የSmokePing መጫኛ %s የለም። የSmokePing ውሂብ ማውጫን እዚያ ለንባብ-ብቻ ይጫኑ።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s በRRA መንገድ ውስጥ ነው እና በsymlink በኩል አይደረስበትም።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "የCacti ተጠቃሚ ወደ %s መጻፍ ይችላል። የSmokePing RRD ፋይሎች ለCacti ለንባብ-ብቻ መሆን አለባቸው።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "የSmokePing መጫኛ %s በCacti RRA መንገድ %s ውስጥ አይደለም።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "የCacti RRA መንገድ %s የለም።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "የSmokePing መጫኛ %s ባዶ፣ \".\" ወይም \"..\" ክፍል ይዟል።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "የSmokePing መጫኛ %s የሚደረሰው በsymlink በኩል ሲሆን Cacti ይህን አይቀበልም። በምትኩ ለንባብ-ብቻ bind mount ይጠቀሙ።"
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "የመጫኛ ሰንጠረዡን ማንበብ ስላልተቻለ መጫኛው ለንባብ-ብቻ መሆኑን ማረጋገጥ አልተቻለም።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s ለንባብ-ብቻ በሆነ መጫኛ ላይ ነው።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s መጻፍ በሚቻልበት መጫኛ %s ላይ ነው። የSmokePing ውሂብ ማውጫን ለንባብ-ብቻ ይጫኑ።"
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "እስካሁን ዝርዝር ስለሌለ ምንም የRRD ፋይሎች አይጠበቁም።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "ሁሉም %d የሚጠበቁ የRRD ፋይሎች በመጫኛው በኩል ይታያሉ።"
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "%d ከ%d የሚጠበቁ የRRD ፋይሎች በመጫኛው በኩል አይታዩም፣ ለምሳሌ %s።"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "ከዚህ በታች የተመዘገቡትን ምልከታዎች ይገምግሙ። እውቅናዎች ለዚህ ክፍለ ጊዜ ግላዊ ናቸው፣ ምልከታዎች ሲለወጡ ጊዜያቸው ያልፋል፣ እና ማንቂያዎችን አያፍኑም ወይም ጤናን አይለውጡም።"
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "የSmokePing ክዋኔዎች"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "እርምጃዎች"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "ምርመራ"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "ነገር"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "የታየበት (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "ሁኔታ"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "ያልታወቀ ወይም ያረጀ"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "በፍጹም"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "እውቅና ተሰጥቷል፤ ጤና አልተለወጠም።"
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "እውቅና ስጥ"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "መድረስ ለሚችሉባቸው መሣሪያዎች ምንም ምልከታዎች የሉም።"
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "የSmokePing ኦፕሬተር"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "የSmokePing እይታ"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "የSmokePing አስተዳዳሪ"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "የSmokePing ጤና"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "ሁለቱም ዒላማዎች አንባቢውን በሚያሄደው poller ላይ መሆን አለባቸው"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "አዲሱ ዒላማ ቀድሞውኑ ከመሣሪያ %d ጋር ተዛምዷል"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "የድሮው ዒላማ ካልተዛመደበት መሣሪያ %d ላይ የውሂብ ምንጮች አሉት"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "የSmokePing ምንጭ"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "የSmokePing ፖለር"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "ከSmokePing አስተናጋጅ ጋር አብሮ የሚሰራ ወይም የፋይል ስርዓት የሚጋራ የCacti ፖለር። የSmokePing ውሂብን የሚያነበው ይህ ፖለር ብቻ ነው።"
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "የSmokePing ማዋቀሪያ ፋይል"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "አንባቢውን በሚያስኬደው ፖለር የሚነበበው ዋናው የSmokePing ማዋቀሪያ ፋይል። ተሰኪው እሱን እና የሚያካትታቸውን ፋይሎች በራሱ ተንታኝ ያነባል እንጂ በፍጹም አይጽፍባቸውም። የሚካተቱ ፋይሎች በዚህ ፋይል ማውጫ ውስጥ መቆየት አለባቸው።"
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "የSmokePing ውሂብ ማውጫ"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "SmokePing እንደሚያየው ከSmokePing ማዋቀሪያ ውስጥ ያለው datadir።"
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "የውሂብ ማውጫው የCacti መጫኛ"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "በCacti RRA ዱካ ውስጥ የሚገኝ ለንባብ ብቻ የሆነ የSmokePing ውሂብ ማውጫ bind ወይም NFS መጫኛ። Cacti የRRD ፋይሎችን የሚያነበው በRRA ዱካው ውስጥ ብቻ ነው እንጂ በሲምሊንክ በኩል በፍጹም አያነብም።"
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "አንባቢ"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "የአንባቢ ጊዜ በጀት"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "አንድ የአንባቢ ዙር ከማቆሙ እና በሚቀጥለው የፖለር ዑደት ከመቀጠሉ በፊት የRRD ፋይሎችን በማንበብ ሊያጠፋ የሚችለው ሰከንዶች።"
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "የዝርዝር ፍተሻ ክፍተት"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "በዝርዝር ፍተሻ ዙሮች መካከል ያለው ዝቅተኛ ሰከንዶች። የማዋቀሪያው ፋይል ሲቀየርም የዝርዝር ፍተሻው ይሰራል።"
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "የወቅታዊነት ገደብ"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "አንድ ልኬት አሁንም እንደ ወቅታዊ ተቆጥሮ የሚቆይበት ከአንድ እርምጃ በኋላ ያለው የሰከንዶች ብዛት።"
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "የመጥፋት ቀለሞች"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "የስሞክ ግራፎች የትኞቹን የSmokePing መጥፋት ቀለሞች እንደሚስሉ ይወስናል። SmokePing 2.7 ከ2.8 እና ከዚያ በኋላ ካሉት የተለዩ የመጥፋት ደረጃዎችን ይስላል። ራስ-ሰር አንባቢው ከSmokePing አጠገብ የሚያገኘውንና በጤና ገጹ ላይ የሚታየውን የSmokePing ስሪት ይከተላል፤ ምንም ካላገኘ ደግሞ 2.8 እና ከዚያ በኋላ ያለውን ይጠቀማል።"
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "ራስ-ሰር"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 እና ከዚያ በኋላ"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "አራግፍ"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "ሲራገፍ የተሰኪ ሰንጠረዦችን አቆይ"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "ሲመረጥ ተሰኪውን ማራገፍ የዝርዝር፣ የካርታ እና የጤና ሰንጠረዦቹን ይጠብቃል። የSmokePing ፋይሎች በምንም መንገድ በፍጹም አይሰረዙም።"
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "የመጠባበቂያ ማውጫ"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "ማራገፉ የተሰኪውን ማዋቀሪያ ወደ ውጭ የሚልክበት ቦታ። ተሰኪው ሁሉንም በሚከለክል ሕግ የሚጠብቀውን የCacti cache/smokeping ማውጫ ለመጠቀም ባዶ ይተዉት። እዚህ የሚዘጋጅ ማውጫ አስቀድሞ ያለ፣ የሚጻፍበት እና ከድር ስርወ ማውጫ ውጭ መሆን አለበት፤ የሚጻፍበት ካልሆነ ምንም ወደ ውጭ አይላክም።"
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "ዒላማው ገና አልተቀመጠም።"
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "ዒላማው በአንድ ዙር %d ፒንጎችን ይልካል። የስሞክ ግራፎች ያሉት ለ10፣ 20 እና 30 ብቻ ነው፤ ያለው የማጠቃለያ ውሂብ ብቻ ነው።"
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti የRRD ፋይሎችን የሚያስቀምጠው የSmokePing ፋይሎች በሌሉበት RRDproxy ላይ ነው። የሚገኘው የማጠቃለያ ውሂብ ብቻ ነው።"
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "መሣሪያው የሚጠየቀው በፖለር %d ነው፣ ነገር ግን የማጠቃለያ እሴቶቹን የሚሞላው አንባቢ የሚሰራው በፖለር %d ላይ ነው። መሣሪያውን ለፖለር %d ይመድቡ።"
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "የማጠቃለያ ግራፍ አብነት አልተጫነም።"
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "የማጠቃለያ ውሂብ አብነት አልተጫነም።"
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti የማጠቃለያ ግራፉን አልፈጠረም።"
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "ሁለቱም ዒላማዎች መጀመሪያ መቀመጥ አለባቸው።"
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "አሮጌው ዒላማ የሚዛወር የስሞክ ውሂብ ምንጭ የለውም።"
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "የRRD ፋይል %s በSmokePing መጫኛ በኩል አይታይም።"
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "የRRD ፋይል %s ከSmokePing መጫኛ ውጭ ያመለክታል።"
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "የስሞክ ግራፍ አብነት አልተጫነም።"
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti የስሞክ ግራፉን አልፈጠረም።"
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti ለውሂብ ምንጭ የSmokePing ዱካውን አይቀበልም።"
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "ሌላ የSmokePing ማዋቀሪያ ማስመጣት እየሰራ ስለሆነ ምንም አልመጣም። ሲጠናቀቅ እንደገና ያረጋግጡ።"
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "ከፍተሻው በኋላ ማዋቀሪያው ወይም መጫኛው ስለተቀየረ ምንም አልመጣም። እንደገና ያረጋግጡ።"
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "ወደ ግራፍ ዛፍ ማንጸባረቅ ዛፎችን የማርትዕ ፈቃድ ይፈልጋል።"
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "ዒላማዎቹን ማስቀመጥ አልተቻለም፤ የCacti መዝገብን ይመልከቱ። ሌላ ምንም ነገር አልተቀየረም።"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: ተዘሏል፣ %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: ተዘሏል፣ Cacti መሣሪያውን አልፈጠረም"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: መሣሪያ %d ተፈጥሯል"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: ተዘሏል፣ ዒላማው አልተቀመጠም"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: አስቀድሞ በCacti ውስጥ በመሣሪያ %d ላይ አለ"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "የግራፍ ዛፉ %s መፈጠር አልተቻለም።"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "የግራፍ ዛፍ %s ተፈጥሯል"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "የዛፍ ቅርንጫፉ %s መፈጠር አልተቻለም"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "የዛፍ ቅርንጫፍ %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "መሣሪያ %d ወደ ዛፉ መጨመር አልተቻለም"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "መሣሪያ %d በዛፍ ቅርንጫፍ %s ስር"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "ዒላማው ገና አልተቀመጠም"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "አስቀድሞ ከመሣሪያ %d ጋር ተዛምዷል"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti መሣሪያውን አልፈጠረም"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "መሣሪያ %d ተፈጥሯል"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "ዒላማው በዚሁ ጊዜ ውስጥ ከሌላ መሣሪያ ጋር ተዛምዷል፤ መሣሪያ %d የSmokePing ግራፎች የሉትም"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "ዒላማው በዚሁ ጊዜ ውስጥ ከሌላ መሣሪያ ጋር ተዛምዷል"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "ከመሣሪያ %d ጋር ተዛምዷል"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "የማጠቃለያ ግራፍ %d ለ%s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "ለ%s ማጠቃለያ የለም: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "የስሞክ ግራፍ %d ለ%s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "ለ%s የስሞክ ግራፍ የለም: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "%d መሣሪያዎች በተፈቀደው ጊዜ ውስጥ አልተሰሩም። ለእነሱ ተግባሩን እንደገና ያሂዱ፤ አስቀድመው የተጨመሩ መሣሪያዎች ይዘለላሉ።"
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "የጊዜ ገደብ"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "አስተናጋጅ %s ያለው ያልተዛመደ የSmokePing ዒላማ የለም"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "ጥቆማው ከእንግዲህ ክፍት አይደለም"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "አዲሱ ዒላማ ከሌላ መሣሪያ ጋር ተዛምዷል"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "የስሞክ ግራፍ %d አሁን አዲሱን ፋይል ያነባል፤ አሮጌው ፋይል በተቀመጠ ግራፍ ውስጥ ሊታይ የሚችል ሆኖ ይቆያል"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "የማጠቃለያ ውሂብ ምንጭ %d አዲሱን ዒላማ ይከተላል"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "መሣሪያ %d ከአዲሱ ዒላማ ጋር ተዛምዷል"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "ሁኔታ"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "ወቅታዊነት"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "የመጨረሻ ዝመና"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "መጥፋት"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "ጥገና"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "መካከለኛ"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "ዒላማ"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "ማየት ከሚችሏቸው መሣሪያዎች ጋር የተዛመዱ የSmokePing ዒላማዎች የሉም።"
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "በጥገና ላይ"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "አይ"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "በፍጹም አልታየም"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "የSmokePing ተሰኪ PHP %s ወይም ከዚያ በኋላ ያለውን ይፈልጋል። ይህ አገልጋይ PHP %s ስለሚያሄድ ተሰኪው አልተጫነም ወይም አልነቃም።"
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "የSmokePing ተሰኪ አልነቃም።"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "የSmokePing ተሰኪ PHP %s ወይም ከዚያ በኋላ ያለውን ይፈልጋል።"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "የSmokePing ማዋቀሪያ ወደ %s ተልኳል"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "የSmokePing ማዋቀሪያ ወደ ውጭ አልተላከም፤ የSmokePing መዝገብን ይመልከቱ። ማራገፉ ቀጥሏል።"
+
+#: setup.php
+msgid "Management"
+msgstr "አስተዳደር"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "ማስመጣት/መላክ"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "የSmokePing ዒላማዎችን ለመጨመር ፈቃድ የለዎትም።"
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "ምንም ፋይል አልተጫነም፣ ወይም አገልጋዩ ከሚቀበለው በላይ ትልቅ ነው።"
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "ተግባራዊ የሚደረግ የተፈተሸ ማስመጣት የለም። ፋይሉን እንደገና ይፈትሹ።"
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "ማዋቀሪያው መጥቷል።"
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "የSmokePing አብነቶችን ማስመጣት አልተሳካም። የጤና ሰንጠረዡን ይመልከቱ።"
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "የመሣሪያ ፈቃዶችዎ ሁሉንም መሣሪያ ስለማይሸፍኑ የSmokePing ማዋቀሪያን ማስመጣት አይችሉም። የሁሉም መሣሪያዎች መዳረሻ ያለውን አስተዳዳሪ ይጠይቁ።"
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "አዲሱን የግራፍ ዛፍ ይሰይሙ፣ ወይም ያለውን ዛፍ ወይም ምንም ዛፍ አለመምረጥን ይምረጡ።"
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "የተጫነው ፋይል ከ4 MiB ይበልጣል።"
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "የSmokePing ማዋቀሪያው ሊነበብ ስላልቻለ ምንም አልመጣም: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "ተግባራዊ የሚደረግ አስቀድሞ የታየ ማስመጣት የለም። እንደገና አስቀድመው ይመልከቱት።"
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "እና %d ተጨማሪ፤ የCacti መዝገብን ይመልከቱ"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "የSmokePing ማዋቀሪያው መጥቷል።"
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "በዚህ ፖለር ላይ አንድ ዒላማ ይምረጡ እና እሱን ለማዛመድ ሊቀይሩት የሚችሉትን መሣሪያ ይምረጡ።"
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "ጥቆማው ክፍት አይደለም፣ ወይም ሊቀይሩት የማይችሉትን መሣሪያ ወይም ፖለር ያካትታል።"
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "ጥቆማው ውድቅ ተደርጓል።"
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "የክትትል እይታ"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "ምልከታዎቹን ማንበብ አልተቻለም። አስተዳዳሪ የተሰኪውን መዝገብ እንዲያረጋግጥ ይጠይቁ።"

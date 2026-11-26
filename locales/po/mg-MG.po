@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: mg-MG\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Fototra"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Ampitahao amin'ny kisary SmokePing sy ny toe-javatra fikojakojana ny fahaverezana sy ny fahatarana. Ampitao any amin'ny mpandrindra ny rakitra tsy hita, ny fanafarana ary ny fampifandraisana indray."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "nodinganina, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (mahazatra)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "Fikirakirana SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Tsy mahafaoka ny fitaovana rehetra ny fahazoan-dalanao momba ny fitaovana, ka tsy afaka manondrana na manafatra ny fikirakirana SmokePing ianao. Manontania mpandrindra manana fidirana amin'ny fitaovana rehetra."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "Hanondrana ny Fikirakirana SmokePing"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "Mitahiry ny fikirakirana ny plugin, ny lasibatra SmokePing novakin'ny plugin, ary ny fitaovana ifandraisan'ny tsirairay amin'ny alalan'ny anaran'ny mpampiantrano sy ny famaritana ny fitaovana ny fanondranana. Tsy mitahiry loharanon-drakitra, kisary, rakitra RRD, na fanamarinam-panalahidy izy io."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "Sintony"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "Hanafatra Fikirakirana SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "Ny fisafidianana rakitra dia manamarina azy fotsiny. Ny efijery manaraka dia mitanisa ny fanovana rehetra hataon'ny rakitra, ary tsy misy soratana raha tsy manamafy io lisitra io ianao. Ny fanafarana dia manampy sy manavao; tsy mamafa lasibatra na mamindra fampifandraisana na oviana na oviana izy io, ary tsy mamorona rakitra RRD na mikitika ny lahatahirin-drakitry ny SmokePing."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "Hamarino ny Rakitra"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "Fanamarinana Fanafarana"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "Tsy nisy zavatra voasoratra."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "Hiverina"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "Tsy azo ampidirina ny rakitra raha tsy voavaha ireo hadisoana ireo. Tsy nisy zavatra voasoratra."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "Efa mifanaraka amin'ny rakitra ny fametrahana. Tsy misy zavatra hafarana."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "Drafitra %s. Ny fampiharana dia manao ireo fanovana ireo indray mandeha ao anatin'ny dingana iray. Raha niova ny rakitra na ny fametrahana taorian'ity fanamarinana ity, dia lavina ny fanafarana ary manamarina indray ianao."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "Ampiharo ny Fanafarana"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "Foano"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "Hanampy Lasibatra SmokePing"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "tsy misy lasibatra SmokePing mifanaraka"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "Tsindrio ny Tohizo mba hanampiana ny lasibatra SmokePing izay manana mpampiantrano mitovy amin'ny anaran'ny mpampiantrano amin'ny fitaovana tsirairay voafantina. Ny lasibatra tsirairay dia mahazo kisary famintinana ho an'ny fampitandremana ary, rehefa azo atao kisary ny angon-drakitry ny SmokePing, kisary smoke. Tsy misy fitaovana foronina eto."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "Lasibatra %d no mifanaraka."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "Zavatra %d noforonina na nampifandraisina, %d nodinganina."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "Manana lasibatra SmokePing ity fitaovana ity, saingy ny mpamaky izay mameno ny sandan'ny famintinana dia mandeha eo amin'ny poller %d ary ny fitaovana dia voatahiry eo amin'ny poller %d. Mijanona ny sandan'ny famintinana sy ny fampitandremana mandra-panendry indray ny fitaovana ho eo amin'ny poller %d."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "Lasibatra SmokePing an'ity Fitaovana ity"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "Kisary smoke %d no mbola mandoko ny loko hafa; mamindra hatramin'ny 200 isaky ny tsingerina ny poller fototra."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "Kisary smoke %d no tsy azo nafindra; alefaso ny upgrade-graphs mba hanandrana azy ireo indray, ary jereo ny firaketana Cacti hahitana ny antony."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Ny fikirakirana Loss Colors dia mangataka loko fahaverezana SmokePing %s, saingy SmokePing %s no hitan'ny mpamaky. Ataovy Ho azy (Automatic) izany raha tsy hoe tokony ho samy hafa amin'ny an'ny SmokePing ny kisary."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Ny fikirakirana Loss Colors dia misafidy ny loko fahaverezana SmokePing %s ho an'ny kisary smoke."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Tsy nahita kinova SmokePing ny mpamaky, ka ny fikirakirana Loss Colors dia misafidy ny loko fahaverezana ho an'ny SmokePing 2.8 sy ny aoriana. Raha SmokePing 2.7 ny anao, dia ataovy SmokePing 2.7 ny Loss Colors."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Nahita SmokePing %s ny mpamaky, ka misafidy ny loko fahaverezana avy amin'izany ny fikirakirana Loss Colors."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Tsy voapetraka ny Thold, ka tsy misy lasibatra mampitandrina ao amin'ny SmokePing sy ny Thold miaraka."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Tsy misy lasibatra manana fampitandremana SmokePing sy fetra Thold miasa miaraka."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "Lasibatra %d no manana fampitandremana SmokePing sy fetra Thold miasa miaraka, ka mety hampandre indroa ny olana iray. Ampitahao ny fepetra fampitandremana alohan'ny hanesorana ny iray: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "Tsy nahomby ny fanafarana ny lasitra SmokePing ary tsy averina andramana ho azy: %s Ampiasao ny Andramo Indray ny Fanafarana Lasitra rehefa voavaha ny antony."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "Tsy mbola nafarana ny lasitra SmokePing. Ampiasao ny Andramo Indray ny Fanafarana Lasitra."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "Voafatra ny lasitra SmokePing."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "Ny fitaovana tsirairay manana loharanon-drakitra famintinana dia angonin'ny poller-n'ny mpamaky."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "Fitaovana %d no manana loharanon-drakitra famintinana nefa tsy angonin'ny poller %d, izay mampandeha ny mpamaky, ka tsy manana angon-drakitra ny sandan'ny famintinana sy ny fampitandremana azy ireo: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "Eo amin'ny poller %d no vakiana ny fikirakirana SmokePing, fa tsy eo amin'ity mpizara ity; ny laharan'ny lisitra dia mampiseho ny vokatry ny famakiana farany nataony."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "Tsy azo vakiana ny fikirakirana SmokePing %s: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "Ny fikirakirana SmokePing %s dia mitanisa lasibatra %d; fidirana %d no nodinganina: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "Ny fikirakirana SmokePing %s dia mitanisa lasibatra %d."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "Foana ny fikirakirana ny lalan'ny rakitra PHP na tsy rakitra azo alefa izy io, ka tsy afaka manomboka ny mpamaky."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "Manomboka amin'ny %s ny mpamaky."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "Tsy mbola nahavita fihodinana iray ny mpamaky teo amin'ity poller ity."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "Ny fihodinan'ny mpamaky farany dia nifarana %d segondra lasa izay, mihoatra ny elanelam-potoana telon'ny poller."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "Namaky andiany %d amin'ny %d tao anatin'ny %.1f segondra ny mpamaky ary nihoatra ny teti-potoanany in-%d."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "Namaky andiany %d amin'ny %d tao anatin'ny %.1f segondra ny mpamaky, %d segondra lasa izay."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "Tsy mbola nisy lisitra novakiana teo amin'ity poller ity."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "Tsy nahomby ny lisitra farany %d segondra lasa izay ary mbola ampiasaina ny teo aloha: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "Nitanisa lasibatra %d ny lisitra %d segondra lasa izay."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "Fahasalaman'ny SmokePing ho an'ny Poller %d"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "Fanamarinana"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "Antsipiriany"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "Toetra"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "Andramo Indray ny Fanafarana Lasitra"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "OK"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "Fampitandremana"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "Hadisoana"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "Tsy fantatra"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d s lasa izay"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "tsy mbola nisy"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "Manafatra Fikirakirana SmokePing"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "Fikirakirana"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "Ny rakitra SmokePing voakirakira dia vakiana miaraka amin'ny rakitra ampidiriny, avy ao amin'ny lahatahiriny manokana. Ny rakitra nampakarina dia vakiana samirery: tsy mahazo mampiasa @include ao anatiny."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "Ny rakitra voakirakira, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "Rakitra nampakarina, tsy misy @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "Rakitra Nampakarina"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "Ho an'ny rakitra nampakarina ihany: fikirakirana SmokePing tsy mihoatra ny 4 MiB."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "Fitaovana"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "Ny fitaovana iray isaky ny mpampiantrano SmokePing dia manambatra ny lasibatra mandinika ny mpampiantrano iray ihany. Ny fitaovana efa manana ny anaran'ny mpampiantrano eo amin'ny poller voafidy no ampiasaina fa tsy mamorona vaovao."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "Fitaovana iray isaky ny mpampiantrano SmokePing"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "Fitaovana iray isaky ny lasibatra SmokePing"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "Lasitra Fitaovana"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "Ny lasitry ny fitaovana foronin'ny fanafarana."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "Poller"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "Ny poller-n'ny fitaovana vaovao. Tsy maintsy ilay poller mampandeha ny mpamaky SmokePing izany, raha tsy izany dia tsy hahazo angon-drakitra ny loharanon-drakitra famintinana azy ireo."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "Toerana"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "Ny toerana misy ny fitaovana vaovao."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "Tsy misy"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "Hazon-kisary"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "Tarataro ao amin'ny hazon-kisary ny ambaratongan'ny SmokePing: ny fizarana tsirairay dia lasa sampana, ary ny fitaovana tsirairay dia mpampiantrano eo ambanin'ny sampan'ny lasibatra azy. Ampiasaina indray ny sampana sy mpampiantrano efa misy."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "Hazo vaovao, voalaza eto ambany ny anarany"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "Aza taratarina"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "Anaran'ny Hazo Vaovao"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "Ho an'ny hazo vaovao ihany. Ny hazo efa manana io anarana io no ampiasaina."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "Ny topi-maso dia mamaky ny fikirakirana ary mitanisa izay ho foronin'ny fanafarana. Tsy misy soratana raha tsy manamafy io lisitra io eo amin'ny efijery manaraka ianao, ary tsy misy fanoratana atao amin'ny rakitra manokan'ny SmokePing na oviana na oviana."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "Topi-maso"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "Fanamarihana"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "Ambaratonga"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "Hafatra"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "Fizarana SmokePing"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "Ampidiro"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "Fizarana"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "Lasibatra"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "Tsy misy fizarana voamarika, ka voafidy daholo ny lasibatra rehetra. Mariho ny fizarana ary havaozy ny topi-maso mba hanafarana ireo ihany."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "Ny lasibatra ao amin'ny fizarana voamarika ihany no voafidy."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "Havaozy ny Topi-maso"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "Mamorona"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "Ampiasao ny fitaovana %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "Efa mifandray amin'ny fitaovana %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "Dingano: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "Fitaovana: %d hoforonina, %d efa misy hampiasaina, %d efa mifandray, %d nodinganina"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "Hetsika"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "Famaritana"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "Anaran'ny Mpampiantrano"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "Lasibatra SmokePing"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "Tsy misy fitaovana."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "Famintinana"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "master"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "Kisary: %d hoforonina, %d efa misy"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "Kisary"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "Toerana misy azy"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "Lasibatra SmokePing"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "Tsy misy kisary hoforonina."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "Antony"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "Angon-drakitra Famintinana Ihany: lasibatra %d"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "Sampana"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "Fitaovana"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "Hazon-kisary: sampana %d, fidirana fitaovana %d"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "Tombanana"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "Vesatra Tombanana"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "Hamafiso"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "Tsy azo ampidirina ny fikirakirana raha tsy voavaha ireo hadisoana etsy ambony. Tsy nisy zavatra voasoratra."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "Efa ao amin'ny Cacti daholo ny lasibatra voafantina rehetra. Tsy misy zavatra hafarana."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "Drafitra %s. Ny fanafarana dia mamorona mivantana izay voatanisa etsy ambony amin'ny alalan'ny fiasan'ny fitaovana, kisary ary hazo ao amin'ny Cacti. Raha niova ny fikirakirana SmokePing na ny Cacti taorian'ity topi-maso ity, dia lavina ny fanafarana ary manao topi-maso indray ianao."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s sy %d hafa"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "Ampio %s ao amin'ny Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "Ny lasibatra SmokePing %s (mpampiantrano %s) dia tsy manana fitaovana Cacti. Safidio izay hatao aminy."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "Mamorona fitaovana vaovao avy amin'ny lasitra SmokePing Target"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "Ampifandraiso amin'ny fitaovana efa misy"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "Na aiza na aiza safidiana dia mahazo kisary famintinana ho an'ny fampitandremana ny lasibatra ary, rehefa azo atao kisary ny angon-drakitry ny SmokePing, kisary smoke. Tsy manoratra ny rakitry ny SmokePing na oviana na oviana ny Cacti."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "Ampio"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "Hamafiso ny Fampifandraisana Indray"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "Tsy mitanisa ny %s intsony ny SmokePing. Ny %s dia manana mpampiantrano mitovy (%s) sy mpitsapa mitovy (%s). Manomboka rakitra vaovao foana ny SmokePing ho an'ny lalana vaovao."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "Ny fampifandraisana indray dia mamindra ny kisary smoke sy ny loharanon-drakitra famintinana mankany amin'ny lasibatra vaovao miaraka amin'ny fampifandraisana ny fitaovana. Ny rakitra taloha dia mitazona ny tantarany ao amin'ny kisary voatahiry. Tsy misy zavatra fafana."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "Mifandray amin'ny lasibatra taloha ny fitaovana %d."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "Esory ny Tolo-kevitra"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "Ampifandraiso Indray"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "Tsy eo intsony"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "Eo"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "Tsy mifandray"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Ampio ao amin'ny Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "Lisitra SmokePing"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "Mpampiantrano"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "Lisitra"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "Fampifandraisana"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "Anarana"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "Lalana"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "Mpitsapa"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "Mpanaraka"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "Dingana / Pings"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "Tsy mbola nisy lasibatra nafarana teo amin'ity poller ity."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "Famerenana"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "Tolo-kevitra fampifandraisana indray"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "Lalana Tsy Hita Intsony"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "Lalana Vaovao"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "Tsy misy tolo-kevitra fampifandraisana indray."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "Andiany %d: manodidina ny %.1f fonosana fitsapana isan-tsegondra ary %.2f fanavaozana RRD isan-tsegondra ao amin'ny SmokePing."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Mahazo laharan'ny loharanon-drakitra manodidina ny %d sy laharan'ny singa kisary %d ny Cacti."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "Tsy misy ny mount SmokePing %s. Apetaho eo amin'ny fomba famakiana ihany ny lahatahirin-drakitry ny SmokePing."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "Ao anatin'ny lalana RRA ny %s ary tsy tratrarina amin'ny alalan'ny symlink."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Afaka manoratra ao amin'ny %s ny mpampiasa Cacti. Tsy maintsy ho amin'ny fomba famakiana ihany ny rakitra RRD an'ny SmokePing ho an'ny Cacti."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "Ny mount SmokePing %s dia tsy ao anatin'ny lalana RRA an'ny Cacti %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Tsy misy ny lalana RRA an'ny Cacti %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "Ny mount SmokePing %s dia misy fizarana foana, \".\" na \"..\"."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "Ny mount SmokePing %s dia tratrarina amin'ny alalan'ny symlink, izay lavin'ny Cacti. Mampiasà bind mount famakiana ihany fa tsara kokoa."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "Tsy afaka namaky ny latabatry ny mount, ka tsy voamarina fa famakiana ihany ilay mount."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "Eo amin'ny mount famakiana ihany ny %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "Ny %s dia eo amin'ny mount azo anoratana %s. Apetaho amin'ny fomba famakiana ihany ny lahatahirin-drakitry ny SmokePing."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "Tsy mbola misy lisitra, ka tsy misy rakitra RRD andrasana."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "Hita amin'ny alalan'ny mount avokoa ny rakitra RRD %d andrasana rehetra."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "Rakitra RRD %d amin'ny %d andrasana no tsy hita amin'ny alalan'ny mount, ohatra ny %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Jereo eto ambany ny fandinihana voarakitra. Ny fanekena dia manokana ho an'ity fivoriana ity, lany daty rehefa miova ny fandinihana, ary tsy manafoana fampitandremana na manova ny fahasalamana velively."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "Fampandehanana SmokePing"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Hetsika"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Fanadihadiana"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Singa"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Voamarika (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Toetra"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Tsy fantatra na efa antitra"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Tsy mbola nisy"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Voamarika ho ekena; tsy niova ny fahasalamana."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Ekeo"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Tsy misy fandinihana azo jerena ho an'ny fitaovana azonao idirana."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "Mpanatanteraka SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "Fijery SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "Mpandrindra SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "Fahasalaman'ny SmokePing"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "tsy maintsy eo amin'ny poller mampandeha ny mpamaky ny lasibatra roa"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "ny lasibatra vaovao dia efa mifandray amin'ny fitaovana %d"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "ny lasibatra taloha dia manana loharanon-drakitra eo amin'ny fitaovana %d, izay tsy ifandraisany"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "Loharano SmokePing"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "Poller SmokePing"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Ny poller Cacti izay mandeha eo amin'ny mpampiantrano SmokePing, na mizara rafitra rakitra aminy. Io poller io ihany no mamaky ny angona SmokePing."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "Rakitra fikirakirana SmokePing"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "Ny rakitra fikirakirana fototra SmokePing, vakian'ny poller izay mampandeha ny mpamaky. Mamaky azy io sy ireo rakitra ampidiriny amin'ny alalan'ny mpandinika azy manokana ny plugin ary tsy manoratra ao amin'izy ireo mihitsy. Ny rakitra ampidirina dia tsy maintsy mijanona ao anatin'ny lahatahirin'ity rakitra ity."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "Lahatahiry angona SmokePing"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "Ny datadir avy amin'ny fikirakirana SmokePing, araka ny fahitan'ny SmokePing azy."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "Fampifandraisana Cacti amin'ny lahatahiry angona"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "Fampifandraisana bind na NFS azo vakiana ihany ho an'ny lahatahiry angona SmokePing ao anatin'ny lalan'ny RRA an'ny Cacti. Ny Cacti dia tsy mamaky afa-tsy ireo rakitra RRD ao anatin'ny lalan'ny RRA-ny ary tsy mamaky amin'ny alalan'ny rohy an'ohatra (symlink) mihitsy."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "Mpamaky"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "Fetram-potoana ho an'ny mpamaky"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "Segondra azon'ny fampandehanana mpamaky iray laniana amin'ny famakiana rakitra RRD alohan'ny hijanonany sy hanohizany amin'ny tsingerin'ny poller manaraka."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "Elanelam-potoanan'ny fanisana"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "Segondra farafahakeliny eo anelanelan'ny fampandehanana fanisana. Mandeha ihany koa ny fanisana rehefa miova ny rakitra fikirakirana."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "Fetran'ny fahavaozan'angona"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "Segondra mihoatra ny dingana iray izay mbola iheverana ny fandrefesana iray ho vaovao."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Lokon'ny fahaverezana"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Ireo lokon'ny fahaverezana SmokePing asehon'ny grafika smoke. Ny SmokePing 2.7 dia mampiseho ambaratongam-pahaverezana hafa noho ny 2.8 sy ny aoriana. Ny Mandeha ho azy dia manaraka ny kinova SmokePing hitan'ny mpamaky eo akaikin'ny SmokePing, aseho eo amin'ny pejy toe-pahasalamana, ary mampiasa ny 2.8 sy ny aoriana rehefa tsy mahita na inona na inona."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Mandeha ho azy"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 sy ny aoriana"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Fanesorana"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Tazomy ny tabilaon'ny plugin rehefa manaisotra"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "Rehefa voamarika, ny fanesorana ny plugin dia mitazona ny tabilaon'ny fanisana, ny fampifandraisana ary ny toe-pahasalamana. Tsy fafana na oviana na oviana ny rakitra SmokePing na manao ahoana na manao ahoana."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "Lahatahiry fitahirizana dika mitovy"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "Ny toerana hanoratan'ny fanesorana ny fanondranana ny fikirakirana ny plugin. Avelao ho banga mba hampiasana ny lahatahiry cache/smokeping an'ny Cacti, izay arovan'ny plugin amin'ny fitsipika deny-all. Ny lahatahiry voafaritra eto dia tsy maintsy efa misy, azo anoratana, ary ivelan'ny fototry ny tranonkala; rehefa tsy azo anoratana izy dia tsy misy fanondranana soratana."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "Mbola tsy voatahiry ny lasibatra."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "Mandefa ping %d isaky ny fihodinana ny lasibatra. Ny grafika smoke dia tsy misy afa-tsy ho an'ny 10, 20, ary 30; angona famintinana ihany no ananany."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Mitahiry rakitra RRD ao amin'ny RRDproxy ny Cacti, izay tsy misy ny rakitra SmokePing. Angona famintinana ihany no azo ampiasaina."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "Ny fitaovana dia angonin'ny poller %d, nefa ny mpamaky izay mameno ny sanda famintinana dia mandeha ao amin'ny poller %d. Apetraho amin'ny poller %d ny fitaovana."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "Tsy tafapetraka ny lasitra grafika famintinana."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "Tsy tafapetraka ny lasitra angona famintinana."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Tsy namorona ny grafika famintinana ny Cacti."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "Tsy maintsy tahirizina aloha ny lasibatra roa."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "Tsy manana loharanon'angona smoke hafindra ny lasibatra taloha."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "Tsy hita amin'ny alalan'ny fampifandraisana SmokePing ny rakitra RRD %s."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "Ny rakitra RRD %s dia manondro toerana ivelan'ny fampifandraisana SmokePing."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "Tsy tafapetraka ny lasitra grafika smoke."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Tsy namorona ny grafika smoke ny Cacti."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Tsy manaiky ny lalana SmokePing ho an'ny loharanon'angona ny Cacti."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "Misy fanafarana fikirakirana SmokePing hafa mandeha amin'izao fotoana izao, ka tsy nisy na inona na inona nafarana. Zahao indray rehefa vita izany."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "Niova ny fikirakirana na ny fametrahana hatramin'ny fanamarinana, ka tsy nisy na inona na inona nafarana. Hamarino indray."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "Ny fampitoviana ao anatin'ny hazo grafika dia mila fahazoan-dalana hanova hazo."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "Tsy afaka notehirizina ireo lasibatra; jereo ny firaketana Cacti. Tsy nisy zavatra hafa novana."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: nolalovana, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: nolalovana, tsy namorona ny fitaovana ny Cacti"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: namorona ny fitaovana %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: nolalovana, tsy voatahiry ny lasibatra"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: efa ao amin'ny Cacti eo amin'ny fitaovana %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "Tsy afaka noforonina ny hazo grafika %s."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "namorona ny hazo grafika %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "tsy afaka noforonina ny sampan'ny hazo %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "sampan'ny hazo %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "tsy afaka nampiana tao amin'ny hazo ny fitaovana %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "fitaovana %d eo ambanin'ny sampan'ny hazo %s"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "mbola tsy voatahiry ny lasibatra"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "efa nampifandraisina tamin'ny fitaovana %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "tsy namorona ny fitaovana ny Cacti"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "namorona ny fitaovana %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "nampifandraisina tamin'ny fitaovana hafa ny lasibatra nandritra izany; tsy manana grafika SmokePing ny fitaovana %d"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "nampifandraisina tamin'ny fitaovana hafa ny lasibatra nandritra izany"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "nampifandraisina tamin'ny fitaovana %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "grafika famintinana %d ho an'ny %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "tsy misy famintinana ho an'ny %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "grafika smoke %d ho an'ny %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "tsy misy grafika smoke ho an'ny %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "Fitaovana %d no tsy voakarakara tao anatin'ny fotoana nomena. Avereno alefa ny hetsika ho azy ireo; nolalovana ireo fitaovana efa nampiana."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "Fetra fotoana"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "tsy misy lasibatra SmokePing tsy mifandray manana ny mpampiantrano %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "tsy misokatra intsony ny tolo-kevitra"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "ny lasibatra vaovao dia nampifandraisina tamin'ny fitaovana hafa"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "ny grafika smoke %d izao dia mamaky ny rakitra vaovao; ny rakitra taloha dia mijanona azo atao grafika ao amin'ny grafika voatahiry"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "ny loharanon'angona famintinana %d dia manaraka ny lasibatra vaovao"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "ny fitaovana %d dia nampifandraisina tamin'ny lasibatra vaovao"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "Toe-javatra"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "Fahavaozana"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "Fanavaozana farany"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "Fahaverezana"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Fikojakojana"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "Mediana"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "Tanjona"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "Tsy misy lasibatra SmokePing nampifandraisina tamin'ny fitaovana azonao jerena."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "Eo am-pikojakojana"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Tsia"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "Tsy mbola hita mihitsy"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Mitaky PHP %s na aoriana ny plugin SmokePing. Mampiasa PHP %s ity lohamilina ity, ka tsy napetraka na nalefa ny plugin."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "Tsy alefa ny plugin SmokePing."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "Mitaky PHP %s na aoriana ny plugin SmokePing."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "Naondrana tany amin'ny %s ny fikirakirana SmokePing"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "Tsy naondrana ny fikirakirana SmokePing; jereo ny firaketana SmokePing. Nitohy ihany ny fanesorana."
+
+#: setup.php
+msgid "Management"
+msgstr "Fitantanana"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "Fanafarana/Fanondranana"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "Tsy manana fahazoan-dalana hanampy lasibatra SmokePing ianao."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "Tsy nisy rakitra nampakarina, na lehibe noho izay eken'ny lohamilina izany."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "Tsy misy fanafarana voamarina hampiharina. Hamarino indray ny rakitra."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "Nafarana ny fikirakirana."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "Tsy nahomby ny fanafarana ny lasitra SmokePing. Jereo ny tabilao toe-pahasalamana."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Tsy maharakotra ny fitaovana rehetra ny fahazoan-dalanao momba ny fitaovana, ka tsy afaka manafatra fikirakirana SmokePing ianao. Manontania mpitantana manana fidirana amin'ny fitaovana rehetra."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "Omeo anarana ny hazo grafika vaovao, na misafidiana hazo efa misy na tsy misy hazo."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "Ny rakitra nampakarina dia lehibe noho ny 4 MiB."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "Tsy azo vakiana ny fikirakirana SmokePing, ka tsy nisy na inona na inona nafarana: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "Tsy misy fanafarana nojerena mialoha hampiharina. Jereo mialoha indray izany."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "sy %d fanampiny; jereo ny firaketana Cacti"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "Nafarana ny fikirakirana SmokePing."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "Misafidiana lasibatra eo amin'ity poller ity ary, raha hampifandray azy, fitaovana azonao ovaina."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "Tsy misokatra ny tolo-kevitra, na mahakasika fitaovana na poller tsy azonao ovaina izany."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "Nolavina ny tolo-kevitra."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Fomba fijery fanaraha-maso"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Tsy azo novakiana ny fandinihana. Angataho ny mpitantana hanamarina ny firaketana ny plugin."

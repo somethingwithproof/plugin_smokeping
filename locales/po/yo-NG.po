@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: yo-NG\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Olórí"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Ṣe àfiwé pípàdánù àti ìdádúró pẹ̀lú àwọn àwòrán SmokePing àti ipò ìtọ́jú. Gbé àwọn fáìlì tí ó sọnù, ìkówọlé àti ìtúnsopọ̀ lọ sí ọ̀dọ̀ alábòójútó."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "ti fò lọ, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (àìyípadà)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "Ìṣètò SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Àwọn àṣẹ ẹ̀rọ rẹ kò dé gbogbo ẹ̀rọ, nítorí náà o kò lè kó ìṣètò SmokePing jáde tàbí kí o kó o wọlé. Béèrè lọ́wọ́ alábòójútó tí ó ní ààyè sí gbogbo ẹ̀rọ."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "Kó Ìṣètò SmokePing Jáde"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "Ìkójáde náà ní àwọn ìṣètò àfikún, àwọn àfojúsùn SmokePing tí àfikún ti kà, àti ẹ̀rọ tí ọ̀kọ̀ọ̀kan sopọ̀ mọ́, nípasẹ̀ orúkọ olùgbàlejò àti àpèjúwe ẹ̀rọ náà. Kò ní orísun dátà, àwòrán, fáìlì RRD, tàbí ẹ̀rí ìdánimọ̀ kankan."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "Ṣe ìgbàsílẹ̀"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "Kó Ìṣètò SmokePing Wọlé"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "Yíyan fáìlì kàn ń ṣàyẹ̀wò rẹ̀ nìkan ni. Ojú-ìwé tí ó tẹ̀lé yóò ṣe àkójọ gbogbo àyípadà tí fáìlì náà yóò ṣe, kò sì sí ohun tí a ó kọ títí tí o fi jẹ́rìí sí àtòjọ náà. Ìkówọlé máa ń fi kún un ó sì máa ń ṣe àtúnṣe; kì í pa àfojúsùn rẹ́ tàbí yí ìsopọ̀ padà láé, kò sì dá fáìlì RRD sílẹ̀ tàbí fọwọ́ kan àpò dátà SmokePing láé."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "Ṣàyẹ̀wò Fáìlì"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "Àyẹ̀wò Ìkówọlé"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "A kò kọ ohunkóhun."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "Padà"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "A kò lè kó fáìlì náà wọlé títí tí a ó fi tún àwọn àṣìṣe wọ̀nyí ṣe. A kò kọ ohunkóhun."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "Ìfisílẹ̀ náà ti bá fáìlì náà mu tẹ́lẹ̀. Kò sí ohunkóhun láti kó wọlé."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "Ètò %s. Ìmúlò yóò ṣe àwọn àyípadà wọ̀nyí gan-an ní ìṣẹ̀dá kan ṣoṣo. Bí fáìlì náà tàbí ìfisílẹ̀ bá ti yí padà láti ìgbà àyẹ̀wò yìí, a ó kọ̀ láti kó o wọlé, o ó sì tún ṣàyẹ̀wò rẹ̀."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "Mú Ìkówọlé Ṣẹ"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "Fagilé"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "Fi Àwọn Àfojúsùn SmokePing Kún Un"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "kò sí àfojúsùn SmokePing tí ó bá a mu"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "Tẹ Tẹ̀síwájú láti fi àwọn àfojúsùn SmokePing tí olùgbàlejò wọn jẹ́ orúkọ olùgbàlejò ti ẹ̀rọ kọ̀ọ̀kan tí a yàn kún un. Àfojúsùn kọ̀ọ̀kan yóò gba àwòrán àkópọ̀ fún ìkìlọ̀ àti, nígbà tí a bá lè ya àwòrán dátà SmokePing, àwòrán smoke kan. A kì í dá àwọn ẹ̀rọ sílẹ̀ níbí láé."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "Àwọn àfojúsùn %d bá a mu."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "A dá tàbí sopọ̀ àwọn ohun %d, a fò %d lọ."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "Ẹ̀rọ yìí ní àwọn àfojúsùn SmokePing, ṣùgbọ́n olùka tí ó ń kún àwọn ìwọ̀n àkópọ̀ wọn ń ṣiṣẹ́ lórí olùṣàyẹ̀wò %d, a sì fi ẹ̀rọ náà pamọ́ sórí olùṣàyẹ̀wò %d. Àwọn ìwọ̀n àkópọ̀ àti ìkìlọ̀ yóò dúró títí tí a ó fi yan ẹ̀rọ náà fún olùṣàyẹ̀wò %d lẹ́ẹ̀kan sí i."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "Àwọn Àfojúsùn SmokePing ti Ẹ̀rọ Yìí"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "Àwọn àwòrán smoke %d ṣì ń ya àwọn àwọ̀ mìíràn; olùṣàyẹ̀wò àkọ́kọ́ máa ń gbé tó 200 ní ìpele kọ̀ọ̀kan."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "Àwọn àwòrán smoke %d kò ṣe é gbé; ṣiṣẹ́ upgrade-graphs láti gbìyànjú wọn lẹ́ẹ̀kan sí i, kí o sì wo àkọsílẹ̀ Cacti fún ìdí rẹ̀."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Ìṣètò Àwọn Àwọ̀ Pípàdánù béèrè fún àwọn àwọ̀ pípàdánù SmokePing %s, ṣùgbọ́n olùka rí SmokePing %s. Ṣètò rẹ̀ sí Aládàáṣe àyàfi bí àwọn àwòrán bá yẹ kí ó yàtọ̀ sí ti SmokePing."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Ìṣètò Àwọn Àwọ̀ Pípàdánù yan àwọn àwọ̀ pípàdánù SmokePing %s fún àwọn àwòrán smoke."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Olùka kò rí ẹ̀yà SmokePing kankan, nítorí náà ìṣètò Àwọn Àwọ̀ Pípàdánù yan àwọn àwọ̀ pípàdánù ti SmokePing 2.8 àti àwọn tó tẹ̀lé e. Bí SmokePing bá jẹ́ 2.7, ṣètò Àwọn Àwọ̀ Pípàdánù sí SmokePing 2.7."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Olùka rí SmokePing %s, nítorí náà ìṣètò Àwọn Àwọ̀ Pípàdánù yan àwọn àwọ̀ pípàdánù rẹ̀."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "A kò fi Thold sílẹ̀, nítorí náà kò sí àfojúsùn tí ó ń kìlọ̀ ní SmokePing àti Thold méjèèjì."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Kò sí àfojúsùn tí ó ní ìkìlọ̀ SmokePing àti ààlà Thold tí a mú ṣiṣẹ́ méjèèjì."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "Àwọn àfojúsùn %d ní ìkìlọ̀ SmokePing àti ààlà Thold tí a mú ṣiṣẹ́ méjèèjì, nítorí náà ìṣòro kan lè fi ìfitọ́nilétí ránṣẹ́ lẹ́ẹ̀mejì. Ṣe àfiwé àwọn ìpinnu ìkìlọ̀ wọn kí o tó yọ èyíkéyìí kúrò: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "Àwọn àdàkọ SmokePing kùnà láti kó wọlé, a kò sì tún gbìyànjú wọn lọ́nà aládàáṣe: %s Lo Tún Gbìyànjú Ìkówọlé Àdàkọ lẹ́yìn tí o bá tún ìdí rẹ̀ ṣe."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "A kò tíì kó àwọn àdàkọ SmokePing wọlé. Lo Tún Gbìyànjú Ìkówọlé Àdàkọ."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "A ti kó àwọn àdàkọ SmokePing wọlé."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "Olùṣàyẹ̀wò ti olùka ni ó ń ṣàyẹ̀wò gbogbo ẹ̀rọ tí ó ní àwọn orísun dátà àkópọ̀."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "Àwọn ẹ̀rọ %d ní àwọn orísun dátà àkópọ̀ ṣùgbọ́n olùṣàyẹ̀wò %d, tí ó ń ṣiṣẹ́ olùka, kò ṣàyẹ̀wò wọn, nítorí náà àwọn ìwọ̀n àkópọ̀ àti ìkìlọ̀ wọn kò ní dátà: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "A ń ka ìṣètò SmokePing lórí olùṣàyẹ̀wò %d, kì í ṣe lórí sáfà yìí; ìlà àkójọpọ̀ fi èsì ìkà ìkẹyìn rẹ̀ hàn."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "A kò lè ka ìṣètò SmokePing %s: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "Ìṣètò SmokePing %s ṣe àkójọ àwọn àfojúsùn %d; a fò àwọn àkọsílẹ̀ %d lọ: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "Ìṣètò SmokePing %s ṣe àkójọ àwọn àfojúsùn %d."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "Ìṣètò ọ̀nà fáìlì PHP ṣófo tàbí kì í ṣe fáìlì tí ó ṣe é ṣiṣẹ́, nítorí náà olùka kò lè bẹ̀rẹ̀."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "Olùka bẹ̀rẹ̀ pẹ̀lú %s."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "Olùka kò tíì parí ìṣiṣẹ́ kan lórí olùṣàyẹ̀wò yìí."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "Ìṣiṣẹ́ olùka tí ó kẹ́yìn parí ní ìṣẹ́jú-àáyá %d sẹ́yìn, ju àkókò olùṣàyẹ̀wò mẹ́ta lọ."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "Olùka ka ìtẹ̀léra %d nínú %d láàárín ìṣẹ́jú-àáyá %.1f, ó sì ti kọjá àkókò tí a yàn fún un ní ìgbà %d."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "Olùka ka ìtẹ̀léra %d nínú %d láàárín ìṣẹ́jú-àáyá %.1f, ní ìṣẹ́jú-àáyá %d sẹ́yìn."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "A kò tíì ka àkójọpọ̀ kankan lórí olùṣàyẹ̀wò yìí."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "Àkójọpọ̀ tí ó kẹ́yìn kùnà ní ìṣẹ́jú-àáyá %d sẹ́yìn, èyí tí ó ṣáájú sì ṣì wà ní lílò: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "Àkójọpọ̀ ṣe àtòjọ àwọn àfojúsùn %d ní ìṣẹ́jú-àáyá %d sẹ́yìn."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "Ìlera SmokePing fún Olùṣàyẹ̀wò %d"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "Àyẹ̀wò"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "Àlàyé Kíkún"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "Ipò"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "Tún Gbìyànjú Ìkówọlé Àdàkọ"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "Ó dára"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "Ìkìlọ̀"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "Àṣìṣe"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "Àìmọ̀"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d s sẹ́yìn"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "kò tíì wáyé"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "Kó Ìṣètò SmokePing Wọlé"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "Ìṣètò"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "A ń ka fáìlì SmokePing tí a ṣètò pẹ̀lú àwọn fáìlì tí ó ní nínú, láti inú àpò tirẹ̀. A ń ka fáìlì tí a gbé sókè fúnra rẹ̀: a kò gba @include láàyè nínú rẹ̀."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "Fáìlì tí a ṣètò, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "Fáìlì tí a gbé sókè, láìsí @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "Fáìlì Tí A Gbé Sókè"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "Fún fáìlì tí a gbé sókè nìkan: ìṣètò SmokePing tí kò ju 4 MiB lọ."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "Àwọn ẹ̀rọ"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "Ẹ̀rọ kan fún olùgbàlejò SmokePing kọ̀ọ̀kan ń kó àwọn àfojúsùn tí ó ń ṣàyẹ̀wò olùgbàlejò kan náà jọ. A ó lo ẹ̀rọ tí ó ti ní orúkọ olùgbàlejò náà lórí olùṣàyẹ̀wò tí a yàn dípò tuntun."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "Ẹ̀rọ kan fún olùgbàlejò SmokePing kọ̀ọ̀kan"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "Ẹ̀rọ kan fún àfojúsùn SmokePing kọ̀ọ̀kan"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "Àdàkọ Ẹ̀rọ"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "Àdàkọ ti àwọn ẹ̀rọ tí ìkówọlé náà dá sílẹ̀."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "Poller"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "Olùṣàyẹ̀wò ti àwọn ẹ̀rọ tuntun. Ó gbọ́dọ̀ jẹ́ olùṣàyẹ̀wò tí ó ń ṣiṣẹ́ olùka SmokePing, tàbí àwọn orísun dátà àkópọ̀ wọn kò ní gba dátà kankan."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "Ibùdó"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "Ibùdó ti àwọn ẹ̀rọ tuntun."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "Kò sí"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "Igi Àwòrán"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "Ṣe àfarawé ètò ìṣàkóso SmokePing sínú igi àwòrán: abala kọ̀ọ̀kan yóò di ẹ̀ka kan, ẹ̀rọ kọ̀ọ̀kan yóò sì di olùgbàlejò lábẹ́ ẹ̀ka ti àwọn àfojúsùn rẹ̀. A ó tún àwọn ẹ̀ka àti olùgbàlejò tí ó ti wà tẹ́lẹ̀ lò."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "Igi tuntun kan, tí a dárúkọ rẹ̀ nísàlẹ̀"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "Má ṣe àfarawé"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "Orúkọ Igi Tuntun"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "Fún igi tuntun nìkan. A ó lo igi tí ó ti ní orúkọ yìí tẹ́lẹ̀."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "Àwòkọ́kọ́ ń ka ìṣètò náà ó sì ń ṣe àkójọ ohun tí ìkówọlé yóò dá sílẹ̀. A kò ní kọ ohunkóhun títí tí o fi jẹ́rìí sí àtòjọ náà lójú-ìwé tí ó tẹ̀lé, a kì yóò sì kọ àwọn fáìlì SmokePing fúnra rẹ̀ láé."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "Àwòkọ́kọ́"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "Àkíyèsí"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "Ìpele"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "Ìfiranṣẹ́"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "Àwọn Abala SmokePing"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "Kó wọlé"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "Ìpín"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "Àwọn Àfojúsùn"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "A kò ṣàmì sí abala kankan, nítorí náà a yan gbogbo àfojúsùn. Ṣàmì sí àwọn abala kí o sì ṣe àtúnṣe àwòkọ́kọ́ láti kó àwọn wọ̀nyẹn nìkan wọlé."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "Àwọn àfojúsùn tí ó wà nínú àwọn abala tí a ṣàmì sí nìkan ni a yàn."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "Ṣe Àtúnṣe Àwòkọ́kọ́"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "Ṣẹ̀dá"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "Lo ẹ̀rọ %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "Ó ti sopọ̀ mọ́ ẹ̀rọ %d tẹ́lẹ̀"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "Fò lọ: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "Àwọn ẹ̀rọ: %d láti dá sílẹ̀, %d tí ó wà tẹ́lẹ̀ láti lò, %d tí ó ti sopọ̀ tẹ́lẹ̀, %d tí a fò lọ"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "Ìgbésẹ̀"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "Àpèjúwe"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "Orúkọ Olùgbàlejò"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "Àwọn Àfojúsùn SmokePing"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "Kò sí ẹ̀rọ."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "Àkópọ̀"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "master"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "Àwọn àwòrán: %d láti dá sílẹ̀, %d tí wà tẹ́lẹ̀"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "Àwòrán"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "Ipò"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "Àfojúsùn SmokePing"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "Kò sí àwòrán láti dá sílẹ̀."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "Ìdí"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "Dátà Àkópọ̀ Nìkan: àwọn àfojúsùn %d"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "Ẹ̀ka"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "Ẹ̀rọ"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "Igi Àwòrán: àwọn ẹ̀ka %d, àwọn àkọsílẹ̀ ẹ̀rọ %d"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "Ìṣírò Àbájáde"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "Ìwọ̀n Iṣẹ́ Tí A Fojúsùn"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "Fìdí Múlẹ̀"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "A kò lè kó ìṣètò náà wọlé títí tí a ó fi tún àwọn àṣìṣe òkè wọ̀nyí ṣe. A kò kọ ohunkóhun."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "Gbogbo àfojúsùn tí a yàn ti wà nínú Cacti tẹ́lẹ̀. Kò sí ohunkóhun láti kó wọlé."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "Ètò %s. Ìkówọlé máa ń dá ohun tí a kọ sílẹ̀ lókè gan-an sílẹ̀ nípasẹ̀ àwọn iṣẹ́ ẹ̀rọ, àwòrán, àti igi ti Cacti. Bí ìṣètò SmokePing tàbí Cacti bá ti yí padà láti ìgbà àwòkọ́kọ́ yìí, a ó kọ̀ láti kó o wọlé, o ó sì tún wo àwòkọ́kọ́ lẹ́ẹ̀kan sí i."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s àti %d sí i"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "Fi %s kún Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "Àfojúsùn SmokePing %s (olùgbàlejò %s) kò ní ẹ̀rọ Cacti. Yan ohun tí o fẹ́ ṣe pẹ̀lú rẹ̀."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "Dá ẹ̀rọ tuntun sílẹ̀ láti inú àdàkọ Àfojúsùn SmokePing"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "Sopọ̀ mọ́ ẹ̀rọ tí ó wà tẹ́lẹ̀"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "Ọ̀nà yòówù kí ó jẹ́, àfojúsùn náà yóò gba àwòrán àkópọ̀ fún ìkìlọ̀ àti, nígbà tí a bá lè ya àwòrán dátà SmokePing, àwòrán smoke kan. Cacti kì í kọ àwọn fáìlì SmokePing láé."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "Fi kún un"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "Jẹ́rìí sí Ìtúnsopọ̀"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing kò ṣe àkójọ %s mọ́. %s ní olùgbàlejò kan náà (%s) àti ìwádìí kan náà (%s). SmokePing máa ń bẹ̀rẹ̀ fáìlì tuntun tí ó ṣófo fún ọ̀nà tuntun."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "Ìtúnsopọ̀ máa ń gbé àwòrán smoke àti orísun dátà àkópọ̀ lọ sí àfojúsùn tuntun àti ìsopọ̀ ẹ̀rọ náà pẹ̀lú wọn. Fáìlì àtijọ́ pa ìtàn rẹ̀ mọ́ nínú àwòrán tí a fi pamọ́. A kò pa ohunkóhun rẹ́."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "Ẹ̀rọ %d sopọ̀ mọ́ àfojúsùn àtijọ́."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "Kọ Àbá Sílẹ̀"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "Tún sopọ̀"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "Ti lọ"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "Wà níbẹ̀"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "Kò tíì so pọ̀"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Fi kún Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "Àkójọpọ̀ SmokePing"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "Olùgbàlejò"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "Àkójọpọ̀"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "Ìsopọ̀"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "Orúkọ"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "Ọ̀nà"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "Ìwádìí (Probe)"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "Àwọn Slave"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "Ìgbésẹ̀ / Pings"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "A kò tíì kó àwọn àfojúsùn kankan wọlé lórí olùṣàyẹ̀wò yìí."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "Àyẹ̀wò"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "Àwọn Àbá Àtúnṣopọ̀"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "Ọ̀nà Tí Ó Sọnù"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "Ọ̀nà Tuntun"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "Kò sí àbá ìtúnsopọ̀ kankan."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "Ìtẹ̀léra %d: nǹkan bí àwọn ìdìpọ̀ ìwádìí %.1f ní ìṣẹ́jú-àáyá kan àti àwọn àtúnṣe RRD %.2f ní ìṣẹ́jú-àáyá kan nínú SmokePing."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti gba nǹkan bí ìlà orísun dátà %d àti ìlà ohun àwòrán %d."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "Ìsopọ̀ mount SmokePing %s kò sí. So àpò dátà SmokePing pọ̀ síbẹ̀ ní ipò kíkà-nìkan."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s wà nínú ọ̀nà RRA, a kò sì dé ọ̀dọ̀ rẹ̀ nípasẹ̀ symlink."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Olùlò Cacti lè kọ sí %s. Àwọn fáìlì RRD ti SmokePing gbọ́dọ̀ jẹ́ kíkà-nìkan fún Cacti."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "Ìsopọ̀ mount SmokePing %s kò sí nínú ọ̀nà RRA Cacti %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Ọ̀nà RRA Cacti %s kò sí."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "Ìsopọ̀ mount SmokePing %s ní apá tí ó ṣófo, \".\" tàbí \"..\"."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "A dé ọ̀dọ̀ ìsopọ̀ mount SmokePing %s nípasẹ̀ symlink, èyí tí Cacti kọ̀. Lo bind mount kíkà-nìkan dípò rẹ̀."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "Kò ṣe é ṣe láti ka tábìlì mount, nítorí náà a kò lè jẹ́rìí sí i pé mount náà jẹ́ kíkà-nìkan."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s wà lórí mount kíkà-nìkan."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s wà lórí mount tí ó ṣe é kọ sí %s. So àpò dátà SmokePing pọ̀ ní ipò kíkà-nìkan."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "Kò sí àkójọpọ̀ síbẹ̀, nítorí náà a kò retí àwọn fáìlì RRD kankan."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "Gbogbo àwọn fáìlì RRD %d tí a retí hàn nípasẹ̀ mount náà."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "Àwọn fáìlì RRD %d nínú %d tí a retí kò hàn nípasẹ̀ mount náà, fún àpẹẹrẹ %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Ṣàyẹ̀wò àwọn àkíyèsí tí a kọ sílẹ̀ ní ìsàlẹ̀ yìí. Àwọn ìjẹ́rìísí wà fún ìgbà ìpàdé yìí nìkan, wọ́n ń dópin nígbà tí àwọn àkíyèsí bá yí padà, wọn kì í sì í dín àwọn ìtanijí kù tàbí yí ìlera padà."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "Àwọn Iṣẹ́ SmokePing"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Àwọn Ìgbésẹ̀"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Ìwádìí"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Ohun"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Àkíyèsí (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Ipò"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Àìmọ̀ tàbí ó ti pẹ́"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Láéláé"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "A ti jẹ́rìí sí i; ìlera kò yí padà."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Jẹ́rìí sí i"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Kò sí àkíyèsí kankan fún àwọn ẹ̀rọ tí o ní ààyè sí."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "Olùṣiṣẹ́ SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "Ìwòran SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "Alábòójútó SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "Ìlera SmokePing"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "àwọn àfojúsùn méjèèjì gbọ́dọ̀ wà lórí olùṣàyẹ̀wò tí ó ń ṣiṣẹ́ olùka"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "àfojúsùn tuntun ti sopọ̀ mọ́ ẹ̀rọ %d tẹ́lẹ̀"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "àfojúsùn àtijọ́ ní àwọn orísun dátà lórí ẹ̀rọ %d, tí kò sopọ̀ mọ́"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "Orísun SmokePing"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "Olùṣàyẹ̀wò SmokePing"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Olùṣàyẹ̀wò Cacti tí ó ń ṣiṣẹ́ lórí, tàbí tí ó ń lo ètò fáìlì kan náà pẹ̀lú, olùgbàlejò SmokePing. Olùṣàyẹ̀wò yìí nìkan ni ó ń ka dátà SmokePing."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "Fáìlì Ìṣètò SmokePing"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "Fáìlì ìṣètò SmokePing pàtàkì, tí olùṣàyẹ̀wò tí ó ń ṣiṣẹ́ olùkàwé ń kà. Àfikún náà ń ka òun àti àwọn fáìlì tí ó ní nínú pẹ̀lú olùtúmọ̀ tirẹ̀, kò sì kọ ohunkóhun sí inú wọn láé. Àwọn fáìlì tí ó wà nínú rẹ̀ gbọ́dọ̀ wà ní àpò fáìlì ti fáìlì yìí."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "Àpò Dátà SmokePing"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "datadir láti inú ìṣètò SmokePing, gẹ́gẹ́ bí SmokePing ṣe rí i."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "Ìsopọ̀ Cacti sí Àpò Dátà"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "Ìsopọ̀ bind tàbí NFS ti kíka-nìkan ti àpò dátà SmokePing nínú ọ̀nà RRA Cacti. Cacti ń ka àwọn fáìlì RRD nínú ọ̀nà RRA rẹ̀ nìkan, kì í sì í kà wọ́n nípasẹ̀ ìsopọ̀-àfọwọ́ṣe (symlink) láé."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "Olùka"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "Ìṣúná Àkókò Olùka"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "Ìṣẹ́jú-àáyá tí ìṣiṣẹ́ olùkàwé kan lè lò láti ka àwọn fáìlì RRD kí ó tó dáwọ́ dúró kí ó sì tẹ̀síwájú ní ìyípo olùṣàyẹ̀wò tí ó tẹ̀lé."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "Àlàfo Ìṣàkójọ"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "Ìṣẹ́jú-àáyá tó kéré jùlọ láàárín àwọn ìṣiṣẹ́ ìṣàkójọ. Ìṣàkójọ náà tún ń ṣiṣẹ́ nígbà tí fáìlì ìṣètò bá yípadà."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "Ààyè Ìtuntun"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "Ìṣẹ́jú-àáyá tí ó kọjá ìgbésẹ̀ kan tí ìwọ̀n sì ṣì wà ní kíkà gẹ́gẹ́ bí èyí tí ó ṣẹ̀ṣẹ̀ dé."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Àwọn Àwọ̀ Àdánù"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Àwọn àwọ̀ àdánù SmokePing tí àwọn àwòrán èéfín ń yà. SmokePing 2.7 ń ya àwọn ìpele àdánù mìíràn ju 2.8 àti àwọn tí ó tẹ̀lé e lọ. Àdáṣe ń tẹ̀lé ẹ̀yà SmokePing tí olùkàwé rí lẹ́gbẹ̀ẹ́ SmokePing, tí a fi hàn lórí ojú-ewé ìlera, ó sì ń lo 2.8 àti àwọn tí ó tẹ̀lé e nígbà tí kò bá rí èyíkéyìí."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Àdáṣe"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 àti àwọn tí ó tẹ̀lé e"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Yọ kúrò"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Pa Àwọn Tábìlì Àfikún Mọ́ Nígbà Yíyọ Kúrò"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "Nígbà tí a bá sàmì sí i, yíyọ àfikún náà kúrò yóò pa àwọn tábìlì ìṣàkójọ, ìsopọ̀-àwòrán, àti ìlera rẹ̀ mọ́. A kì í yọ àwọn fáìlì SmokePing kúrò lọ́nàkọnà."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "Àpò Àfipamọ́"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "Ibì tí ìyọkúrò ti ń kọ ìkójáde ìṣètò àfikún náà sí. Fi sílẹ̀ ní òfo láti lo àpò cache/smokeping ti Cacti, èyí tí àfikún náà ń dáàbò bò pẹ̀lú òfin kíkọ̀-gbogbo-rẹ̀. Àpò tí a ṣètò níbí gbọ́dọ̀ ti wà tẹ́lẹ̀, kí ó ṣeé kọ̀wé sí, kí ó sì wà lóde gbòǹgbò wẹ́ẹ̀bù; nígbà tí kò bá ṣeé kọ̀wé sí, kò sí ìkójáde kankan tí a ó kọ."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "A kò tíì fi ibi-àfojúsùn náà pamọ́."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "Ibi-àfojúsùn náà ń fi ping %d ránṣẹ́ ní ìyípo kọ̀ọ̀kan. Àwọn àwòrán èéfín wà fún 10, 20, àti 30 nìkan; dátà àkópọ̀ nìkan ni ó ní."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti ń pa àwọn fáìlì RRD mọ́ lórí RRDproxy, níbi tí àwọn fáìlì SmokePing kò sí. Dátà àkópọ̀ nìkan ni ó wà."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "Olùṣàyẹ̀wò %d ni ó ń ṣàyẹ̀wò ẹ̀rọ náà, ṣùgbọ́n olùkàwé tí ó ń kún àwọn ìní àkópọ̀ ń ṣiṣẹ́ lórí olùṣàyẹ̀wò %d. Yan ẹ̀rọ náà fún olùṣàyẹ̀wò %d."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "A kò tíì fi àdàkọ àwòrán àkópọ̀ sórí ẹ̀rọ."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "A kò tíì fi àdàkọ dátà àkópọ̀ sórí ẹ̀rọ."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti kò ṣẹ̀dá àwòrán àkópọ̀ náà."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "A gbọ́dọ̀ fi àwọn ibi-àfojúsùn méjèèjì pamọ́ kọ́kọ́."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "Ibi-àfojúsùn àtijọ́ kò ní orísun dátà èéfín kankan láti gbé lọ."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "Fáìlì RRD %s kò ṣeé rí nípasẹ̀ ìsopọ̀ SmokePing."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "Fáìlì RRD %s yanjú sí òde ìsopọ̀ SmokePing."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "A kò tíì fi àdàkọ àwòrán èéfín sórí ẹ̀rọ."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti kò ṣẹ̀dá àwòrán èéfín náà."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti kò gba ọ̀nà SmokePing fún orísun dátà kan."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "Ìkówọlé ìṣètò SmokePing mìíràn ń lọ lọ́wọ́, nítorí náà a kò kọ ohunkóhun wọlé. Ṣàyẹ̀wò lẹ́ẹ̀kan sí i nígbà tí ó bá parí."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "Ìṣètò tàbí ìfisórí-ẹ̀rọ ti yípadà láti ìgbà àyẹ̀wò náà, nítorí náà a kò kọ ohunkóhun wọlé. Ṣàyẹ̀wò lẹ́ẹ̀kan sí i."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "Ṣíṣe àdàkọ sínú igi àwòrán nílò àṣẹ láti ṣàtúnṣe àwọn igi."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "A kò lè fi àwọn ibi-àfojúsùn náà pamọ́; wo àkọsílẹ̀ Cacti. Kò sí ohun mìíràn tí a yípadà."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: ti fò kọjá, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: ti fò kọjá, Cacti kò ṣẹ̀dá ẹ̀rọ náà"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: ṣẹ̀dá ẹ̀rọ %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: ti fò kọjá, a kò fi ibi-àfojúsùn náà pamọ́"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: ti wà nínú Cacti tẹ́lẹ̀ lórí ẹ̀rọ %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "A kò lè ṣẹ̀dá igi àwòrán %s."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "ti ṣẹ̀dá igi àwòrán %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "a kò lè ṣẹ̀dá ẹ̀ka igi %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "ẹ̀ka igi %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "a kò lè fi ẹ̀rọ %d kún igi náà"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "ẹ̀rọ %d lábẹ́ ẹ̀ka igi %s"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "a kò tíì fi ibi-àfojúsùn náà pamọ́"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "ti so pọ̀ mọ́ ẹ̀rọ %d tẹ́lẹ̀"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti kò ṣẹ̀dá ẹ̀rọ náà"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "ti ṣẹ̀dá ẹ̀rọ %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "a ti so ibi-àfojúsùn náà pọ̀ mọ́ ẹ̀rọ mìíràn láàárín àkókò yẹn; ẹ̀rọ %d kò ní àwọn àwòrán SmokePing kankan"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "a ti so ibi-àfojúsùn náà pọ̀ mọ́ ẹ̀rọ mìíràn láàárín àkókò yẹn"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "ti so pọ̀ mọ́ ẹ̀rọ %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "àwòrán àkópọ̀ %d fún %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "kò sí àkópọ̀ fún %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "àwòrán èéfín %d fún %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "kò sí àwòrán èéfín fún %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "A kò ṣiṣẹ́ lórí ẹ̀rọ %d láàárín àkókò tí a fàyè gbà. Tún ìgbésẹ̀ náà ṣe fún wọn; a ó fò àwọn ẹ̀rọ tí a ti fi kún un tẹ́lẹ̀ kọjá."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "Òpin àkókò"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "kò sí ibi-àfojúsùn SmokePing tí kò ní ìsopọ̀ tí ó ní olùgbàlejò %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "ìmọ̀ràn náà kò sí ní ṣíṣí mọ́"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "a ti so ibi-àfojúsùn tuntun náà pọ̀ mọ́ ẹ̀rọ mìíràn"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "àwòrán èéfín %d ti ń ka fáìlì tuntun náà báyìí; fáìlì àtijọ́ ṣì ṣeé yà ní àwòrán nínú àwòrán tí a fi pamọ́"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "orísun dátà àkópọ̀ %d ń tẹ̀lé ibi-àfojúsùn tuntun náà"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "a ti so ẹ̀rọ %d pọ̀ mọ́ ibi-àfojúsùn tuntun náà"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "Ipò"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "Ìtuntun"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "Ìmúdójúìwọ̀n Tó Kẹ́yìn"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "Àdánù"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Ìtọ́jú"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "Àárín"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "Ibi Àfojúsùn"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "Kò sí àwọn ibi-àfojúsùn SmokePing kankan tí a so pọ̀ mọ́ àwọn ẹ̀rọ tí o lè wò."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "Wà lábẹ́ ìtọ́jú"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Rárá"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "A kò ṣe àkíyèsí rẹ̀ láé"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Àfikún SmokePing nílò PHP %s tàbí ẹ̀yà tí ó tẹ̀lé e. Olùpèsè yìí ń lo PHP %s, nítorí náà a kò fi àfikún náà sórí ẹ̀rọ tàbí kí a mú un ṣiṣẹ́."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "A kò tíì mú àfikún SmokePing ṣiṣẹ́."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "Àfikún SmokePing nílò PHP %s tàbí ẹ̀yà tí ó tẹ̀lé e."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "A ti kó ìṣètò SmokePing jáde sí %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "A kò kó ìṣètò SmokePing jáde; wo àkọsílẹ̀ SmokePing. Ìyọkúrò náà tẹ̀síwájú."
+
+#: setup.php
+msgid "Management"
+msgstr "Ìṣàkóso"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "Ìkówọlé/Ìkójáde"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "O kò ní àṣẹ láti fi àwọn ibi-àfojúsùn SmokePing kún un."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "A kò gbé fáìlì kankan sókè, tàbí ó tóbi ju bí olùpèsè ṣe ń gbà lọ."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "Kò sí ìkówọlé tí a ṣàyẹ̀wò kankan láti lò. Ṣàyẹ̀wò fáìlì náà lẹ́ẹ̀kan sí i."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "A ti kó ìṣètò náà wọlé."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "Àwọn àdàkọ SmokePing kùnà láti kówọlé. Wo tábìlì ìlera."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Àwọn àṣẹ ẹ̀rọ rẹ kò bo gbogbo ẹ̀rọ, nítorí náà o kò lè kó ìṣètò SmokePing wọlé. Béèrè lọ́wọ́ alákòóso tí ó ní àǹfààní sí gbogbo ẹ̀rọ."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "Fún igi àwòrán tuntun náà ní orúkọ, tàbí yan igi tí ó ti wà tẹ́lẹ̀ tàbí kí o má yan igi kankan."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "Fáìlì tí a gbé sókè náà tóbi ju 4 MiB lọ."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "A kò lè ka ìṣètò SmokePing, nítorí náà a kò kọ ohunkóhun wọlé: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "Kò sí ìkówọlé tí a ṣàwòkọ́kọ́ kankan láti lò. Tún ṣàwòkọ́kọ́ rẹ̀ lẹ́ẹ̀kan sí i."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "àti %d sí i; wo àkọsílẹ̀ Cacti"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "A ti kó ìṣètò SmokePing wọlé."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "Yan ibi-àfojúsùn kan lórí olùṣàyẹ̀wò yìí, àti láti so ó pọ̀, yan ẹ̀rọ kan tí o lè yípadà."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "Ìmọ̀ràn náà kò sí ní ṣíṣí, tàbí ó ní í ṣe pẹ̀lú ẹ̀rọ tàbí olùṣàyẹ̀wò kan tí o kò lè yípadà."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "A ti pa ìmọ̀ràn náà tì."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Ìwòran àbójútó"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "A kò le ka àwọn àkíyèsí. Béèrè lọ́wọ́ alákòóso láti ṣàyẹ̀wò àkọsílẹ̀ àfikún náà."

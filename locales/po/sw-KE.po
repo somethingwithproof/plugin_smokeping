@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: sw-KE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Master"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Linganisha upotevu na uchelewaji na grafu za SmokePing na hali ya matengenezo. Peleka faili zilizokosekana, uingizaji na uunganishaji upya kwa msimamizi."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "imerukwa, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (chaguomsingi)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "Usanidi wa SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Ruhusa zako za kifaa hazijumuishi kila kifaa, kwa hivyo huwezi kuhamisha au kuingiza usanidi wa SmokePing. Mwombe msimamizi aliye na ufikiaji wa vifaa vyote."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "Hamisha Usanidi wa SmokePing"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "Uhamishaji unashikilia mipangilio ya programu-jalizi, shabaha za SmokePing ambazo programu-jalizi imesoma, na kifaa ambacho kila moja imeoanishwa nacho, kwa jina la mpangishaji na maelezo ya kifaa. Hauna chanzo cha data, grafu, faili ya RRD, wala kitambulisho."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "Pakua"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "Ingiza Usanidi wa SmokePing"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "Kuchagua faili kunaikagua tu. Skrini inayofuata inaorodhesha kila badiliko ambalo faili ingefanya, na hakuna kinachoandikwa hadi uthibitishe orodha hiyo. Uingizaji huongeza na kusasisha; haufuti shabaha wala kuhamisha uoanishaji kamwe, na hauundi faili ya RRD wala kugusa saraka ya data ya SmokePing."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "Kagua Faili"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "Ukaguzi wa Uingizaji"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "Hakuna kilichoandikwa."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "Nyuma"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "Faili haiwezi kuingizwa hadi hitilafu hizi zirekebishwe. Hakuna kilichoandikwa."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "Usakinishaji tayari unalingana na faili. Hakuna cha kuingiza."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "Mpango %s. Kutekeleza kunafanya mabadiliko haya hasa katika muamala mmoja. Ikiwa faili au usakinishaji ulibadilika tangu ukaguzi huu, uingizaji unakataliwa na unakagua tena."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "Tekeleza Uingizaji"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "Ghairi"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "Ongeza Shabaha za SmokePing"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "hakuna shabaha ya SmokePing inayolingana"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "Bofya Endelea ili kuongeza shabaha za SmokePing ambazo mpangishaji wake ni jina la mpangishaji la kila kifaa kilichochaguliwa. Kila shabaha hupata grafu ya muhtasari kwa ajili ya arifa na, data ya SmokePing inapoweza kuchorwa kwenye grafu, grafu ya smoke. Vifaa haviundwi hapa kamwe."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "Shabaha %d zinalingana."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "Vipengee %d vimeundwa au kuoanishwa, %d vimerukwa."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "Kifaa hiki kina shabaha za SmokePing, lakini kisomaji kinachojaza thamani zake za muhtasari kinaendeshwa kwenye kikusanyaji %d na kifaa kimehifadhiwa kwenye kikusanyaji %d. Thamani za muhtasari na arifa zitasimama hadi kifaa kigawiwe kikusanyaji %d tena."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "Shabaha za SmokePing za Kifaa Hiki"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "Grafu %d za smoke bado zinachora rangi nyingine; kikusanyaji kikuu huhamisha hadi 200 kwa kila mzunguko."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "Grafu %d za smoke hazikuweza kuhamishwa; endesha upgrade-graphs ili kuzijaribu tena, na uangalie kumbukumbu ya Cacti kuona sababu."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Mpangilio wa Rangi za Upotevu unaomba rangi za upotevu za SmokePing %s, lakini kisomaji kilipata SmokePing %s. Uwekee Kiotomatiki isipokuwa kama grafu zinapaswa kutofautiana na za SmokePing."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Mpangilio wa Rangi za Upotevu huchagua rangi za upotevu za SmokePing %s kwa grafu za smoke."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Kisomaji hakikupata toleo la SmokePing, kwa hivyo mpangilio wa Rangi za Upotevu huchagua rangi za upotevu za SmokePing 2.8 na baadaye. Ikiwa SmokePing ni 2.7, weka Rangi za Upotevu kuwa SmokePing 2.7."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Kisomaji kilipata SmokePing %s, kwa hivyo mpangilio wa Rangi za Upotevu huchagua rangi zake za upotevu."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold haijasakinishwa, kwa hivyo hakuna shabaha inayotoa arifa katika SmokePing na Thold zote mbili."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Hakuna shabaha iliyo na arifa ya SmokePing na kizingiti cha Thold kilichowashwa."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "Shabaha %d zina arifa ya SmokePing na kizingiti cha Thold kilichowashwa, kwa hivyo tatizo moja linaweza kutoa arifa mara mbili. Linganisha masharti yao ya arifa kabla ya kuondoa mojawapo: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "Violezo vya SmokePing vilishindwa kuingizwa na havijaribiwi tena kiotomatiki: %s Tumia Jaribu Tena Uingizaji wa Kiolezo baada ya kurekebisha sababu."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "Violezo vya SmokePing havijaingizwa. Tumia Jaribu Tena Uingizaji wa Kiolezo."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "Violezo vya SmokePing vimeingizwa."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "Kila kifaa kilicho na vyanzo vya data ya muhtasari kinakusanywa na kikusanyaji cha kisomaji."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "Vifaa %d vina vyanzo vya data ya muhtasari lakini havikusanywi na kikusanyaji %d, kinachoendesha kisomaji, kwa hivyo thamani zake za muhtasari na arifa hazina data: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "Usanidi wa SmokePing unasomwa kwenye kikusanyaji %d, si kwenye seva hii; safu ya orodha inaonyesha matokeo ya usomaji wake wa mwisho."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "Usanidi wa SmokePing %s hauwezi kusomwa: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "Usanidi wa SmokePing %s unaorodhesha shabaha %d; maingizo %d yamerukwa: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "Usanidi wa SmokePing %s unaorodhesha shabaha %d."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "Mpangilio wa njia ya faili tumizi ya PHP uko tupu au si faili inayoweza kuendeshwa, kwa hivyo kisomaji hakiwezi kuanza."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "Kisomaji huanza na %s."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "Kisomaji hakijakamilisha uendeshaji kwenye kikusanyaji hiki."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "Uendeshaji wa mwisho wa kisomaji ulikamilika sekunde %d zilizopita, zaidi ya vipindi vitatu vya kikusanyaji."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "Kisomaji kilisoma mfululizo %d kati ya %d kwa sekunde %.1f na kimezidi muda wake uliopangwa mara %d."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "Kisomaji kilisoma mfululizo %d kati ya %d kwa sekunde %.1f, sekunde %d zilizopita."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "Hakuna orodha iliyosomwa kwenye kikusanyaji hiki."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "Orodha ya mwisho ilishindwa sekunde %d zilizopita na ile iliyotangulia bado inatumika: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "Orodha iliorodhesha shabaha %d sekunde %d zilizopita."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "Afya ya SmokePing kwa Kikusanyaji %d"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "Ukaguzi"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "Maelezo"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "Hali"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "Jaribu Tena Uingizaji wa Kiolezo"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "Sawa"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "Onyo"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "Hitilafu"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "Haijulikani"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "sekunde %d zilizopita"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "kamwe"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "Ingiza Usanidi wa SmokePing"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "Usanidi"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "Faili ya SmokePing iliyosanidiwa inasomwa pamoja na faili inazojumuisha, kutoka kwa saraka yake yenyewe. Faili iliyopakiwa inasomwa peke yake: @include hairuhusiwi ndani yake."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "Faili iliyosanidiwa, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "Faili iliyopakiwa, bila @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "Faili Iliyopakiwa"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "Kwa faili iliyopakiwa pekee: usanidi wa SmokePing usiozidi 4 MiB."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "Vifaa"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "Kifaa kimoja kwa kila mpangishaji wa SmokePing kinakusanya shabaha zinazochunguza mpangishaji yuleyule. Kifaa ambacho tayari kina jina la mpangishaji kwenye kikusanyaji kilichochaguliwa hutumika badala ya kipya."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "Kifaa kimoja kwa kila mpangishaji wa SmokePing"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "Kifaa kimoja kwa kila shabaha ya SmokePing"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "Kiolezo cha Kifaa"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "Kiolezo cha vifaa ambavyo uingizaji huunda."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "Kikusanyaji"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "Kikusanyaji cha vifaa vipya. Lazima kiwe kikusanyaji kinachoendesha kisomaji cha SmokePing, la sivyo vyanzo vyake vya data ya muhtasari havitapata data."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "Tovuti"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "Eneo la vifaa vipya."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "Hakuna"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "Mti wa Grafu"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "Akisi mpangilio wa SmokePing katika mti wa grafu: kila sehemu inakuwa tawi, na kila kifaa kinakuwa mpangishaji chini ya tawi la shabaha zake. Matawi na wapangishaji waliopo hutumika tena."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "Mti mpya, uliotajwa hapa chini"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "Usiakisi"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "Jina la Mti Mpya"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "Kwa mti mpya pekee. Mti ambao tayari una jina hili hutumika."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "Onyesho la awali linasoma usanidi na kuorodhesha kile ambacho uingizaji ungeunda. Hakuna kinachoandikwa hadi uthibitishe orodha hiyo kwenye skrini inayofuata, na faili za SmokePing zenyewe haziandikwi kamwe."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "Onyesho la Awali"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "Dokezo"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "Kiwango"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "Ujumbe"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "Sehemu za SmokePing"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "Leta"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "Sehemu"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "Shabaha"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "Hakuna sehemu iliyotiwa alama, kwa hivyo kila shabaha imechaguliwa. Tia alama sehemu na usasishe onyesho la awali ili kuingiza hizo pekee."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "Shabaha zilizo katika sehemu zilizotiwa alama pekee ndizo zimechaguliwa."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "Sasisha Onyesho la Awali"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "Unda"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "Tumia kifaa %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "Tayari kimeoanishwa na kifaa %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "Ruka: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "Vifaa: %d vya kuunda, %d vilivyopo vya kutumia, %d tayari vimeoanishwa, %d vimerukwa"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "Hatua"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "Maelezo"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "Jina la Mpangishaji"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "Shabaha za SmokePing"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "Hakuna kifaa."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "Muhtasari"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "master"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "Grafu: %d za kuunda, %d tayari zipo"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "Grafu"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "Mahali"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "Shabaha ya SmokePing"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "Hakuna grafu ya kuunda."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "Sababu"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "Data ya Muhtasari Pekee: shabaha %d"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "Tawi"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "Kifaa"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "Mti wa Grafu: matawi %d, maingizo %d ya vifaa"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "Kadirio"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "Mzigo Unaokadiriwa"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "Thibitisha"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "Usanidi hauwezi kuingizwa hadi hitilafu zilizo hapo juu zirekebishwe. Hakuna kilichoandikwa."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "Kila shabaha iliyochaguliwa tayari iko katika Cacti. Hakuna cha kuingiza."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "Mpango %s. Kuingiza kunaunda hasa kile kilichoorodheshwa hapo juu kupitia vipengele vya kifaa, grafu, na mti vya Cacti. Ikiwa usanidi wa SmokePing au Cacti ilibadilika tangu onyesho hili la awali, uingizaji unakataliwa na unaonyesha awali tena."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s na %d zaidi"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "Ongeza %s kwa Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "Shabaha ya SmokePing %s (mpangishaji %s) haina kifaa cha Cacti. Chagua cha kufanya nayo."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "Unda kifaa kipya kutoka kwa kiolezo cha Shabaha ya SmokePing"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "Ioanishe na kifaa kilichopo"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "Kwa vyovyote vile shabaha hupata grafu ya muhtasari kwa ajili ya arifa na, data ya SmokePing inapoweza kuchorwa kwenye grafu, grafu ya smoke. Cacti haiandiki faili za SmokePing kamwe."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "Ongeza"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "Thibitisha Uunganishaji Upya"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing haiorodheshi tena %s. %s ina mpangishaji yuleyule (%s) na kichunguzi kilekile (%s). SmokePing huanzisha faili mpya tupu kwa njia mpya."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "Kuunganisha upya kunahamisha grafu ya smoke na chanzo cha data ya muhtasari kwa shabaha mpya pamoja na uoanishaji wa kifaa. Faili ya zamani huhifadhi kumbukumbu yake katika grafu iliyohifadhiwa kwenye kumbukumbu. Hakuna kinachofutwa."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "Kifaa %d kimeoanishwa na shabaha ya zamani."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "Puuza Pendekezo"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "Unganisha Upya"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "Haipo tena"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "Ipo"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "Haijaunganishwa"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Ongeza kwa Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "Orodha ya SmokePing"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "Mpangishaji"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "Orodha"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "Uoanishaji"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "Jina"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "Njia"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "Kichunguzi"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "Visaidizi"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "Hatua / Pings"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "Hakuna shabaha zilizoingizwa kwenye kikusanyaji hiki."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "Kagua"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "Mapendekezo ya Kuunganisha Upya"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "Njia Iliyotoweka"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "Njia Mpya"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "Hakuna mapendekezo ya uunganishaji upya."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "Mfululizo %d: takriban pakiti %.1f za uchunguzi kwa sekunde na masasisho %.2f ya RRD kwa sekunde katika SmokePing."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti hupata takriban safu %d za vyanzo vya data na safu %d za vipengee vya grafu."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "Kiunganishi cha SmokePing %s hakipo. Unganisha saraka ya data ya SmokePing hapo kwa kusoma tu."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s iko ndani ya njia ya RRA na haifikiwi kupitia kiungo laini (symlink)."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Mtumiaji wa Cacti anaweza kuandika katika %s. Faili za RRD za SmokePing lazima ziwe za kusoma tu kwa Cacti."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "Kiunganishi cha SmokePing %s hakiko ndani ya njia ya RRA ya Cacti %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Njia ya RRA ya Cacti %s haipo."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "Kiunganishi cha SmokePing %s kina kipande tupu, \".\" au \"..\"."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "Kiunganishi cha SmokePing %s kinafikiwa kupitia kiungo laini (symlink), ambacho Cacti inakikataa. Tumia kiunganishi cha bind cha kusoma tu badala yake."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "Imeshindwa kusoma jedwali la viunganishi, kwa hivyo kiunganishi hakikuweza kuthibitishwa kuwa cha kusoma tu."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s iko kwenye sehemu iliyopachikwa ya kusoma pekee."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s iko kwenye kiunganishi kinachoweza kuandikwa %s. Unganisha saraka ya data ya SmokePing kwa kusoma tu."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "Hakuna orodha bado, kwa hivyo hakuna faili za RRD zinazotarajiwa."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "Faili zote %d za RRD zinazotarajiwa zinaonekana kupitia kiunganishi."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "Faili %d kati ya %d za RRD zinazotarajiwa hazionekani kupitia kiunganishi, kwa mfano %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Kagua maangalizo yaliyorekodiwa hapa chini. Utambuzi ni wa kipindi hiki cha mtumiaji pekee, huisha wakati maangalizo yanapobadilika, na kamwe hauzuii arifa au kubadilisha afya."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "Shughuli za SmokePing"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Vitendo"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Uchunguzi"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Kipengee"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Ilionekana (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Hali"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Haijulikani au imepitwa na wakati"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Kamwe"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Imetambuliwa; afya haijabadilika."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Tambua"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Hakuna maangalizo yanayopatikana kwa vifaa unavyoweza kufikia."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "Mwendeshaji wa SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "Mwonekano wa SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "Msimamizi wa SmokePing"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "Afya ya SmokePing"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "shabaha zote mbili lazima ziwe kwenye kikusanyaji kinachoendesha kisomaji"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "shabaha mpya tayari imeoanishwa na kifaa %d"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "shabaha ya zamani ina vyanzo vya data kwenye kifaa %d, ambacho haijaoanishwa nacho"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "Chanzo cha SmokePing"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "Poller ya SmokePing"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Poller ya Cacti inayofanya kazi kwenye, au inayoshiriki mfumo wa faili na, seva pangishi ya SmokePing. Ni poller hii pekee inayoweza kusoma data ya SmokePing."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "Faili ya Usanidi ya SmokePing"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "Faili kuu ya usanidi ya SmokePing, inayosomwa na poller inayoendesha kisomaji. Programu-jalizi huisoma pamoja na faili zinazojumuishwa kwa kutumia kichanganuzi chake chenyewe na haiandiki humo kamwe. Faili zinazojumuishwa lazima zibaki ndani ya saraka ya faili hii."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "Saraka ya Data ya SmokePing"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "Saraka ya datadir kutoka kwa usanidi wa SmokePing, jinsi SmokePing inavyoiona."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "Mount ya Cacti ya Saraka ya Data"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "Mount ya bind ya kusoma tu au ya NFS ya saraka ya data ya SmokePing ndani ya njia ya RRA ya Cacti. Cacti husoma faili za RRD zilizo ndani ya njia yake ya RRA pekee na kamwe si kupitia symlink."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "Kisomaji"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "Bajeti ya Muda wa Kisomaji"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "Sekunde ambazo uendeshaji mmoja wa kisomaji unaweza kutumia kusoma faili za RRD kabla ya kusimama na kuendelea katika mzunguko unaofuata wa poller."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "Muda kati ya Ukaguzi wa Orodha"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "Kiwango cha chini cha sekunde kati ya uendeshaji wa ukaguzi wa orodha. Ukaguzi wa orodha pia huendeshwa faili ya usanidi inapobadilika."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "Ruhusa ya Upya wa Data"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "Sekunde baada ya hatua moja ambapo kipimo bado kinahesabiwa kuwa cha sasa."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Rangi za Upotevu"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Rangi zipi za upotevu za SmokePing ambazo grafu za smoke huchora. SmokePing 2.7 huchora viwango vingine vya upotevu kuliko 2.8 na matoleo ya baadaye. Otomatiki hufuata toleo la SmokePing ambalo kisomaji hupata karibu na SmokePing, likionyeshwa kwenye ukurasa wa afya, na hutumia 2.8 na matoleo ya baadaye lisipopata lolote."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Otomatiki"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 na matoleo ya baadaye"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Sakinusha"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Weka Majedwali ya Programu-jalizi Wakati wa Kusakinusha"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "Ikichaguliwa, kuondoa programu-jalizi kutahifadhi majedwali yake ya orodha, ulinganishaji, na afya. Faili za SmokePing haziondolewi kamwe kwa vyovyote vile."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "Saraka ya Hifadhi Nakala"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "Mahali ambapo uondoaji huandika uhamishaji wa usanidi wa programu-jalizi. Acha wazi ili kutumia saraka ya cache/smokeping ya Cacti, ambayo programu-jalizi huilinda kwa kanuni ya kuzuia yote. Saraka inayowekwa hapa lazima iwe tayari ipo, iweze kuandikwa, na iwe nje ya web root; isipoweza kuandikwa hakuna uhamishaji unaoandikwa."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "Lengo bado halijahifadhiwa."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "Lengo hutuma ping %d kwa kila raundi. Grafu za smoke zipo tu kwa 10, 20, na 30; lina data ya muhtasari pekee."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti huhifadhi faili za RRD kwenye RRDproxy, ambapo faili za SmokePing hazipo. Data ya muhtasari pekee ndiyo inayopatikana."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "Kifaa kinakaguliwa na poller %d, lakini kisomaji kinachojaza thamani za muhtasari kinafanya kazi kwenye poller %d. Weka kifaa hicho kwenye poller %d."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "Kiolezo cha grafu ya muhtasari hakijasakinishwa."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "Kiolezo cha data ya muhtasari hakijasakinishwa."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti haikuunda grafu ya muhtasari."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "Malengo yote mawili lazima yahifadhiwe kwanza."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "Lengo la zamani halina chanzo cha data ya smoke cha kuhamisha."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "Faili ya RRD %s haionekani kupitia mount ya SmokePing."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "Faili ya RRD %s inaelekeza nje ya mount ya SmokePing."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "Kiolezo cha grafu ya smoke hakijasakinishwa."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti haikuunda grafu ya smoke."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti haikubali njia ya SmokePing kwa chanzo cha data."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "Uingizaji mwingine wa usanidi wa SmokePing unaendelea, kwa hivyo hakuna kilichoingizwa. Angalia tena utakapokamilika."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "Usanidi au usakinishaji ulibadilika tangu ukaguzi, kwa hivyo hakuna kilichoingizwa. Kagua tena."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "Kuakisi kwenye mti wa grafu kunahitaji ruhusa ya kuhariri miti."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "Malengo hayakuweza kuhifadhiwa; angalia kumbukumbu ya Cacti. Hakuna kingine kilichobadilishwa."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: imerukwa, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: imerukwa, Cacti haikuunda kifaa"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: kifaa %d kimeundwa"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: imerukwa, lengo halikuhifadhiwa"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: tayari ipo katika Cacti kwenye kifaa %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "Mti wa grafu %s haukuweza kuundwa."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "mti wa grafu %s umeundwa"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "tawi la mti %s halikuweza kuundwa"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "tawi la mti %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "kifaa %d hakikuweza kuongezwa kwenye mti"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "kifaa %d chini ya tawi la mti %s"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "lengo bado halijahifadhiwa"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "tayari limeunganishwa na kifaa %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti haikuunda kifaa"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "kifaa %d kimeundwa"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "wakati huo huo lengo liliunganishwa na kifaa kingine; kifaa %d hakina grafu za SmokePing"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "wakati huo huo lengo liliunganishwa na kifaa kingine"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "limeunganishwa na kifaa %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "grafu ya muhtasari %d kwa %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "hakuna muhtasari kwa %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "grafu ya smoke %d kwa %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "hakuna grafu ya smoke kwa %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "Vifaa %d havikushughulikiwa katika muda ulioruhusiwa. Endesha kitendo hicho tena kwa ajili yavyo; vifaa ambavyo tayari vimeongezwa vinarukwa."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "Kikomo cha muda"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "hakuna lengo la SmokePing lisilounganishwa lenye seva pangishi %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "pendekezo haliko wazi tena"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "lengo jipya limeunganishwa na kifaa kingine"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "grafu ya smoke %d sasa inasoma faili mpya; faili ya zamani inabaki ikichoreka katika grafu iliyohifadhiwa kwenye kumbukumbu"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "chanzo cha data ya muhtasari %d kinafuata lengo jipya"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "kifaa %d kimeunganishwa na lengo jipya"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "Hali"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "Upya"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "Sasisho la Mwisho"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "Upotevu"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Matengenezo"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "Wastani wa Kati"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "Lengo"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "Hakuna malengo ya SmokePing yaliyounganishwa na vifaa unavyoweza kuona."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "Katika matengenezo"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Hapana"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "Haijawahi kuonekana"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Programu-jalizi ya SmokePing inahitaji PHP %s au toleo la baadaye. Seva hii inatumia PHP %s, kwa hivyo programu-jalizi haikusakinishwa wala kuwezeshwa."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "Programu-jalizi ya SmokePing haijawezeshwa."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "Programu-jalizi ya SmokePing inahitaji PHP %s au toleo la baadaye."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "Usanidi wa SmokePing ulihamishiwa kwenye %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "Usanidi wa SmokePing haukuhamishwa; angalia kumbukumbu ya SmokePing. Uondoaji uliendelea."
+
+#: setup.php
+msgid "Management"
+msgstr "Usimamizi"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "Leta/Hamisha"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "Huna ruhusa ya kuongeza malengo ya SmokePing."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "Hakuna faili iliyopakiwa, au ni kubwa kuliko kiwango kinachokubaliwa na seva."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "Hakuna uingizaji uliokaguliwa wa kutekeleza. Kagua faili tena."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "Usanidi uliingizwa."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "Violezo vya SmokePing vilishindwa kuingizwa. Angalia jedwali la afya."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Ruhusa zako za vifaa hazifuniki kila kifaa, kwa hivyo huwezi kuingiza usanidi wa SmokePing. Mwombe msimamizi mwenye ufikiaji wa vifaa vyote."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "Taja mti mpya wa grafu, au chagua mti uliopo au bila mti."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "Faili iliyopakiwa ni kubwa kuliko 4 MiB."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "Usanidi wa SmokePing hauwezi kusomwa, kwa hivyo hakuna kilichoingizwa: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "Hakuna uingizaji uliohakikiwa wa kutekeleza. Uhakiki tena."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "na %d zaidi; angalia kumbukumbu ya Cacti"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "Usanidi wa SmokePing uliingizwa."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "Chagua lengo kwenye poller hii na, ili kuliunganisha, chagua kifaa unachoweza kubadilisha."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "Pendekezo haliko wazi, au linahusisha kifaa au poller ambayo huwezi kubadilisha."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "Pendekezo liliondolewa."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Mwonekano wa ufuatiliaji"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Maangalizo hayakuweza kusomwa. Mwombe msimamizi aangalie kumbukumbu ya programu-jalizi."

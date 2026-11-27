@@ -69,4 +69,56 @@ final class SummaryCalculator {
 			$age === null ? null : max(0, $age),
 		);
 	}
+
+	/**
+	 * Compute extended summary values (jitter, distribution quantiles, and
+	 * packet-loss burst streak) alongside the backwards-compatible base fields.
+	 *
+	 * Stale, never-updated, or missing observations yield null (U) for all
+	 * extended latency and loss metrics so stale samples never read as zero.
+	 *
+	 * @param Observation|null $observation Latest cached observation.
+	 * @param int $firstSeen Unix timestamp when the target was first seen.
+	 * @param list<float|int> $pingSamplesSeconds Optional SmokePing round ping samples in seconds (ping1..ping20).
+	 * @param list<float|null> $recentLosses Optional recent round loss values (count or percentage) for burst streak.
+	 * @param DDSketch|null $sketch Optional latency DDSketch (values in milliseconds) for multi-round quantiles.
+	 * @return ExtendedSummaryValues
+	 */
+	public function computeExtended(
+		?Observation $observation,
+		int $firstSeen,
+		array $pingSamplesSeconds = [],
+		array $recentLosses = [],
+		?DDSketch $sketch = null,
+	): ExtendedSummaryValues {
+		$base = $this->compute($observation, $firstSeen);
+
+		if ($observation === null || !$observation->filePresent) {
+			return ExtendedSummaryValues::unknown();
+		}
+
+		$state = $this->freshness->freshness($observation);
+
+		if ($state === Freshness::Never || $state === Freshness::Stale) {
+			return ExtendedSummaryValues::baseOnly($base);
+		}
+
+		$samplesMs = [];
+
+		foreach ($pingSamplesSeconds as $seconds) {
+			$val = (float) $seconds;
+
+			if (is_finite($val) && $val >= 0.0) {
+				$samplesMs[] = $val * 1000.0;
+			}
+		}
+
+		return ExtendedSummaryValues::fromSamples(
+			$base,
+			$samplesMs,
+			$recentLosses,
+			$sketch,
+			$base->lossPct,
+		);
+	}
 }

@@ -40,16 +40,23 @@ if (!isset($called_by_script_server)) {
 
 /**
  * @param string $series "<target id>~<location>", the key of the reader's cache
- * @return string "median:<ms> loss_pct:<percent> age:<seconds>", each U when unknown
+ * @param string $mode Optional mode: empty for the default 3-field contract, or "extended"/"--extended"
+ * @return string "median:<ms> loss_pct:<percent> age:<seconds>" (plus extended fields when requested), each U when unknown
  */
-function ss_smokeping_summary($series = '') {
+function ss_smokeping_summary($series = '', $mode = '') {
+	$extended = $mode === 'extended' || $mode === '--extended';
+
 	if (!function_exists('smokeping_boot')) {
 		include_once(dirname(__FILE__) . '/../setup.php');
 	}
 
 	if (!smokeping_boot()) {
+		if ($extended) {
+			return 'median:U loss_pct:U age:U jitter_iqr_ms:U jitter_rfc3550_ms:U min_ms:U p95_ms:U p99_ms:U max_ms:U loss_burst_max:U';
+		}
+
 		return 'median:U loss_pct:U age:U';
 	}
 
-	return smokeping_summary_answer((string) $series);
+	return smokeping_summary_answer((string) $series, $extended);
 }

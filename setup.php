@@ -724,12 +724,16 @@ function smokeping_graph_buttons($data) {
 /**
  * The summary data source's answer for one series, read from the reader's
  * cache with the settings of this poller.
+ *
+ * @param string $series Series key "<target id>~<location>".
+ * @param bool $extended When true, append jitter, quantile, and loss-burst fields.
+ * @return string
  */
-function smokeping_summary_answer(string $series): string {
+function smokeping_summary_answer(string $series, bool $extended = false): string {
 	$clock      = new \Somethingwithproof\Smokeping\SystemClock();
 	$calculator = new \Somethingwithproof\Smokeping\SummaryCalculator(new \Somethingwithproof\Smokeping\FreshnessEvaluator($clock, smokeping_settings()->freshnessAllowance), $clock);
 
-	return (new \Somethingwithproof\Smokeping\SummaryScript(new \Somethingwithproof\Smokeping\ObservationRepository(false), $calculator))->run($series);
+	return (new \Somethingwithproof\Smokeping\SummaryScript(new \Somethingwithproof\Smokeping\ObservationRepository(false), $calculator))->run($series, $extended);
 }
 
 /**

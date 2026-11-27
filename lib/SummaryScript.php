@@ -38,12 +38,20 @@ final class SummaryScript {
 	}
 
 	/**
-	 * Run.
+	 * Run the script-server query for one series.
 	 *
-	 * @param string $series Series.
+	 * Defaults to the backwards-compatible "median:.. loss_pct:.. age:.." output.
+	 * Passing $extended = true appends jitter, quantile, and loss-burst fields.
+	 *
+	 * @param string $series Series key "<target id>~<location>".
+	 * @param bool $extended Whether to emit extended summary fields.
 	 * @return string
 	 */
-	public function run(string $series): string {
+	public function run(string $series, bool $extended = false): string {
+		if ($extended) {
+			return $this->extendedValues($series)->format();
+		}
+
 		return $this->values($series)->format();
 	}
 
@@ -63,6 +71,35 @@ final class SummaryScript {
 		$row = $this->observations->latest($key['target'], $key['location']);
 
 		return $row === null ? SummaryValues::unknown() : $this->calculator->compute($row['observation'], $row['firstSeen']);
+	}
+
+	/**
+	 * Extended summary values for one series, optionally enriched with round
+	 * ping samples, recent round loss readings, or an aggregated DDSketch.
+	 *
+	 * @param string $series Series key "<target id>~<location>".
+	 * @param list<float|int> $pingSamplesSeconds Optional round ping samples in seconds.
+	 * @param list<float|null> $recentLosses Optional recent round loss values.
+	 * @param DDSketch|null $sketch Optional latency DDSketch in milliseconds.
+	 * @return ExtendedSummaryValues
+	 */
+	public function extendedValues(
+		string $series,
+		array $pingSamplesSeconds = [],
+		array $recentLosses = [],
+		?DDSketch $sketch = null,
+	): ExtendedSummaryValues {
+		$key = self::parse($series);
+
+		if ($key === null) {
+			return ExtendedSummaryValues::unknown();
+		}
+
+		$row = $this->observations->latest($key['target'], $key['location']);
+
+		return $row === null
+			? ExtendedSummaryValues::unknown()
+			: $this->calculator->computeExtended($row['observation'], $row['firstSeen'], $pingSamplesSeconds, $recentLosses, $sketch);
 	}
 
 	/**

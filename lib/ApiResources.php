@@ -71,7 +71,7 @@ final class ApiResources {
 		$items    = [];
 
 		foreach ($targets as $target) {
-			$id      = (string) ($target->id?->value ?? 0);
+			$id      = (string) ($target->id !== null ? $target->id->value : 0);
 			$items[] = [
 				'id'          => $id,
 				'name'        => 'smokepingTargets/' . $id,

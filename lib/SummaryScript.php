@@ -28,13 +28,31 @@ namespace Somethingwithproof\Smokeping;
  * is unknown, never zero.
  */
 final class SummaryScript {
+	/**
+	 * Create a new SummaryScript instance.
+	 *
+	 * @param ObservationRepository $observations Observations.
+	 * @param SummaryCalculator $calculator Calculator.
+	 */
 	public function __construct(private readonly ObservationRepository $observations, private readonly SummaryCalculator $calculator) {
 	}
 
+	/**
+	 * Run.
+	 *
+	 * @param string $series Series.
+	 * @return string
+	 */
 	public function run(string $series): string {
 		return $this->values($series)->format();
 	}
 
+	/**
+	 * Values.
+	 *
+	 * @param string $series Series.
+	 * @return SummaryValues
+	 */
 	public function values(string $series): SummaryValues {
 		$key = self::parse($series);
 
@@ -58,6 +76,13 @@ final class SummaryScript {
 		return ['target' => (int) $match[1], 'location' => $match[2]];
 	}
 
+	/**
+	 * Series.
+	 *
+	 * @param int $targetId Target id.
+	 * @param string $location Location.
+	 * @return string
+	 */
 	public static function series(int $targetId, string $location): string {
 		return $targetId . '~' . $location;
 	}

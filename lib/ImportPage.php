@@ -26,11 +26,17 @@ namespace Somethingwithproof\Smokeping;
  * every action. Every value is escaped here.
  */
 final class ImportPage {
+	/** File constant. */
 	private const FILE = 'smokeping_import.php';
 
 	/** Rows of a long list shown before the rest is summarized. */
 	private const MAX_ROWS = 200;
 
+	/**
+	 * Refused.
+	 *
+	 * @param string $message Message.
+	 */
 	public static function refused(string $message): void {
 		html_start_box(html_escape(__('Import SmokePing Configuration', 'smokeping')), '100%', '', '3', 'center', '');
 		print '<tr><td class="textArea">' . html_escape($message) . '</td></tr>';

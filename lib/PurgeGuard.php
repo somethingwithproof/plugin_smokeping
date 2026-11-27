@@ -32,6 +32,12 @@ namespace Somethingwithproof\Smokeping;
  * cleaner page.
  */
 final class PurgeGuard {
+	/**
+	 * Create a new PurgeGuard instance.
+	 *
+	 * @param ObjectRepository $objects Objects.
+	 * @param CactiObjectRepository $cacti Cacti.
+	 */
 	public function __construct(
 		private readonly ObjectRepository $objects,
 		private readonly CactiObjectRepository $cacti,
@@ -139,6 +145,13 @@ final class PurgeGuard {
 		return '/' . implode('/', $parts);
 	}
 
+	/**
+	 * Is under.
+	 *
+	 * @param string $file File.
+	 * @param string $directory Directory.
+	 * @return bool
+	 */
 	public static function isUnder(string $file, string $directory): bool {
 		return $directory !== '/' && str_starts_with($file, $directory . '/');
 	}

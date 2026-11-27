@@ -25,6 +25,11 @@ namespace Somethingwithproof\Smokeping;
  * only from a confirmation screen.
  */
 final class InventoryPage {
+	/**
+	 * Create a new InventoryPage instance.
+	 *
+	 * @param TargetRepository $targets Targets.
+	 */
 	public function __construct(private readonly TargetRepository $targets) {
 	}
 
@@ -134,6 +139,12 @@ final class InventoryPage {
 		print '</tr></table></form>';
 	}
 
+	/**
+	 * Render pagination.
+	 *
+	 * @param TargetFilter $filter Filter.
+	 * @param int $total Total.
+	 */
 	private function renderPagination(TargetFilter $filter, int $total): void {
 		if ($filter->rows <= 0) {
 			return;

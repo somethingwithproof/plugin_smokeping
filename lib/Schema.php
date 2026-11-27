@@ -29,48 +29,69 @@ namespace Somethingwithproof\Smokeping;
  * whether the tables exist.
  */
 final class Schema {
+	/** Version constant. */
 	public const VERSION = 7;
 
 	/** Settings removed by schema 3, when the plugin stopped running Perl. */
 	private const RETIRED_SETTINGS = ['smokeping_perl_binary', 'smokeping_lib_dir'];
 
 
+	/** Hook registrations managed by plugin_smokeping. */
 	public const HOOKS = [
-		'abilities_register'       => 'smokeping_abilities_register',
-		'auth_alternate_realms'    => 'smokeping_auth_alternate_realms',
-		'casc_register_providers'  => 'smokeping_casc_register_providers',
-		'config_arrays'            => 'smokeping_config_arrays',
-		'config_settings'          => 'smokeping_config_settings',
-		'doctor_register_checks'   => 'smokeping_doctor_register_checks',
-		'draw_navigation_text'     => 'smokeping_draw_navigation_text',
-		'poller_top'               => 'smokeping_purge_sweep',
-		'poller_finishing'         => 'smokeping_purge_sweep',
-		'poller_bottom'            => 'smokeping_poller_bottom',
-		'replicate_out'            => 'smokeping_replicate_out',
-		'data_source_remove'       => 'smokeping_data_source_remove',
-		'device_remove'            => 'smokeping_device_remove',
-		'device_action_array'      => 'smokeping_device_action_array',
-		'device_action_prepare'    => 'smokeping_device_action_prepare',
-		'device_action_execute'    => 'smokeping_device_action_execute',
-		'api_device_save'          => 'smokeping_api_device_save',
-		'graph_buttons'            => 'smokeping_graph_buttons',
-		'graph_buttons_thumbnails' => 'smokeping_graph_buttons',
-		'top_header_tabs'          => 'smokeping_show_tab',
-		'top_graph_header_tabs'    => 'smokeping_show_tab',
+		'abilities_register'         => 'smokeping_abilities_register',
+		'api_register_resources'     => 'smokeping_api_register_resources',
+		'auth_alternate_realms'      => 'smokeping_auth_alternate_realms',
+		'casc_register_providers'    => 'smokeping_casc_register_providers',
+		'config_arrays'              => 'smokeping_config_arrays',
+		'config_settings'            => 'smokeping_config_settings',
+		'doctor_register_checks'     => 'smokeping_doctor_register_checks',
+		'doctor_register_debug_info' => 'smokeping_doctor_register_debug_info',
+		'draw_navigation_text'       => 'smokeping_draw_navigation_text',
+		'poller_top'                 => 'smokeping_purge_sweep',
+		'poller_finishing'           => 'smokeping_purge_sweep',
+		'poller_bottom'              => 'smokeping_poller_bottom',
+		'replicate_out'              => 'smokeping_replicate_out',
+		'data_source_remove'         => 'smokeping_data_source_remove',
+		'device_remove'              => 'smokeping_device_remove',
+		'device_action_array'        => 'smokeping_device_action_array',
+		'device_action_prepare'      => 'smokeping_device_action_prepare',
+		'device_action_execute'      => 'smokeping_device_action_execute',
+		'api_device_save'            => 'smokeping_api_device_save',
+		'graph_buttons'              => 'smokeping_graph_buttons',
+		'graph_buttons_thumbnails'   => 'smokeping_graph_buttons',
+		'top_header_tabs'            => 'smokeping_show_tab',
+		'top_graph_header_tabs'      => 'smokeping_show_tab',
 	];
 
+	/** Plugin constant. */
 	private const PLUGIN  = 'smokeping';
+	/** Setting constant. */
 	private const SETTING = 'smokeping_schema_version';
 
+	/**
+	 * Create a new Schema instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
+	/**
+	 * Stored version.
+	 *
+	 * @return int
+	 */
 	public function storedVersion(): int {
 		$value = db_fetch_cell_prepared('SELECT value FROM settings WHERE name = ?', [self::SETTING], '', true, $this->connection);
 
 		return is_numeric($value) ? (int) $value : 0;
 	}
 
+	/**
+	 * Is current.
+	 *
+	 * @return bool
+	 */
 	public function isCurrent(): bool {
 		return $this->storedVersion() === self::VERSION;
 	}
@@ -192,18 +213,40 @@ final class Schema {
 		return true;
 	}
 
+	/**
+	 * Recorded plugin version.
+	 *
+	 * @return string
+	 */
 	public function recordedPluginVersion(): string {
 		return (string) db_fetch_cell_prepared('SELECT version FROM plugin_config WHERE directory = ?', [self::PLUGIN], '', true, $this->connection);
 	}
 
+	/**
+	 * Record plugin version.
+	 *
+	 * @param string $version Version.
+	 * @param string $author Author.
+	 * @param string $homepage Homepage.
+	 */
 	public function recordPluginVersion(string $version, string $author, string $homepage): void {
 		db_execute_prepared('UPDATE plugin_config SET version = ?, author = ?, webpage = ? WHERE directory = ?', [$version, $author, $homepage, self::PLUGIN], true, $this->connection);
 	}
 
+	/**
+	 * Plugin enabled.
+	 *
+	 * @return bool
+	 */
 	public function pluginEnabled(): bool {
 		return (int) db_fetch_cell_prepared('SELECT status FROM plugin_config WHERE directory = ?', [self::PLUGIN], '', true, $this->connection) === 1;
 	}
 
+	/**
+	 * Hooks registered.
+	 *
+	 * @return bool
+	 */
 	public function hooksRegistered(): bool {
 		$placeholders = implode(', ', array_fill(0, count(self::HOOKS), '?'));
 
@@ -221,10 +264,17 @@ final class Schema {
 		db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", [self::PLUGIN], true, $this->connection);
 	}
 
+	/** Forget version. */
 	public function forgetVersion(): void {
 		db_execute_prepared('DELETE FROM settings WHERE name = ?', [self::SETTING], true, $this->connection);
 	}
 
+	/**
+	 * Table exists.
+	 *
+	 * @param string $table Table.
+	 * @return bool
+	 */
 	private function tableExists(string $table): bool {
 		return db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?', [$table], '', true, $this->connection) > 0;
 	}

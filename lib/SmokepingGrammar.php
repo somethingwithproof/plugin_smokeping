@@ -34,32 +34,58 @@ namespace Somethingwithproof\Smokeping;
  * they name; SmokepingConfigParser builds those from ProbeCatalog.
  */
 final class SmokepingGrammar {
+	/** Root constant. */
 	public const ROOT          = 'root';
+	/** General constant. */
 	public const GENERAL       = 'General';
+	/** Database constant. */
 	public const DATABASE      = 'Database';
+	/** Influxdb constant. */
 	public const INFLUXDB      = 'InfluxDB';
+	/** Presentation constant. */
 	public const PRESENTATION  = 'Presentation';
+	/** Charts constant. */
 	public const CHARTS        = 'Presentation/charts';
+	/** Chart constant. */
 	public const CHART         = 'Presentation/charts/*';
+	/** Overview constant. */
 	public const OVERVIEW      = 'Presentation/overview';
+	/** Detail constant. */
 	public const DETAIL        = 'Presentation/detail';
+	/** Loss colors constant. */
 	public const LOSS_COLORS   = 'Presentation/detail/loss_colors';
+	/** Uptime colors constant. */
 	public const UPTIME_COLORS = 'Presentation/detail/uptime_colors';
+	/** Multihost constant. */
 	public const MULTIHOST     = 'Presentation/multihost';
+	/** Hierarchies constant. */
 	public const HIERARCHIES   = 'Presentation/hierarchies';
+	/** Hierarchy constant. */
 	public const HIERARCHY     = 'Presentation/hierarchies/*';
+	/** Probes constant. */
 	public const PROBES        = 'Probes';
+	/** Probe constant. */
 	public const PROBE         = 'Probes/*';
+	/** Subprobe constant. */
 	public const SUBPROBE      = 'Probes/*/*';
+	/** Alerts constant. */
 	public const ALERTS        = 'Alerts';
+	/** Alert constant. */
 	public const ALERT         = 'Alerts/*';
+	/** Slaves constant. */
 	public const SLAVES        = 'Slaves';
+	/** Slave constant. */
 	public const SLAVE         = 'Slaves/*';
+	/** Override constant. */
 	public const OVERRIDE      = 'Slaves/*/override';
+	/** Targets constant. */
 	public const TARGETS       = 'Targets';
+	/** Target constant. */
 	public const TARGET        = 'Targets/*';
 
+	/** Keyd re constant. */
 	public const KEYD_RE  = '[-_0-9a-zA-Z]+';
+	/** Keydd re constant. */
 	public const KEYDD_RE = '[-_0-9a-zA-Z.]+';
 
 	/** Target variables every probe accepts, in SmokePing's order. */
@@ -68,8 +94,11 @@ final class SmokepingGrammar {
 	/** Target variables a target section takes from its parent. */
 	public const TARGET_INHERITED = ['probe', 'alerts', 'alertee', 'slaves', 'menuextra', 'nomasterpoll'];
 
+	/** Yes no constant. */
 	private const YES_NO = ['re' => '(yes|no)', 'error' => "this must either be 'yes' or 'no'"];
+	/** Color constant. */
 	private const COLOR  = ['re' => '[0-9a-f]{6}', 'error' => 'use rrggbb for color'];
+	/** Int1 constant. */
 	private const INT1   = ['check' => 'int1'];
 
 	/**

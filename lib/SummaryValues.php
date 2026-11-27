@@ -25,6 +25,13 @@ namespace Somethingwithproof\Smokeping;
  * the seconds since the RRD's last update. Null is unknown and prints as U.
  */
 final readonly class SummaryValues {
+	/**
+	 * Create a new SummaryValues instance.
+	 *
+	 * @param float|null $median Median.
+	 * @param float|null $lossPct Loss pct.
+	 * @param int|null $age Age.
+	 */
 	public function __construct(
 		public ?float $median,
 		public ?float $lossPct,
@@ -32,6 +39,11 @@ final readonly class SummaryValues {
 	) {
 	}
 
+	/**
+	 * Unknown.
+	 *
+	 * @return self
+	 */
 	public static function unknown(): self {
 		return new self(null, null, null);
 	}
@@ -44,6 +56,12 @@ final readonly class SummaryValues {
 		return sprintf('median:%s loss_pct:%s age:%s', self::number($this->median), self::number($this->lossPct), $this->age === null ? 'U' : (string) $this->age);
 	}
 
+	/**
+	 * Number.
+	 *
+	 * @param float|null $value Value.
+	 * @return string
+	 */
 	private static function number(?float $value): string {
 		if ($value === null) {
 			return 'U';

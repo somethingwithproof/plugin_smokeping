@@ -28,11 +28,19 @@ namespace Somethingwithproof\Smokeping;
  * operator sees what would be created before continuing.
  */
 final class DeviceActions {
+	/** Action constant. */
 	public const ACTION = 'smokeping_add';
 
 	/** Seconds one request may spend on the action. */
 	public const TIME_LIMIT = 300;
 
+	/**
+	 * Create a new DeviceActions instance.
+	 *
+	 * @param TargetActions $actions Actions.
+	 * @param TargetRepository $targets Targets.
+	 * @param CactiObjectRepository $cacti Cacti.
+	 */
 	public function __construct(
 		private readonly TargetActions $actions,
 		private readonly TargetRepository $targets,

@@ -25,6 +25,13 @@ namespace Somethingwithproof\Smokeping;
  * SmokePing's own configuration files.
  */
 final class TholdGenerator {
+	/**
+	 * Create a new TholdGenerator instance.
+	 *
+	 * @param TargetRepository $targets Targets.
+	 * @param ObjectRepository $objects Objects.
+	 * @param CactiObjectRepository $cacti Cacti.
+	 */
 	public function __construct(
 		private readonly TargetRepository $targets,
 		private readonly ObjectRepository $objects,

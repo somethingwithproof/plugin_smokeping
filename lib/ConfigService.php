@@ -42,6 +42,12 @@ final class ConfigService {
 		}
 	}
 
+	/**
+	 * Export.
+	 *
+	 * @param string $format Format.
+	 * @return string
+	 */
 	public function export(string $format): string {
 		$this->requireUnrestricted();
 
@@ -144,6 +150,12 @@ final class ConfigService {
 		}
 	}
 
+	/**
+	 * Plan.
+	 *
+	 * @param ConfigDocument $document Document.
+	 * @return ConfigPlan
+	 */
 	public function plan(ConfigDocument $document): ConfigPlan {
 		$this->requireUnrestricted();
 

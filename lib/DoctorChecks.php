@@ -27,8 +27,21 @@ namespace Somethingwithproof\Smokeping;
  * shape without mutating any state.
  */
 final class DoctorChecks {
+	/** Doctor check category slug for SmokePing. */
 	public const CATEGORY = 'smokeping';
 
+	/**
+	 * Create a DoctorChecks runner for SmokePing diagnostic checks and debug snapshots.
+	 *
+	 * @param Settings $settings Active plugin settings.
+	 * @param TargetRepository $targets Repository of SmokePing targets.
+	 * @param ObservationRepository $observations Repository of latest RRD observations.
+	 * @param FreshnessEvaluator $evaluator Freshness policy evaluator.
+	 * @param MountCheck $mountCheck Mount containment and read-only verifier.
+	 * @param OrphanRrdScanner $orphanScanner Unowned RRD file scanner.
+	 * @param string $rraPath Configured Cacti RRA root path.
+	 * @param bool $readerHost Whether the current host is the configured SmokePing reader poller.
+	 */
 	public function __construct(
 		private readonly Settings $settings,
 		private readonly TargetRepository $targets,
@@ -234,6 +247,79 @@ final class DoctorChecks {
 		);
 	}
 
+	/**
+	 * Build a redacted plain-array diagnostic snapshot for doctor_register_debug_info.
+	 *
+	 * Omits raw filesystem paths and any sensitive runtime values while exposing
+	 * operational metadata useful for support bundles.
+	 *
+	 * @param Health $health Reader and inventory health record for the configured poller.
+	 * @param string $pluginVersion Installed plugin version string from INFO.
+	 * @param int $schemaVersion Applied database schema version.
+	 * @return array{label: string, description: string, fields: array<string, array{label: string, value: string, private: bool}>}
+	 */
+	public function debugInfo(Health $health, string $pluginVersion, int $schemaVersion): array {
+		$configReadable = $this->readerHost ? (is_readable($this->settings->configFile) ? 'yes' : 'no') : 'remote-poller';
+		$mountReadable  = $this->readerHost ? (is_dir($this->settings->mountPath) && is_readable($this->settings->mountPath) ? 'yes' : 'no') : 'remote-poller';
+
+		return [
+			'label'       => 'SmokePing',
+			'description' => 'Redacted SmokePing plugin configuration, schema, and reader telemetry snapshot.',
+			'fields'      => [
+				'plugin_version'        => ['label' => 'Plugin Version', 'value' => $pluginVersion, 'private' => false],
+				'schema_version'        => ['label' => 'Schema Version', 'value' => (string) $schemaVersion, 'private' => false],
+				'poller_id'             => ['label' => 'Reader Poller ID', 'value' => (string) $this->settings->pollerId, 'private' => false],
+				'reader_host'           => ['label' => 'Running on Reader Poller', 'value' => $this->readerHost ? 'yes' : 'no', 'private' => false],
+				'reader_budget_s'       => ['label' => 'Reader Budget (s)', 'value' => (string) $this->settings->readerBudget, 'private' => false],
+				'inventory_interval_s'  => ['label' => 'Inventory Interval (s)', 'value' => (string) $this->settings->inventoryInterval, 'private' => false],
+				'freshness_allowance_s' => ['label' => 'Freshness Allowance (s)', 'value' => (string) $this->settings->freshnessAllowance, 'private' => false],
+				'keep_tables_uninstall' => ['label' => 'Keep Tables on Uninstall', 'value' => $this->settings->keepTablesOnUninstall ? 'yes' : 'no', 'private' => false],
+				'config_file_readable'  => ['label' => 'Config File Readable', 'value' => $configReadable, 'private' => false],
+				'mount_path_readable'   => ['label' => 'Mount Path Readable', 'value' => $mountReadable, 'private' => false],
+				'inventory_status'      => ['label' => 'Inventory Status', 'value' => $health->inventoryStatus->value, 'private' => false],
+				'inventory_targets'     => ['label' => 'Inventory Targets', 'value' => (string) $health->inventoryTargets, 'private' => false],
+				'series_total'          => ['label' => 'Series Total', 'value' => (string) $health->seriesTotal, 'private' => false],
+				'series_read'           => ['label' => 'Series Read', 'value' => (string) $health->seriesRead, 'private' => false],
+				'budget_overruns'       => ['label' => 'Budget Overruns', 'value' => (string) $health->budgetOverruns, 'private' => false],
+				'smokeping_version'     => ['label' => 'Detected SmokePing Version', 'value' => $health->smokepingVersion !== '' ? $health->smokepingVersion : 'unknown', 'private' => false],
+				'config_path'           => ['label' => 'Config Path', 'value' => '[redacted]', 'private' => true],
+				'mount_path'            => ['label' => 'Mount Path', 'value' => '[redacted]', 'private' => true],
+			],
+		];
+	}
+
+	/**
+	 * Attach the redacted SmokePing debug info section to an array or registrar object.
+	 *
+	 * @param mixed $sections Array accumulator or registrar object with register(string, array).
+	 * @param Health $health Reader and inventory health record for the configured poller.
+	 * @param string $pluginVersion Installed plugin version string from INFO.
+	 * @param int $schemaVersion Applied database schema version.
+	 * @return mixed Updated sections accumulator or registrar.
+	 */
+	public function registerDebugInfo($sections, Health $health, string $pluginVersion, int $schemaVersion) {
+		$entry = $this->debugInfo($health, $pluginVersion, $schemaVersion);
+
+		if (is_array($sections)) {
+			$sections[self::CATEGORY] = $entry;
+
+			return $sections;
+		}
+
+		if (is_object($sections) && method_exists($sections, 'register')) {
+			$sections->register(self::CATEGORY, $entry);
+		}
+
+		return $sections;
+	}
+
+	/**
+	 * Return the more severe of two health levels.
+	 *
+	 * @param HealthLevel $a First health level.
+	 * @param HealthLevel $b Second health level.
+	 * @return HealthLevel The higher-severity health level.
+	 */
 	private static function worse(HealthLevel $a, HealthLevel $b): HealthLevel {
 		$rank = static fn (HealthLevel $level): int => match ($level) {
 			HealthLevel::Error   => 3,
@@ -246,6 +332,12 @@ final class DoctorChecks {
 	}
 
 	/**
+	 * Format a single Doctor check result entry.
+	 *
+	 * @param string $id Stable check identifier.
+	 * @param string $status Doctor status string (ok, warn, fail, unknown).
+	 * @param string $summary One-line summary message.
+	 * @param string $detail Detailed diagnostic text.
 	 * @return array{id: string, category: string, status: string, summary: string, detail: string, repair: string, repairable: bool, assessment: string}
 	 */
 	private static function result(string $id, string $status, string $summary, string $detail): array {

@@ -23,6 +23,12 @@ namespace Somethingwithproof\Smokeping;
  * Health findings for the reader and inventory of one poller.
  */
 final class HealthCheck {
+	/**
+	 * Create a new HealthCheck instance.
+	 *
+	 * @param Clock $clock Clock.
+	 * @param int $pollerInterval Poller interval.
+	 */
 	public function __construct(private readonly Clock $clock, private readonly int $pollerInterval) {
 	}
 
@@ -65,6 +71,13 @@ final class HealthCheck {
 		return new Finding('loss_colors', $level, $message);
 	}
 
+	/**
+	 * Loss colors selected.
+	 *
+	 * @param string $setting Setting.
+	 * @param string $version Version.
+	 * @return Finding
+	 */
 	private static function lossColorsSelected(string $setting, string $version): Finding {
 		$colors   = LossColors::resolve($setting, $version);
 		$detected = LossColors::ofVersion($version);
@@ -157,6 +170,13 @@ final class HealthCheck {
 		);
 	}
 
+	/**
+	 * Templates.
+	 *
+	 * @param bool $present Present.
+	 * @param TemplateFailure|null $failure Failure.
+	 * @return Finding
+	 */
 	public static function templates(bool $present, ?TemplateFailure $failure): Finding {
 		if ($failure !== null) {
 			return new Finding('templates', HealthLevel::Error, __('The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause.', $failure->message, 'smokeping'));
@@ -203,6 +223,12 @@ final class HealthCheck {
 		return new Finding('config_file', HealthLevel::Ok, __('The SmokePing configuration %s lists %d targets.', $file, count($inventory->targets), 'smokeping'));
 	}
 
+	/**
+	 * Php binary.
+	 *
+	 * @param string $phpBinary Php binary.
+	 * @return Finding
+	 */
 	public static function phpBinary(string $phpBinary): Finding {
 		if ($phpBinary === '' || !is_file($phpBinary) || !is_executable($phpBinary)) {
 			return new Finding('php_binary', HealthLevel::Error, __('The PHP binary path setting is empty or not an executable file, so the reader cannot start.', 'smokeping'));
@@ -211,6 +237,12 @@ final class HealthCheck {
 		return new Finding('php_binary', HealthLevel::Ok, __('The reader starts with %s.', $phpBinary, 'smokeping'));
 	}
 
+	/**
+	 * Reader.
+	 *
+	 * @param Health $health Health.
+	 * @return Finding
+	 */
 	private function reader(Health $health): Finding {
 		if ($health->runFinished === 0) {
 			return new Finding('reader', HealthLevel::Unknown, __('The reader has not completed a run on this poller.', 'smokeping'));
@@ -229,6 +261,12 @@ final class HealthCheck {
 		return new Finding('reader', HealthLevel::Ok, __('The reader read %d of %d series in %.1f seconds, %d seconds ago.', $health->seriesRead, $health->seriesTotal, $health->runDuration, $age, 'smokeping'));
 	}
 
+	/**
+	 * Inventory.
+	 *
+	 * @param Health $health Health.
+	 * @return Finding
+	 */
 	private function inventory(Health $health): Finding {
 		return match ($health->inventoryStatus) {
 			InventoryStatus::Never => new Finding('inventory', HealthLevel::Unknown, __('No inventory has been read on this poller.', 'smokeping')),

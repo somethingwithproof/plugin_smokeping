@@ -25,23 +25,48 @@ namespace Somethingwithproof\Smokeping;
  * never receive arbitrary sort, state, or unbounded page sizes.
  */
 final readonly class TargetFilter {
+	/** Default rows constant. */
 	public const DEFAULT_ROWS     = 0;
+	/** Default paged constant. */
 	public const DEFAULT_PAGED    = 50;
+	/** Max rows constant. */
 	public const MAX_ROWS         = 500;
+	/** Page size labels constant. */
 	public const PAGE_SIZE_LABELS = [0 => 'All', 25 => '25', 50 => '50', 100 => '100', 200 => '200'];
 
+	/** Presences constant. */
 	public const PRESENCES = ['all', 'present', 'gone'];
+	/** Mappings constant. */
 	public const MAPPINGS  = ['all', 'mapped', 'unmapped'];
+	/** States constant. */
 	public const STATES    = ['all', 'current', 'delayed', 'stale', 'never'];
 
+	/** Search property. */
 	public string $search;
+	/** Probe property. */
 	public string $probe;
+	/** Presence property. */
 	public string $presence;
+	/** Mapping property. */
 	public string $mapping;
+	/** State property. */
 	public string $state;
+	/** Page property. */
 	public int $page;
+	/** Rows property. */
 	public int $rows;
 
+	/**
+	 * Create a new TargetFilter instance.
+	 *
+	 * @param string $search Search.
+	 * @param string $probe Probe.
+	 * @param string $presence Presence.
+	 * @param string $mapping Mapping.
+	 * @param string $state State.
+	 * @param int $page Page.
+	 * @param int $rows Rows.
+	 */
 	public function __construct(
 		string $search = '',
 		string $probe = '',
@@ -65,10 +90,20 @@ final readonly class TargetFilter {
 		}
 	}
 
+	/**
+	 * Offset.
+	 *
+	 * @return int
+	 */
 	public function offset(): int {
 		return $this->rows > 0 ? ($this->page - 1) * $this->rows : 0;
 	}
 
+	/**
+	 * Is filtered.
+	 *
+	 * @return bool
+	 */
 	public function isFiltered(): bool {
 		return $this->search !== ''
 			|| $this->probe !== ''

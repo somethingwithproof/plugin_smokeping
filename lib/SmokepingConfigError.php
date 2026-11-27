@@ -26,10 +26,27 @@ namespace Somethingwithproof\Smokeping;
  * such as a mandatory variable that is missing.
  */
 final class SmokepingConfigError extends \RuntimeException {
+	/**
+	 * Create a new SmokepingConfigError instance.
+	 *
+	 * @param string $reason Reason.
+	 * @param string $source Source.
+	 * @param int $sourceLine Source line.
+	 * @param string $section Section.
+	 */
 	public function __construct(public readonly string $reason, public readonly string $source = '', public readonly int $sourceLine = 0, public readonly string $section = '') {
 		parent::__construct(self::format($reason, $source, $sourceLine, $section));
 	}
 
+	/**
+	 * Format.
+	 *
+	 * @param string $reason Reason.
+	 * @param string $file File.
+	 * @param int $line Line.
+	 * @param string $section Section.
+	 * @return string
+	 */
 	private static function format(string $reason, string $file, int $line, string $section): string {
 		if ($file === '') {
 			return $reason;

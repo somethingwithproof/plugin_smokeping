@@ -65,6 +65,12 @@ final class Html {
 		return new RawHtml('<a class="linkEditMain" href="' . html_escape($file . '?' . http_build_query($query)) . '">' . html_escape($text) . '</a>');
 	}
 
+	/**
+	 * Level.
+	 *
+	 * @param HealthLevel $level Level.
+	 * @return string
+	 */
 	public static function level(HealthLevel $level): string {
 		return match ($level) {
 			HealthLevel::Ok      => __('OK', 'smokeping'),
@@ -74,6 +80,12 @@ final class Html {
 		};
 	}
 
+	/**
+	 * Age.
+	 *
+	 * @param int|null $seconds Seconds.
+	 * @return string
+	 */
 	public static function age(?int $seconds): string {
 		return $seconds === null ? __('never', 'smokeping') : __('%d s ago', $seconds, 'smokeping');
 	}

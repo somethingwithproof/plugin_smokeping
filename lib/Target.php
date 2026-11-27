@@ -98,6 +98,11 @@ final readonly class Target {
 		return $this->noMasterPoll ? $this->slaves : array_merge([''], $this->slaves);
 	}
 
+	/**
+	 * Display name.
+	 *
+	 * @return string
+	 */
 	public function displayName(): string {
 		return $this->title !== '' ? $this->title : ($this->menu !== '' ? $this->menu : $this->path->value);
 	}

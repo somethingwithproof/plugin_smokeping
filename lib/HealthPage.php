@@ -19,9 +19,22 @@
 
 namespace Somethingwithproof\Smokeping;
 
+/** Health page component. */
 final class HealthPage {
+	/** Orphan scanner property. */
 	private readonly OrphanRrdScanner $orphanScanner;
 
+	/**
+	 * Create a new HealthPage instance.
+	 *
+	 * @param HealthCheck $checks Checks.
+	 * @param MountCheck $mount Mount.
+	 * @param HealthRepository $health Health.
+	 * @param TargetRepository $targets Targets.
+	 * @param TemplateInstaller $templates Templates.
+	 * @param CactiObjectRepository $cacti Cacti.
+	 * @param OrphanRrdScanner|null $orphanScanner Orphan scanner.
+	 */
 	public function __construct(
 		private readonly HealthCheck $checks,
 		private readonly MountCheck $mount,
@@ -44,6 +57,14 @@ final class HealthPage {
 		return HealthCheck::lossColors($setting, $smokepingVersion, $left['pending'], $left['failed']);
 	}
 
+	/**
+	 * Render.
+	 *
+	 * @param Settings $settings Settings.
+	 * @param string $rraPath Rra path.
+	 * @param string $phpBinary Php binary.
+	 * @param bool $readerHost Reader host.
+	 */
 	public function render(Settings $settings, string $rraPath, string $phpBinary, bool $readerHost): void {
 		$health   = $this->health->forPoller($settings->pollerId);
 		$expected = [];

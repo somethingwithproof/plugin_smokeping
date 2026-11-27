@@ -27,6 +27,14 @@ namespace Somethingwithproof\Smokeping;
  * its summary objects only.
  */
 final readonly class ProvisionResult {
+	/**
+	 * Create a new ProvisionResult instance.
+	 *
+	 * @param bool $created Created.
+	 * @param string $reason Reason.
+	 * @param int $localDataId Local data id.
+	 * @param int $localGraphId Local graph id.
+	 */
 	private function __construct(
 		public bool $created,
 		public string $reason,
@@ -35,10 +43,23 @@ final readonly class ProvisionResult {
 	) {
 	}
 
+	/**
+	 * Created.
+	 *
+	 * @param int $localDataId Local data id.
+	 * @param int $localGraphId Local graph id.
+	 * @return self
+	 */
 	public static function created(int $localDataId, int $localGraphId): self {
 		return new self(true, '', $localDataId, $localGraphId);
 	}
 
+	/**
+	 * Skipped.
+	 *
+	 * @param string $reason Reason.
+	 * @return self
+	 */
 	public static function skipped(string $reason): self {
 		return new self(false, $reason, 0, 0);
 	}

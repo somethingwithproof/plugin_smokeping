@@ -36,6 +36,12 @@ final class SmokepingConfigReader implements InventoryReader {
 	) {
 	}
 
+	/**
+	 * Read.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @return Inventory
+	 */
 	public function read(int $pollerId): Inventory {
 		if ($this->configFile === '') {
 			throw new InventoryError('No SmokePing configuration file is set');

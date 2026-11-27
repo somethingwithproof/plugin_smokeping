@@ -40,6 +40,11 @@ final readonly class ImportPlan {
 	) {
 	}
 
+	/**
+	 * Is empty.
+	 *
+	 * @return bool
+	 */
 	public function isEmpty(): bool {
 		return $this->added === [] && $this->changed === [] && $this->disappeared === [] && $this->proposals === [];
 	}

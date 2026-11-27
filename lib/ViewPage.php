@@ -24,8 +24,18 @@ namespace Somethingwithproof\Smokeping;
  * with filter bar, pagination, and shared structured rows for CSV export.
  */
 final class ViewPage {
+	/** Clock property. */
 	private readonly Clock $clock;
 
+	/**
+	 * Create a new ViewPage instance.
+	 *
+	 * @param TargetRepository $targets Targets.
+	 * @param ObservationRepository $observations Observations.
+	 * @param FreshnessEvaluator $evaluator Evaluator.
+	 * @param DeviceMaintenance $maintenance Maintenance.
+	 * @param Clock|null $clock Clock.
+	 */
 	public function __construct(
 		private readonly TargetRepository $targets,
 		private readonly ObservationRepository $observations,
@@ -218,6 +228,13 @@ final class ViewPage {
 		print '</tr></table></form>';
 	}
 
+	/**
+	 * Render pagination.
+	 *
+	 * @param TargetFilter $filter Filter.
+	 * @param int $total Total.
+	 * @param int $hostId Host id.
+	 */
 	private function renderPagination(TargetFilter $filter, int $total, int $hostId): void {
 		if ($filter->rows <= 0) {
 			return;

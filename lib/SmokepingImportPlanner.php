@@ -30,6 +30,15 @@ namespace Somethingwithproof\Smokeping;
  * running the same import again plans nothing new.
  */
 final class SmokepingImportPlanner {
+	/**
+	 * Plan.
+	 *
+	 * @param Inventory $inventory Inventory.
+	 * @param SmokepingImportOptions $options Options.
+	 * @param SmokepingImportState $state State.
+	 * @param string $digest Digest.
+	 * @return SmokepingImportPlan
+	 */
 	public static function plan(Inventory $inventory, SmokepingImportOptions $options, SmokepingImportState $state, string $digest): SmokepingImportPlan {
 		$errors = self::errors($options, $state);
 		$notes  = $inventory->warnings;

@@ -26,9 +26,20 @@ namespace Somethingwithproof\Smokeping;
  * leaves every row either at its previous reading or at its new one.
  */
 final class ObservationRepository {
+	/**
+	 * Create a new ObservationRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
+	/**
+	 * Store.
+	 *
+	 * @param Observation $observation Observation.
+	 * @return bool
+	 */
 	public function store(Observation $observation): bool {
 		return (bool) db_execute_prepared('REPLACE INTO plugin_smokeping_observation
 			(target_id, location, observed_at, ingested_at, expected_interval, pings, loss, median, file_present, revision)

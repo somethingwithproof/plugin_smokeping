@@ -31,10 +31,15 @@ namespace Somethingwithproof\Smokeping;
  * same under any YAML reader.
  */
 final class YamlScalar {
+	/** String constant. */
 	public const STRING    = 'string';
+	/** Nil constant. */
 	public const NIL       = 'null';
+	/** Bool constant. */
 	public const BOOL      = 'bool';
+	/** Int constant. */
 	public const INT       = 'int';
+	/** Ambiguous constant. */
 	public const AMBIGUOUS = 'ambiguous';
 
 	/**

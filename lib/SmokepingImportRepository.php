@@ -28,6 +28,11 @@ final class SmokepingImportRepository {
 	/** A server-wide lock name of at most 64 characters, unique to the database. */
 	private const LOCK_NAME = "CONCAT('smokeping_import_', LEFT(SHA1(DATABASE()), 20))";
 
+	/**
+	 * Create a new SmokepingImportRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -95,6 +100,7 @@ final class SmokepingImportRepository {
 		return (int) db_fetch_cell_prepared('SELECT GET_LOCK(' . self::LOCK_NAME . ', 0)', [], '', true, $this->connection) === 1;
 	}
 
+	/** Unlock. */
 	public function unlock(): void {
 		db_fetch_cell_prepared('SELECT RELEASE_LOCK(' . self::LOCK_NAME . ')', [], '', true, $this->connection);
 	}

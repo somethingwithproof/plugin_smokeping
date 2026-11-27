@@ -29,6 +29,7 @@ enum LossColors: string {
 	case Current = '2.8';
 	case Legacy  = '2.7';
 
+	/** Setting constant. */
 	public const SETTING = 'smokeping_loss_colors';
 
 	/** The setting's value that follows the detected SmokePing version. */
@@ -66,6 +67,11 @@ enum LossColors: string {
 		return sprintf('%d.%d.%d', $m[1], $m[2], $m[3]);
 	}
 
+	/**
+	 * Other.
+	 *
+	 * @return self
+	 */
 	public function other(): self {
 		return $this === self::Current ? self::Legacy : self::Current;
 	}

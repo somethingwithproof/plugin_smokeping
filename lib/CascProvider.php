@@ -27,8 +27,15 @@ namespace Somethingwithproof\Smokeping;
  * confirmation plan-hash contract as the SmokePing CLI and web page.
  */
 final class CascProvider {
+	/** Slug constant. */
 	public const SLUG = 'smokeping';
 
+	/**
+	 * Create a new CascProvider instance.
+	 *
+	 * @param ConfigService $service Service.
+	 * @param Clock $clock Clock.
+	 */
 	public function __construct(
 		private readonly ConfigService $service,
 		private readonly Clock $clock = new SystemClock(),
@@ -73,6 +80,12 @@ final class CascProvider {
 		];
 	}
 
+	/**
+	 * Export.
+	 *
+	 * @param string $format Format.
+	 * @return string
+	 */
 	public function export(string $format = ConfigCodec::YAML): string {
 		return $this->service->export($format);
 	}

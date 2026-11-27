@@ -37,6 +37,11 @@ final readonly class ActionOutcome {
 	) {
 	}
 
+	/**
+	 * Succeeded.
+	 *
+	 * @return bool
+	 */
 	public function succeeded(): bool {
 		return $this->done !== [];
 	}

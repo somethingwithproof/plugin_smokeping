@@ -19,10 +19,22 @@
 
 namespace Somethingwithproof\Smokeping;
 
+/** Health repository component. */
 final class HealthRepository {
+	/**
+	 * Create a new HealthRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
+	/**
+	 * For poller.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @return Health
+	 */
 	public function forPoller(int $pollerId): Health {
 		$row = db_fetch_row_prepared('SELECT * FROM plugin_smokeping_health WHERE poller_id = ?', [$pollerId], true, $this->connection);
 
@@ -38,6 +50,17 @@ final class HealthRepository {
 		return array_map([Health::class, 'fromRow'], $rows);
 	}
 
+	/**
+	 * Record run.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @param int $started Started.
+	 * @param int $finished Finished.
+	 * @param float $duration Duration.
+	 * @param int $total Total.
+	 * @param int $read Read.
+	 * @param bool $overrun Overrun.
+	 */
 	public function recordRun(int $pollerId, int $started, int $finished, float $duration, int $total, int $read, bool $overrun): void {
 		$this->ensureRow($pollerId);
 
@@ -48,6 +71,16 @@ final class HealthRepository {
 			[$started, $finished, $duration, $total, $read, (int) $overrun, (int) $overrun, $finished, $pollerId], true, $this->connection);
 	}
 
+	/**
+	 * Record inventory.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @param int $at At.
+	 * @param InventoryStatus $status Status.
+	 * @param string $error Error.
+	 * @param int $targets Targets.
+	 * @param string $smokepingVersion Smokeping version.
+	 */
 	public function recordInventory(int $pollerId, int $at, InventoryStatus $status, string $error, int $targets, string $smokepingVersion = ''): void {
 		$this->ensureRow($pollerId);
 
@@ -63,6 +96,11 @@ final class HealthRepository {
 			[$at, $status->value, mb_substr($error, 0, 1024), $ok, $targets, $ok, mb_substr($smokepingVersion, 0, 16), $pollerId], true, $this->connection);
 	}
 
+	/**
+	 * Ensure row.
+	 *
+	 * @param int $pollerId Poller id.
+	 */
 	private function ensureRow(int $pollerId): void {
 		db_execute_prepared('INSERT IGNORE INTO plugin_smokeping_health (poller_id) VALUES (?)', [$pollerId], true, $this->connection);
 	}

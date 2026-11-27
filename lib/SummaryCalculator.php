@@ -27,6 +27,12 @@ namespace Somethingwithproof\Smokeping;
  * age is numeric whenever the RRD exists, so staleness itself can alert.
  */
 final class SummaryCalculator {
+	/**
+	 * Create a new SummaryCalculator instance.
+	 *
+	 * @param FreshnessEvaluator $freshness Freshness.
+	 * @param Clock $clock Clock.
+	 */
 	public function __construct(private readonly FreshnessEvaluator $freshness, private readonly Clock $clock) {
 	}
 

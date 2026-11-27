@@ -43,8 +43,17 @@ final class SmokepingSection {
 	public ?string $probe = null;
 	/** @var list<string>|null target variables that become mandatory once host is set */
 	public ?array $hostMandatory = null;
+	/** Ordered child property. */
 	public bool $orderedChild = false;
 
+	/**
+	 * Create a new SmokepingSection instance.
+	 *
+	 * @param string $name Name.
+	 * @param string $kind Kind.
+	 * @param string $path Path.
+	 * @param int $depth Depth.
+	 */
 	public function __construct(
 		public readonly string $name,
 		public readonly string $kind,
@@ -53,10 +62,22 @@ final class SmokepingSection {
 	) {
 	}
 
+	/**
+	 * Value.
+	 *
+	 * @param string $name Name.
+	 * @return string|null
+	 */
 	public function value(string $name): ?string {
 		return $this->vars[$name] ?? null;
 	}
 
+	/**
+	 * Child.
+	 *
+	 * @param string $name Name.
+	 * @return self|null
+	 */
 	public function child(string $name): ?self {
 		return $this->children[$name] ?? null;
 	}

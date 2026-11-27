@@ -28,6 +28,11 @@ namespace Somethingwithproof\Smokeping;
  * false means Cacti's default for the current process.
  */
 final class TargetRepository {
+	/**
+	 * Create a new TargetRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -184,12 +189,25 @@ final class TargetRepository {
 		));
 	}
 
+	/**
+	 * Find.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @param string $path Path.
+	 * @return Target|null
+	 */
 	public function find(int $pollerId, string $path): ?Target {
 		$row = db_fetch_row_prepared('SELECT * FROM plugin_smokeping_target WHERE poller_id = ? AND path = ?', [$pollerId, $path], true, $this->connection);
 
 		return is_array($row) && $row !== [] ? Target::fromRow($row) : null;
 	}
 
+	/**
+	 * By id.
+	 *
+	 * @param int $id Id.
+	 * @return Target|null
+	 */
 	public function byId(int $id): ?Target {
 		$row = db_fetch_row_prepared('SELECT * FROM plugin_smokeping_target WHERE id = ?', [$id], true, $this->connection);
 
@@ -234,10 +252,21 @@ final class TargetRepository {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM plugin_smokeping_mapping WHERE host_id = ?', [$hostId], '', true, $this->connection) > 0;
 	}
 
+	/**
+	 * Mapped host.
+	 *
+	 * @param int $targetId Target id.
+	 * @return int
+	 */
 	public function mappedHost(int $targetId): int {
 		return (int) db_fetch_cell_prepared('SELECT host_id FROM plugin_smokeping_mapping WHERE target_id = ?', [$targetId], '', true, $this->connection);
 	}
 
+	/**
+	 * Unmap.
+	 *
+	 * @param int $targetId Target id.
+	 */
 	public function unmap(int $targetId): void {
 		db_execute_prepared('DELETE FROM plugin_smokeping_mapping WHERE target_id = ?', [$targetId], true, $this->connection);
 	}
@@ -258,6 +287,14 @@ final class TargetRepository {
 		return $old === null || $new === null ? null : ['old' => $old, 'new' => $new];
 	}
 
+	/**
+	 * Decide proposal.
+	 *
+	 * @param int $id Id.
+	 * @param string $status Status.
+	 * @param int $userId User id.
+	 * @param int $now Now.
+	 */
 	public function decideProposal(int $id, string $status, int $userId, int $now): void {
 		db_execute_prepared("UPDATE plugin_smokeping_relink SET status = ?, decided_at = ?, decided_by = ? WHERE id = ? AND status = 'proposed'", [$status, $now, $userId, $id], true, $this->connection);
 	}
@@ -395,6 +432,12 @@ final class TargetRepository {
 		return true;
 	}
 
+	/**
+	 * Insert.
+	 *
+	 * @param Target $target Target.
+	 * @param int $now Now.
+	 */
 	private function insert(Target $target, int $now): void {
 		$this->execute('INSERT INTO plugin_smokeping_target
 			(poller_id, path, host, probe, probe_desc, alerts, menu, title, slaves, nomasterpoll, step, pings, mode, admin_state, present, first_seen, last_seen)
@@ -406,6 +449,12 @@ final class TargetRepository {
 			]);
 	}
 
+	/**
+	 * Update.
+	 *
+	 * @param Target $target Target.
+	 * @param int $now Now.
+	 */
 	private function update(Target $target, int $now): void {
 		$this->execute('UPDATE plugin_smokeping_target
 			SET host = ?, probe = ?, probe_desc = ?, alerts = ?, menu = ?, title = ?, slaves = ?, nomasterpoll = ?, step = ?, pings = ?, present = 1, last_seen = ?

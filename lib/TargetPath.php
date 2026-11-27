@@ -28,12 +28,25 @@ namespace Somethingwithproof\Smokeping;
  * name free of "..", slashes, and shell metacharacters.
  */
 final readonly class TargetPath {
+	/** Segment constant. */
 	private const SEGMENT  = '/^[-_0-9a-zA-Z]+$/D';
+	/** Location constant. */
 	private const LOCATION = '/^[-_0-9a-zA-Z][-_.0-9a-zA-Z]*$/D';
 
+	/**
+	 * Create a new TargetPath instance.
+	 *
+	 * @param string $value Value.
+	 */
 	private function __construct(public string $value) {
 	}
 
+	/**
+	 * From string.
+	 *
+	 * @param string $path Path.
+	 * @return self
+	 */
 	public static function fromString(string $path): self {
 		if ($path === '' || strlen($path) > 255) {
 			throw new \InvalidArgumentException('Target path must be 1 to 255 characters');
@@ -67,6 +80,12 @@ final readonly class TargetPath {
 		return rtrim($root, '/') . '/' . $this->value . ($location === '' ? '' : '~' . $location) . '.rrd';
 	}
 
+	/**
+	 * Equals.
+	 *
+	 * @param self $other Other.
+	 * @return bool
+	 */
 	public function equals(self $other): bool {
 		return $this->value === $other->value;
 	}

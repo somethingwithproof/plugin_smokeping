@@ -25,15 +25,31 @@ namespace Somethingwithproof\Smokeping;
  * the same thing whichever way it arrived.
  */
 final class ConfigCodec {
+	/** Yaml constant. */
 	public const YAML = 'yaml';
+	/** Xml constant. */
 	public const XML  = 'xml';
 
+	/** Max bytes constant. */
 	public const MAX_BYTES = 8388608;
 
+	/**
+	 * Is format.
+	 *
+	 * @param string $format Format.
+	 * @return bool
+	 */
 	public static function isFormat(string $format): bool {
 		return $format === self::YAML || $format === self::XML;
 	}
 
+	/**
+	 * Parse.
+	 *
+	 * @param string $format Format.
+	 * @param string $text Text.
+	 * @return ConfigDocument
+	 */
 	public static function parse(string $format, string $text): ConfigDocument {
 		return match ($format) {
 			self::YAML => ConfigSchema::build(YamlReader::parse($text, self::MAX_BYTES)),
@@ -81,6 +97,13 @@ final class ConfigCodec {
 		return $text;
 	}
 
+	/**
+	 * Write.
+	 *
+	 * @param string $format Format.
+	 * @param ConfigDocument $document Document.
+	 * @return string
+	 */
 	public static function write(string $format, ConfigDocument $document): string {
 		$data = self::toArray($document);
 

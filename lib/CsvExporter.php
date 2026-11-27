@@ -27,6 +27,7 @@ namespace Somethingwithproof\Smokeping;
  * instead of evaluating formulas.
  */
 final class CsvExporter {
+	/** Target headers constant. */
 	public const TARGET_HEADERS = [
 		'path',
 		'name',
@@ -131,6 +132,12 @@ final class CsvExporter {
 		return self::export(self::TARGET_HEADERS, $csvRows);
 	}
 
+	/**
+	 * Format float.
+	 *
+	 * @param float $value Value.
+	 * @return string
+	 */
 	private static function formatFloat(float $value): string {
 		$text = rtrim(rtrim(sprintf('%.3F', $value), '0'), '.');
 

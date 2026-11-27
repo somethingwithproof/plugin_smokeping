@@ -26,6 +26,11 @@ namespace Somethingwithproof\Smokeping;
  * through SQL here.
  */
 final class CactiObjectRepository {
+	/**
+	 * Create a new CactiObjectRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -38,18 +43,42 @@ final class CactiObjectRepository {
 		return $id > 0 ? $id : 1;
 	}
 
+	/**
+	 * Device template count.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function deviceTemplateCount(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM host_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * Graph template count.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function graphTemplateCount(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM graph_templates WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * Data template count.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function dataTemplateCount(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM data_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * Data input count.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function dataInputCount(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM data_input WHERE name = ?', [$name], '', true, $this->connection);
 	}
@@ -61,6 +90,12 @@ final class CactiObjectRepository {
 		return (int) db_fetch_cell_prepared("SELECT f.id FROM data_input_fields AS f INNER JOIN data_input AS i ON i.id = f.data_input_id WHERE i.name = ? AND f.data_name = ? AND f.input_output = 'in'", [$dataInputName, $dataName], '', true, $this->connection);
 	}
 
+	/**
+	 * Data template id.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function dataTemplateId(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM data_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
@@ -289,10 +324,22 @@ final class CactiObjectRepository {
 		return array_values(array_map(fn (array $row) => Row::string($row, 'path'), $rows));
 	}
 
+	/**
+	 * Device of graph.
+	 *
+	 * @param int $localGraphId Local graph id.
+	 * @return int
+	 */
 	public function deviceOfGraph(int $localGraphId): int {
 		return (int) db_fetch_cell_prepared('SELECT host_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
 	}
 
+	/**
+	 * Device poller.
+	 *
+	 * @param int $hostId Host id.
+	 * @return int
+	 */
 	public function devicePoller(int $hostId): int {
 		return (int) db_fetch_cell_prepared('SELECT poller_id FROM host WHERE id = ?', [$hostId], '', true, $this->connection);
 	}
@@ -313,10 +360,22 @@ final class CactiObjectRepository {
 			WHERE gti.local_graph_id = 0 AND gti.vdef_id > 0 AND gt.name IN (' . implode(', ', array_fill(0, count($names), '?')) . ')', $names, '', true, $this->connection);
 	}
 
+	/**
+	 * Graph template id.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function graphTemplateId(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM graph_templates WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * Device template id.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function deviceTemplateId(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM host_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
@@ -483,6 +542,12 @@ final class CactiObjectRepository {
 		return true;
 	}
 
+	/**
+	 * Set graph title.
+	 *
+	 * @param int $localGraphId Local graph id.
+	 * @param string $title Title.
+	 */
 	public function setGraphTitle(int $localGraphId, string $title): void {
 		db_execute_prepared("UPDATE graph_templates_graph SET title = ?, t_title = 'on' WHERE local_graph_id = ?", [$title, $localGraphId], true, $this->connection);
 	}

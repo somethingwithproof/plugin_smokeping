@@ -54,7 +54,7 @@ $realms = db_fetch_cell("SELECT COUNT(*) FROM plugin_realms WHERE plugin = \"smo
 $host   = db_fetch_cell("SELECT COUNT(*) FROM host_template WHERE name = \"SmokePing Target\"");
 $graph  = db_fetch_cell("SELECT COUNT(*) FROM graph_templates WHERE name LIKE \"SmokePing Smoke (%\"");
 echo "$tables $hooks $realms $host $graph";' > /tmp/counts 2>/dev/null
-[ "$(cat /tmp/counts)" = "6 21 3 1 6" ] && result PASS installed-objects "6 tables, 21 hooks, 3 realms, the host template, 6 smoke graph templates (3 ping counts, 2 loss color tables)" || result FAIL installed-objects "$(cat /tmp/counts)"
+[ "$(cat /tmp/counts)" = "6 23 3 1 6" ] && result PASS installed-objects "6 tables, 23 hooks, 3 realms, the host template, 6 smoke graph templates (3 ping counts, 2 loss color tables)" || result FAIL installed-objects "$(cat /tmp/counts)"
 
 # The shipped files work: the CLI and the reader run, and the translation template and docs are present.
 out=$(php plugins/smokeping/cli/smokeping.php export 2>&1 | head -1)

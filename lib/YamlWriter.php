@@ -101,6 +101,12 @@ final class YamlWriter {
 		}
 	}
 
+	/**
+	 * Scalar.
+	 *
+	 * @param mixed $value Value.
+	 * @return string
+	 */
 	private static function scalar(mixed $value): string {
 		if (is_bool($value)) {
 			return $value ? 'true' : 'false';
@@ -129,6 +135,12 @@ final class YamlWriter {
 		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
+	/**
+	 * Double quoted.
+	 *
+	 * @param string $value Value.
+	 * @return string
+	 */
 	private static function doubleQuoted(string $value): string {
 		$out = '';
 

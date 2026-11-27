@@ -32,20 +32,43 @@ final class GraphSizing {
 	/** The limit was set by hand, so the plugin left it alone; $limit is the one the plugin last set, if any. */
 	public const MANUAL = 'manual';
 
+	/**
+	 * Create a new GraphSizing instance.
+	 *
+	 * @param string $status Status.
+	 * @param string|null $limit Limit.
+	 */
 	private function __construct(
 		public readonly string $status,
 		public readonly ?string $limit,
 	) {
 	}
 
+	/**
+	 * Sized.
+	 *
+	 * @param string $limit Limit.
+	 * @return self
+	 */
 	public static function sized(string $limit): self {
 		return new self(self::SIZED, $limit);
 	}
 
+	/**
+	 * Kept.
+	 *
+	 * @return self
+	 */
 	public static function kept(): self {
 		return new self(self::KEPT, null);
 	}
 
+	/**
+	 * Manual.
+	 *
+	 * @param string $recorded Recorded.
+	 * @return self
+	 */
 	public static function manual(string $recorded): self {
 		return new self(self::MANUAL, $recorded === '' ? null : $recorded);
 	}

@@ -26,9 +26,13 @@ namespace Somethingwithproof\Smokeping;
  * and return zero secrets or credentials.
  */
 final class AbilitiesProvider {
+	/** Category constant. */
 	public const CATEGORY            = 'smokeping';
+	/** Ability list constant. */
 	public const ABILITY_LIST        = 'smokeping-list-targets';
+	/** Ability get health constant. */
 	public const ABILITY_GET_HEALTH  = 'smokeping-get-health';
+	/** Max target results constant. */
 	private const MAX_TARGET_RESULTS = 200;
 
 	/**
@@ -161,6 +165,12 @@ final class AbilitiesProvider {
 		];
 	}
 
+	/**
+	 * Can view.
+	 *
+	 * @param int $userId User id.
+	 * @return bool
+	 */
 	private function canView(int $userId): bool {
 		return $userId > 0 && ($this->hasViewRealm)($userId) === true;
 	}

@@ -18,6 +18,7 @@
  */
 
 use Somethingwithproof\Smokeping\AbilitiesProvider;
+use Somethingwithproof\Smokeping\ApiResources;
 use Somethingwithproof\Smokeping\CascProvider;
 use Somethingwithproof\Smokeping\ConfigCodec;
 use Somethingwithproof\Smokeping\ConfigRepository;
@@ -25,6 +26,7 @@ use Somethingwithproof\Smokeping\ConfigService;
 use Somethingwithproof\Smokeping\DoctorChecks;
 use Somethingwithproof\Smokeping\FixedClock;
 use Somethingwithproof\Smokeping\FreshnessEvaluator;
+use Somethingwithproof\Smokeping\Health;
 use Somethingwithproof\Smokeping\HealthRepository;
 use Somethingwithproof\Smokeping\MountCheck;
 use Somethingwithproof\Smokeping\ObjectRepository;
@@ -48,13 +50,23 @@ describe('Ecosystem hook registrations', function () {
 		$GLOBALS['__smokeping_options']    = [];
 	});
 
-	it('declares abilities_register, doctor_register_checks, casc_register_providers, and replicate_out in Schema::HOOKS', function () {
+	it('declares all ecosystem hooks in Schema::HOOKS including doctor_register_debug_info and api_register_resources', function () {
 		expect(Schema::HOOKS)->toHaveKey('abilities_register', 'smokeping_abilities_register')
+			->and(Schema::HOOKS)->toHaveKey('api_register_resources', 'smokeping_api_register_resources')
 			->and(Schema::HOOKS)->toHaveKey('doctor_register_checks', 'smokeping_doctor_register_checks')
+			->and(Schema::HOOKS)->toHaveKey('doctor_register_debug_info', 'smokeping_doctor_register_debug_info')
 			->and(Schema::HOOKS)->toHaveKey('casc_register_providers', 'smokeping_casc_register_providers')
-			->and(Schema::HOOKS)->toHaveKey('replicate_out', 'smokeping_replicate_out');
+			->and(Schema::HOOKS)->toHaveKey('replicate_out', 'smokeping_replicate_out')
+			->and(Schema::HOOKS)->toHaveCount(23);
 
-		foreach (['smokeping_abilities_register', 'smokeping_doctor_register_checks', 'smokeping_casc_register_providers', 'smokeping_replicate_out'] as $fn) {
+		foreach ([
+			'smokeping_abilities_register',
+			'smokeping_api_register_resources',
+			'smokeping_doctor_register_checks',
+			'smokeping_doctor_register_debug_info',
+			'smokeping_casc_register_providers',
+			'smokeping_replicate_out',
+		] as $fn) {
 			expect(function_exists($fn))->toBeTrue($fn);
 		}
 	});
@@ -96,19 +108,107 @@ describe('Ecosystem hook registrations', function () {
 		$doctorChecks = smokeping_doctor_register_checks([]);
 		expect($doctorChecks)->toHaveCount(4);
 
+		$debugSections = smokeping_doctor_register_debug_info([]);
+		expect($debugSections)->toHaveKey('smokeping')
+			->and($debugSections['smokeping']['fields']['config_path']['value'])->toBe('[redacted]')
+			->and($debugSections['smokeping']['fields']['mount_path']['value'])->toBe('[redacted]')
+			->and($debugSections['smokeping']['fields']['schema_version']['value'])->toBe((string) Schema::VERSION);
+
+		$apiResources = smokeping_api_register_resources([]);
+		expect(array_keys($apiResources))->toBe([
+			'smokeping/targets',
+			'smokeping/observations',
+			'smokeping/health',
+		]);
+
+		foreach ($apiResources as $key => $descriptor) {
+			expect($descriptor['plugin'])->toBe('smokeping', $key)
+				->and($descriptor['read_only'])->toBeTrue($key)
+				->and($descriptor['methods'])->toBe(['list', 'get'], $key);
+		}
+
 		$cascProviders = smokeping_casc_register_providers([]);
 		expect($cascProviders)->toHaveKey('smokeping');
 
 		$repOut = smokeping_replicate_out(['remote_poller_id' => 1, 'rcnn_id' => false, 'class' => 'all']);
 		expect($repOut['remote_poller_id'])->toBe(1);
 
-		// Disabled plugin short-circuits all four hooks safely.
+		// Disabled plugin short-circuits all ecosystem hooks safely.
 		$GLOBALS['__operator_enabled'] = false;
 		$emptyReg                      = new stdClass();
 		smokeping_abilities_register($emptyReg);
 		expect(smokeping_doctor_register_checks(['keep']))->toBe(['keep'])
+			->and(smokeping_doctor_register_debug_info(['keep' => []]))->toBe(['keep' => []])
+			->and(smokeping_api_register_resources(['keep' => []]))->toBe(['keep' => []])
 			->and(smokeping_casc_register_providers(['keep']))->toBe(['keep'])
 			->and(smokeping_replicate_out('not-array'))->toBe('not-array');
+	});
+
+	it('supports registrar objects for doctor_register_debug_info and api_register_resources and ships schema YAML with zero cross-plugin imports', function () {
+		$settings = Settings::fromRow([
+			'smokeping_poller_id'   => '1',
+			'smokeping_config_file' => '/secret/internal/smokeping.conf',
+			'smokeping_mount_path'  => '/secret/rra/smokeping',
+		], '/secret/rra');
+		$clock  = new FixedClock(1700001000);
+		$doctor = new DoctorChecks(
+			$settings,
+			new TargetRepository(false),
+			new ObservationRepository(false),
+			new FreshnessEvaluator($clock, 60),
+			new MountCheck(''),
+			new OrphanRrdScanner(),
+			'/secret/rra',
+			false
+		);
+
+		$debugReg = new class {
+			/** @var array<string, array<string, mixed>> */
+			public array $sections = [];
+
+			/** @param array<string, mixed> $section */
+			public function register(string $id, array $section): void {
+				$this->sections[$id] = $section;
+			}
+		};
+
+		$doctor->registerDebugInfo($debugReg, Health::never(1), '1.0.0', Schema::VERSION);
+		$serialized = (string) json_encode($debugReg->sections);
+		expect($debugReg->sections)->toHaveKey('smokeping')
+			->and($serialized)->not->toContain('/secret/internal/smokeping.conf')
+			->and($serialized)->not->toContain('/secret/rra/smokeping');
+
+		$apiReg = new class {
+			/** @var array<string, array<string, mixed>> */
+			public array $resources = [];
+
+			/** @param array<string, mixed> $descriptor */
+			public function register(string $id, array $descriptor): void {
+				$this->resources[$id] = $descriptor;
+			}
+		};
+
+		ApiResources::register($apiReg);
+		expect(array_keys($apiReg->resources))->toBe([
+			'smokeping/targets',
+			'smokeping/observations',
+			'smokeping/health',
+		]);
+
+		// Verify static Drupal-style schema separates config from state cleanly.
+		$schemaYaml = (string) file_get_contents(dirname(__DIR__, 2) . '/schema/smokeping.schema.yaml');
+		expect($schemaYaml)->toContain('plugin: smokeping')
+			->and($schemaYaml)->toContain("\nconfig:\n")
+			->and($schemaYaml)->toContain("\nstate:\n")
+			->and($schemaYaml)->toContain('smokeping_poller_id:')
+			->and($schemaYaml)->toContain('plugin_smokeping_observation:');
+
+		// Zero cross-plugin PHP imports in setup.php, DoctorChecks.php, or ApiResources.php.
+		foreach (['setup.php', 'lib/DoctorChecks.php', 'lib/ApiResources.php'] as $rel) {
+			$src = (string) file_get_contents(dirname(__DIR__, 2) . '/' . $rel);
+			expect($src)->not->toMatch('/plugin_(doctor|api)\b/i', $rel)
+				->and($src)->not->toMatch('/use\s+[^\n;]*(Doctor|ApiPlugin)\\\\/i', $rel);
+		}
 	});
 });
 

@@ -32,6 +32,7 @@ final class ConfigPage {
 		return [ConfigCodec::YAML => __('YAML (default)', 'smokeping'), ConfigCodec::XML => __('XML', 'smokeping')];
 	}
 
+	/** Refused. */
 	public static function refused(): void {
 		html_start_box(html_escape(__('SmokePing Configuration', 'smokeping')), '100%', '', '3', 'center', '');
 
@@ -40,6 +41,7 @@ final class ConfigPage {
 		html_end_box(false);
 	}
 
+	/** Main. */
 	public static function main(): void {
 		html_start_box(html_escape(__('Export the SmokePing Configuration', 'smokeping')), '100%', '', '3', 'center', '');
 		form_start('smokeping_config.php', 'smokeping_export');

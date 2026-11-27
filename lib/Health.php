@@ -23,6 +23,23 @@ namespace Somethingwithproof\Smokeping;
  * Reader and inventory status of one poller.
  */
 final readonly class Health {
+	/**
+	 * Create a new Health instance.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @param int $runStarted Run started.
+	 * @param int $runFinished Run finished.
+	 * @param float $runDuration Run duration.
+	 * @param int $seriesTotal Series total.
+	 * @param int $seriesRead Series read.
+	 * @param int $budgetOverruns Budget overruns.
+	 * @param int $lastOverrun Last overrun.
+	 * @param int $inventoryAt Inventory at.
+	 * @param InventoryStatus $inventoryStatus Inventory status.
+	 * @param string $inventoryError Inventory error.
+	 * @param int $inventoryTargets Inventory targets.
+	 * @param string $smokepingVersion Smokeping version.
+	 */
 	public function __construct(
 		public int $pollerId,
 		public int $runStarted,
@@ -42,6 +59,12 @@ final readonly class Health {
 	) {
 	}
 
+	/**
+	 * Never.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @return self
+	 */
 	public static function never(int $pollerId): self {
 		return new self($pollerId, 0, 0, 0.0, 0, 0, 0, 0, 0, InventoryStatus::Never, '', 0);
 	}

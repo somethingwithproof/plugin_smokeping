@@ -26,9 +26,13 @@ namespace Somethingwithproof\Smokeping;
  * page script the plugin ships must appear in exactly one realm below.
  */
 final class Pages {
+	/** Operator constant. */
 	public const OPERATOR = ['smokeping_operator.php'];
+	/** View constant. */
 	public const VIEW  = 'smokeping.php';
+	/** Import constant. */
 	public const IMPORT = 'smokeping_import.php';
+	/** Admin constant. */
 	public const ADMIN  = ['smokeping_inventory.php', 'smokeping_health.php', 'smokeping_config.php', self::IMPORT];
 
 	/**

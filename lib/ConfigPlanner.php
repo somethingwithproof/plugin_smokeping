@@ -32,6 +32,13 @@ final class ConfigPlanner {
 	/** Target fields an import may change on an existing target. */
 	private const UPDATABLE = ['host', 'probe', 'menu', 'title', 'slaves', 'nomasterpoll', 'step', 'pings', 'admin_state'];
 
+	/**
+	 * Plan.
+	 *
+	 * @param ConfigDocument $document Document.
+	 * @param ConfigState $state State.
+	 * @return ConfigPlan
+	 */
 	public static function plan(ConfigDocument $document, ConfigState $state): ConfigPlan {
 		$errors     = [];
 		$changes    = [];

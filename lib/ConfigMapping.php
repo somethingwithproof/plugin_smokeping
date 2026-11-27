@@ -25,6 +25,14 @@ namespace Somethingwithproof\Smokeping;
  * installation that wrote the file and the one that reads it.
  */
 final readonly class ConfigMapping {
+	/**
+	 * Create a new ConfigMapping instance.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @param TargetPath $path Path.
+	 * @param string $hostname Hostname.
+	 * @param string $description Description.
+	 */
 	public function __construct(
 		public int $pollerId,
 		public TargetPath $path,
@@ -33,10 +41,20 @@ final readonly class ConfigMapping {
 	) {
 	}
 
+	/**
+	 * Target key.
+	 *
+	 * @return string
+	 */
 	public function targetKey(): string {
 		return ConfigState::targetKey($this->pollerId, $this->path->value);
 	}
 
+	/**
+	 * Device key.
+	 *
+	 * @return string
+	 */
 	public function deviceKey(): string {
 		return ConfigState::deviceKey($this->hostname, $this->description);
 	}

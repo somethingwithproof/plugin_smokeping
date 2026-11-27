@@ -29,6 +29,12 @@ namespace Somethingwithproof\Smokeping;
  * collector's own observation cache and health rows stay local to the collector.
  */
 final class RemoteReplication {
+	/**
+	 * Create a new RemoteReplication instance.
+	 *
+	 * @param TargetRepository $targets Targets.
+	 * @param ObjectRepository $objects Objects.
+	 */
 	public function __construct(
 		private readonly TargetRepository $targets,
 		private readonly ObjectRepository $objects,

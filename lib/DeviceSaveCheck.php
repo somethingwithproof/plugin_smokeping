@@ -28,6 +28,11 @@ namespace Somethingwithproof\Smokeping;
  * the health page keeps listing the device until it is fixed.
  */
 final class DeviceSaveCheck {
+	/**
+	 * Create a new DeviceSaveCheck instance.
+	 *
+	 * @param TargetRepository $targets Targets.
+	 */
 	public function __construct(private readonly TargetRepository $targets) {
 	}
 

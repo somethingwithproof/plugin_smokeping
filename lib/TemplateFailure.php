@@ -28,6 +28,14 @@ namespace Somethingwithproof\Smokeping;
  * explicit request.
  */
 final readonly class TemplateFailure {
+	/**
+	 * Create a new TemplateFailure instance.
+	 *
+	 * @param string $pluginVersion Plugin version.
+	 * @param int $templatesVersion Templates version.
+	 * @param int $at At.
+	 * @param string $message Message.
+	 */
 	public function __construct(
 		public string $pluginVersion,
 		public int $templatesVersion,
@@ -36,6 +44,12 @@ final readonly class TemplateFailure {
 	) {
 	}
 
+	/**
+	 * From setting.
+	 *
+	 * @param string $value Value.
+	 * @return self|null
+	 */
 	public static function fromSetting(string $value): ?self {
 		if ($value === '') {
 			return null;
@@ -50,6 +64,11 @@ final readonly class TemplateFailure {
 		return new self(Row::string($data, 'plugin'), Row::int($data, 'templates', 0, 0), Row::int($data, 'at', 0, 0), Row::string($data, 'message'));
 	}
 
+	/**
+	 * To setting.
+	 *
+	 * @return string
+	 */
 	public function toSetting(): string {
 		return json_encode(['plugin' => $this->pluginVersion, 'templates' => $this->templatesVersion, 'at' => $this->at, 'message' => $this->message], JSON_THROW_ON_ERROR);
 	}

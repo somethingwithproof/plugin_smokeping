@@ -56,6 +56,12 @@ final readonly class RrdLastUpdate {
 		return new self((int) $match[1], $parsed);
 	}
 
+	/**
+	 * Value.
+	 *
+	 * @param string $name Name.
+	 * @return float|null
+	 */
 	public function value(string $name): ?float {
 		return $this->values[$name] ?? null;
 	}

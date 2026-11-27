@@ -33,21 +33,34 @@ namespace Somethingwithproof\Smokeping;
 final class TemplateInstaller {
 	// Version 4 adds the smoke graph templates with SmokePing 2.7's loss
 	// colors; the other templates are as in version 3 (Schema 7).
+	/** Version constant. */
 	public const VERSION = 4;
 
+	/** Setting constant. */
 	public const SETTING = 'smokeping_templates_version';
 
+	/** Failure setting constant. */
 	public const FAILURE_SETTING = 'smokeping_templates_failure';
 
+	/** Device template constant. */
 	public const DEVICE_TEMPLATE = 'SmokePing Target';
 
+	/** Summary template constant. */
 	public const SUMMARY_TEMPLATE = 'SmokePing Summary';
 
+	/** Summary input constant. */
 	public const SUMMARY_INPUT = 'SmokePing Summary Script';
 
 	/** Ping counts that have a smoke template. */
 	public const PINGS = [10, 20, 30];
 
+	/**
+	 * Create a new TemplateInstaller instance.
+	 *
+	 * @param string $file File.
+	 * @param string $coreLibrary Core library.
+	 * @param CactiObjectRepository $objects Objects.
+	 */
 	public function __construct(
 		private readonly string $file,
 		private readonly string $coreLibrary,
@@ -55,6 +68,13 @@ final class TemplateInstaller {
 	) {
 	}
 
+	/**
+	 * Graph template name.
+	 *
+	 * @param int $pings Pings.
+	 * @param LossColors $colors Colors.
+	 * @return string
+	 */
 	public static function graphTemplateName(int $pings, LossColors $colors = LossColors::Current): string {
 		return $colors === LossColors::Legacy
 			? sprintf('SmokePing Smoke (%d pings, 2.7 loss colors)', $pings)
@@ -78,10 +98,20 @@ final class TemplateInstaller {
 		return $names;
 	}
 
+	/**
+	 * Is current.
+	 *
+	 * @return bool
+	 */
 	public function isCurrent(): bool {
 		return (int) read_config_option(self::SETTING) === self::VERSION;
 	}
 
+	/**
+	 * Failure.
+	 *
+	 * @return TemplateFailure|null
+	 */
 	public function failure(): ?TemplateFailure {
 		return TemplateFailure::fromSetting((string) read_config_option(self::FAILURE_SETTING));
 	}

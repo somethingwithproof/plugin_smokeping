@@ -66,14 +66,33 @@ final class SmokepingImportService {
 		return [$inventory, hash('sha256', ($upload === null ? 'server' : 'upload') . (string) json_encode($paths))];
 	}
 
+	/**
+	 * Default template id.
+	 *
+	 * @return int
+	 */
 	public function defaultTemplateId(): int {
 		return $this->cacti->deviceTemplateId(TemplateInstaller::DEVICE_TEMPLATE);
 	}
 
+	/**
+	 * Reader poller id.
+	 *
+	 * @return int
+	 */
 	public function readerPollerId(): int {
 		return $this->settings->pollerId;
 	}
 
+	/**
+	 * Plan.
+	 *
+	 * @param Inventory $inventory Inventory.
+	 * @param string $digest Digest.
+	 * @param SmokepingImportOptions $options Options.
+	 * @param bool $upload Upload.
+	 * @return SmokepingImportPlan
+	 */
 	public function plan(Inventory $inventory, string $digest, SmokepingImportOptions $options, bool $upload): SmokepingImportPlan {
 		$this->requireUnrestricted();
 
@@ -279,6 +298,7 @@ final class SmokepingImportService {
 		return $lines;
 	}
 
+	/** Require unrestricted. */
 	private function requireUnrestricted(): void {
 		if ($this->unrestricted !== null && ($this->unrestricted)() !== true) {
 			throw new InventoryError('Your device permissions do not cover every device, so you cannot import a SmokePing configuration.');

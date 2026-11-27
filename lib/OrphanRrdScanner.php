@@ -25,13 +25,23 @@ namespace Somethingwithproof\Smokeping;
  * left behind after renames). Never modifies, deletes, or follows symlinks.
  */
 final class OrphanRrdScanner {
+	/** Default max files constant. */
 	public const DEFAULT_MAX_FILES   = 20000;
+	/** Default max seconds constant. */
 	public const DEFAULT_MAX_SECONDS = 2.0;
+	/** Default max depth constant. */
 	public const DEFAULT_MAX_DEPTH   = 16;
 
 	/** SmokePing's own internal directories under datadir that never hold targets. */
 	private const SKIP_DIRS = ['__cgi', '__sortercache'];
 
+	/**
+	 * Create a new OrphanRrdScanner instance.
+	 *
+	 * @param int $maxFiles Max files.
+	 * @param float $maxSeconds Max seconds.
+	 * @param int $maxDepth Max depth.
+	 */
 	public function __construct(
 		private readonly int $maxFiles = self::DEFAULT_MAX_FILES,
 		private readonly float $maxSeconds = self::DEFAULT_MAX_SECONDS,

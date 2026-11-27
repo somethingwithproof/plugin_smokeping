@@ -40,6 +40,15 @@ final readonly class LoadEstimate {
 	/** Graph items in a summary graph. */
 	public const SUMMARY_ITEMS = 5;
 
+	/**
+	 * Create a new LoadEstimate instance.
+	 *
+	 * @param int $series Series.
+	 * @param float $packetsPerSecond Packets per second.
+	 * @param float $rrdUpdatesPerSecond Rrd updates per second.
+	 * @param int $dataSourceRows Data source rows.
+	 * @param int $graphItemRows Graph item rows.
+	 */
 	public function __construct(
 		public int $series,
 		public float $packetsPerSecond,

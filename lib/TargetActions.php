@@ -30,6 +30,16 @@ namespace Somethingwithproof\Smokeping;
  * still open.
  */
 final class TargetActions {
+	/**
+	 * Create a new TargetActions instance.
+	 *
+	 * @param SmokeProvisioner $provisioner Provisioner.
+	 * @param TargetRepository $targets Targets.
+	 * @param ObjectRepository $objects Objects.
+	 * @param CactiObjectRepository $cacti Cacti.
+	 * @param string $coreLibrary Core library.
+	 * @param Clock $clock Clock.
+	 */
 	public function __construct(
 		private readonly SmokeProvisioner $provisioner,
 		private readonly TargetRepository $targets,

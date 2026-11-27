@@ -76,7 +76,13 @@ final class CsvExporter {
 	 * @param list<string> $cells
 	 */
 	public static function formatRow(array $cells, bool $neutralize = true): string {
-		return implode(',', array_map(static fn (string $c): string => self::encodeCell($c, $neutralize), $cells)) . "\r\n";
+		$encoded = [];
+
+		foreach ($cells as $cell) {
+			$encoded[] = self::encodeCell($cell, $neutralize);
+		}
+
+		return implode(',', $encoded) . "\r\n";
 	}
 
 	/**
@@ -84,17 +90,20 @@ final class CsvExporter {
 	 * @param list<list<string>> $rows
 	 */
 	public static function export(array $headers, array $rows): string {
-		$out = self::formatRow($headers, false);
+		$lines = [self::encodeRowCells($headers, false)];
 
 		foreach ($rows as $row) {
-			$out .= self::formatRow($row, true);
+			$lines[] = self::encodeRowCells($row, true);
 		}
 
-		return $out;
+		return implode("\r\n", $lines) . "\r\n";
 	}
 
 	/**
 	 * Export view-page target state rows using SummaryValues fields.
+	 *
+	 * Encodes each row directly into the output line buffer without allocating
+	 * an intermediate matrix of string rows.
 	 *
 	 * @param list<array{
 	 *     path: string,
@@ -111,25 +120,44 @@ final class CsvExporter {
 	 * }> $rows
 	 */
 	public static function exportTargets(array $rows): string {
-		$csvRows = [];
+		$lines = [self::encodeRowCells(self::TARGET_HEADERS, false)];
 
 		foreach ($rows as $row) {
-			$csvRows[] = [
-				$row['path'],
-				$row['name'],
-				$row['host'],
-				$row['probe'],
-				$row['device'],
-				$row['location'] === '' ? 'master' : $row['location'],
-				$row['median_ms'] === null ? '' : self::formatFloat($row['median_ms']),
-				$row['loss_pct'] === null ? '' : self::formatFloat($row['loss_pct']),
-				$row['age_seconds'] === null ? '' : (string) $row['age_seconds'],
-				$row['freshness'],
-				$row['condition'],
-			];
+			$median = $row['median_ms'] === null ? '' : self::formatFloat($row['median_ms']);
+			$loss   = $row['loss_pct'] === null ? '' : self::formatFloat($row['loss_pct']);
+			$age    = $row['age_seconds'] === null ? '' : (string) $row['age_seconds'];
+
+			$lines[] = self::encodeCell($row['path'])
+				. ',' . self::encodeCell($row['name'])
+				. ',' . self::encodeCell($row['host'])
+				. ',' . self::encodeCell($row['probe'])
+				. ',' . self::encodeCell($row['device'])
+				. ',' . self::encodeCell($row['location'] === '' ? 'master' : $row['location'])
+				. ',' . ($median !== '' && $median[0] === '-' ? "'" . $median : $median)
+				. ',' . ($loss !== '' && $loss[0] === '-' ? "'" . $loss : $loss)
+				. ',' . ($age !== '' && $age[0] === '-' ? "'" . $age : $age)
+				. ',' . self::encodeCell($row['freshness'])
+				. ',' . self::encodeCell($row['condition']);
 		}
 
-		return self::export(self::TARGET_HEADERS, $csvRows);
+		return implode("\r\n", $lines) . "\r\n";
+	}
+
+	/**
+	 * Encode a list of cells as a single comma-delimited line without trailing CRLF.
+	 *
+	 * @param list<string> $cells Row cells.
+	 * @param bool $neutralize Whether to neutralize spreadsheet formula prefixes.
+	 * @return string Encoded CSV line.
+	 */
+	private static function encodeRowCells(array $cells, bool $neutralize): string {
+		$encoded = [];
+
+		foreach ($cells as $cell) {
+			$encoded[] = self::encodeCell($cell, $neutralize);
+		}
+
+		return implode(',', $encoded);
 	}
 
 	/**

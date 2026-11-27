@@ -48,6 +48,12 @@ final class DDSketch {
 	/** Natural logarithm of gamma for O(1) bucket indexing. */
 	private float $logGamma;
 
+	/** Reciprocal of logGamma so indexFor() multiplies instead of dividing. */
+	private float $invLogGamma;
+
+	/** Midpoint scale factor 2 / (gamma + 1) for O(1) value reconstruction. */
+	private float $valueScale;
+
 	/** Maximum number of positive buckets retained before collapsing lowest bins. */
 	private int $maxBins;
 
@@ -65,6 +71,15 @@ final class DDSketch {
 
 	/** Exact maximum observed value, or null when empty. */
 	private ?float $max = null;
+
+	/** Whether $bins is currently ordered by ascending bucket index. */
+	private bool $binsSorted = true;
+
+	/** Lowest bucket index currently present in $bins, or null when empty. */
+	private ?int $minBinIndex = null;
+
+	/** Highest bucket index currently present in $bins, or null when empty. */
+	private ?int $maxBinIndex = null;
 
 	/**
 	 * Map of logarithmic bucket index to accumulated observation weight.
@@ -101,6 +116,8 @@ final class DDSketch {
 		$this->alpha         = $alpha;
 		$this->gamma         = (1.0 + $alpha) / (1.0 - $alpha);
 		$this->logGamma      = log($this->gamma);
+		$this->invLogGamma   = 1.0 / $this->logGamma;
+		$this->valueScale    = 2.0 / ($this->gamma + 1.0);
 		$this->maxBins       = $maxBins;
 		$this->zeroThreshold = $zeroThreshold;
 	}
@@ -122,8 +139,8 @@ final class DDSketch {
 		}
 
 		$this->count += $weight;
-		$this->min    = $this->min === null ? $value : min($this->min, $value);
-		$this->max    = $this->max === null ? $value : max($this->max, $value);
+		$this->min    = $this->min === null || $value < $this->min ? $value : $this->min;
+		$this->max    = $this->max === null || $value > $this->max ? $value : $this->max;
 
 		if ($value <= $this->zeroThreshold) {
 			$this->zeroCount += $weight;
@@ -131,11 +148,37 @@ final class DDSketch {
 			return;
 		}
 
-		$index              = $this->indexFor($value);
-		$this->bins[$index] = ($this->bins[$index] ?? 0.0) + $weight;
+		$index = (int) ceil(log($value) * $this->invLogGamma);
+
+		if (isset($this->bins[$index])) {
+			$this->bins[$index] += $weight;
+
+			return;
+		}
+
+		// When already at maxBins capacity, any sample below the current lowest
+		// bucket would immediately collapse into minBinIndex. Fold it directly
+		// in O(1) without inserting, sorting, or scanning.
+		if ($this->minBinIndex !== null && $index < $this->minBinIndex && count($this->bins) >= $this->maxBins) {
+			$this->bins[$this->minBinIndex] += $weight;
+
+			return;
+		}
+
+		if ($this->minBinIndex === null || $index < $this->minBinIndex) {
+			$this->minBinIndex = $index;
+		}
+
+		if ($this->maxBinIndex === null || $index > $this->maxBinIndex) {
+			$this->maxBinIndex = $index;
+		} else {
+			$this->binsSorted = false;
+		}
+
+		$this->bins[$index] = $weight;
 
 		if (count($this->bins) > $this->maxBins) {
-			$this->collapseLowest();
+			$this->collapseExcess();
 		}
 	}
 
@@ -169,7 +212,7 @@ final class DDSketch {
 			return 0.0;
 		}
 
-		ksort($this->bins, SORT_NUMERIC);
+		$this->ensureSorted();
 		$running = $this->zeroCount;
 
 		foreach ($this->bins as $index => $binWeight) {
@@ -188,17 +231,74 @@ final class DDSketch {
 	/**
 	 * Compute standard latency summary quantiles (p50, p95, p99, p99.9) alongside count/min/max.
 	 *
+	 * Resolves all four quantiles in a single ascending scan over the sorted
+	 * positive buckets instead of sorting and scanning once per quantile.
+	 *
 	 * @return array{count: float, min: ?float, max: ?float, p50: ?float, p95: ?float, p99: ?float, p999: ?float}
 	 */
 	public function summary(): array {
+		if ($this->count <= 0.0 || $this->min === null || $this->max === null) {
+			return [
+				'count' => $this->count,
+				'min'   => $this->min,
+				'max'   => $this->max,
+				'p50'   => null,
+				'p95'   => null,
+				'p99'   => null,
+				'p999'  => null,
+			];
+		}
+
+		$ranks = [
+			'p50'  => 0.50 * $this->count,
+			'p95'  => 0.95 * $this->count,
+			'p99'  => 0.99 * $this->count,
+			'p999' => 0.999 * $this->count,
+		];
+		$out     = ['p50' => null, 'p95' => null, 'p99' => null, 'p999' => null];
+		$pending = [];
+
+		foreach ($ranks as $label => $targetRank) {
+			if ($targetRank <= $this->zeroCount) {
+				$out[$label] = 0.0;
+			} else {
+				$pending[$label] = $targetRank;
+			}
+		}
+
+		if ($pending !== []) {
+			$this->ensureSorted();
+			$running = $this->zeroCount;
+
+			foreach ($this->bins as $index => $binWeight) {
+				$running += $binWeight;
+
+				foreach ($pending as $label => $targetRank) {
+					if ($running >= $targetRank) {
+						$estimate    = $this->valueFor($index);
+						$out[$label] = $estimate < $this->min ? $this->min : ($estimate > $this->max ? $this->max : $estimate);
+						unset($pending[$label]);
+					}
+				}
+
+				if ($pending === []) {
+					break;
+				}
+			}
+
+			foreach ($pending as $label => $_targetRank) {
+				$out[$label] = $this->max;
+			}
+		}
+
 		return [
 			'count' => $this->count,
 			'min'   => $this->min,
 			'max'   => $this->max,
-			'p50'   => $this->quantile(0.50),
-			'p95'   => $this->quantile(0.95),
-			'p99'   => $this->quantile(0.99),
-			'p999'  => $this->quantile(0.999),
+			'p50'   => $out['p50'],
+			'p95'   => $out['p95'],
+			'p99'   => $out['p99'],
+			'p999'  => $out['p999'],
 		];
 	}
 
@@ -224,19 +324,33 @@ final class DDSketch {
 		$this->zeroCount += $other->zeroCount;
 
 		if ($other->min !== null) {
-			$this->min = $this->min === null ? $other->min : min($this->min, $other->min);
+			$this->min = $this->min === null || $other->min < $this->min ? $other->min : $this->min;
 		}
 
 		if ($other->max !== null) {
-			$this->max = $this->max === null ? $other->max : max($this->max, $other->max);
+			$this->max = $this->max === null || $other->max > $this->max ? $other->max : $this->max;
 		}
 
 		foreach ($other->bins as $index => $weight) {
-			$this->bins[$index] = ($this->bins[$index] ?? 0.0) + $weight;
+			if (isset($this->bins[$index])) {
+				$this->bins[$index] += $weight;
+			} else {
+				if ($this->minBinIndex === null || $index < $this->minBinIndex) {
+					$this->minBinIndex = $index;
+				}
+
+				if ($this->maxBinIndex === null || $index > $this->maxBinIndex) {
+					$this->maxBinIndex = $index;
+				} else {
+					$this->binsSorted = false;
+				}
+
+				$this->bins[$index] = $weight;
+			}
 		}
 
-		while (count($this->bins) > $this->maxBins) {
-			$this->collapseLowest();
+		if (count($this->bins) > $this->maxBins) {
+			$this->collapseExcess();
 		}
 	}
 
@@ -318,7 +432,7 @@ final class DDSketch {
 	 * @return array{alpha: float, max_bins: int, zero_threshold: float, count: float, zero_count: float, min: ?float, max: ?float, bins: array<int, float>}
 	 */
 	public function toArray(): array {
-		ksort($this->bins, SORT_NUMERIC);
+		$this->ensureSorted();
 
 		return [
 			'alpha'          => $this->alpha,
@@ -373,24 +487,26 @@ final class DDSketch {
 				throw new \InvalidArgumentException('DDSketch bin weight must be a positive finite number.');
 			}
 
-			$sketch->bins[(int) $key] = (float) $weight;
+			$intKey = (int) $key;
+
+			if ($sketch->minBinIndex === null || $intKey < $sketch->minBinIndex) {
+				$sketch->minBinIndex = $intKey;
+			}
+
+			if ($sketch->maxBinIndex === null || $intKey > $sketch->maxBinIndex) {
+				$sketch->maxBinIndex = $intKey;
+			} else {
+				$sketch->binsSorted = false;
+			}
+
+			$sketch->bins[$intKey] = (float) $weight;
 		}
 
-		while (count($sketch->bins) > $sketch->maxBins) {
-			$sketch->collapseLowest();
+		if (count($sketch->bins) > $sketch->maxBins) {
+			$sketch->collapseExcess();
 		}
 
 		return $sketch;
-	}
-
-	/**
-	 * Map a positive value above zeroThreshold to its logarithmic bucket index.
-	 *
-	 * @param float $value Positive observation value.
-	 * @return int Integer bucket index.
-	 */
-	private function indexFor(float $value): int {
-		return (int) ceil(log($value) / $this->logGamma);
 	}
 
 	/**
@@ -400,27 +516,49 @@ final class DDSketch {
 	 * @return float Representative latency value for the bucket.
 	 */
 	private function valueFor(int $index): float {
-		return (2.0 * ($this->gamma ** $index)) / ($this->gamma + 1.0);
+		return $this->valueScale * ($this->gamma ** $index);
 	}
 
 	/**
-	 * Collapse the two lowest-index positive buckets into the higher of the pair.
-	 *
-	 * Preserves exact upper-tail accuracy (p95, p99, p99.9) under a fixed bin budget.
+	 * Sort positive buckets by ascending index only when out-of-order inserts occurred.
 	 */
-	private function collapseLowest(): void {
-		if (count($this->bins) < 2) {
+	private function ensureSorted(): void {
+		if (!$this->binsSorted) {
+			ksort($this->bins, SORT_NUMERIC);
+			$this->binsSorted = true;
+		}
+	}
+
+	/**
+	 * Collapse excess lowest-index positive buckets into the lowest retained bucket.
+	 *
+	 * Uses O(1) popping when sorted with a single excess bin, an O(B) allocation-free
+	 * scan for a single unsorted excess bin, and a single O(B log B) sort + linear
+	 * fold when merging multiple excess bins.
+	 */
+	private function collapseExcess(): void {
+		$excess = count($this->bins) - $this->maxBins;
+
+		if ($excess <= 0 || count($this->bins) < 2) {
 			return;
 		}
 
-		ksort($this->bins, SORT_NUMERIC);
-		$keys     = array_keys($this->bins);
-		$lowest   = $keys[0];
-		$next     = $keys[1];
-		$combined = $this->bins[$lowest] + $this->bins[$next];
+		$this->ensureSorted();
+		$foldedWeight = 0.0;
+		$dropped      = 0;
 
-		unset($this->bins[$lowest]);
-		$this->bins[$next] = $combined;
+		foreach ($this->bins as $key => $weight) {
+			if ($dropped < $excess) {
+				$foldedWeight += $weight;
+				unset($this->bins[$key]);
+				$dropped++;
+			} else {
+				$this->bins[$key] += $foldedWeight;
+				$this->minBinIndex = $key;
+
+				break;
+			}
+		}
 	}
 
 	/**

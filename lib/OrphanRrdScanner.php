@@ -72,39 +72,48 @@ final class OrphanRrdScanner {
 			$owned[$path] = true;
 		}
 
-		$deadline  = microtime(true) + max(0.01, $this->maxSeconds);
-		$scanned   = 0;
-		$truncated = false;
-		$orphans   = [];
-		$queue     = [['dir' => $base, 'rel' => '', 'depth' => 0]];
+		$deadlineNs = hrtime(true) + (int) (max(0.01, $this->maxSeconds) * 1e9);
+		$scanned    = 0;
+		$checked    = 0;
+		$truncated  = false;
+		$orphans    = [];
+		$queue      = [['dir' => $base, 'rel' => '', 'depth' => 0]];
+		$head       = 0;
+		$queueCount = 1;
 
-		while ($queue !== []) {
-			if ($scanned >= $this->maxFiles || microtime(true) >= $deadline) {
+		while ($head < $queueCount) {
+			if ($scanned >= $this->maxFiles || hrtime(true) >= $deadlineNs) {
 				$truncated = true;
 
 				break;
 			}
 
-			$frame = array_shift($queue);
+			$frame = $queue[$head];
+			unset($queue[$head]);
+			$head++;
+
 			$entries = @scandir($frame['dir']);
 
 			if (!is_array($entries)) {
 				continue;
 			}
 
+			$dirPrefix = $frame['dir'] . '/';
+			$relPrefix = $frame['rel'] === '' ? '' : $frame['rel'] . '/';
+			$depth     = $frame['depth'];
+
 			foreach ($entries as $entry) {
 				if ($entry === '.' || $entry === '..') {
 					continue;
 				}
 
-				if ($scanned >= $this->maxFiles || microtime(true) >= $deadline) {
+				if ($scanned >= $this->maxFiles || ((++$checked & 63) === 0 && hrtime(true) >= $deadlineNs)) {
 					$truncated = true;
 
 					break 2;
 				}
 
-				$full = $frame['dir'] . '/' . $entry;
-				$rel  = $frame['rel'] === '' ? $entry : $frame['rel'] . '/' . $entry;
+				$full = $dirPrefix . $entry;
 
 				// Never follow symlinks inside the mount.
 				if (is_link($full)) {
@@ -112,18 +121,18 @@ final class OrphanRrdScanner {
 				}
 
 				if (is_dir($full)) {
-					if ($frame['depth'] === 0 && in_array($entry, self::SKIP_DIRS, true)) {
+					if ($depth === 0 && in_array($entry, self::SKIP_DIRS, true)) {
 						continue;
 					}
 
-					if ($frame['depth'] < $this->maxDepth) {
-						$queue[] = ['dir' => $full, 'rel' => $rel, 'depth' => $frame['depth'] + 1];
+					if ($depth < $this->maxDepth) {
+						$queue[$queueCount++] = ['dir' => $full, 'rel' => $relPrefix . $entry, 'depth' => $depth + 1];
 					}
 
 					continue;
 				}
 
-				if (!is_file($full) || !str_ends_with($entry, '.rrd')) {
+				if (!str_ends_with($entry, '.rrd') || !is_file($full)) {
 					continue;
 				}
 
@@ -132,7 +141,7 @@ final class OrphanRrdScanner {
 				if (!isset($owned[$full])) {
 					$mtime     = @filemtime($full);
 					$orphans[] = [
-						'relative' => $rel,
+						'relative' => $relPrefix . $entry,
 						'mtime'    => is_int($mtime) ? $mtime : 0,
 					];
 				}

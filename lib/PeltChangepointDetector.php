@@ -58,7 +58,7 @@ final readonly class PeltChangepointDetector {
 	/**
 	 * Detect optimal changepoint indices (0-based start of each new regime).
 	 *
-	 * Uses O(1) prefix-sum segment cost evaluation and delayed Theorem 3.1
+	 * Uses O(1) shifted prefix-sum segment cost evaluation and delayed Theorem 3.1
 	 * pruning so exactness holds for any minSegmentLength >= 1.
 	 *
 	 * @param list<float|int> $series Ordered time-series observations.
@@ -66,84 +66,7 @@ final readonly class PeltChangepointDetector {
 	 * @throws \InvalidArgumentException When any element of $series is non-finite.
 	 */
 	public function detect(array $series): array {
-		$values = self::normalizeSeries($series);
-		$n      = count($values);
-		$minLen = $this->minSegmentLength;
-
-		if ($n < 2 * $minLen) {
-			return [];
-		}
-
-		[$prefixSum, $prefixSq] = self::prefixSums($values);
-		$totalCost              = self::segmentCost($prefixSum, $prefixSq, 0, $n);
-
-		if ($totalCost <= 1e-12) {
-			return [];
-		}
-
-		$beta = $this->resolvePenalty($values, $totalCost);
-
-		/** @var array<int, float> $bestCost */
-		$bestCost = [0 => -$beta];
-		/** @var array<int, int> $previous */
-		$previous = [0 => -1];
-		/** @var list<int> $candidates */
-		$candidates = [0];
-
-		for ($t = $minLen; $t <= $n; $t++) {
-			$eligible = $t - $minLen;
-
-			if ($eligible >= $minLen) {
-				$candidates[] = $eligible;
-
-				// Delayed pruning: $eligible is now a valid predecessor for every
-				// future T >= $t. By Killick et al. (2012) Theorem 3.1 with K = 0
-				// (variance decomposition: C(s, eligible) + C(eligible, T) <= C(s, T)),
-				// any earlier candidate s <= eligible - minLen with
-				// F(s) + C(s, eligible) >= F(eligible) is strictly dominated forever.
-				$eligibleCost = $bestCost[$eligible];
-				$pruned       = [];
-
-				foreach ($candidates as $s) {
-					if ($s <= $eligible - $minLen) {
-						$dominated = $bestCost[$s] + self::segmentCost($prefixSum, $prefixSq, $s, $eligible);
-
-						if ($dominated >= $eligibleCost) {
-							continue;
-						}
-					}
-
-					$pruned[] = $s;
-				}
-
-				$candidates = $pruned;
-			}
-
-			$minCost = INF;
-			$bestS   = 0;
-
-			foreach ($candidates as $s) {
-				$cost = $bestCost[$s] + self::segmentCost($prefixSum, $prefixSq, $s, $t) + $beta;
-
-				if ($cost < $minCost) {
-					$minCost = $cost;
-					$bestS   = $s;
-				}
-			}
-
-			$bestCost[$t] = $minCost;
-			$previous[$t] = $bestS;
-		}
-
-		$changepoints = [];
-		$cursor       = $previous[$n];
-
-		while ($cursor > 0) {
-			$changepoints[] = $cursor;
-			$cursor         = $previous[$cursor];
-		}
-
-		return array_reverse($changepoints);
+		return $this->detectNormalized(self::normalizeSeries($series));
 	}
 
 	/**
@@ -161,7 +84,7 @@ final readonly class PeltChangepointDetector {
 			return [];
 		}
 
-		$boundaries = array_merge([0], $this->detect($values), [$n]);
+		$boundaries = array_merge([0], $this->detectNormalized($values), [$n]);
 		$segments   = [];
 
 		for ($i = 0, $limit = count($boundaries) - 1; $i < $limit; $i++) {
@@ -239,8 +162,129 @@ final readonly class PeltChangepointDetector {
 	 * @throws \InvalidArgumentException When any element of $series is non-finite.
 	 */
 	public static function estimateNoiseVariance(array $series): float {
-		$values = self::normalizeSeries($series);
+		return self::estimateNoiseVarianceNormalized(self::normalizeSeries($series));
+	}
+
+	/**
+	 * Core PELT dynamic program over an already-validated float series.
+	 *
+	 * Inlines O(1) shifted prefix-sum SSE arithmetic inside the pruning and
+	 * minimization loops to avoid per-candidate PHP call overhead, and stops
+	 * pruning checks as soon as ascending candidates exceed $eligible - $minLen.
+	 *
+	 * @param list<float> $values Validated finite observations.
+	 * @return list<int> Strictly ascending changepoint start indices.
+	 */
+	private function detectNormalized(array $values): array {
 		$n      = count($values);
+		$minLen = $this->minSegmentLength;
+
+		if ($n < 2 * $minLen) {
+			return [];
+		}
+
+		// Shift values by $values[0] before squaring so large-mean latency
+		// series do not lose precision to catastrophic cancellation in SSE.
+		$shift     = $values[0];
+		$prefixSum = [0.0];
+		$prefixSq  = [0.0];
+		$a1        = 0.0;
+		$a2        = 0.0;
+
+		for ($i = 0; $i < $n; $i++) {
+			$shifted     = $values[$i] - $shift;
+			$a1         += $shifted;
+			$a2         += $shifted * $shifted;
+			$prefixSum[] = $a1;
+			$prefixSq[]  = $a2;
+		}
+
+		$totalCost = $a2 - (($a1 * $a1) / $n);
+
+		if ($totalCost <= 1e-12) {
+			return [];
+		}
+
+		$beta = $this->resolvePenalty($values, $totalCost);
+
+		/** @var array<int, float> $bestCost */
+		$bestCost = [0 => -$beta];
+		/** @var array<int, int> $previous */
+		$previous = [0 => -1];
+		/** @var list<int> $candidates */
+		$candidates = [0];
+
+		for ($t = $minLen; $t <= $n; $t++) {
+			$eligible = $t - $minLen;
+
+			if ($eligible >= $minLen) {
+				// Delayed pruning: $eligible is now a valid predecessor for every
+				// future T >= $t. By Killick et al. (2012) Theorem 3.1 with K = 0
+				// (variance decomposition: C(s, eligible) + C(eligible, T) <= C(s, T)),
+				// any earlier candidate s <= eligible - minLen with
+				// F(s) + C(s, eligible) >= F(eligible) is strictly dominated forever.
+				$eligibleCost = $bestCost[$eligible];
+				$maxPrunable  = $eligible - $minLen;
+				$psElig       = $prefixSum[$eligible];
+				$sqElig       = $prefixSq[$eligible];
+				$pruned       = [];
+
+				foreach ($candidates as $s) {
+					if ($s <= $maxPrunable) {
+						$sum = $psElig - $prefixSum[$s];
+						$sse = ($sqElig - $prefixSq[$s]) - (($sum * $sum) / ($eligible - $s));
+
+						if ($bestCost[$s] + ($sse > 0.0 ? $sse : 0.0) >= $eligibleCost) {
+							continue;
+						}
+					}
+
+					$pruned[] = $s;
+				}
+
+				$pruned[]   = $eligible;
+				$candidates = $pruned;
+			}
+
+			$psT     = $prefixSum[$t];
+			$sqT     = $prefixSq[$t];
+			$minCost = INF;
+			$bestS   = 0;
+
+			foreach ($candidates as $s) {
+				$sum  = $psT - $prefixSum[$s];
+				$sse  = ($sqT - $prefixSq[$s]) - (($sum * $sum) / ($t - $s));
+				$cost = $bestCost[$s] + ($sse > 0.0 ? $sse : 0.0) + $beta;
+
+				if ($cost < $minCost) {
+					$minCost = $cost;
+					$bestS   = $s;
+				}
+			}
+
+			$bestCost[$t] = $minCost;
+			$previous[$t] = $bestS;
+		}
+
+		$changepoints = [];
+		$cursor       = $previous[$n];
+
+		while ($cursor > 0) {
+			$changepoints[] = $cursor;
+			$cursor         = $previous[$cursor];
+		}
+
+		return array_reverse($changepoints);
+	}
+
+	/**
+	 * Estimate noise variance from already-validated finite floats via first-difference MAD.
+	 *
+	 * @param list<float> $values Validated observation values.
+	 * @return float Estimated non-negative noise variance.
+	 */
+	private static function estimateNoiseVarianceNormalized(array $values): float {
+		$n = count($values);
 
 		if ($n < 2) {
 			return 0.0;
@@ -275,7 +319,7 @@ final readonly class PeltChangepointDetector {
 		}
 
 		$n        = count($values);
-		$variance = self::estimateNoiseVariance($values);
+		$variance = self::estimateNoiseVarianceNormalized($values);
 
 		// For piecewise-constant (noiseless) series, first-difference MAD is zero;
 		// scale a conservative penalty from overall series variance so exact step
@@ -308,45 +352,5 @@ final readonly class PeltChangepointDetector {
 		}
 
 		return $values;
-	}
-
-	/**
-	 * Build prefix sums of values and squared values for O(1) SSE queries.
-	 *
-	 * @param list<float> $values Validated observations.
-	 * @return array{0: list<float>, 1: list<float>} Prefix sum and prefix squared-sum arrays of length n + 1.
-	 */
-	private static function prefixSums(array $values): array {
-		$s1 = [0.0];
-		$s2 = [0.0];
-		$a1 = 0.0;
-		$a2 = 0.0;
-
-		foreach ($values as $v) {
-			$a1  += $v;
-			$a2  += $v * $v;
-			$s1[] = $a1;
-			$s2[] = $a2;
-		}
-
-		return [$s1, $s2];
-	}
-
-	/**
-	 * Compute the squared-error segment cost C(y[start..end-1]) in O(1) time.
-	 *
-	 * @param list<float> $prefixSum Prefix sum array.
-	 * @param list<float> $prefixSq Prefix squared-sum array.
-	 * @param int $start Inclusive segment start index.
-	 * @param int $end Exclusive segment end index (> $start).
-	 * @return float Non-negative segment sum of squared deviations.
-	 */
-	private static function segmentCost(array $prefixSum, array $prefixSq, int $start, int $end): float {
-		$length = $end - $start;
-		$sum    = $prefixSum[$end] - $prefixSum[$start];
-		$sumSq  = $prefixSq[$end] - $prefixSq[$start];
-		$sse    = $sumSq - (($sum * $sum) / $length);
-
-		return $sse > 0.0 ? $sse : 0.0;
 	}
 }

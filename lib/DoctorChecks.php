@@ -55,20 +55,30 @@ final class DoctorChecks {
 	}
 
 	/**
-	 * Run all SmokePing diagnostic checks and return Doctor-formatted results.
+	 * Run or list all SmokePing diagnostic checks in Doctor's canonical descriptor shape.
 	 *
+	 * @param string $mode Execution mode ('run' or 'list').
 	 * @return list<array{
 	 *     id: string,
+	 *     plugin: string,
 	 *     category: string,
+	 *     title: string,
 	 *     status: string,
-	 *     summary: string,
-	 *     detail: string,
-	 *     repair: string,
-	 *     repairable: bool,
-	 *     assessment: string
+	 *     message: string,
+	 *     details: string,
+	 *     remediation: string
 	 * }>
 	 */
-	public function run(): array {
+	public function run(string $mode = 'run'): array {
+		if ($mode === 'list') {
+			return [
+				self::result('smokeping.stale_targets', 'info', 'SmokePing stale targets', 'Checks whether SmokePing target series have recent observations.', '', 'Verify the SmokePing reader poller is running and RRD files are updating.'),
+				self::result('smokeping.freshness_breaches', 'info', 'SmokePing freshness breaches', 'Checks whether SmokePing target observations stay within the freshness allowance.', '', 'Inspect SmokePing polling intervals and freshness allowance settings.'),
+				self::result('smokeping.orphan_rrds', 'info', 'SmokePing orphan RRD files', 'Checks for unowned RRD files under the configured SmokePing mount path.', '', 'Review unowned RRD files under the SmokePing mount path and clean up retired targets.'),
+				self::result('smokeping.config_path', 'info', 'SmokePing configuration and mount path', 'Checks SmokePing configuration file readability and mount containment.', '', 'Verify SmokePing config file and RRA mount path settings and permissions.'),
+			];
+		}
+
 		$pollerId = $this->settings->pollerId;
 		$targets  = $this->targets->readable($pollerId);
 		$obsMap   = $this->observations->forTargets(array_values(array_filter(array_map(static fn (Target $t): int => (int) $t->id?->value, $targets), static fn (int $id): bool => $id > 0)));
@@ -102,105 +112,124 @@ final class DoctorChecks {
 			}
 		}
 
-		$results = [
+		return [
 			$this->staleTargetsResult($totalSeries, $staleTargets),
 			$this->freshnessBreachesResult($totalSeries, $breachedCount),
 			$this->orphanRrdsResult($expectedFiles),
 			$this->configPathResult($expectedFiles),
 		];
-
-		return $results;
 	}
 
 	/**
-	 * Attach SmokePing checks to either an array accumulator or a registrar object.
+	 * Evaluate SmokePing checks for the doctor_register_checks hook without echoing $context.
 	 *
-	 * @param mixed $registry
-	 * @return mixed
+	 * @param mixed $context Doctor hook context array (expects optional 'mode' key).
+	 * @return list<array{
+	 *     id: string,
+	 *     plugin: string,
+	 *     category: string,
+	 *     title: string,
+	 *     status: string,
+	 *     message: string,
+	 *     details: string,
+	 *     remediation: string
+	 * }>
 	 */
-	public function register($registry) {
-		$results = $this->run();
+	public function register($context = []): array {
+		$mode = is_array($context) && is_string($context['mode'] ?? null) ? $context['mode'] : 'run';
 
-		if (is_array($registry)) {
-			foreach ($results as $entry) {
-				$registry[] = $entry;
-			}
-
-			return $registry;
-		}
-
-		if (is_object($registry) && method_exists($registry, 'register')) {
-			foreach ($results as $entry) {
-				$registry->register($entry['id'], $entry);
-			}
-		}
-
-		return $registry;
+		return $this->run($mode);
 	}
 
 	/**
-	 * @param list<string> $staleTargets
-	 * @return array{id: string, category: string, status: string, summary: string, detail: string, repair: string, repairable: bool, assessment: string}
+	 * Build the stale-targets check descriptor.
+	 *
+	 * @param int          $totalSeries  Total readable target series.
+	 * @param list<string> $staleTargets List of stale or never-observed series identifiers.
+	 * @return array{id: string, plugin: string, category: string, title: string, status: string, message: string, details: string, remediation: string}
 	 */
 	private function staleTargetsResult(int $totalSeries, array $staleTargets): array {
+		$title = 'SmokePing stale targets';
+
 		if ($totalSeries === 0) {
-			return self::result('smokeping_stale_targets', 'unknown', 'No SmokePing target series imported', 'No readable SmokePing target series exist on poller ' . $this->settings->pollerId . '.');
+			return self::result('smokeping.stale_targets', 'info', $title, 'No SmokePing target series imported', 'No readable SmokePing target series exist on poller ' . $this->settings->pollerId . '.', '');
 		}
 
 		if ($staleTargets === []) {
-			return self::result('smokeping_stale_targets', 'ok', 'All SmokePing target series are active', sprintf('All %d series on poller %d have recent observations.', $totalSeries, $this->settings->pollerId));
+			return self::result('smokeping.stale_targets', 'ok', $title, 'All SmokePing target series are active', sprintf('All %d series on poller %d have recent observations.', $totalSeries, $this->settings->pollerId), '');
 		}
 
 		$sample = implode(', ', array_slice($staleTargets, 0, 10)) . (count($staleTargets) > 10 ? ', ...' : '');
 
 		return self::result(
-			'smokeping_stale_targets',
+			'smokeping.stale_targets',
 			'warn',
+			$title,
 			sprintf('%d of %d SmokePing series are stale or never observed', count($staleTargets), $totalSeries),
-			'Stale or never-observed series: ' . $sample
+			'Stale or never-observed series: ' . $sample,
+			'Confirm SmokePing is updating RRD files for these targets and the reader poller has read access.'
 		);
 	}
 
 	/**
-	 * @return array{id: string, category: string, status: string, summary: string, detail: string, repair: string, repairable: bool, assessment: string}
+	 * Build the freshness-breaches check descriptor.
+	 *
+	 * @param int $totalSeries   Total readable target series.
+	 * @param int $breachedCount Number of series exceeding freshness allowance.
+	 * @return array{id: string, plugin: string, category: string, title: string, status: string, message: string, details: string, remediation: string}
 	 */
 	private function freshnessBreachesResult(int $totalSeries, int $breachedCount): array {
+		$title = 'SmokePing freshness breaches';
+
 		if ($totalSeries === 0) {
-			return self::result('smokeping_freshness_breaches', 'unknown', 'No SmokePing series to evaluate freshness', 'No readable target series exist on poller ' . $this->settings->pollerId . '.');
+			return self::result('smokeping.freshness_breaches', 'info', $title, 'No SmokePing series to evaluate freshness', 'No readable target series exist on poller ' . $this->settings->pollerId . '.', '');
 		}
 
 		if ($breachedCount === 0) {
-			return self::result('smokeping_freshness_breaches', 'ok', 'No SmokePing freshness breaches', sprintf('All %d series are within step + %d s freshness allowance.', $totalSeries, $this->settings->freshnessAllowance));
+			return self::result('smokeping.freshness_breaches', 'ok', $title, 'No SmokePing freshness breaches', sprintf('All %d series are within step + %d s freshness allowance.', $totalSeries, $this->settings->freshnessAllowance), '');
 		}
 
 		return self::result(
-			'smokeping_freshness_breaches',
+			'smokeping.freshness_breaches',
 			'warn',
+			$title,
 			sprintf('%d SmokePing series exceed freshness allowance', $breachedCount),
-			sprintf('%d of %d series on poller %d are delayed or stale beyond step + %d s.', $breachedCount, $totalSeries, $this->settings->pollerId, $this->settings->freshnessAllowance)
+			sprintf('%d of %d series on poller %d are delayed or stale beyond step + %d s.', $breachedCount, $totalSeries, $this->settings->pollerId, $this->settings->freshnessAllowance),
+			'Verify SmokePing probe intervals and reader poller execution frequency.'
 		);
 	}
 
 	/**
-	 * @param list<string> $expectedFiles
-	 * @return array{id: string, category: string, status: string, summary: string, detail: string, repair: string, repairable: bool, assessment: string}
+	 * Build the orphan-RRDs check descriptor.
+	 *
+	 * @param list<string> $expectedFiles Expected RRD file paths for configured targets.
+	 * @return array{id: string, plugin: string, category: string, title: string, status: string, message: string, details: string, remediation: string}
 	 */
 	private function orphanRrdsResult(array $expectedFiles): array {
+		$title = 'SmokePing orphan RRD files';
+
 		if (!$this->readerHost) {
-			return self::result('smokeping_orphan_rrds', 'unknown', 'Orphan RRD check runs only on the SmokePing reader poller', sprintf('This host is not poller %d.', $this->settings->pollerId));
+			return self::result('smokeping.orphan_rrds', 'info', $title, 'Orphan RRD check runs only on the SmokePing reader poller', sprintf('This host is not poller %d.', $this->settings->pollerId), '');
 		}
 
 		$containment = MountCheck::withinRra($this->settings->mountPath, $this->rraPath);
 
 		if ($containment !== null || !is_dir($this->settings->mountPath)) {
-			return self::result('smokeping_orphan_rrds', 'fail', 'SmokePing mount path is unavailable for orphan scan', $containment ?? ('Mount path does not exist: ' . $this->settings->mountPath));
+			return self::result(
+				'smokeping.orphan_rrds',
+				'fail',
+				$title,
+				'SmokePing mount path is unavailable for orphan scan',
+				$containment ?? ('Mount path does not exist: ' . $this->settings->mountPath),
+				'Mount the SmokePing RRD directory inside the Cacti RRA path and verify read permissions.'
+			);
 		}
 
 		$scan    = $this->orphanScanner->scan($this->settings->mountPath, $expectedFiles);
 		$orphans = $scan['orphans'];
 
 		if ($orphans === []) {
-			return self::result('smokeping_orphan_rrds', 'ok', 'No orphan SmokePing RRD files detected', sprintf('Scanned %d RRD files under %s.', $scan['scanned'], $this->settings->mountPath));
+			return self::result('smokeping.orphan_rrds', 'ok', $title, 'No orphan SmokePing RRD files detected', sprintf('Scanned %d RRD files under %s.', $scan['scanned'], $this->settings->mountPath), '');
 		}
 
 		$names = array_map(static fn (array $o): string => $o['relative'], array_slice($orphans, 0, 10));
@@ -208,16 +237,20 @@ final class DoctorChecks {
 		$trunc = $scan['truncated'] ? ' (scan budget reached)' : '';
 
 		return self::result(
-			'smokeping_orphan_rrds',
+			'smokeping.orphan_rrds',
 			'warn',
+			$title,
 			sprintf('%d orphan SmokePing RRD file(s) found%s', count($orphans), $trunc),
-			'Unowned RRD files: ' . implode(', ', $names) . $extra
+			'Unowned RRD files: ' . implode(', ', $names) . $extra,
+			'Archive or remove unowned RRD files that no longer belong to active SmokePing targets.'
 		);
 	}
 
 	/**
-	 * @param list<string> $expectedFiles
-	 * @return array{id: string, category: string, status: string, summary: string, detail: string, repair: string, repairable: bool, assessment: string}
+	 * Build the config-and-mount-path check descriptor.
+	 *
+	 * @param list<string> $expectedFiles Expected RRD file paths for configured targets.
+	 * @return array{id: string, plugin: string, category: string, title: string, status: string, message: string, details: string, remediation: string}
 	 */
 	private function configPathResult(array $expectedFiles): array {
 		$configFinding = HealthCheck::configFile($this->settings->configFile, $this->readerHost, $this->settings->pollerId);
@@ -235,15 +268,17 @@ final class DoctorChecks {
 		$status = match ($worst) {
 			HealthLevel::Error   => 'fail',
 			HealthLevel::Warning => 'warn',
-			HealthLevel::Unknown => 'unknown',
+			HealthLevel::Unknown => 'info',
 			HealthLevel::Ok      => 'ok',
 		};
 
 		return self::result(
-			'smokeping_config_path',
+			'smokeping.config_path',
 			$status,
+			'SmokePing configuration and mount path',
 			'SmokePing configuration and mount path status: ' . $status,
-			implode(' | ', $details)
+			implode(' | ', $details),
+			$status === 'ok' || $status === 'info' ? '' : 'Check SmokePing configuration file path, mount containment, and filesystem permissions.'
 		);
 	}
 
@@ -256,15 +291,18 @@ final class DoctorChecks {
 	 * @param Health $health Reader and inventory health record for the configured poller.
 	 * @param string $pluginVersion Installed plugin version string from INFO.
 	 * @param int $schemaVersion Applied database schema version.
-	 * @return array{label: string, description: string, fields: array<string, array{label: string, value: string, private: bool}>}
+	 * @return array{id: string, plugin: string, label: string, description: string, private: bool, fields: array<string, array{label: string, value: string, private: bool}>}
 	 */
 	public function debugInfo(Health $health, string $pluginVersion, int $schemaVersion): array {
 		$configReadable = $this->readerHost ? (is_readable($this->settings->configFile) ? 'yes' : 'no') : 'remote-poller';
 		$mountReadable  = $this->readerHost ? (is_dir($this->settings->mountPath) && is_readable($this->settings->mountPath) ? 'yes' : 'no') : 'remote-poller';
 
 		return [
+			'id'          => 'smokeping.overview',
+			'plugin'      => self::CATEGORY,
 			'label'       => 'SmokePing',
 			'description' => 'Redacted SmokePing plugin configuration, schema, and reader telemetry snapshot.',
+			'private'     => false,
 			'fields'      => [
 				'plugin_version'        => ['label' => 'Plugin Version', 'value' => $pluginVersion, 'private' => false],
 				'schema_version'        => ['label' => 'Schema Version', 'value' => (string) $schemaVersion, 'private' => false],
@@ -289,28 +327,18 @@ final class DoctorChecks {
 	}
 
 	/**
-	 * Attach the redacted SmokePing debug info section to an array or registrar object.
+	 * Return the redacted SmokePing debug info section list without echoing $context.
 	 *
-	 * @param mixed $sections Array accumulator or registrar object with register(string, array).
+	 * @param mixed $context Doctor debug-info hook context.
 	 * @param Health $health Reader and inventory health record for the configured poller.
 	 * @param string $pluginVersion Installed plugin version string from INFO.
 	 * @param int $schemaVersion Applied database schema version.
-	 * @return mixed Updated sections accumulator or registrar.
+	 * @return list<array{id: string, plugin: string, label: string, description: string, private: bool, fields: array<string, array{label: string, value: string, private: bool}>}>
 	 */
-	public function registerDebugInfo($sections, Health $health, string $pluginVersion, int $schemaVersion) {
-		$entry = $this->debugInfo($health, $pluginVersion, $schemaVersion);
+	public function registerDebugInfo($context, Health $health, string $pluginVersion, int $schemaVersion): array {
+		unset($context);
 
-		if (is_array($sections)) {
-			$sections[self::CATEGORY] = $entry;
-
-			return $sections;
-		}
-
-		if (is_object($sections) && method_exists($sections, 'register')) {
-			$sections->register(self::CATEGORY, $entry);
-		}
-
-		return $sections;
+		return [$this->debugInfo($health, $pluginVersion, $schemaVersion)];
 	}
 
 	/**
@@ -332,24 +360,41 @@ final class DoctorChecks {
 	}
 
 	/**
-	 * Format a single Doctor check result entry.
+	 * Normalize arbitrary status tokens to Doctor's strict ok|warn|fail|info enum.
 	 *
-	 * @param string $id Stable check identifier.
-	 * @param string $status Doctor status string (ok, warn, fail, unknown).
-	 * @param string $summary One-line summary message.
-	 * @param string $detail Detailed diagnostic text.
-	 * @return array{id: string, category: string, status: string, summary: string, detail: string, repair: string, repairable: bool, assessment: string}
+	 * @param string $status Raw status string.
+	 * @return string Normalized Doctor status ('ok', 'warn', 'fail', or 'info').
 	 */
-	private static function result(string $id, string $status, string $summary, string $detail): array {
+	private static function normalizeStatus(string $status): string {
+		return match (strtolower(trim($status))) {
+			'ok', 'pass'       => 'ok',
+			'warn', 'warning'  => 'warn',
+			'fail', 'critical', 'error' => 'fail',
+			default            => 'info',
+		};
+	}
+
+	/**
+	 * Format a single canonical Doctor check descriptor entry.
+	 *
+	 * @param string $id          Stable dot-prefixed check identifier.
+	 * @param string $status      Status string normalized to ok, warn, fail, or info.
+	 * @param string $title       Human-readable check title.
+	 * @param string $message     One-line status message.
+	 * @param string $details     Detailed diagnostic text.
+	 * @param string $remediation Actionable remediation guidance.
+	 * @return array{id: string, plugin: string, category: string, title: string, status: string, message: string, details: string, remediation: string}
+	 */
+	private static function result(string $id, string $status, string $title, string $message, string $details, string $remediation): array {
 		return [
-			'id'         => $id,
-			'category'   => self::CATEGORY,
-			'status'     => $status,
-			'summary'    => $summary,
-			'detail'     => $detail,
-			'repair'     => '',
-			'repairable' => false,
-			'assessment' => 'assessed',
+			'id'          => $id,
+			'plugin'      => self::CATEGORY,
+			'category'    => self::CATEGORY,
+			'title'       => $title,
+			'status'      => self::normalizeStatus($status),
+			'message'     => $message,
+			'details'     => $details,
+			'remediation' => $remediation,
 		];
 	}
 }

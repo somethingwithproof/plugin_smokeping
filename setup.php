@@ -904,14 +904,14 @@ function smokeping_abilities_register($registrar): void {
  * doctor_register_checks hook: report stale targets, orphan RRDs, freshness
  * breaches, and SmokePing config/mount path health without mutating state.
  *
- * @param mixed $checks
- * @return mixed
+ * @param mixed $context
+ * @return array<int, array<string, mixed>>
  */
-function smokeping_doctor_register_checks($checks = array()) {
+function smokeping_doctor_register_checks($context = array()) {
 	global $config;
 
 	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
-		return $checks;
+		return array();
 	}
 
 	$settings  = smokeping_settings();
@@ -931,7 +931,7 @@ function smokeping_doctor_register_checks($checks = array()) {
 		$pollerId === $settings->pollerId
 	);
 
-	return $doctor->register($checks);
+	return $doctor->register($context);
 }
 
 /**
@@ -941,9 +941,9 @@ function smokeping_doctor_register_checks($checks = array()) {
  * @param mixed $providers
  * @return mixed
  */
-function smokeping_casc_register_providers($providers = array()) {
+function smokeping_casc_register_providers($providers = null) {
 	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
-		return $providers;
+		return is_array($providers) ? $providers : array();
 	}
 
 	$webUser  = PHP_SAPI !== 'cli';
@@ -979,14 +979,14 @@ function smokeping_replicate_out($data) {
  * doctor_register_debug_info hook: expose a redacted SmokePing diagnostic
  * snapshot as plain arrays with zero cross-plugin PHP imports.
  *
- * @param mixed $sections
- * @return mixed
+ * @param mixed $context
+ * @return array<int, array<string, mixed>>
  */
-function smokeping_doctor_register_debug_info($sections = array()) {
+function smokeping_doctor_register_debug_info($context = array()) {
 	global $config;
 
 	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
-		return $sections;
+		return array();
 	}
 
 	$settings  = smokeping_settings();
@@ -1008,7 +1008,7 @@ function smokeping_doctor_register_debug_info($sections = array()) {
 		$pollerId === $settings->pollerId
 	);
 
-	return $doctor->registerDebugInfo($sections, $health, $info['version'] ?? '', \Somethingwithproof\Smokeping\Schema::VERSION);
+	return $doctor->registerDebugInfo($context, $health, $info['version'] ?? '', \Somethingwithproof\Smokeping\Schema::VERSION);
 }
 
 /**
@@ -1016,11 +1016,11 @@ function smokeping_doctor_register_debug_info($sections = array()) {
  * as plain arrays with zero cross-plugin PHP imports.
  *
  * @param mixed $resources
- * @return mixed
+ * @return array<int, array<string, mixed>>
  */
 function smokeping_api_register_resources($resources = array()) {
 	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
-		return $resources;
+		return array();
 	}
 
 	return \Somethingwithproof\Smokeping\ApiResources::register($resources);

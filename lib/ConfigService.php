@@ -55,6 +55,17 @@ final class ConfigService {
 	}
 
 	/**
+	 * Export the configuration as a plain associative array for CasC providers.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function exportArray(): array {
+		$this->requireUnrestricted();
+
+		return ConfigCodec::toArray(ConfigPlanner::export($this->repository->state()));
+	}
+
+	/**
 	 * Write a YAML export of the configuration and return its path, or null
 	 * when nothing was written. Used by the uninstall; a failure is logged and
 	 * never blocks it.

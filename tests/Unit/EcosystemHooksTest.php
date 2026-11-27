@@ -105,46 +105,73 @@ describe('Ecosystem hook registrations', function () {
 			->and(($registrar->abilities['smokeping-list-targets']['permission'])(42))->toBeTrue()
 			->and(($registrar->abilities['smokeping-list-targets']['execute'])(42, new stdClass()))->toBe(['total' => 0, 'targets' => []]);
 
-		$doctorChecks = smokeping_doctor_register_checks([]);
-		expect($doctorChecks)->toHaveCount(4);
+		$doctorChecks = smokeping_doctor_register_checks(['mode' => 'run', 'plugin' => 'smokeping']);
+		expect($doctorChecks)->toHaveCount(4)
+			->and(array_is_list($doctorChecks))->toBeTrue();
 
-		$debugSections = smokeping_doctor_register_debug_info([]);
-		expect($debugSections)->toHaveKey('smokeping')
-			->and($debugSections['smokeping']['fields']['config_path']['value'])->toBe('[redacted]')
-			->and($debugSections['smokeping']['fields']['mount_path']['value'])->toBe('[redacted]')
-			->and($debugSections['smokeping']['fields']['schema_version']['value'])->toBe((string) Schema::VERSION);
-
-		$apiResources = smokeping_api_register_resources([]);
-		expect(array_keys($apiResources))->toBe([
-			'smokeping/targets',
-			'smokeping/observations',
-			'smokeping/health',
-		]);
-
-		foreach ($apiResources as $key => $descriptor) {
-			expect($descriptor['plugin'])->toBe('smokeping', $key)
-				->and($descriptor['read_only'])->toBeTrue($key)
-				->and($descriptor['methods'])->toBe(['list', 'get'], $key);
+		foreach ($doctorChecks as $check) {
+			expect($check['plugin'])->toBe('smokeping')
+				->and($check['id'])->toStartWith('smokeping.')
+				->and($check['status'])->toBeIn(['ok', 'warn', 'fail', 'info'])
+				->and($check['message'])->not->toBe('');
 		}
 
-		$cascProviders = smokeping_casc_register_providers([]);
-		expect($cascProviders)->toHaveKey('smokeping');
+		$listedChecks = smokeping_doctor_register_checks(['mode' => 'list', 'plugin' => 'smokeping']);
+		expect($listedChecks)->toHaveCount(4);
+
+		foreach ($listedChecks as $check) {
+			expect($check['status'])->toBe('info')
+				->and($check['id'])->toStartWith('smokeping.');
+		}
+
+		$debugSections = smokeping_doctor_register_debug_info(['plugin' => 'smokeping']);
+		expect($debugSections)->toHaveCount(1)
+			->and(array_is_list($debugSections))->toBeTrue()
+			->and($debugSections[0]['id'])->toBe('smokeping.overview')
+			->and($debugSections[0]['plugin'])->toBe('smokeping')
+			->and($debugSections[0]['fields']['config_path']['value'])->toBe('[redacted]')
+			->and($debugSections[0]['fields']['mount_path']['value'])->toBe('[redacted]')
+			->and($debugSections[0]['fields']['schema_version']['value'])->toBe((string) Schema::VERSION);
+
+		$apiResources = smokeping_api_register_resources([]);
+		expect($apiResources)->toHaveCount(1)
+			->and(array_is_list($apiResources))->toBeTrue()
+			->and($apiResources[0]['plugin'])->toBe('smokeping')
+			->and($apiResources[0]['collection'])->toBe('smokepingTargets')
+			->and($apiResources[0]['collection'])->toMatch('/^[a-z][A-Za-z0-9]{2,63}$/')
+			->and($apiResources[0]['realm_read'])->toBe('smokeping.php')
+			->and(is_callable($apiResources[0]['handlers']['list']))->toBeTrue()
+			->and(is_callable($apiResources[0]['handlers']['get']))->toBeTrue();
+
+		$cascRegistrar = new class {
+			/** @var list<array<string, mixed>> */
+			public array $registered = [];
+
+			/** @param array<string, mixed> $descriptor */
+			public function register(array $descriptor): void {
+				$this->registered[] = $descriptor;
+			}
+		};
+		$cascDescriptor = smokeping_casc_register_providers($cascRegistrar);
+		expect($cascRegistrar->registered)->toHaveCount(1)
+			->and($cascDescriptor['slug'])->toBe('smokeping')
+			->and($cascDescriptor['schemaVersion'])->toBe('1.0');
 
 		$repOut = smokeping_replicate_out(['remote_poller_id' => 1, 'rcnn_id' => false, 'class' => 'all']);
 		expect($repOut['remote_poller_id'])->toBe(1);
 
-		// Disabled plugin short-circuits all ecosystem hooks safely.
+		// Disabled plugin short-circuits all ecosystem hooks safely without echoing context.
 		$GLOBALS['__operator_enabled'] = false;
 		$emptyReg                      = new stdClass();
 		smokeping_abilities_register($emptyReg);
-		expect(smokeping_doctor_register_checks(['keep']))->toBe(['keep'])
-			->and(smokeping_doctor_register_debug_info(['keep' => []]))->toBe(['keep' => []])
-			->and(smokeping_api_register_resources(['keep' => []]))->toBe(['keep' => []])
+		expect(smokeping_doctor_register_checks(['mode' => 'run', 'plugin' => 'smokeping']))->toBe([])
+			->and(smokeping_doctor_register_debug_info(['plugin' => 'smokeping']))->toBe([])
+			->and(smokeping_api_register_resources([['collection' => 'keep']]))->toBe([])
 			->and(smokeping_casc_register_providers(['keep']))->toBe(['keep'])
 			->and(smokeping_replicate_out('not-array'))->toBe('not-array');
 	});
 
-	it('supports registrar objects for doctor_register_debug_info and api_register_resources and ships schema YAML with zero cross-plugin imports', function () {
+	it('redacts paths in doctor_register_debug_info, serves api_register_resources handlers, and ships schema YAML with zero cross-plugin imports', function () {
 		$settings = Settings::fromRow([
 			'smokeping_poller_id'   => '1',
 			'smokeping_config_file' => '/secret/internal/smokeping.conf',
@@ -162,38 +189,33 @@ describe('Ecosystem hook registrations', function () {
 			false
 		);
 
-		$debugReg = new class {
-			/** @var array<string, array<string, mixed>> */
-			public array $sections = [];
-
-			/** @param array<string, mixed> $section */
-			public function register(string $id, array $section): void {
-				$this->sections[$id] = $section;
-			}
-		};
-
-		$doctor->registerDebugInfo($debugReg, Health::never(1), '1.0.0', Schema::VERSION);
-		$serialized = (string) json_encode($debugReg->sections);
-		expect($debugReg->sections)->toHaveKey('smokeping')
+		$sections   = $doctor->registerDebugInfo(['plugin' => 'smokeping'], Health::never(1), '1.0.0', Schema::VERSION);
+		$serialized = (string) json_encode($sections);
+		expect($sections)->toHaveCount(1)
+			->and($sections[0]['id'])->toBe('smokeping.overview')
+			->and($sections[0]['plugin'])->toBe('smokeping')
 			->and($serialized)->not->toContain('/secret/internal/smokeping.conf')
 			->and($serialized)->not->toContain('/secret/rra/smokeping');
 
-		$apiReg = new class {
-			/** @var array<string, array<string, mixed>> */
-			public array $resources = [];
+		$GLOBALS['__smokeping_db_assoc'] = static fn (): array => [[
+			'id' => 11, 'poller_id' => 1, 'path' => 'Europe/paris', 'host' => 'paris.example',
+			'probe' => 'FPing', 'title' => 'Paris', 'step' => 300, 'pings' => 20,
+			'present' => 1, 'mode' => 'observed', 'admin_state' => 'enabled',
+		]];
+		$registered = ApiResources::register([['plugin' => 'other', 'collection' => 'otherItems']]);
+		expect($registered)->toHaveCount(2)
+			->and($registered[1]['collection'])->toBe('smokepingTargets');
 
-			/** @param array<string, mixed> $descriptor */
-			public function register(string $id, array $descriptor): void {
-				$this->resources[$id] = $descriptor;
-			}
-		};
+		$listed = ($registered[1]['handlers']['list'])(['user_id' => 1]);
+		expect($listed)->toHaveCount(1)
+			->and($listed[0]['id'])->toBe('11')
+			->and($listed[0]['name'])->toBe('smokepingTargets/11');
 
-		ApiResources::register($apiReg);
-		expect(array_keys($apiReg->resources))->toBe([
-			'smokeping/targets',
-			'smokeping/observations',
-			'smokeping/health',
-		]);
+		$found = ($registered[1]['handlers']['get'])('11', ['user_id' => 1]);
+		expect($found)->not->toBeNull()
+			->and($found['path'])->toBe('Europe/paris')
+			->and(($registered[1]['handlers']['get'])('999', ['user_id' => 1]))->toBeNull()
+			->and(($registered[1]['handlers']['get'])('', ['user_id' => 1]))->toBeNull();
 
 		// Verify static Drupal-style schema separates config from state cleanly.
 		$schemaYaml = (string) file_get_contents(dirname(__DIR__, 2) . '/schema/smokeping.schema.yaml');
@@ -368,7 +390,7 @@ describe('DoctorChecks (doctor_register_checks)', function () {
 			true
 		);
 
-		$checks = $doctor->register([]);
+		$checks = $doctor->register(['mode' => 'run', 'plugin' => 'smokeping']);
 		$byId   = [];
 
 		foreach ($checks as $entry) {
@@ -376,29 +398,16 @@ describe('DoctorChecks (doctor_register_checks)', function () {
 		}
 
 		expect(array_keys($byId))->toBe([
-			'smokeping_stale_targets',
-			'smokeping_freshness_breaches',
-			'smokeping_orphan_rrds',
-			'smokeping_config_path',
+			'smokeping.stale_targets',
+			'smokeping.freshness_breaches',
+			'smokeping.orphan_rrds',
+			'smokeping.config_path',
 		])
-			->and($byId['smokeping_stale_targets']['status'])->toBe('warn')
-			->and($byId['smokeping_freshness_breaches']['status'])->toBe('warn')
-			->and($byId['smokeping_orphan_rrds']['status'])->toBe('warn')
-			->and($byId['smokeping_orphan_rrds']['detail'])->toContain('Europe/orphan.rrd')
-			->and($byId['smokeping_config_path']['status'])->toBe('fail');
-
-		// Object registrar, non-reader host, healthy targets, and clean mount paths.
-		$objReg = new class {
-			/** @var array<string, array<string, mixed>> */
-			public array $entries = [];
-
-			/** @param array<string, mixed> $entry */
-			public function register(string $id, array $entry): void {
-				$this->entries[$id] = $entry;
-			}
-		};
-		$doctor->register($objReg);
-		expect(array_keys($objReg->entries))->toHaveCount(4);
+			->and($byId['smokeping.stale_targets']['status'])->toBe('warn')
+			->and($byId['smokeping.freshness_breaches']['status'])->toBe('warn')
+			->and($byId['smokeping.orphan_rrds']['status'])->toBe('warn')
+			->and($byId['smokeping.orphan_rrds']['details'])->toContain('Europe/orphan.rrd')
+			->and($byId['smokeping.config_path']['status'])->toBe('fail');
 
 		unlink($this->root . '/rra/smokeping/Europe/orphan.rrd');
 		touch($this->root . '/smokeping.conf');
@@ -424,17 +433,17 @@ describe('DoctorChecks (doctor_register_checks)', function () {
 		], $this->root . '/rra');
 		$okDoctor = new DoctorChecks($okSettings, new TargetRepository(false), new ObservationRepository(false), new FreshnessEvaluator($clock, 60), new MountCheck(''), new OrphanRrdScanner(), $this->root . '/rra', true);
 		$okById   = array_column($okDoctor->run(), null, 'id');
-		expect($okById['smokeping_stale_targets']['status'])->toBe('ok')
-			->and($okById['smokeping_freshness_breaches']['status'])->toBe('ok')
-			->and($okById['smokeping_orphan_rrds']['status'])->toBe('ok');
+		expect($okById['smokeping.stale_targets']['status'])->toBe('ok')
+			->and($okById['smokeping.freshness_breaches']['status'])->toBe('ok')
+			->and($okById['smokeping.orphan_rrds']['status'])->toBe('ok');
 
-		// Non-reader host + empty targets
+		// Non-reader host + empty targets map to canonical info status
 		$GLOBALS['__smokeping_db_assoc'] = [];
 		$remoteDoctor                    = new DoctorChecks($okSettings, new TargetRepository(false), new ObservationRepository(false), new FreshnessEvaluator($clock, 60), new MountCheck(''), new OrphanRrdScanner(), $this->root . '/rra', false);
 		$remoteById                      = array_column($remoteDoctor->run(), null, 'id');
-		expect($remoteById['smokeping_stale_targets']['status'])->toBe('unknown')
-			->and($remoteById['smokeping_freshness_breaches']['status'])->toBe('unknown')
-			->and($remoteById['smokeping_orphan_rrds']['status'])->toBe('unknown');
+		expect($remoteById['smokeping.stale_targets']['status'])->toBe('info')
+			->and($remoteById['smokeping.freshness_breaches']['status'])->toBe('info')
+			->and($remoteById['smokeping.orphan_rrds']['status'])->toBe('info');
 
 		// Missing mount on reader host -> fail
 		$badMountSettings = Settings::fromRow([
@@ -444,7 +453,7 @@ describe('DoctorChecks (doctor_register_checks)', function () {
 		], $this->root . '/rra');
 		$badMountDoctor = new DoctorChecks($badMountSettings, new TargetRepository(false), new ObservationRepository(false), new FreshnessEvaluator($clock, 60), new MountCheck(''), new OrphanRrdScanner(), $this->root . '/rra', true);
 		$badById        = array_column($badMountDoctor->run(), null, 'id');
-		expect($badById['smokeping_orphan_rrds']['status'])->toBe('fail');
+		expect($badById['smokeping.orphan_rrds']['status'])->toBe('fail');
 	});
 });
 
@@ -454,7 +463,7 @@ describe('CascProvider (casc_register_providers)', function () {
 		$GLOBALS['__smokeping_db_exec']  = [];
 	});
 
-	it('bridges export, validate, plan, and apply directly through ConfigCodec and ConfigService', function () {
+	it('bridges export, validate, plan, and apply over array payloads via 1-argument ProviderRegistrar', function () {
 		$GLOBALS['__smokeping_db_assoc'] = static function (string $sql): array {
 			if (str_contains($sql, 'FROM poller')) {
 				return [['id' => 1]];
@@ -465,54 +474,64 @@ describe('CascProvider (casc_register_providers)', function () {
 
 		$service  = new ConfigService(new ConfigRepository(false, '/rra'));
 		$provider = new CascProvider($service, new FixedClock(1700000000));
-		$registry = $provider->register([]);
 
-		expect($registry)->toHaveKey('smokeping')
-			->and($registry['smokeping']['formats'])->toBe([ConfigCodec::YAML, ConfigCodec::XML]);
-
-		$yaml = ($registry['smokeping']['export'])('yaml');
-		expect($yaml)->toContain('schema_version: 1');
-
-		$valid = ($registry['smokeping']['validate'])($yaml, 'yaml');
-		expect($valid['valid'])->toBeTrue()
-			->and($valid['errors'])->toBe([]);
-
-		$plan = ($registry['smokeping']['plan'])($yaml, 'yaml');
-		expect($plan['has_errors'])->toBeFalse()
-			->and($plan['empty'])->toBeTrue()
-			->and($plan['plan_id'])->not->toBe('');
-
-		$bad = ($registry['smokeping']['validate'])("schema_version: 999\n", 'yaml');
-		expect($bad['valid'])->toBeFalse()
-			->and($bad['errors'])->not->toBe([]);
-
-		$badPlan = ($registry['smokeping']['plan'])("schema_version: 999\n", 'yaml');
-		expect($badPlan['has_errors'])->toBeTrue()
-			->and($badPlan['plan_id'])->toBe('');
-
-		$badApply = ($registry['smokeping']['apply'])("schema_version: 999\n", 'wrong', 'yaml', 1);
-		expect($badApply['applied'])->toBeFalse()
-			->and($badApply['errors'])->not->toBe([]);
-
-		$mismatchApply = ($registry['smokeping']['apply'])($yaml, '0000000000000000', 'yaml', 1);
-		expect($mismatchApply['applied'])->toBeFalse();
-
-		$okApply = ($registry['smokeping']['apply'])($yaml, $plan['plan_id'], 'yaml', 1);
-		expect($okApply['applied'])->toBeTrue()
-			->and($okApply['errors'])->toBe([]);
-
-		// Object registrar support
+		// 1-argument ProviderRegistrar support
 		$objReg = new class {
-			/** @var array<string, array<string, mixed>> */
+			/** @var list<array<string, mixed>> */
 			public array $providers = [];
 
 			/** @param array<string, mixed> $desc */
-			public function register(string $slug, array $desc): void {
-				$this->providers[$slug] = $desc;
+			public function register(array $desc): void {
+				$this->providers[] = $desc;
 			}
 		};
-		$provider->register($objReg);
-		expect($objReg->providers)->toHaveKey('smokeping');
+		$descriptor = $provider->register($objReg);
+		expect($objReg->providers)->toHaveCount(1)
+			->and($descriptor['slug'])->toBe('smokeping')
+			->and($descriptor['schemaVersion'])->toBe('1.0');
+
+		// Direct return and array accumulator support
+		expect($provider->register()['slug'])->toBe('smokeping')
+			->and($provider->register([]))->toHaveKey('smokeping');
+
+		$exported = ($descriptor['export'])([]);
+		expect($exported['schemaVersion'])->toBe('1.0')
+			->and($exported['config']['schema_version'])->toBe(1);
+
+		expect(($descriptor['validate'])($exported))->toBe([]);
+		expect(($descriptor['plan'])($exported, []))->toBe([]);
+
+		// Desired change triggers plan item with plan_hash
+		$changed                          = $exported['config'];
+		$changed['settings']['smokeping_freshness_allowance'] = 120;
+		$plan                                                 = ($descriptor['plan'])($changed, []);
+		expect($plan)->not->toBe([])
+			->and($plan[0]['operation'])->toBe('update')
+			->and($plan[0]['key'])->toBe('smokeping')
+			->and($plan[0]['plan_hash'])->not->toBe('');
+
+		// Invalid payload returns non-empty list<string> and error plan/apply
+		$bad = ($descriptor['validate'])(['schema_version' => 999]);
+		expect($bad)->not->toBe([])
+			->and(array_is_list($bad))->toBeTrue();
+
+		$badPlan = ($descriptor['plan'])(['schema_version' => 999], []);
+		expect($badPlan)->not->toBe([])
+			->and($badPlan[0]['operation'])->toBe('error');
+
+		$badApply = ($descriptor['apply'])(['schema_version' => 999], 'wrong', ['user_id' => 1]);
+		expect($badApply['ok'])->toBeFalse()
+			->and($badApply['applied'])->toBeFalse()
+			->and($badApply['errors'])->not->toBe([]);
+
+		$mismatchApply = ($descriptor['apply'])($exported, '0000000000000000', ['user_id' => 1]);
+		expect($mismatchApply['ok'])->toBeFalse()
+			->and($mismatchApply['applied'])->toBeFalse();
+
+		$okApply = ($descriptor['apply'])($changed, $plan[0]['plan_hash'], ['user_id' => 1]);
+		expect($okApply['ok'])->toBeTrue()
+			->and($okApply['applied'])->toBeTrue()
+			->and($okApply['errors'])->toBe([]);
 	});
 });
 

@@ -43,14 +43,20 @@ final class CascProvider {
 	}
 
 	/**
-	 * Register the SmokePing CasC provider with either an array accumulator or
-	 * a registrar object exposing register().
+	 * Register the SmokePing CasC provider with a 1-argument ProviderRegistrar
+	 * or return the canonical plain-array descriptor.
 	 *
-	 * @param mixed $providers
-	 * @return mixed
+	 * @param mixed $providers ProviderRegistrar instance or optional accumulator array.
+	 * @return mixed Registered descriptor array or updated accumulator array.
 	 */
-	public function register($providers) {
+	public function register($providers = null) {
 		$descriptor = $this->descriptor();
+
+		if (is_object($providers) && method_exists($providers, 'register')) {
+			$providers->register($descriptor);
+
+			return $descriptor;
+		}
 
 		if (is_array($providers)) {
 			$providers[self::SLUG] = $descriptor;
@@ -58,101 +64,176 @@ final class CascProvider {
 			return $providers;
 		}
 
-		if (is_object($providers) && method_exists($providers, 'register')) {
-			$providers->register(self::SLUG, $descriptor);
-		}
-
-		return $providers;
+		return $descriptor;
 	}
 
 	/**
+	 * Build the canonical plain-array CasC provider descriptor.
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function descriptor(): array {
 		return [
-			'name'           => self::SLUG,
-			'schema_version' => ConfigDocument::VERSION,
-			'formats'        => [ConfigCodec::YAML, ConfigCodec::XML],
-			'export'         => fn (string $format = ConfigCodec::YAML): string => $this->export($format),
-			'validate'       => fn (string $content, string $format = ConfigCodec::YAML): array => $this->validate($content, $format),
-			'plan'           => fn (string $content, string $format = ConfigCodec::YAML): array => $this->plan($content, $format),
-			'apply'          => fn (string $content, string $confirmPlanId, string $format = ConfigCodec::YAML, int $userId = 0): array => $this->apply($content, $confirmPlanId, $format, $userId),
+			'slug'          => self::SLUG,
+			'schemaVersion' => '1.0',
+			'export'        => fn (array $options = []): array => $this->exportData($options),
+			'validate'      => fn (array $desired): array => $this->validateData($desired),
+			'plan'          => fn (array $desired, array $options = []): array => $this->planData($desired, $options),
+			'apply'         => fn (array $desired, string $planHash = '', array $options = []): array => $this->applyData($desired, $planHash, $options),
 		];
 	}
 
 	/**
-	 * Export.
+	 * Export SmokePing declarative configuration as a plain associative array.
 	 *
-	 * @param string $format Format.
-	 * @return string
+	 * @param array<string, mixed> $options Optional export options.
+	 * @return array{schemaVersion: string, config: array<string, mixed>, reference: array<string, mixed>}
 	 */
-	public function export(string $format = ConfigCodec::YAML): string {
-		return $this->service->export($format);
+	public function exportData(array $options = []): array {
+		unset($options);
+		$data      = $this->service->exportArray();
+		$reference = [];
+
+		if (isset($data['reference_settings']) && is_array($data['reference_settings'])) {
+			/** @var array<string, mixed> $refSettings */
+			$refSettings = $data['reference_settings'];
+			$reference   = $refSettings;
+			unset($data['reference_settings']);
+		}
+
+		return [
+			'schemaVersion' => '1.0',
+			'config'        => $data,
+			'reference'     => $reference,
+		];
 	}
 
 	/**
-	 * @return array{valid: bool, errors: list<string>}
+	 * Validate a desired SmokePing configuration payload.
+	 *
+	 * @param array<string, mixed> $desired Desired declarative payload.
+	 * @return list<string> Empty list when valid, or error strings when invalid.
 	 */
-	public function validate(string $content, string $format = ConfigCodec::YAML): array {
+	public function validateData(array $desired): array {
 		try {
-			$document = ConfigCodec::parse($format, $content);
+			$document = self::decodeArray($desired);
 			$plan     = $this->service->plan($document);
 
-			return [
-				'valid'  => !$plan->hasErrors(),
-				'errors' => $plan->errors,
-			];
+			return $plan->errors;
 		} catch (ConfigException $e) {
-			return [
-				'valid'  => false,
-				'errors' => $e->lines(),
-			];
+			return $e->lines();
 		}
 	}
 
 	/**
-	 * @return array{plan_id: string, empty: bool, has_errors: bool, errors: list<string>, lines: list<string>}
+	 * Compute a declarative change plan for a desired SmokePing payload.
+	 *
+	 * @param array<string, mixed> $desired Desired declarative payload.
+	 * @param array<string, mixed> $options Optional planner options.
+	 * @return list<array<string, mixed>>
 	 */
-	public function plan(string $content, string $format = ConfigCodec::YAML): array {
+	public function planData(array $desired, array $options = []): array {
+		unset($options);
+
 		try {
-			$document = ConfigCodec::parse($format, $content);
+			$document = self::decodeArray($desired);
 			$plan     = $this->service->plan($document);
 
-			return [
-				'plan_id'    => $plan->id(),
-				'empty'      => $plan->isEmpty(),
-				'has_errors' => $plan->hasErrors(),
-				'errors'     => $plan->errors,
-				'lines'      => $plan->lines(),
-			];
+			if ($plan->hasErrors()) {
+				$items = [];
+
+				foreach ($plan->errors as $error) {
+					$items[] = [
+						'operation' => 'error',
+						'key'       => self::SLUG,
+						'message'   => $error,
+					];
+				}
+
+				return $items;
+			}
+
+			if ($plan->isEmpty()) {
+				return [];
+			}
+
+			$items  = [];
+			$planId = $plan->id();
+
+			foreach ($plan->lines() as $line) {
+				$items[] = [
+					'operation' => 'update',
+					'key'       => self::SLUG,
+					'message'   => $line,
+					'plan_hash' => $planId,
+				];
+			}
+
+			return $items;
 		} catch (ConfigException $e) {
-			return [
-				'plan_id'    => '',
-				'empty'      => true,
-				'has_errors' => true,
-				'errors'     => $e->lines(),
-				'lines'      => [],
-			];
+			$items = [];
+
+			foreach ($e->lines() as $error) {
+				$items[] = [
+					'operation' => 'error',
+					'key'       => self::SLUG,
+					'message'   => $error,
+				];
+			}
+
+			return $items;
 		}
 	}
 
 	/**
-	 * @return array{applied: bool, errors: list<string>}
+	 * Apply a desired SmokePing configuration payload with plan confirmation.
+	 *
+	 * @param array<string, mixed> $desired  Desired declarative payload.
+	 * @param string               $planHash Confirmed plan hash.
+	 * @param array<string, mixed> $options  Optional apply options (supports int 'user_id').
+	 * @return array{ok: bool, applied: bool, errors: list<string>}
 	 */
-	public function apply(string $content, string $confirmPlanId, string $format = ConfigCodec::YAML, int $userId = 0): array {
+	public function applyData(array $desired, string $planHash = '', array $options = []): array {
+		$userId = isset($options['user_id']) && is_int($options['user_id']) ? $options['user_id'] : 0;
+
 		try {
-			$document = ConfigCodec::parse($format, $content);
-			$refusals = $this->service->apply($document, $confirmPlanId, $userId, $this->clock->now());
+			$document = self::decodeArray($desired);
+			$plan     = $this->service->plan($document);
+
+			if ($plan->hasErrors()) {
+				return [
+					'ok'      => false,
+					'applied' => false,
+					'errors'  => $plan->errors,
+				];
+			}
+
+			$confirmId = $planHash !== '' ? $planHash : '';
+			$refusals  = $this->service->apply($document, $confirmId, $userId, $this->clock->now());
 
 			return [
+				'ok'      => $refusals === [],
 				'applied' => $refusals === [],
 				'errors'  => $refusals,
 			];
 		} catch (ConfigException $e) {
 			return [
+				'ok'      => false,
 				'applied' => false,
 				'errors'  => $e->lines(),
 			];
 		}
+	}
+
+	/**
+	 * Decode a plain-array CasC payload into a validated ConfigDocument.
+	 *
+	 * @param array<string, mixed> $desired Plain-array payload or envelope with 'config'.
+	 * @return ConfigDocument
+	 */
+	private static function decodeArray(array $desired): ConfigDocument {
+		$payload = array_key_exists('config', $desired) && is_array($desired['config']) ? $desired['config'] : $desired;
+
+		return ConfigCodec::parse(ConfigCodec::YAML, YamlWriter::write($payload));
 	}
 }

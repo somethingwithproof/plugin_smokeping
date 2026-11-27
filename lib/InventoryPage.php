@@ -20,8 +20,9 @@
 namespace Somethingwithproof\Smokeping;
 
 /**
- * Administrator view of every target, including unmapped ones, and of the
- * open re-link proposals. Proposals are applied only from a confirmation screen.
+ * Administrator view of targets, including unmapped ones, with SQL-level
+ * filtering and pagination, plus open re-link proposals. Proposals are applied
+ * only from a confirmation screen.
  */
 final class InventoryPage {
 	public function __construct(private readonly TargetRepository $targets) {
@@ -31,11 +32,27 @@ final class InventoryPage {
 	 * @param array<int, string> $devices device id => description the user may see; a
 	 *                                    target mapped to any other device is left out
 	 */
-	public function render(int $pollerId, array $devices): void {
+	public function render(int $pollerId, array $devices, ?TargetFilter $filter = null): void {
+		$filter   = $filter ?? new TargetFilter();
 		$mappings = $this->targets->mappings();
-		$rows     = [];
 
-		foreach ($this->targets->forPoller($pollerId) as $target) {
+		if ($filter->isFiltered() || $filter->page > 1 || $filter->rows !== TargetFilter::DEFAULT_ROWS) {
+			$pageData = $this->targets->filteredForPoller($pollerId, $filter, array_keys($devices));
+			$targets  = $pageData['targets'];
+			$total    = $pageData['total'];
+			$probes   = $pageData['probes'];
+		} else {
+			$pageData = $this->targets->filteredForPoller($pollerId, $filter, array_keys($devices));
+			$targets  = $pageData['targets'];
+			$total    = $pageData['total'];
+			$probes   = $pageData['probes'];
+		}
+
+		$this->renderFilterBar($filter, $probes, $total);
+
+		$rows = [];
+
+		foreach ($targets as $target) {
 			$host = $mappings[(int) $target->id?->value] ?? 0;
 
 			if ($host > 0 && !isset($devices[$host])) {
@@ -62,6 +79,8 @@ final class InventoryPage {
 			__('No targets have been imported on this poller.', 'smokeping')
 		);
 
+		$this->renderPagination($filter, $total);
+
 		$visible   = array_filter($this->targets->openRelinkProposals(), fn (array $p) => !isset($mappings[$p['old_id']]) || isset($devices[$mappings[$p['old_id']]]));
 		$proposals = array_map(fn (array $p) => [$p['old_path'], $p['new_path'], $p['host'], $p['probe'], Html::link('smokeping_inventory.php', ['action' => 'relink', 'id' => $p['id']], __('Review', 'smokeping'))], array_values($visible));
 
@@ -71,5 +90,69 @@ final class InventoryPage {
 			$proposals,
 			__('No re-link proposals.', 'smokeping')
 		);
+	}
+
+	/**
+	 * @param list<string> $probes
+	 */
+	private function renderFilterBar(TargetFilter $filter, array $probes, int $total): void {
+		print '<form method="get" action="smokeping_inventory.php" class="filterTable">';
+		print '<table class="filterTable"><tr>';
+		print '<td><label for="sp_filter">' . html_escape(__('Path', 'smokeping') . '/' . __('Host', 'smokeping')) . '</label> ';
+		print '<input type="text" id="sp_filter" name="filter" size="24" value="' . html_escape($filter->search) . '"></td>';
+
+		print '<td><label for="sp_probe">' . html_escape(__('Probe', 'smokeping')) . '</label> <select id="sp_probe" name="probe">';
+		print '<option value="">' . html_escape('All') . '</option>';
+
+		foreach ($probes as $probe) {
+			$selected = $filter->probe === $probe ? ' selected' : '';
+			print '<option value="' . html_escape($probe) . '"' . $selected . '>' . html_escape($probe) . '</option>';
+		}
+
+		print '</select></td>';
+
+		print '<td><label for="sp_presence">' . html_escape(__('Inventory', 'smokeping')) . '</label> <select id="sp_presence" name="presence">';
+
+		foreach (['all' => 'All', 'present' => __('Present', 'smokeping'), 'gone' => __('Gone', 'smokeping')] as $value => $label) {
+			$selected = $filter->presence === $value ? ' selected' : '';
+			print '<option value="' . html_escape($value) . '"' . $selected . '>' . html_escape($label) . '</option>';
+		}
+
+		print '</select></td>';
+
+		print '<td><label for="sp_mapping">' . html_escape(__('Mapping', 'smokeping')) . '</label> <select id="sp_mapping" name="mapping">';
+
+		foreach (['all' => 'All', 'mapped' => 'Mapped', 'unmapped' => __('Unmapped', 'smokeping')] as $value => $label) {
+			$selected = $filter->mapping === $value ? ' selected' : '';
+			print '<option value="' . html_escape($value) . '"' . $selected . '>' . html_escape($label) . '</option>';
+		}
+
+		print '</select></td>';
+		print '<td><input type="submit" class="ui-button ui-corner-all ui-widget" value="Go"> ';
+		print '<a class="ui-button ui-corner-all ui-widget" href="smokeping_inventory.php">Clear</a></td>';
+		print '<td>' . html_escape(sprintf('%d targets', $total)) . '</td>';
+		print '</tr></table></form>';
+	}
+
+	private function renderPagination(TargetFilter $filter, int $total): void {
+		$pages = (int) max(1, (int) ceil($total / $filter->rows));
+
+		if ($pages <= 1) {
+			return;
+		}
+
+		$base = $filter->queryParams(false);
+		print '<div class="navBarNavigation">';
+		print '<span>' . html_escape(sprintf('Page %d of %d (%d total)', $filter->page, $pages, $total)) . '</span> ';
+
+		if ($filter->page > 1) {
+			print Html::link('smokeping_inventory.php', $base + ['page' => $filter->page - 1], 'Previous')->html . ' ';
+		}
+
+		if ($filter->page < $pages) {
+			print Html::link('smokeping_inventory.php', $base + ['page' => $filter->page + 1], 'Next')->html;
+		}
+
+		print '</div>';
 	}
 }

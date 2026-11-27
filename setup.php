@@ -807,3 +807,127 @@ function smokeping_page_allowed(): bool {
 		&& ($current_user['enabled'] ?? '') === 'on'
 		&& api_plugin_user_realm_auth(get_current_page());
 }
+
+/**
+ * abilities_register hook: expose read-only SmokePing abilities gated on the
+ * SmokePing View realm for the token owner ($userId), with zero secrets.
+ *
+ * @param mixed $registrar
+ */
+function smokeping_abilities_register($registrar): void {
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping') || !is_object($registrar)) {
+		return;
+	}
+
+	$settings = smokeping_settings();
+	$clock    = new \Somethingwithproof\Smokeping\SystemClock();
+	$cacti    = new \Somethingwithproof\Smokeping\CactiObjectRepository(false);
+
+	$provider = new \Somethingwithproof\Smokeping\AbilitiesProvider(
+		$settings,
+		new \Somethingwithproof\Smokeping\TargetRepository(false),
+		new \Somethingwithproof\Smokeping\ObservationRepository(false),
+		new \Somethingwithproof\Smokeping\HealthRepository(false),
+		new \Somethingwithproof\Smokeping\FreshnessEvaluator($clock, $settings->freshnessAllowance),
+		$clock,
+		max(60, (int) read_config_option('poller_interval')),
+		static function (int $userId) use ($cacti): bool {
+			return $cacti->userHasPluginRealm($userId, 'smokeping', \Somethingwithproof\Smokeping\Pages::VIEW)
+				|| $cacti->userHasPluginRealm($userId, 'smokeping', 'smokeping_operator.php')
+				|| $cacti->userHasPluginRealm($userId, 'smokeping', 'smokeping_inventory.php');
+		},
+		static function (int $userId): array {
+			$total   = 0;
+			$allowed = get_allowed_devices('', 'description', '', $total, $userId);
+			$devices = array();
+
+			if (is_array($allowed)) {
+				foreach ($allowed as $device) {
+					if (is_array($device) && isset($device['id']) && is_numeric($device['id'])) {
+						$desc = isset($device['description']) && is_string($device['description']) ? $device['description'] : '';
+						$devices[(int) $device['id']] = $desc;
+					}
+				}
+			}
+
+			return $devices;
+		}
+	);
+
+	$provider->register($registrar);
+}
+
+/**
+ * doctor_register_checks hook: report stale targets, orphan RRDs, freshness
+ * breaches, and SmokePing config/mount path health without mutating state.
+ *
+ * @param mixed $checks
+ * @return mixed
+ */
+function smokeping_doctor_register_checks($checks = array()) {
+	global $config;
+
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
+		return $checks;
+	}
+
+	$settings  = smokeping_settings();
+	$clock     = new \Somethingwithproof\Smokeping\SystemClock();
+	$mountinfo = is_readable('/proc/self/mountinfo') ? (string) file_get_contents('/proc/self/mountinfo') : '';
+	$rraPath   = isset($config['rra_path']) && is_string($config['rra_path']) ? $config['rra_path'] : '';
+	$pollerId  = isset($config['poller_id']) && is_numeric($config['poller_id']) ? (int) $config['poller_id'] : 1;
+
+	$doctor = new \Somethingwithproof\Smokeping\DoctorChecks(
+		$settings,
+		new \Somethingwithproof\Smokeping\TargetRepository(false),
+		new \Somethingwithproof\Smokeping\ObservationRepository(false),
+		new \Somethingwithproof\Smokeping\FreshnessEvaluator($clock, $settings->freshnessAllowance),
+		new \Somethingwithproof\Smokeping\MountCheck($mountinfo),
+		new \Somethingwithproof\Smokeping\OrphanRrdScanner(),
+		$rraPath,
+		$pollerId === $settings->pollerId
+	);
+
+	return $doctor->register($checks);
+}
+
+/**
+ * casc_register_providers hook: register the SmokePing CasC provider backed by
+ * ConfigCodec and ConfigService (export/validate/plan/apply).
+ *
+ * @param mixed $providers
+ * @return mixed
+ */
+function smokeping_casc_register_providers($providers = array()) {
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
+		return $providers;
+	}
+
+	$webUser  = PHP_SAPI !== 'cli';
+	$provider = new \Somethingwithproof\Smokeping\CascProvider(smokeping_config_service($webUser), new \Somethingwithproof\Smokeping\SystemClock());
+
+	return $provider->register($providers);
+}
+
+/**
+ * replicate_out hook: push poller-scoped SmokePing configuration tables to a
+ * remote data collector without disturbing local mode or collector caches.
+ *
+ * @param mixed $data
+ * @return mixed
+ */
+function smokeping_replicate_out($data) {
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping') || !is_array($data)) {
+		return $data;
+	}
+
+	$replication = new \Somethingwithproof\Smokeping\RemoteReplication(
+		new \Somethingwithproof\Smokeping\TargetRepository(false),
+		new \Somethingwithproof\Smokeping\ObjectRepository(false)
+	);
+
+	/** @var array<string, mixed> $payload */
+	$payload = $data;
+
+	return $replication->handle($payload);
+}

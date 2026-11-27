@@ -113,6 +113,50 @@ final class HealthCheck {
 		return new Finding('dual_alerting', HealthLevel::Warning, __('%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s', count($paths), implode(', ', array_slice($paths, 0, 10)) . (count($paths) > 10 ? ', ...' : ''), 'smokeping'));
 	}
 
+	/**
+	 * Orphan RRD files found under the SmokePing mount that no target owns.
+	 * Read-only report; files are never deleted or modified.
+	 *
+	 * @param array{orphans: list<array{relative: string, mtime: int}>, truncated: bool, scanned: int}|null $scan
+	 * @param list<array{id: int, old_id: int, old_path: string, new_path: string, host: string, probe: string, proposed_at: int}> $proposals
+	 */
+	public static function orphanRrds(?array $scan, array $proposals = []): Finding {
+		if ($scan === null) {
+			return new Finding('orphan_rrds', HealthLevel::Unknown, 'Orphan RRD scan runs only on the SmokePing reader poller.');
+		}
+
+		$orphans = $scan['orphans'];
+
+		if ($orphans === []) {
+			$note = $scan['truncated'] ? ' (scan budget reached)' : '';
+
+			return new Finding('orphan_rrds', HealthLevel::Ok, sprintf('No unowned RRD files found (%d RRD files scanned%s).', $scan['scanned'], $note));
+		}
+
+		$proposalByRrd = [];
+
+		foreach ($proposals as $proposal) {
+			$proposalByRrd[$proposal['old_path'] . '.rrd'] = $proposal['id'];
+		}
+
+		$listed = [];
+
+		foreach (array_slice($orphans, 0, 10) as $orphan) {
+			$updated = $orphan['mtime'] > 0 ? gmdate('Y-m-d H:i:s', $orphan['mtime']) . ' UTC' : 'unknown';
+			$suffix  = isset($proposalByRrd[$orphan['relative']]) ? sprintf(' [re-link proposal #%d]', $proposalByRrd[$orphan['relative']]) : '';
+			$listed[] = sprintf('%s (updated %s)%s', $orphan['relative'], $updated, $suffix);
+		}
+
+		$more  = count($orphans) > 10 ? ', ...' : '';
+		$trunc = $scan['truncated'] ? ' (scan budget reached)' : '';
+
+		return new Finding(
+			'orphan_rrds',
+			HealthLevel::Warning,
+			sprintf('%d unowned RRD file(s) under the mount%s: %s%s', count($orphans), $trunc, implode(', ', $listed), $more)
+		);
+	}
+
 	public static function templates(bool $present, ?TemplateFailure $failure): Finding {
 		if ($failure !== null) {
 			return new Finding('templates', HealthLevel::Error, __('The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause.', $failure->message, 'smokeping'));

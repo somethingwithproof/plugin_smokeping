@@ -36,13 +36,17 @@ final class Schema {
 
 
 	public const HOOKS = [
-		'auth_alternate_realms' => 'smokeping_auth_alternate_realms',
+		'abilities_register'       => 'smokeping_abilities_register',
+		'auth_alternate_realms'    => 'smokeping_auth_alternate_realms',
+		'casc_register_providers'  => 'smokeping_casc_register_providers',
 		'config_arrays'            => 'smokeping_config_arrays',
 		'config_settings'          => 'smokeping_config_settings',
+		'doctor_register_checks'   => 'smokeping_doctor_register_checks',
 		'draw_navigation_text'     => 'smokeping_draw_navigation_text',
 		'poller_top'               => 'smokeping_purge_sweep',
 		'poller_finishing'         => 'smokeping_purge_sweep',
 		'poller_bottom'            => 'smokeping_poller_bottom',
+		'replicate_out'            => 'smokeping_replicate_out',
 		'data_source_remove'       => 'smokeping_data_source_remove',
 		'device_remove'            => 'smokeping_device_remove',
 		'device_action_array'      => 'smokeping_device_action_array',

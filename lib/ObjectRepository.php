@@ -84,6 +84,47 @@ final class ObjectRepository {
 	}
 
 	/**
+	 * Summary data sources of a target including host_id, for Thold threshold generation.
+	 *
+	 * @return list<array{local_data_id: int, host_id: int, location: string}>
+	 */
+	public function summaryDataSourcesForTarget(int $targetId): array {
+		$rows = Row::rows(db_fetch_assoc_prepared(
+			'SELECT local_data_id, host_id, location
+			FROM plugin_smokeping_object
+			WHERE target_id = ? AND state = ?
+			ORDER BY location, local_data_id',
+			[$targetId, self::SUMMARY],
+			true,
+			$this->connection
+		));
+
+		return array_values(array_map(static fn (array $row): array => [
+			'local_data_id' => Row::int($row, 'local_data_id'),
+			'host_id'       => Row::int($row, 'host_id'),
+			'location'      => Row::string($row, 'location'),
+		], $rows));
+	}
+
+	/**
+	 * Raw object rows scoped to targets on $pollerId, for remote collector replication.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function forPollerRows(int $pollerId): array {
+		return Row::rows(db_fetch_assoc_prepared(
+			'SELECT o.*
+			FROM plugin_smokeping_object AS o
+			INNER JOIN plugin_smokeping_target AS t ON t.id = o.target_id
+			WHERE t.poller_id = ?
+			ORDER BY o.id',
+			[$pollerId],
+			true,
+			$this->connection
+		));
+	}
+
+	/**
 	 * Every smoke graph, live or archived, with its file relative to rra_path
 	 * and the limit the plugin last set on it.
 	 *

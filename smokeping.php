@@ -34,22 +34,52 @@ foreach (get_allowed_devices() as $smokeping_device) {
 
 // The graph button links here with the device whose graph was open. The filter
 // only narrows the devices the user may already see.
-if (isset_request_var('host_id')) {
-	$smokeping_only = get_filter_request_var('host_id');
+$smokeping_host_id = 0;
 
-	$smokeping_devices = array_intersect_key($smokeping_devices, array((int) $smokeping_only => true));
+if (isset_request_var('host_id')) {
+	$smokeping_only    = (int) get_filter_request_var('host_id');
+	$smokeping_host_id = $smokeping_only;
+
+	$smokeping_devices = array_intersect_key($smokeping_devices, array($smokeping_only => true));
 }
 
-$smokeping_page = new \Somethingwithproof\Smokeping\ViewPage(
+$smokeping_search = isset_request_var('filter') ? (string) get_nfilter_request_var('filter') : '';
+$smokeping_probe  = isset_request_var('probe') ? (string) get_nfilter_request_var('probe') : '';
+$smokeping_state  = isset_request_var('state') ? (string) get_nfilter_request_var('state') : 'all';
+$smokeping_pnum   = isset_request_var('page') ? (int) get_nfilter_request_var('page') : 1;
+$smokeping_action = isset_request_var('action') ? (string) get_nfilter_request_var('action') : '';
+
+$smokeping_filter = new \Somethingwithproof\Smokeping\TargetFilter(
+	$smokeping_search,
+	$smokeping_probe,
+	'all',
+	'all',
+	$smokeping_state,
+	$smokeping_pnum
+);
+
+$smokeping_clock = new \Somethingwithproof\Smokeping\SystemClock();
+$smokeping_page  = new \Somethingwithproof\Smokeping\ViewPage(
 	new \Somethingwithproof\Smokeping\TargetRepository(false),
 	new \Somethingwithproof\Smokeping\ObservationRepository(false),
-	new \Somethingwithproof\Smokeping\FreshnessEvaluator(new \Somethingwithproof\Smokeping\SystemClock(), $smokeping_settings->freshnessAllowance),
-	new \Somethingwithproof\Smokeping\MaintMaintenance()
+	new \Somethingwithproof\Smokeping\FreshnessEvaluator($smokeping_clock, $smokeping_settings->freshnessAllowance),
+	new \Somethingwithproof\Smokeping\MaintMaintenance(),
+	$smokeping_clock
 );
+
+if ($smokeping_action === 'export_csv') {
+	$smokeping_csv = \Somethingwithproof\Smokeping\CsvExporter::exportTargets($smokeping_page->rows($smokeping_devices, $smokeping_filter));
+	header('Content-Type: text/csv; charset=UTF-8');
+	header('Content-Disposition: attachment; filename="smokeping-targets.csv"');
+	header('X-Content-Type-Options: nosniff');
+	header('Cache-Control: no-store');
+	print $smokeping_csv;
+	exit;
+}
 
 top_graph_header();
 if (api_plugin_user_realm_auth('smokeping_operator.php')) {
 	print '<p><a href="smokeping_operator.php">' . html_escape(__('SmokePing Operations', 'smokeping')) . '</a></p>';
 }
-$smokeping_page->render($smokeping_devices);
+$smokeping_page->render($smokeping_devices, $smokeping_filter, $smokeping_host_id);
 bottom_footer();

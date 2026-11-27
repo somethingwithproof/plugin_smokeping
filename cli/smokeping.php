@@ -79,6 +79,7 @@ smokeping_boot();
 
 $smokeping_usage = 'usage: cli/smokeping.php provision <target path> [--device=ID] [--location=NAME]' . PHP_EOL
 	. '       cli/smokeping.php relink <old target path> <new target path> [--location=NAME]' . PHP_EOL
+	. '       cli/smokeping.php thold-generate <target path> [--alert=NAME] [--apply]' . PHP_EOL
 	. '       cli/smokeping.php size-graphs' . PHP_EOL
 	. '       cli/smokeping.php upgrade-graphs' . PHP_EOL
 	. '       cli/smokeping.php export [--format=yaml|xml] [--file=PATH]' . PHP_EOL
@@ -265,6 +266,7 @@ $smokeping_format   = 'yaml';
 $smokeping_file     = '';
 $smokeping_apply    = false;
 $smokeping_confirm  = '';
+$smokeping_alert    = '';
 $smokeping_import   = array();
 
 foreach ($smokeping_args as $smokeping_arg) {
@@ -278,6 +280,8 @@ foreach ($smokeping_args as $smokeping_arg) {
 		$smokeping_file = substr($smokeping_arg, 7);
 	} elseif (strpos($smokeping_arg, '--confirm=') === 0) {
 		$smokeping_confirm = substr($smokeping_arg, 10);
+	} elseif (strpos($smokeping_arg, '--alert=') === 0) {
+		$smokeping_alert = substr($smokeping_arg, 8);
 	} elseif ($smokeping_arg === '--apply') {
 		$smokeping_apply = true;
 	} elseif ($smokeping_arg === '--dry-run') {
@@ -290,6 +294,66 @@ foreach ($smokeping_args as $smokeping_arg) {
 	} else {
 		$smokeping_paths[] = $smokeping_arg;
 	}
+}
+
+if ($smokeping_command === 'thold-generate') {
+	if (count($smokeping_paths) !== 1) {
+		fwrite(STDERR, $smokeping_usage);
+		exit(1);
+	}
+
+	$smokeping_settings = smokeping_settings();
+	$smokeping_targets  = new \Somethingwithproof\Smokeping\TargetRepository(false);
+	$smokeping_target   = $smokeping_targets->find($smokeping_settings->pollerId, $smokeping_paths[0]);
+
+	if ($smokeping_target === null) {
+		fwrite(STDERR, 'ERROR: No target ' . $smokeping_paths[0] . ' on poller ' . $smokeping_settings->pollerId . PHP_EOL);
+		exit(1);
+	}
+
+	$smokeping_alerts = array();
+
+	try {
+		$smokeping_root   = (new \Somethingwithproof\Smokeping\SmokepingConfigParser())->parseFile($smokeping_settings->configFile);
+		$smokeping_alerts = \Somethingwithproof\Smokeping\TholdTranslator::parseAlerts($smokeping_root);
+	} catch (\Somethingwithproof\Smokeping\SmokepingConfigError $e) {
+		fwrite(STDERR, 'ERROR: Cannot read SmokePing alerts from ' . $smokeping_settings->configFile . ': ' . $e->getMessage() . PHP_EOL);
+		exit(2);
+	}
+
+	$smokeping_generator = new \Somethingwithproof\Smokeping\TholdGenerator(
+		$smokeping_targets,
+		new \Somethingwithproof\Smokeping\ObjectRepository(false),
+		new \Somethingwithproof\Smokeping\CactiObjectRepository(false)
+	);
+	$smokeping_only = $smokeping_alert !== '' ? $smokeping_alert : null;
+
+	if (!$smokeping_apply) {
+		$smokeping_plan = $smokeping_generator->preview($smokeping_target, $smokeping_alerts, $smokeping_only);
+
+		foreach ($smokeping_plan['translations'] as $smokeping_item) {
+			if ($smokeping_item['supported']) {
+				print sprintf('SUPPORTED %s (%s) -> loss_pct > %g%% for %d consecutive poll(s)', $smokeping_item['alert_name'], $smokeping_item['smokeping_pattern'], $smokeping_item['thold_hi'], $smokeping_item['thold_fail_trigger']) . PHP_EOL;
+			} else {
+				print sprintf('UNSUPPORTED %s (%s): %s', $smokeping_item['alert_name'], $smokeping_item['smokeping_pattern'], $smokeping_item['reason']) . PHP_EOL;
+			}
+		}
+
+		print 'Dry run; nothing was written. Pass --apply to create supported Thold thresholds.' . PHP_EOL;
+		exit(0);
+	}
+
+	$smokeping_applied = $smokeping_generator->apply($smokeping_target, $smokeping_alerts, $smokeping_only);
+
+	foreach ($smokeping_applied['created'] as $smokeping_created) {
+		print sprintf('Created Thold #%d on data source %d (%s)', $smokeping_created['thold_id'], $smokeping_created['local_data_id'], $smokeping_created['name']) . PHP_EOL;
+	}
+
+	foreach ($smokeping_applied['skipped'] as $smokeping_skipped) {
+		fwrite(STDERR, 'SKIPPED: ' . $smokeping_skipped . PHP_EOL);
+	}
+
+	exit($smokeping_applied['created'] !== array() || $smokeping_applied['skipped'] === array() ? 0 : 1);
 }
 
 if ($smokeping_command === 'import-smokeping') {

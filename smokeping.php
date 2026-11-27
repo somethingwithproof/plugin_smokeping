@@ -47,6 +47,7 @@ $smokeping_search = isset_request_var('filter') ? (string) get_nfilter_request_v
 $smokeping_probe  = isset_request_var('probe') ? (string) get_nfilter_request_var('probe') : '';
 $smokeping_state  = isset_request_var('state') ? (string) get_nfilter_request_var('state') : 'all';
 $smokeping_pnum   = isset_request_var('page') ? (int) get_nfilter_request_var('page') : 1;
+$smokeping_rows   = isset_request_var('rows') ? (int) get_nfilter_request_var('rows') : 0;
 $smokeping_action = isset_request_var('action') ? (string) get_nfilter_request_var('action') : '';
 
 $smokeping_filter = new \Somethingwithproof\Smokeping\TargetFilter(
@@ -55,7 +56,8 @@ $smokeping_filter = new \Somethingwithproof\Smokeping\TargetFilter(
 	'all',
 	'all',
 	$smokeping_state,
-	$smokeping_pnum
+	$smokeping_pnum,
+	$smokeping_rows
 );
 
 $smokeping_clock = new \Somethingwithproof\Smokeping\SystemClock();

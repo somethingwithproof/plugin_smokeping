@@ -159,7 +159,8 @@ $smokeping_filter = new \Somethingwithproof\Smokeping\TargetFilter(
 	isset_request_var('presence') ? (string) get_nfilter_request_var('presence') : 'all',
 	isset_request_var('mapping') ? (string) get_nfilter_request_var('mapping') : 'all',
 	'all',
-	isset_request_var('page') ? (int) get_nfilter_request_var('page') : 1
+	isset_request_var('page') ? (int) get_nfilter_request_var('page') : 1,
+	isset_request_var('rows') ? (int) get_nfilter_request_var('rows') : 0
 );
 
 top_header();

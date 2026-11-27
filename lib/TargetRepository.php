@@ -113,15 +113,20 @@ final class TargetRepository {
 			$this->connection
 		);
 
-		$limit  = $filter->rows;
-		$offset = $filter->offset();
-		$rows   = Row::rows(db_fetch_assoc_prepared(
+		$limitSql = '';
+
+		if ($filter->rows > 0) {
+			$limit    = $filter->rows;
+			$offset   = $filter->offset();
+			$limitSql = "\n\t\t\tLIMIT $limit OFFSET $offset";
+		}
+
+		$rows = Row::rows(db_fetch_assoc_prepared(
 			"SELECT t.*
 			FROM plugin_smokeping_target AS t
 			LEFT JOIN plugin_smokeping_mapping AS m ON m.target_id = t.id
 			WHERE $whereSql
-			ORDER BY t.path
-			LIMIT $limit OFFSET $offset",
+			ORDER BY t.path$limitSql",
 			$params,
 			true,
 			$this->connection

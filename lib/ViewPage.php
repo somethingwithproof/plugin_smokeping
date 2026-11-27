@@ -134,7 +134,7 @@ final class ViewPage {
 		$filter  = $filter ?? new TargetFilter();
 		$allRows = $this->rows($devices, $filter);
 		$total   = count($allRows);
-		$paged   = array_slice($allRows, $filter->offset(), $filter->rows);
+		$paged   = $filter->rows > 0 ? array_slice($allRows, $filter->offset(), $filter->rows) : $allRows;
 
 		$probes = [];
 
@@ -203,6 +203,14 @@ final class ViewPage {
 		}
 
 		print '</select></td>';
+		print '<td><label for="sp_view_rows">Rows</label> <select id="sp_view_rows" name="rows">';
+
+		foreach (TargetFilter::PAGE_SIZE_LABELS as $value => $label) {
+			$selected = $filter->rows === $value ? ' selected' : '';
+			print '<option value="' . $value . '"' . $selected . '>' . html_escape($label) . '</option>';
+		}
+
+		print '</select></td>';
 		print '<td><input type="submit" class="ui-button ui-corner-all ui-widget" value="Go"> ';
 		print '<a class="ui-button ui-corner-all ui-widget" href="smokeping.php">Clear</a> ';
 		print Html::link('smokeping.php', $exportParams, 'Export CSV')->html . '</td>';
@@ -211,6 +219,10 @@ final class ViewPage {
 	}
 
 	private function renderPagination(TargetFilter $filter, int $total, int $hostId): void {
+		if ($filter->rows <= 0) {
+			return;
+		}
+
 		$pages = (int) max(1, (int) ceil($total / $filter->rows));
 
 		if ($pages <= 1) {

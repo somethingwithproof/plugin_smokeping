@@ -35,18 +35,10 @@ final class InventoryPage {
 	public function render(int $pollerId, array $devices, ?TargetFilter $filter = null): void {
 		$filter   = $filter ?? new TargetFilter();
 		$mappings = $this->targets->mappings();
-
-		if ($filter->isFiltered() || $filter->page > 1 || $filter->rows !== TargetFilter::DEFAULT_ROWS) {
-			$pageData = $this->targets->filteredForPoller($pollerId, $filter, array_keys($devices));
-			$targets  = $pageData['targets'];
-			$total    = $pageData['total'];
-			$probes   = $pageData['probes'];
-		} else {
-			$pageData = $this->targets->filteredForPoller($pollerId, $filter, array_keys($devices));
-			$targets  = $pageData['targets'];
-			$total    = $pageData['total'];
-			$probes   = $pageData['probes'];
-		}
+		$pageData = $this->targets->filteredForPoller($pollerId, $filter, array_keys($devices));
+		$targets  = $pageData['targets'];
+		$total    = $pageData['total'];
+		$probes   = $pageData['probes'];
 
 		$this->renderFilterBar($filter, $probes, $total);
 
@@ -128,6 +120,14 @@ final class InventoryPage {
 		}
 
 		print '</select></td>';
+		print '<td><label for="sp_rows">Rows</label> <select id="sp_rows" name="rows">';
+
+		foreach (TargetFilter::PAGE_SIZE_LABELS as $value => $label) {
+			$selected = $filter->rows === $value ? ' selected' : '';
+			print '<option value="' . $value . '"' . $selected . '>' . html_escape($label) . '</option>';
+		}
+
+		print '</select></td>';
 		print '<td><input type="submit" class="ui-button ui-corner-all ui-widget" value="Go"> ';
 		print '<a class="ui-button ui-corner-all ui-widget" href="smokeping_inventory.php">Clear</a></td>';
 		print '<td>' . html_escape(sprintf('%d targets', $total)) . '</td>';
@@ -135,6 +135,10 @@ final class InventoryPage {
 	}
 
 	private function renderPagination(TargetFilter $filter, int $total): void {
+		if ($filter->rows <= 0) {
+			return;
+		}
+
 		$pages = (int) max(1, (int) ceil($total / $filter->rows));
 
 		if ($pages <= 1) {

@@ -25,8 +25,10 @@ namespace Somethingwithproof\Smokeping;
  * never receive arbitrary sort, state, or unbounded page sizes.
  */
 final readonly class TargetFilter {
-	public const DEFAULT_ROWS = 50;
-	public const MAX_ROWS     = 500;
+	public const DEFAULT_ROWS     = 0;
+	public const DEFAULT_PAGED    = 50;
+	public const MAX_ROWS         = 500;
+	public const PAGE_SIZE_LABELS = [0 => 'All', 25 => '25', 50 => '50', 100 => '100', 200 => '200'];
 
 	public const PRESENCES = ['all', 'present', 'gone'];
 	public const MAPPINGS  = ['all', 'mapped', 'unmapped'];
@@ -55,11 +57,16 @@ final readonly class TargetFilter {
 		$this->mapping  = in_array($mapping, self::MAPPINGS, true) ? $mapping : 'all';
 		$this->state    = in_array($state, self::STATES, true) ? $state : 'all';
 		$this->page     = max(1, $page);
-		$this->rows     = max(1, min(self::MAX_ROWS, $rows));
+
+		if ($rows <= 0) {
+			$this->rows = $this->page > 1 ? self::DEFAULT_PAGED : 0;
+		} else {
+			$this->rows = min(self::MAX_ROWS, $rows);
+		}
 	}
 
 	public function offset(): int {
-		return ($this->page - 1) * $this->rows;
+		return $this->rows > 0 ? ($this->page - 1) * $this->rows : 0;
 	}
 
 	public function isFiltered(): bool {
@@ -96,6 +103,10 @@ final readonly class TargetFilter {
 
 		if ($this->state !== 'all') {
 			$params['state'] = $this->state;
+		}
+
+		if ($this->rows > 0) {
+			$params['rows'] = $this->rows;
 		}
 
 		if ($includePage && $this->page > 1) {

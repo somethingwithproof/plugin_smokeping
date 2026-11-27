@@ -35,7 +35,19 @@ use Somethingwithproof\Smokeping\Schema;
 use Somethingwithproof\Smokeping\Settings;
 use Somethingwithproof\Smokeping\TargetRepository;
 
+require_once dirname(__DIR__) . '/Support/OperatorStubs.php';
+
 describe('Ecosystem hook registrations', function () {
+	afterEach(function () {
+		$GLOBALS['__operator_enabled']     = true;
+		$GLOBALS['__operator_devices']     = [];
+		$GLOBALS['__smokeping_db_assoc']   = [];
+		$GLOBALS['__smokeping_db_row']     = [];
+		$GLOBALS['__smokeping_db_cell']    = 0;
+		$GLOBALS['__smokeping_db_queries'] = [];
+		$GLOBALS['__smokeping_options']    = [];
+	});
+
 	it('declares abilities_register, doctor_register_checks, casc_register_providers, and replicate_out in Schema::HOOKS', function () {
 		expect(Schema::HOOKS)->toHaveKey('abilities_register', 'smokeping_abilities_register')
 			->and(Schema::HOOKS)->toHaveKey('doctor_register_checks', 'smokeping_doctor_register_checks')
@@ -45,6 +57,58 @@ describe('Ecosystem hook registrations', function () {
 		foreach (['smokeping_abilities_register', 'smokeping_doctor_register_checks', 'smokeping_casc_register_providers', 'smokeping_replicate_out'] as $fn) {
 			expect(function_exists($fn))->toBeTrue($fn);
 		}
+	});
+
+	it('wires setup.php hooks cleanly when enabled and returns early when disabled', function () {
+		$GLOBALS['__operator_enabled']  = true;
+		$GLOBALS['__operator_devices']  = [['id' => 7, 'description' => 'Edge Router']];
+		$GLOBALS['__smokeping_db_cell'] = static function (string $sql): mixed {
+			if (str_contains($sql, 'FROM user_auth WHERE')) {
+				return 'on';
+			}
+
+			return str_contains($sql, 'user_auth_realm') ? 1 : 0;
+		};
+		$GLOBALS['__smokeping_db_assoc'] = [];
+		$GLOBALS['__smokeping_db_row']   = [];
+
+		$registrar = new class {
+			/** @var array<string, string> */
+			public array $categories = [];
+			/** @var array<string, array<string, mixed>> */
+			public array $abilities = [];
+
+			public function registerCategory(string $id, string $label): void {
+				$this->categories[$id] = $label;
+			}
+
+			/** @param array<string, mixed> $def */
+			public function register(string $id, array $def): void {
+				$this->abilities[$id] = $def;
+			}
+		};
+
+		smokeping_abilities_register($registrar);
+		expect($registrar->abilities)->toHaveKeys(['smokeping-list-targets', 'smokeping-get-health'])
+			->and(($registrar->abilities['smokeping-list-targets']['permission'])(42))->toBeTrue()
+			->and(($registrar->abilities['smokeping-list-targets']['execute'])(42, new stdClass()))->toBe(['total' => 0, 'targets' => []]);
+
+		$doctorChecks = smokeping_doctor_register_checks([]);
+		expect($doctorChecks)->toHaveCount(4);
+
+		$cascProviders = smokeping_casc_register_providers([]);
+		expect($cascProviders)->toHaveKey('smokeping');
+
+		$repOut = smokeping_replicate_out(['remote_poller_id' => 1, 'rcnn_id' => false, 'class' => 'all']);
+		expect($repOut['remote_poller_id'])->toBe(1);
+
+		// Disabled plugin short-circuits all four hooks safely.
+		$GLOBALS['__operator_enabled'] = false;
+		$emptyReg                      = new stdClass();
+		smokeping_abilities_register($emptyReg);
+		expect(smokeping_doctor_register_checks(['keep']))->toBe(['keep'])
+			->and(smokeping_casc_register_providers(['keep']))->toBe(['keep'])
+			->and(smokeping_replicate_out('not-array'))->toBe('not-array');
 	});
 });
 
@@ -135,6 +199,23 @@ describe('AbilitiesProvider (abilities_register)', function () {
 			->and($health['status'])->toBe('ok')
 			->and($health['freshness_breaches'])->toBe(0)
 			->and($health['stale_series'])->toBe(0);
+
+		// Probe and search non-matches, denied health, error/never/warning health states, and non-registrar object.
+		expect(($registrar->abilities['smokeping-list-targets']['execute'])(42, (object) ['probe' => 'DNS']))->toBe(['total' => 0, 'targets' => []])
+			->and(($registrar->abilities['smokeping-list-targets']['execute'])(42, (object) ['search' => 'nomatch']))->toBe(['total' => 0, 'targets' => []])
+			->and(($registrar->abilities['smokeping-get-health']['execute'])(99, new stdClass())['status'])->toBe('unknown');
+
+		$GLOBALS['__smokeping_db_row']['inventory_status'] = 'error';
+		expect(($registrar->abilities['smokeping-get-health']['execute'])(42, new stdClass())['status'])->toBe('error');
+
+		$GLOBALS['__smokeping_db_row']['inventory_status'] = 'never';
+		expect(($registrar->abilities['smokeping-get-health']['execute'])(42, new stdClass())['status'])->toBe('unknown');
+
+		$GLOBALS['__smokeping_db_row']['inventory_status'] = 'ok';
+		$GLOBALS['__smokeping_db_row']['budget_overruns']  = 2;
+		expect(($registrar->abilities['smokeping-get-health']['execute'])(42, new stdClass())['status'])->toBe('warning');
+
+		$provider->register(new stdClass());
 	});
 });
 
@@ -205,6 +286,65 @@ describe('DoctorChecks (doctor_register_checks)', function () {
 			->and($byId['smokeping_orphan_rrds']['status'])->toBe('warn')
 			->and($byId['smokeping_orphan_rrds']['detail'])->toContain('Europe/orphan.rrd')
 			->and($byId['smokeping_config_path']['status'])->toBe('fail');
+
+		// Object registrar, non-reader host, healthy targets, and clean mount paths.
+		$objReg = new class {
+			/** @var array<string, array<string, mixed>> */
+			public array $entries = [];
+
+			/** @param array<string, mixed> $entry */
+			public function register(string $id, array $entry): void {
+				$this->entries[$id] = $entry;
+			}
+		};
+		$doctor->register($objReg);
+		expect(array_keys($objReg->entries))->toHaveCount(4);
+
+		unlink($this->root . '/rra/smokeping/Europe/orphan.rrd');
+		touch($this->root . '/smokeping.conf');
+		$GLOBALS['__smokeping_db_assoc'] = static function (string $sql): array {
+			if (str_contains($sql, 'plugin_smokeping_target')) {
+				return [[
+					'id' => 1, 'poller_id' => 1, 'path' => 'Europe/paris', 'host' => 'paris.example',
+					'probe' => 'FPing', 'step' => 300, 'pings' => 20, 'present' => 1, 'admin_state' => 'enabled',
+				]];
+			}
+
+			return [[
+				'target_id' => 1, 'location' => '', 'observed_at' => 1700000950, 'ingested_at' => 1700000960,
+				'expected_interval' => 300, 'pings' => 20, 'loss' => 0, 'median' => 0.01, 'file_present' => 1,
+			]];
+		};
+
+		$okSettings = Settings::fromRow([
+			'smokeping_poller_id'           => '1',
+			'smokeping_config_file'         => $this->root . '/smokeping.conf',
+			'smokeping_mount_path'          => $this->root . '/rra/smokeping',
+			'smokeping_freshness_allowance' => '60',
+		], $this->root . '/rra');
+		$okDoctor = new DoctorChecks($okSettings, new TargetRepository(false), new ObservationRepository(false), new FreshnessEvaluator($clock, 60), new MountCheck(''), new OrphanRrdScanner(), $this->root . '/rra', true);
+		$okById   = array_column($okDoctor->run(), null, 'id');
+		expect($okById['smokeping_stale_targets']['status'])->toBe('ok')
+			->and($okById['smokeping_freshness_breaches']['status'])->toBe('ok')
+			->and($okById['smokeping_orphan_rrds']['status'])->toBe('ok');
+
+		// Non-reader host + empty targets
+		$GLOBALS['__smokeping_db_assoc'] = [];
+		$remoteDoctor                    = new DoctorChecks($okSettings, new TargetRepository(false), new ObservationRepository(false), new FreshnessEvaluator($clock, 60), new MountCheck(''), new OrphanRrdScanner(), $this->root . '/rra', false);
+		$remoteById                      = array_column($remoteDoctor->run(), null, 'id');
+		expect($remoteById['smokeping_stale_targets']['status'])->toBe('unknown')
+			->and($remoteById['smokeping_freshness_breaches']['status'])->toBe('unknown')
+			->and($remoteById['smokeping_orphan_rrds']['status'])->toBe('unknown');
+
+		// Missing mount on reader host -> fail
+		$badMountSettings = Settings::fromRow([
+			'smokeping_poller_id'   => '1',
+			'smokeping_config_file' => $this->root . '/smokeping.conf',
+			'smokeping_mount_path'  => $this->root . '/rra/missing_mount',
+		], $this->root . '/rra');
+		$badMountDoctor = new DoctorChecks($badMountSettings, new TargetRepository(false), new ObservationRepository(false), new FreshnessEvaluator($clock, 60), new MountCheck(''), new OrphanRrdScanner(), $this->root . '/rra', true);
+		$badById        = array_column($badMountDoctor->run(), null, 'id');
+		expect($badById['smokeping_orphan_rrds']['status'])->toBe('fail');
 	});
 });
 
@@ -245,6 +385,34 @@ describe('CascProvider (casc_register_providers)', function () {
 		$bad = ($registry['smokeping']['validate'])("schema_version: 999\n", 'yaml');
 		expect($bad['valid'])->toBeFalse()
 			->and($bad['errors'])->not->toBe([]);
+
+		$badPlan = ($registry['smokeping']['plan'])("schema_version: 999\n", 'yaml');
+		expect($badPlan['has_errors'])->toBeTrue()
+			->and($badPlan['plan_id'])->toBe('');
+
+		$badApply = ($registry['smokeping']['apply'])("schema_version: 999\n", 'wrong', 'yaml', 1);
+		expect($badApply['applied'])->toBeFalse()
+			->and($badApply['errors'])->not->toBe([]);
+
+		$mismatchApply = ($registry['smokeping']['apply'])($yaml, '0000000000000000', 'yaml', 1);
+		expect($mismatchApply['applied'])->toBeFalse();
+
+		$okApply = ($registry['smokeping']['apply'])($yaml, $plan['plan_id'], 'yaml', 1);
+		expect($okApply['applied'])->toBeTrue()
+			->and($okApply['errors'])->toBe([]);
+
+		// Object registrar support
+		$objReg = new class {
+			/** @var array<string, array<string, mixed>> */
+			public array $providers = [];
+
+			/** @param array<string, mixed> $desc */
+			public function register(string $slug, array $desc): void {
+				$this->providers[$slug] = $desc;
+			}
+		};
+		$provider->register($objReg);
+		expect($objReg->providers)->toHaveKey('smokeping');
 	});
 });
 
@@ -289,5 +457,14 @@ describe('RemoteReplication (replicate_out)', function () {
 		])
 			->and($captured['plugin_smokeping_target']['rows'])->toHaveCount(1)
 			->and($captured['plugin_smokeping_mapping']['rows'])->toHaveCount(1);
+
+		expect($replication->payloadForPoller(1))->toBe([]);
+
+		// Non-matching replication class is ignored; poller_id fallback key works.
+		$captured = [];
+		$replication->handle(['poller_id' => 2, 'rcnn_id' => 'conn2', 'class' => 'hosts'], $replicator);
+		expect($captured)->toBe([]);
+		$replication->handle(['poller_id' => 2, 'rcnn_id' => 'conn2', 'class' => 'plugins'], $replicator);
+		expect(array_keys($captured))->toHaveCount(4);
 	});
 });

@@ -25,7 +25,7 @@
 
 የSmokePing መዘግየት (latency) እና የፓኬት መጥፋት ልኬቶችን ወደ Cacti እንደ መደበኛ መሣሪያዎች፣ የውሂብ ምንጮች እና ግራፎች የሚያመጣ የCacti 1.2 ተሰኪ ነው። ከዚያም የጭስ (Smoke) ግራፎች በCacti ፈቃዶች ሥር ከሚመለከታቸው መሣሪያ ጎን ይቀመጣሉ፤ እንዲሁም Thold እና Maint ማንቂያዎችን ሊሰጡባቸው እና ሊያግዷቸው ይችላሉ። ይህ ለCacti የተዘጋጀ ራሱን የቻለ ትግበራ ሲሆን፣ ዋና ደራሲዎቹ Tobias Oetiker እና Niko Tyni የሆኑት የ[SmokePing](https://oss.oetiker.ch/smokeping/) አካል አይደለም ወይም በእሱ የተደገፈ አይደለም። ተሰኪው የSmokePing ኮድን አያካትትም ወይም አያስኬድም፦ SmokePing የሚጽፋቸውን የውቅር እና የRRD ፋይሎች ያነባል፣ እንዲሁም የግራፍ አብነቶቹ ልክ እንደ SmokePing የራሱ ግራፎች ተመሳሳይ ተከታታዮችን (series) እንዲስሉ ተደርገው የተገነቡ ናቸው።
 
-> **ሁኔታ፦ በልማት ላይ። የመታዘብ ሁኔታ (ምዕራፍ 1) በ`main` ላይ ተተግብሮ እንደ 1.0.0-rc.1 ቅድመ-ልቀት ተለቋል።** ተሰኪው የSmokePingን ውቅር እና RRD ፋይሎች ያነባል፣ ሁኔታቸውን ያሳያል፣ ለእነሱ የCacti መሣሪያዎችን፣ የውሂብ ምንጮችን እና ግራፎችን ይፈጥራል፣ እንዲሁም Tholdን እና Maintን ይመግባል። ወደ SmokePing ምንም አይጽፍም። የሚተዳደር ሁኔታ (ተሰኪው የSmokePing ውቅርን የሚጽፍበት) እና የርቀት ሰብሳቢዎች ቀጣይ ምዕራፎች ናቸው፤ አልተጀመሩም እና በዚህ ልቀት ውስጥ የሉም። በእውነተኛ መጫኛዎች ላይ የሚደረጉ ሙከራዎች እና ከSmokePing የግራፍ መግለጫ ጋር ይበልጥ የሚቀራረብ ማዛመድ በምዕራፍ 4 ውስጥ አሁንም ክፍት ናቸው። ለመጀመር [docs/install.md](../../install.md)ን ይመልከቱ።
+> **ሁኔታ፦ በልማት ላይ። የመታዘብ ሁኔታ (ምዕራፍ 1) በ`main` (1.0.0-rc.1) ላይ ከኦፕሬተር ማጣሪያ፣ ከCSV ወደ ውጭ መላኪያ፣ ወላጅ አልባ RRD መለያ፣ የThold ማንቂያ ትርጉም፣ የሥነ-ምህዳር ውህደት መንጠቆዎች እና የርቀት ሰብሳቢ ማባዛት ጋር ተተግብሯል።** ተሰኪው የSmokePingን ውቅር እና RRD ፋይሎች ያነባል፣ ሁኔታቸውን ያሳያል፣ ለእነሱ የCacti መሣሪያዎችን፣ የውሂብ ምንጮችን እና ግራፎችን ይፈጥራል፣ እንዲሁም Tholdን እና Maintን ይመግባል። ወደ SmokePing ምንም አይጽፍም። የሚተዳደር ሁኔታ (ተሰኪው የSmokePing ውቅርን የሚጽፍበት) ቀጣይ ምዕራፍ ነው፤ አልተጀመረም እና በዚህ ልቀት ውስጥ የለም። በእውነተኛ መጫኛዎች ላይ የሚደረጉ ሙከራዎች እና ከSmokePing የግራፍ መግለጫ ጋር ይበልጥ የሚቀራረብ ማዛመድ በምዕራፍ 4 ውስጥ ክፍት ሆነው ቀጥለዋል። ለመጀመር [docs/install.md](../../install.md)ን ይመልከቱ።
 
 ## የመዳረሻ ሚናዎች
 
@@ -65,16 +65,25 @@ SmokePing የመዘግየት ስርጭትን እና የፓኬት መጥፋትን
 - **የመሣሪያ አውድ የለም።** ለተመሳሳይ መሣሪያ መዘግየት እና የበይነገጽ ቆጣሪዎች በተለያዩ መሣሪያዎች ውስጥ ይኖራሉ።
 - **ወደ Cacti ማንቂያ የሚወስድ መንገድ የለም።** Thold እና Maint የሚሰሩት በCacti የውሂብ ምንጮች እና መሣሪያዎች ላይ ነው፤ ስለዚህ የSmokePing ማንቂያዎች ተለይተው ይዋቀራሉ እና ይታገዳሉ።
 
-ተሰኪው እያንዳንዱን የSmokePing ዒላማ ወደ SmokePing ነባር RRD ፋይሎች የሚያመለክቱ የCacti ነገሮች እና አነስተኛ የሆነ የተጠየቁ ማጠቃለያ እሴቶች ስብስብ በማድረግ እነዚህን ክፍተቶች ይዘጋል። የእነሱን ትይዩ ስሪቶች ከመገንባት ይልቅ የCactiን ግራፍ ማውጣት፣ ፈቃዶችን፣ Tholdን እና Maintን እንደገና ይጠቀማል። ለCacti የርቀት ውሂብ ሰብሳቢዎች ድጋፍ ለምዕራፍ 3 የታቀደ ሲሆን በዚህ ልቀት ውስጥ የለም።
+ተሰኪው እያንዳንዱን የSmokePing ዒላማ ወደ SmokePing ነባር RRD ፋይሎች የሚያመለክቱ የCacti ነገሮች እና አነስተኛ የሆነ የተጠየቁ ማጠቃለያ እሴቶች ስብስብ በማድረግ እነዚህን ክፍተቶች ይዘጋል። የእነሱን ትይዩ ስሪቶች ከመገንባት ይልቅ የCactiን ግራፍ ማውጣት፣ ፈቃዶችን፣ Tholdን እና Maintን እንደገና ይጠቀማል። በpoller የተገደበ የውቅር ማባዛት (`replicate_out`) አካባቢያዊ ሁኔታን (`poller 1`) እና የሰብሳቢ-አካባቢያዊ ምልከታ መሸጎጫዎችን ተነጥለው እየጠበቀ የርቀት poller ውቅር ሰንጠረዦችን ይገፋል።
 
 ## ወሰን እና ሁኔታ
 
 | ምዕራፍ | ወሰን | ወሳኝ ምዕራፎች | ሁኔታ |
 |---|---|---|---|
 | 0፣ ምርምር | የተኳኋኝነት ማትሪክስ፣ የupstream ባህሪ ማረጋገጫ፣ የግራፍ ትክክለኛነት ሙከራ | [M1](https://github.com/somethingwithproof/plugin_smokeping/milestone/1) | ግኝቶች በ`docs/research` ውስጥ፤ አንዳንድ የምርምር ጉዳዮች ክፍት ናቸው |
-| 1፣ መታዘብ | የንብረት ዝርዝር ማስገባት፣ የCacti መሣሪያዎች፣ የጭስ እና የማጠቃለያ ግራፎች፣ የThold ማንቂያ፣ የMaint እገዳ፣ የጤና ገጽ | [M2](https://github.com/somethingwithproof/plugin_smokeping/milestone/2), [M3](https://github.com/somethingwithproof/plugin_smokeping/milestone/3), [M4](https://github.com/somethingwithproof/plugin_smokeping/milestone/4) | እንደ 1.0.0-rc.1 ተለቋል፤ ሙከራዎች ክፍት ናቸው |
+| 1፣ መታዘብ | የንብረት ዝርዝር ማስገባት፣ የCacti መሣሪያዎች፣ የጭስ እና የማጠቃለያ ግራፎች፣ የThold ማንቂያ እና የማንቂያ ትርጉም፣ የMaint እገዳ፣ የተጣሩ እይታዎች፣ CSV ወደ ውጭ መላክ፣ ወላጅ አልባ RRD መለየት፣ የሥነ-ምህዳር መንጠቆዎች | [M2](https://github.com/somethingwithproof/plugin_smokeping/milestone/2), [M3](https://github.com/somethingwithproof/plugin_smokeping/milestone/3), [M4](https://github.com/somethingwithproof/plugin_smokeping/milestone/4) | ተተግብሯል፤ ሙከራዎች ክፍት ናቸው |
 | 2፣ የሚተዳደር | በCacti ባለቤትነት የተያዘ የውቅር ስም ቦታ፣ የICMP እና TCP መፈተሻ መገለጫዎች፣ ክለሳዎች፣ ማረጋገጫ፣ ዳግም መጫን፣ ወደኋላ መመለስ | [M5](https://github.com/somethingwithproof/plugin_smokeping/milestone/5) | የታቀደ፣ አልተጀመረም |
-| 3፣ የርቀት | በCacti የርቀት ውሂብ ሰብሳቢዎች ላይ SmokePing፣ ተከታዮች እንደ መለኪያ ቦታዎች | [M6](https://github.com/somethingwithproof/plugin_smokeping/milestone/6) | የታቀደ፣ አልተጀመረም |
+| 3፣ የርቀት | ለርቀት ውሂብ ሰብሳቢዎች በpoller የተገደቡ ጥያቄዎች እና የ`replicate_out` ሰንጠረዥ ማባዛት (`RemoteReplication`)፤ ሙሉ ባለብዙ ሰብሳቢ SmokePing ማሰማራት ብቃት ማረጋገጫ | [M6](https://github.com/somethingwithproof/plugin_smokeping/milestone/6) | ማባዛትና የpoller ገደብ ተተግብረዋል፤ ባለብዙ ሰብሳቢ ማሰማራት ብቃት ማረጋገጫ ክፍት ነው |
+
+የተተገበሩ የኦፕሬተር የሥራ ፍሰቶች፣ የCLI ትእዛዞች እና የሥነ-ምህዳር መንጠቆዎች፦
+
+- **የንብረት ዝርዝር እና የዒላማ ማጣሪያ (`smokeping_inventory.php`, `smokeping.php`)**፦ `TargetFilter`፣ `TargetRepository::filteredForPoller()`፣ `InventoryPage` እና `ViewPage` ፍለጋ (`filter`)፣ መፈተሻ (`probe`)፣ የዝርዝር መኖር (`presence`)፣ የካርታ ሁኔታ (`mapping`)፣ የትኩስነት ሁኔታ (`state`) እና አማራጭ የገጽ መጠን ክፍፍል (`rows`፦ `All`፣ `25`፣ `50`፣ `100`፣ `200`) ያቀርባሉ። ጠቅላላ ድምሮች የተደበቁ መሣሪያዎችን በፍጹም እንዳያጋልጡ የመሣሪያ ታይነት ከመቆጠሩ በፊት በSQL ውስጥ ይተገበራል።
+- **CSV ወደ ውጭ መላክ (`smokeping.php?action=export_csv`)**፦ `CsvExporter` በጠሪው የመሣሪያ ፈቃዶች ሥር ለነቃው የተጣራ እይታ RFC 4180 CRLF ውጤትን ያሰራጫል፣ እንዲሁም የተመን ሉህ ቀመሮችን ለማምከን በ`=`፣ `+`፣ `-`፣ `@`፣ tab ወይም carriage return የሚጀምሩ ሕዋሳትን በአፖስትሮፊ ይጀምራል።
+- **ወላጅ አልባ RRD መለየት (`smokeping_health.php`)**፦ `OrphanRrdScanner` እና `HealthCheck::orphanRrds()` በአንባቢው poller ላይ በSmokePing መጫኛ ውስጥ የተገደበ ፍተሻ ያካሂዳሉ፣ `__cgi`፣ `__sortercache` እና ሲምቦሊክ አገናኞችን ይዘላሉ፣ እንዲሁም ባለቤት የሌላቸውን `.rrd` ፋይሎች ክፍት ከሆኑ የዳግም ማገናኛ ጥቆማዎች ጋር ያመሳስላሉ።
+- **SmokePing-ወደ-Thold መለወጥ (`smokeping_health.php`, `cli/smokeping.php`)**፦ `TholdTranslator` እና `TholdGenerator` የSmokePing `*** Alerts ***` ትርጓሜዎችን ያነባሉ እና የSmokePing ውቅር ፋይሎችን ሳይቀይሩ የሚደገፉ ተከታታይ የመጥፋት ቅጦችን ወደ ተመጣጣኝ `loss_pct` የThold ገደቦች ይተረጉማሉ። የድር ፍሰቱ GET ቅድመ-እይታን (`action=thold_preview`, `HealthPage::renderTholdPreview()`) ተከትሎ በCSRF የተጠበቀ POST (`action=thold_create`) ይጠቀማል። የማይደገፉ ቅጦች (የRTT ማንቂያዎች፣ wildcard decay፣ የተቀላቀሉ ደረጃዎች) ሳይጻፉ ይዘለላሉ።
+- **የአስተዳዳሪ CLI (`cli/smokeping.php`)**፦ `provision <target path> [--device=ID] [--location=NAME]`፣ `relink <old target path> <new target path> [--location=NAME]`፣ `thold-generate <target path> [--alert=NAME] [--apply]`፣ `size-graphs`፣ `upgrade-graphs`፣ `export [--format=yaml|xml] [--file=PATH]`፣ `import --file=PATH [--format=yaml|xml] [--apply --confirm=PLAN]` እና `import-smokeping [--dry-run | --apply --confirm=PLAN] [--file=PATH] [--sections=A,B/C] [--device-per=host|target] [--device-template=ID] [--poller=ID] [--site=ID] [--tree=ID | --tree-name=NAME]` ይደግፋል።
+- **የሥነ-ምህዳር መንጠቆዎች (`setup.php`, `Schema::HOOKS`)**፦ 21 መንጠቆዎችን ይመዘግባል፣ ከእነዚህም ውስጥ `abilities_register` (`AbilitiesProvider`፦ በጥብቅ ለንባብ ብቻ የሆኑ `smokeping-list-targets` እና `smokeping-get-health`፣ በጠሪው የተጠቃሚ መታወቂያ ላይ በView ክልል የተገደቡ፣ ምንም ሚስጥር የማይመልሱ)፣ `doctor_register_checks` (`DoctorChecks`፦ `smokeping_stale_targets`፣ `smokeping_freshness_breaches`፣ `smokeping_orphan_rrds`፣ `smokeping_config_path`)፣ `casc_register_providers` (`CascProvider`፦ በ`ConfigCodec` እና `ConfigService` የተደገፈ የ`smokeping` YAML/XML `export`፣ `validate`፣ `plan` እና `apply`)፣ እና `replicate_out` (`RemoteReplication`፦ `poller_id > 1` ላላቸው የርቀት pollerዎች በpoller የተገደበ የ`plugin_smokeping_target`፣ `plugin_smokeping_mapping`፣ `plugin_smokeping_object` እና `plugin_smokeping_relink` ማመሳሰል) ይገኙበታል።
 
 ከወሰን ውጭ፦ በተሰኪ ባለቤትነት የተያዘ የማንቂያ ሞተር፣ የሪፖርት ማቅረቢያ ሞተር፣ ብጁ ዴመን ወይም የአውታረ መረብ ፕሮቶኮል፣ የሚተዳደሩ HTTP/DNS/አገልግሎት ፍተሻዎች (servcheck ይሸፍናቸዋል)፣ እና ወደ SmokePing RRD ፋይሎች መጻፍ።
 
@@ -109,6 +118,7 @@ SmokePing የመዘግየት ስርጭትን እና የፓኬት መጥፋትን
 - [docs/PLAN.md](../../PLAN.md) ሙሉው ዕቅድ ነው፦ አርክቴክቸር፣ የሚደገፍባቸው የupstream እውነታዎች (ከምንጮች ጋር)፣ የሁኔታ ሞዴል፣ የደህንነት ወሰኖች፣ የአፈጻጸም ስሌት፣ ሙከራ እና ስጋቶች።
 - [docs/decisions/](../../decisions) ቀድሞ ለተደረጉ ምርጫዎች የአርክቴክቸር ውሳኔ መዝገቦችን ይይዛል።
 - [docs/REQUIREMENTS.md](../../REQUIREMENTS.md) እያንዳንዱን የመስፈርት መታወቂያ ከጉዳዩ ጋር ያዛምዳል።
+- የአካባቢያዊ ማረጋገጫ የPest የአሃድ እና የምንጭ-ሕግ ፍተሻዎችን (`pest --configuration=phpunit.xml`)፣ PHPStan Level 9 (`CACTI_PATH=<cacti-dir> phpstan analyse -c phpstan.neon --no-progress`)፣ የመግቢያ ነጥብ አገባብ ፍተሻዎችን (`php -l` በ`*.php`፣ `include/*.php`፣ `scripts/*.php`፣ `cli/*.php` ላይ) እና የትርጉም ፍተሻዎችን (`sh locales/build_gettext.sh --check`) ያስኬዳል። ለውህደት እና ለኮንቴይነር ከጫፍ እስከ ጫፍ ስብስቦች [docs/testing.md](../../testing.md)ን ይመልከቱ።
 
 ```mermaid
 flowchart LR

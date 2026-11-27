@@ -25,7 +25,7 @@
 
 SmokePing のレイテンシおよびパケットロス計測結果を、通常のデバイス、データソース、およびグラフとして Cacti に取り込む Cacti 1.2 プラグインです。スモークグラフは対象デバイスの隣に配置され、Cacti の権限管理下に置かれるため、Thold によるアラート発報や Maint によるアラート抑制が可能になります。本プラグインは Cacti 向けの独立した実装であり、[SmokePing](https://oss.oetiker.ch/smokeping/)（原著者：Tobias Oetiker および Niko Tyni）の一部ではなく、公式に承認されたものでもありません。本プラグインには SmokePing のコードは含まれておらず、実行もしません。SmokePing が出力する設定ファイルと RRD ファイルを読み取り、グラフテンプレートは SmokePing 独自のグラフと同じ系列を描画するように構築されています。
 
-> **ステータス：開発中。Observe モード（フェーズ 1）は `main` に実装済みで、プレリリース 1.0.0-rc.1 としてリリースされています。** 本プラグインは SmokePing の設定ファイルおよび RRD ファイルを読み取り、その状態を表示し、対応する Cacti デバイス・データソース・グラフを作成して、Thold および Maint にデータを提供します。SmokePing 側には一切書き込みを行いません。Managed モード（プラグインから SmokePing 設定を書き込む機能）およびリモートコレクターは後続のフェーズであり、未着手で本リリースには含まれていません。実環境でのパイロット運用および SmokePing グラフ凡例とのさらなる一致については、マイルストーン 4 で引き続き対応中です。開始するには [docs/install.md](../../install.md) をご覧ください。
+> **ステータス：開発中。Observe モード（フェーズ 1）は `main`（1.0.0-rc.1）に実装済みで、運用者向けフィルタリング、CSV エクスポート、孤立 RRD 検出、Thold アラート変換、エコシステム統合フック、およびリモートコレクターレプリケーションを備えています。** 本プラグインは SmokePing の設定ファイルおよび RRD ファイルを読み取り、その状態を表示し、対応する Cacti デバイス・データソース・グラフを作成して、Thold および Maint にデータを提供します。SmokePing 側には一切書き込みを行いません。Managed モード（プラグインから SmokePing 設定を書き込む機能）は後続のフェーズであり、未着手で本リリースには含まれていません。実環境でのパイロット運用および SmokePing グラフ凡例とのさらなる一致については、マイルストーン 4 で引き続き対応中です。開始するには [docs/install.md](../../install.md) をご覧ください。
 
 ## アクセスロール
 
@@ -55,16 +55,25 @@ SmokePing はレイテンシ分布とパケットロスを正確に計測し、�
 - **デバイスコンテキストの欠如。** 同一デバイスのレイテンシとインターフェースカウンタが別々のツールに分散します。
 - **Cacti アラートへの連携手段がない。** Thold と Maint は Cacti のデータソースおよびデバイスに対して動作するため、SmokePing のアラートは別途設定・抑制する必要があります。
 
-本プラグインは、SmokePing の既存 RRD ファイルを参照する Cacti オブジェクトおよび少数のポーリング済みサマリー値として各 SmokePing ターゲットを表現することで、これらのギャップを解消します。並行する独自機能を構築するのではなく、Cacti のグラフ描画、権限管理、Thold、および Maint を再利用します。Cacti リモートデータコレクターのサポートはフェーズ 3 で計画されており、本リリースには含まれていません。
+本プラグインは、SmokePing の既存 RRD ファイルを参照する Cacti オブジェクトおよび少数のポーリング済みサマリー値として各 SmokePing ターゲットを表現することで、これらのギャップを解消します。並行する独自機能を構築するのではなく、Cacti のグラフ描画、権限管理、Thold、および Maint を再利用します。ポーラー単位の設定レプリケーション（`replicate_out`）はリモートポーラー向け設定テーブルをプッシュし、ローカルモード（poller 1）およびコレクター固有のローカル観測キャッシュを分離したまま維持します。
 
 ## スコープとステータス
 
 | フェーズ | スコープ | マイルストーン | ステータス |
 |---|---|---|---|
 | 0, research | 互換性マトリクス、アップストリームの挙動確認、グラフ再現性の検証スパイク | [M1](https://github.com/somethingwithproof/plugin_smokeping/milestone/1) | 調査結果は `docs/research` に収録。一部のリサーチ課題は対応中 |
-| 1, observe | インベントリインポート、Cacti デバイス、スモーク／サマリーグラフ、Thold アラート、Maint 抑制、ヘルスページ | [M2](https://github.com/somethingwithproof/plugin_smokeping/milestone/2), [M3](https://github.com/somethingwithproof/plugin_smokeping/milestone/3), [M4](https://github.com/somethingwithproof/plugin_smokeping/milestone/4) | 1.0.0-rc.1 としてリリース済み。パイロット運用受付中 |
+| 1, observe | インベントリインポート、Cacti デバイス、スモーク／サマリーグラフ、Thold アラートおよびアラート変換、Maint 抑制、フィルター表示、CSV エクスポート、孤立 RRD 検出、エコシステムフック | [M2](https://github.com/somethingwithproof/plugin_smokeping/milestone/2), [M3](https://github.com/somethingwithproof/plugin_smokeping/milestone/3), [M4](https://github.com/somethingwithproof/plugin_smokeping/milestone/4) | 実装済み。パイロット運用受付中 |
 | 2, managed | Cacti 管理下の設定名前空間、ICMP および TCP プローブプロファイル、リビジョン、検証、リロード、ロールバック | [M5](https://github.com/somethingwithproof/plugin_smokeping/milestone/5) | 計画中（未着手） |
-| 3, remote | Cacti リモートデータコレクター上での SmokePing、計測拠点としてのスレーブ対応 | [M6](https://github.com/somethingwithproof/plugin_smokeping/milestone/6) | 計画中（未着手） |
+| 3, remote | リモートデータコレクター向けのポーラー単位クエリおよび `replicate_out` テーブルレプリケーション（`RemoteReplication`）。マルチコレクター環境における SmokePing デプロイの完全検証 | [M6](https://github.com/somethingwithproof/plugin_smokeping/milestone/6) | レプリケーションおよびポーラー単位のスコープ制御は実装済み。マルチコレクターデプロイの検証は未完了 |
+
+実装済みのオペレーターワークフロー、CLI コマンド、およびエコシステムフック：
+
+- **インベントリおよびターゲットのフィルタリング（`smokeping_inventory.php`、`smokeping.php`）**：`TargetFilter`、`TargetRepository::filteredForPoller()`、`InventoryPage`、および `ViewPage` により、検索（`filter`）、プローブ（`probe`）、インベントリ存在状態（`presence`）、マッピング状態（`mapping`）、鮮度状態（`state`）、およびオプションのページサイズ指定ページネーション（`rows`：`All`、`25`、`50`、`100`、`200`）が提供されます。デバイスの可視性は集計前の SQL で強制されるため、合計件数に非表示のデバイスが露出することはありません。
+- **CSV エクスポート（`smokeping.php?action=export_csv`）**：`CsvExporter` は呼び出し元のデバイス権限のもとで、現在のフィルター済みビューに対して RFC 4180 CRLF 形式のデータをストリーミング出力します。スプレッドシート数式の実行を防ぐため、`=`、`+`、`-`、`@`、タブ、または復帰文字で始まるセルの先頭にはアポストロフィを付与します。
+- **孤立 RRD の検出（`smokeping_health.php`）**：`OrphanRrdScanner` と `HealthCheck::orphanRrds()` は、リーダーポーラー上の SmokePing マウントに対して上限付きスキャンを実行し、`__cgi`、`__sortercache`、およびシンボリックリンクをスキップしたうえで、所有者のいない `.rrd` ファイルを未解決の再リンク提案と照合します。
+- **SmokePing から Thold への変換（`smokeping_health.php`、`cli/smokeping.php`）**：`TholdTranslator` と `TholdGenerator` は SmokePing の `*** Alerts ***` 定義を読み取り、SmokePing 設定ファイルを変更することなく、サポート対象の連続損失パターンを同等の `loss_pct` Thold しきい値に変換します。Web フローでは GET プレビュー（`action=thold_preview`、`HealthPage::renderTholdPreview()`）に続いて CSRF 保護された POST（`action=thold_create`）を使用します。未サポートのパターン（RTT アラート、ワイルドカード減衰、混合レベル）は書き込まずにスキップされます。
+- **管理者 CLI（`cli/smokeping.php`）**：`provision <target path> [--device=ID] [--location=NAME]`、`relink <old target path> <new target path> [--location=NAME]`、`thold-generate <target path> [--alert=NAME] [--apply]`、`size-graphs`、`upgrade-graphs`、`export [--format=yaml|xml] [--file=PATH]`、`import --file=PATH [--format=yaml|xml] [--apply --confirm=PLAN]`、および `import-smokeping [--dry-run | --apply --confirm=PLAN] [--file=PATH] [--sections=A,B/C] [--device-per=host|target] [--device-template=ID] [--poller=ID] [--site=ID] [--tree=ID | --tree-name=NAME]` をサポートします。
+- **エコシステムフック（`setup.php`、`Schema::HOOKS`）**：21 個のフックを登録します。これには、`abilities_register`（`AbilitiesProvider`：厳密に読み取り専用の `smokeping-list-targets` と `smokeping-get-health`。呼び出し元のユーザー ID に対して View レルムで制限され、シークレットは返しません）、`doctor_register_checks`（`DoctorChecks`：`smokeping_stale_targets`、`smokeping_freshness_breaches`、`smokeping_orphan_rrds`、`smokeping_config_path`）、`casc_register_providers`（`CascProvider`：`ConfigCodec` と `ConfigService` を基盤とする `smokeping` YAML/XML の `export`、`validate`、`plan`、`apply`）、および `replicate_out`（`RemoteReplication`：`poller_id > 1` のリモートポーラー向けの `plugin_smokeping_target`、`plugin_smokeping_mapping`、`plugin_smokeping_object`、`plugin_smokeping_relink` のポーラー単位同期）が含まれます。
 
 スコープ外：プラグイン独自のアラートエンジン、レポートエンジン、カスタムデーモンまたはネットワークプロトコル、マネージド HTTP/DNS/サービスチェック（servcheck が担当）、および SmokePing の RRD ファイルへの書き込み。
 
@@ -99,6 +108,7 @@ SmokePing はレイテンシ分布とパケットロスを正確に計測し、�
 - [docs/PLAN.md](../../PLAN.md) は全体計画書です。アーキテクチャ、前提とするアップストリーム仕様（出典付き）、状態モデル、セキュリティ境界、パフォーマンス計算、テスト、およびリスクを記載しています。
 - [docs/decisions/](../../decisions) には、決定済みのアーキテクチャ決定記録（ADR）を格納しています。
 - [docs/REQUIREMENTS.md](../../REQUIREMENTS.md) は、各要件 ID と対応する Issue を対応付けています。
+- ローカル検証では、Pest ユニットおよびソースルールチェック（`pest --configuration=phpunit.xml`）、PHPStan レベル 9（`CACTI_PATH=<cacti-dir> phpstan analyse -c phpstan.neon --no-progress`）、エントリーポイントの構文チェック（`*.php`、`include/*.php`、`scripts/*.php`、`cli/*.php` に対する `php -l`）、および翻訳チェック（`sh locales/build_gettext.sh --check`）を実行します。統合スイートおよびコンテナ E2E スイートについては [docs/testing.md](../../testing.md) をご覧ください。
 
 ```mermaid
 flowchart LR

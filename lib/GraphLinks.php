@@ -29,6 +29,12 @@ final class GraphLinks {
 	/** Whether this request has printed the focus rule already. */
 	private static bool $styled = false;
 
+	/**
+	 * Create a new GraphLinks instance.
+	 *
+	 * @param TargetRepository $targets Targets.
+	 * @param CactiObjectRepository $cacti Cacti.
+	 */
 	public function __construct(
 		private readonly TargetRepository $targets,
 		private readonly CactiObjectRepository $cacti,
@@ -69,6 +75,13 @@ final class GraphLinks {
 		return $style . self::html($urlPath, $hostId);
 	}
 
+	/**
+	 * Html.
+	 *
+	 * @param string $urlPath Url path.
+	 * @param int $hostId Host id.
+	 * @return string
+	 */
 	public static function html(string $urlPath, int $hostId): string {
 		$url   = $urlPath . 'plugins/smokeping/smokeping.php?host_id=' . $hostId;
 		$label = html_escape(__('SmokePing Targets of this Device', 'smokeping'));

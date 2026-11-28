@@ -47,6 +47,14 @@ final readonly class SmokepingImportState {
 	) {
 	}
 
+	/**
+	 * Has object.
+	 *
+	 * @param int $targetId Target id.
+	 * @param string $location Location.
+	 * @param string $kind Kind.
+	 * @return bool
+	 */
 	public function hasObject(int $targetId, string $location, string $kind): bool {
 		return isset($this->objects[$targetId . '~' . $location . '~' . $kind]);
 	}

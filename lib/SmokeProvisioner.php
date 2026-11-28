@@ -33,6 +33,19 @@ final class SmokeProvisioner {
 	/** Graphs retemplateDue() brings to the installed templates in one poller cycle. */
 	public const RETEMPLATE_BATCH = 200;
 
+	/**
+	 * Create a new SmokeProvisioner instance.
+	 *
+	 * @param Settings $settings Settings.
+	 * @param string $rraPath Rra path.
+	 * @param string $coreLibrary Core library.
+	 * @param bool $rrdProxy Rrd proxy.
+	 * @param ObjectRepository $objects Objects.
+	 * @param CactiObjectRepository $cacti Cacti.
+	 * @param Clock $clock Clock.
+	 * @param RrdReader|null $rrd Rrd.
+	 * @param LossColors $lossColors Loss colors.
+	 */
 	public function __construct(
 		private readonly Settings $settings,
 		private readonly string $rraPath,
@@ -279,12 +292,29 @@ final class SmokeProvisioner {
 		return $this->relativePathOf($path, $location);
 	}
 
+	/**
+	 * Relative path of.
+	 *
+	 * @param TargetPath $path Path.
+	 * @param string $location Location.
+	 * @return string
+	 */
 	private function relativePathOf(TargetPath $path, string $location): string {
 		$file = $path->rrdFile($this->settings->mountPath, $location);
 
 		return substr($file, strlen(rtrim($this->rraPath, '/')) + 1);
 	}
 
+	/**
+	 * Create.
+	 *
+	 * @param Target $target Target.
+	 * @param int $hostId Host id.
+	 * @param string $location Location.
+	 * @param string $title Title.
+	 * @param string $state State.
+	 * @return ProvisionResult
+	 */
 	private function create(Target $target, int $hostId, string $location, string $title, string $state = ObjectRepository::ACTIVE): ProvisionResult {
 		include_once($this->coreLibrary . '/template.php');
 		include_once($this->coreLibrary . '/functions.php');
@@ -601,6 +631,12 @@ final class SmokeProvisioner {
 		}
 	}
 
+	/**
+	 * Retitle.
+	 *
+	 * @param int $localGraphId Local graph id.
+	 * @param string $title Title.
+	 */
 	private function retitle(int $localGraphId, string $title): void {
 		include_once($this->coreLibrary . '/variables.php');
 
@@ -610,6 +646,12 @@ final class SmokeProvisioner {
 		update_graph_title_cache($localGraphId);
 	}
 
+	/**
+	 * Remove.
+	 *
+	 * @param int $localDataId Local data id.
+	 * @param int $localGraphId Local graph id.
+	 */
 	private function remove(int $localDataId, int $localGraphId): void {
 		include_once($this->coreLibrary . '/api_graph.php');
 		include_once($this->coreLibrary . '/api_data_source.php');

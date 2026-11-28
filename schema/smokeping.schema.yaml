@@ -1,0 +1,156 @@
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# This file is part of plugin_smokeping, a plugin for Cacti.
+# https://github.com/somethingwithproof/plugin_smokeping
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+
+# Static configuration and state schema for plugin_smokeping.
+# Enforces strict Config vs. State separation for CasC, Doctor, and API tooling.
+schema_version: 1
+plugin: smokeping
+
+config:
+  settings:
+    smokeping_poller_id:
+      type: integer
+      label: SmokePing Poller
+      default: 1
+      minimum: 1
+      maximum: 2147483647
+      exportable: true
+      reference_only: false
+      sensitive: false
+    smokeping_config_file:
+      type: string
+      label: SmokePing Configuration File
+      default: /etc/smokeping/config
+      max_length: 255
+      exportable: true
+      reference_only: true
+      sensitive: true
+    smokeping_datadir:
+      type: string
+      label: SmokePing Data Directory
+      default: /var/lib/smokeping
+      max_length: 255
+      exportable: true
+      reference_only: true
+      sensitive: true
+    smokeping_mount_path:
+      type: string
+      label: Cacti Mount of the Data Directory
+      default: ''
+      max_length: 255
+      exportable: true
+      reference_only: true
+      sensitive: true
+    smokeping_reader_budget:
+      type: integer
+      label: Reader Time Budget
+      default: 120
+      minimum: 1
+      maximum: 2147483647
+      exportable: true
+      reference_only: false
+      sensitive: false
+    smokeping_inventory_interval:
+      type: integer
+      label: Inventory Interval
+      default: 300
+      minimum: 0
+      maximum: 2147483647
+      exportable: true
+      reference_only: false
+      sensitive: false
+    smokeping_freshness_allowance:
+      type: integer
+      label: Freshness Allowance
+      default: 60
+      minimum: 0
+      maximum: 2147483647
+      exportable: true
+      reference_only: false
+      sensitive: false
+    smokeping_loss_colors:
+      type: string
+      label: Loss Colors
+      default: auto
+      enum:
+        - auto
+        - current
+        - legacy
+      exportable: false
+      reference_only: false
+      sensitive: false
+    smokeping_uninstall_keep_tables:
+      type: boolean
+      label: Keep Plugin Tables on Uninstall
+      default: false
+      exportable: true
+      reference_only: false
+      sensitive: false
+    smokeping_backup_dir:
+      type: string
+      label: Backup Directory
+      default: ''
+      max_length: 255
+      exportable: true
+      reference_only: true
+      sensitive: true
+  tables:
+    plugin_smokeping_target:
+      scope: poller
+      replicated: true
+      exportable: true
+      description: Discovered SmokePing target inventory and administrative state.
+    plugin_smokeping_mapping:
+      scope: poller
+      replicated: true
+      exportable: true
+      description: Operator-confirmed target to Cacti device mappings.
+    plugin_smokeping_object:
+      scope: poller
+      replicated: true
+      exportable: false
+      description: Provisioned Cacti data sources and smoke graphs linked to targets.
+    plugin_smokeping_relink:
+      scope: poller
+      replicated: true
+      exportable: false
+      description: Pending and decided target re-link proposals.
+
+state:
+  settings:
+    smokeping_schema_version:
+      type: integer
+      exportable: false
+      description: Applied database schema version.
+    smokeping_templates_version:
+      type: integer
+      exportable: false
+      description: Applied Cacti graph and data template bundle version.
+    smokeping_templates_failure:
+      type: string
+      exportable: false
+      description: Last recorded template import failure metadata.
+  tables:
+    plugin_smokeping_observation:
+      scope: runtime
+      replicated: false
+      exportable: false
+      description: Latest RRD median latency and packet loss sample per target and location.
+    plugin_smokeping_health:
+      scope: runtime
+      replicated: false
+      exportable: false
+      description: Per-poller reader execution timing, inventory status, and detected SmokePing version.

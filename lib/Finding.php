@@ -19,7 +19,15 @@
 
 namespace Somethingwithproof\Smokeping;
 
+/** Finding component. */
 final readonly class Finding {
+	/**
+	 * Create a new Finding instance.
+	 *
+	 * @param string $check Check.
+	 * @param HealthLevel $level Level.
+	 * @param string $message Message.
+	 */
 	public function __construct(public string $check, public HealthLevel $level, public string $message) {
 	}
 }

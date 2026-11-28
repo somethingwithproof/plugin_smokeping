@@ -37,5 +37,6 @@ interface RrdReader {
 	 */
 	public function maxMedian(string $file, int $seconds): ?float;
 
+	/** Close. */
 	public function close(): void;
 }

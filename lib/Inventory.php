@@ -23,6 +23,7 @@ namespace Somethingwithproof\Smokeping;
  * Targets of the SmokePing configuration on one poller.
  */
 final readonly class Inventory {
+	/** Format constant. */
 	public const FORMAT = 1;
 
 	/**

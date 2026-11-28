@@ -26,6 +26,11 @@ namespace Somethingwithproof\Smokeping;
  * through SQL here.
  */
 final class CactiObjectRepository {
+	/**
+	 * Create a new CactiObjectRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -38,18 +43,42 @@ final class CactiObjectRepository {
 		return $id > 0 ? $id : 1;
 	}
 
+	/**
+	 * Device template count.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function deviceTemplateCount(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM host_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * Graph template count.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function graphTemplateCount(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM graph_templates WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * Data template count.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function dataTemplateCount(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM data_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * Data input count.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function dataInputCount(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM data_input WHERE name = ?', [$name], '', true, $this->connection);
 	}
@@ -61,6 +90,12 @@ final class CactiObjectRepository {
 		return (int) db_fetch_cell_prepared("SELECT f.id FROM data_input_fields AS f INNER JOIN data_input AS i ON i.id = f.data_input_id WHERE i.name = ? AND f.data_name = ? AND f.input_output = 'in'", [$dataInputName, $dataName], '', true, $this->connection);
 	}
 
+	/**
+	 * Data template id.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function dataTemplateId(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM data_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
@@ -147,6 +182,126 @@ final class CactiObjectRepository {
 	}
 
 	/**
+	 * Whether the Thold plugin schema is present.
+	 */
+	public function tholdInstalled(): bool {
+		return db_table_exists('thold_data', true, $this->connection);
+	}
+
+	/**
+	 * Create an enabled Thold high threshold on a summary data source's
+	 * loss_pct RRD item if no threshold with the same name already exists on
+	 * that data source. Returns the created threshold id, or null when skipped.
+	 */
+	public function createTholdThreshold(int $hostId, int $localDataId, string $name, float $hiValue, int $failTrigger): ?int {
+		if (!$this->tholdInstalled() || $hostId < 1 || $localDataId < 1 || $failTrigger < 1) {
+			return null;
+		}
+
+		$existing = (int) db_fetch_cell_prepared(
+			"SELECT id FROM thold_data WHERE local_data_id = ? AND data_source_name = 'loss_pct' AND name = ? LIMIT 1",
+			[$localDataId, $name],
+			'',
+			true,
+			$this->connection
+		);
+
+		if ($existing > 0) {
+			return null;
+		}
+
+		$rrdId = (int) db_fetch_cell_prepared(
+			"SELECT id FROM data_template_rrd WHERE local_data_id = ? AND data_source_name = 'loss_pct' LIMIT 1",
+			[$localDataId],
+			'',
+			true,
+			$this->connection
+		);
+
+		$graphId = (int) db_fetch_cell_prepared(
+			'SELECT local_graph_id FROM plugin_smokeping_object WHERE local_data_id = ? LIMIT 1',
+			[$localDataId],
+			'',
+			true,
+			$this->connection
+		);
+
+		$ok = db_execute_prepared(
+			"INSERT INTO thold_data
+				(name, host_id, local_data_id, data_template_rrd_id, local_graph_id, data_source_name, thold_type, thold_hi, thold_fail_trigger, thold_enabled)
+			VALUES (?, ?, ?, ?, ?, 'loss_pct', 0, ?, ?, 'on')",
+			[$name, $hostId, $localDataId, $rrdId, $graphId, $hiValue, $failTrigger],
+			true,
+			$this->connection
+		);
+
+		if ($ok === false) {
+			return null;
+		}
+
+		$createdId = (int) db_fetch_cell_prepared(
+			"SELECT id FROM thold_data WHERE local_data_id = ? AND data_source_name = 'loss_pct' AND name = ? ORDER BY id DESC LIMIT 1",
+			[$localDataId, $name],
+			'',
+			true,
+			$this->connection
+		);
+
+		return $createdId > 0 ? $createdId : null;
+	}
+
+	/**
+	 * Whether $userId is an enabled Cacti user granted the plugin realm for
+	 * $file (either directly or through an enabled user group). Never reads
+	 * session state, making it safe for bearer-token Abilities callbacks.
+	 */
+	public function userHasPluginRealm(int $userId, string $plugin, string $file): bool {
+		if ($userId < 1 || $plugin === '' || $file === '') {
+			return false;
+		}
+
+		$enabled = db_fetch_cell_prepared("SELECT enabled FROM user_auth WHERE id = ? AND enabled = 'on'", [$userId], '', true, $this->connection);
+
+		if ($enabled !== 'on') {
+			return false;
+		}
+
+		$direct = (int) db_fetch_cell_prepared(
+			'SELECT COUNT(*)
+			FROM user_auth_realm AS uar
+			INNER JOIN plugin_realms AS pr ON pr.id + 100 = uar.realm_id
+			WHERE uar.user_id = ? AND pr.plugin = ? AND FIND_IN_SET(?, pr.file) > 0',
+			[$userId, $plugin, $file],
+			'',
+			true,
+			$this->connection
+		);
+
+		if ($direct > 0) {
+			return true;
+		}
+
+		if (!db_table_exists('user_auth_group_realm', true, $this->connection)) {
+			return false;
+		}
+
+		$group = (int) db_fetch_cell_prepared(
+			"SELECT COUNT(*)
+			FROM user_auth_group_members AS uagm
+			INNER JOIN user_auth_group AS uag ON uag.id = uagm.group_id AND uag.enabled = 'on'
+			INNER JOIN user_auth_group_realm AS uagr ON uagr.group_id = uag.id
+			INNER JOIN plugin_realms AS pr ON pr.id + 100 = uagr.realm_id
+			WHERE uagm.user_id = ? AND pr.plugin = ? AND FIND_IN_SET(?, pr.file) > 0",
+			[$userId, $plugin, $file],
+			'',
+			true,
+			$this->connection
+		);
+
+		return $group > 0;
+	}
+
+	/**
 	 * Paths of the poller's targets that alert in SmokePing (an alerts value
 	 * in its configuration) and have an enabled Thold threshold on one of
 	 * their summary data sources, so that one problem may notify twice. Null when
@@ -169,10 +324,22 @@ final class CactiObjectRepository {
 		return array_values(array_map(fn (array $row) => Row::string($row, 'path'), $rows));
 	}
 
+	/**
+	 * Device of graph.
+	 *
+	 * @param int $localGraphId Local graph id.
+	 * @return int
+	 */
 	public function deviceOfGraph(int $localGraphId): int {
 		return (int) db_fetch_cell_prepared('SELECT host_id FROM graph_local WHERE id = ?', [$localGraphId], '', true, $this->connection);
 	}
 
+	/**
+	 * Device poller.
+	 *
+	 * @param int $hostId Host id.
+	 * @return int
+	 */
 	public function devicePoller(int $hostId): int {
 		return (int) db_fetch_cell_prepared('SELECT poller_id FROM host WHERE id = ?', [$hostId], '', true, $this->connection);
 	}
@@ -193,10 +360,22 @@ final class CactiObjectRepository {
 			WHERE gti.local_graph_id = 0 AND gti.vdef_id > 0 AND gt.name IN (' . implode(', ', array_fill(0, count($names), '?')) . ')', $names, '', true, $this->connection);
 	}
 
+	/**
+	 * Graph template id.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function graphTemplateId(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM graph_templates WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+	/**
+	 * Device template id.
+	 *
+	 * @param string $name Name.
+	 * @return int
+	 */
 	public function deviceTemplateId(string $name): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM host_template WHERE name = ?', [$name], '', true, $this->connection);
 	}
@@ -363,6 +542,12 @@ final class CactiObjectRepository {
 		return true;
 	}
 
+	/**
+	 * Set graph title.
+	 *
+	 * @param int $localGraphId Local graph id.
+	 * @param string $title Title.
+	 */
 	public function setGraphTitle(int $localGraphId, string $title): void {
 		db_execute_prepared("UPDATE graph_templates_graph SET title = ?, t_title = 'on' WHERE local_graph_id = ?", [$title, $localGraphId], true, $this->connection);
 	}

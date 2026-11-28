@@ -19,14 +19,30 @@
 
 namespace Somethingwithproof\Smokeping;
 
+/** Fixed clock component. */
 final class FixedClock implements Clock {
+	/**
+	 * Create a new FixedClock instance.
+	 *
+	 * @param int $now Now.
+	 */
 	public function __construct(private int $now) {
 	}
 
+	/**
+	 * Now.
+	 *
+	 * @return int
+	 */
 	public function now(): int {
 		return $this->now;
 	}
 
+	/**
+	 * Advance.
+	 *
+	 * @param int $seconds Seconds.
+	 */
 	public function advance(int $seconds): void {
 		$this->now += $seconds;
 	}

@@ -42,10 +42,27 @@ final class ConfigService {
 		}
 	}
 
+	/**
+	 * Export.
+	 *
+	 * @param string $format Format.
+	 * @return string
+	 */
 	public function export(string $format): string {
 		$this->requireUnrestricted();
 
 		return ConfigCodec::write($format, ConfigPlanner::export($this->repository->state()));
+	}
+
+	/**
+	 * Export the configuration as a plain associative array for CasC providers.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function exportArray(): array {
+		$this->requireUnrestricted();
+
+		return ConfigCodec::toArray(ConfigPlanner::export($this->repository->state()));
 	}
 
 	/**
@@ -144,6 +161,12 @@ final class ConfigService {
 		}
 	}
 
+	/**
+	 * Plan.
+	 *
+	 * @param ConfigDocument $document Document.
+	 * @return ConfigPlan
+	 */
 	public function plan(ConfigDocument $document): ConfigPlan {
 		$this->requireUnrestricted();
 

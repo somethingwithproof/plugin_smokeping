@@ -28,13 +28,39 @@ namespace Somethingwithproof\Smokeping;
  * is unknown, never zero.
  */
 final class SummaryScript {
+	/**
+	 * Create a new SummaryScript instance.
+	 *
+	 * @param ObservationRepository $observations Observations.
+	 * @param SummaryCalculator $calculator Calculator.
+	 */
 	public function __construct(private readonly ObservationRepository $observations, private readonly SummaryCalculator $calculator) {
 	}
 
-	public function run(string $series): string {
+	/**
+	 * Run the script-server query for one series.
+	 *
+	 * Defaults to the backwards-compatible "median:.. loss_pct:.. age:.." output.
+	 * Passing $extended = true appends jitter, quantile, and loss-burst fields.
+	 *
+	 * @param string $series Series key "<target id>~<location>".
+	 * @param bool $extended Whether to emit extended summary fields.
+	 * @return string
+	 */
+	public function run(string $series, bool $extended = false): string {
+		if ($extended) {
+			return $this->extendedValues($series)->format();
+		}
+
 		return $this->values($series)->format();
 	}
 
+	/**
+	 * Values.
+	 *
+	 * @param string $series Series.
+	 * @return SummaryValues
+	 */
 	public function values(string $series): SummaryValues {
 		$key = self::parse($series);
 
@@ -48,6 +74,35 @@ final class SummaryScript {
 	}
 
 	/**
+	 * Extended summary values for one series, optionally enriched with round
+	 * ping samples, recent round loss readings, or an aggregated DDSketch.
+	 *
+	 * @param string $series Series key "<target id>~<location>".
+	 * @param list<float|int> $pingSamplesSeconds Optional round ping samples in seconds.
+	 * @param list<float|null> $recentLosses Optional recent round loss values.
+	 * @param DDSketch|null $sketch Optional latency DDSketch in milliseconds.
+	 * @return ExtendedSummaryValues
+	 */
+	public function extendedValues(
+		string $series,
+		array $pingSamplesSeconds = [],
+		array $recentLosses = [],
+		?DDSketch $sketch = null,
+	): ExtendedSummaryValues {
+		$key = self::parse($series);
+
+		if ($key === null) {
+			return ExtendedSummaryValues::unknown();
+		}
+
+		$row = $this->observations->latest($key['target'], $key['location']);
+
+		return $row === null
+			? ExtendedSummaryValues::unknown()
+			: $this->calculator->computeExtended($row['observation'], $row['firstSeen'], $pingSamplesSeconds, $recentLosses, $sketch);
+	}
+
+	/**
 	 * @return array{target: int, location: string}|null
 	 */
 	public static function parse(string $series): ?array {
@@ -58,6 +113,13 @@ final class SummaryScript {
 		return ['target' => (int) $match[1], 'location' => $match[2]];
 	}
 
+	/**
+	 * Series.
+	 *
+	 * @param int $targetId Target id.
+	 * @param string $location Location.
+	 * @return string
+	 */
 	public static function series(int $targetId, string $location): string {
 		return $targetId . '~' . $location;
 	}

@@ -52,6 +52,11 @@ final readonly class SmokepingImportPlan {
 	) {
 	}
 
+	/**
+	 * Id.
+	 *
+	 * @return string
+	 */
 	public function id(): string {
 		$data = [
 			$this->digest,
@@ -68,6 +73,11 @@ final readonly class SmokepingImportPlan {
 		return substr(hash('sha256', (string) json_encode($data)), 0, 16);
 	}
 
+	/**
+	 * Has errors.
+	 *
+	 * @return bool
+	 */
 	public function hasErrors(): bool {
 		return $this->errors !== [];
 	}

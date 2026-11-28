@@ -45,14 +45,29 @@ final readonly class ConfigPlan {
 	) {
 	}
 
+	/**
+	 * Has errors.
+	 *
+	 * @return bool
+	 */
 	public function hasErrors(): bool {
 		return $this->errors !== [];
 	}
 
+	/**
+	 * Is empty.
+	 *
+	 * @return bool
+	 */
 	public function isEmpty(): bool {
 		return $this->settings === [] && $this->targetAdds === [] && $this->targetChanges === [] && $this->mappingAdds === [];
 	}
 
+	/**
+	 * Id.
+	 *
+	 * @return string
+	 */
 	public function id(): string {
 		$parts = [
 			$this->settings,
@@ -129,6 +144,12 @@ final readonly class ConfigPlan {
 		];
 	}
 
+	/**
+	 * Show.
+	 *
+	 * @param string|int|bool|null $value Value.
+	 * @return string
+	 */
 	private static function show(string|int|bool|null $value): string {
 		if ($value === null) {
 			return '(unset)';

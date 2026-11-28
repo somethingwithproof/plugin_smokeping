@@ -39,30 +39,46 @@ namespace Somethingwithproof\Smokeping;
  * a string, such as an uploaded file, refuses @include.
  */
 final class SmokepingConfigParser {
+	/** Max file bytes constant. */
 	public const MAX_FILE_BYTES    = 16777216;
+	/** Max total bytes constant. */
 	public const MAX_TOTAL_BYTES   = 67108864;
+	/** Max line constant. */
 	public const MAX_LINE          = 65536;
+	/** Max includes constant. */
 	public const MAX_INCLUDES      = 256;
+	/** Max include depth constant. */
 	public const MAX_INCLUDE_DEPTH = 16;
+	/** Max depth constant. */
 	public const MAX_DEPTH         = 32;
+	/** Max sections constant. */
 	public const MAX_SECTIONS      = 500000;
+	/** Max defines constant. */
 	public const MAX_DEFINES       = 64;
 
 	/** @var list<string> */
 	private array $allowed = [];
+	/** Root property. */
 	private SmokepingSection $root;
 	/** @var array<int, SmokepingSection> open sections by level */
 	private array $stack = [];
+	/** Level property. */
 	private int $level = 0;
+	/** File property. */
 	private string $file = '';
+	/** Line property. */
 	private int $line = 0;
 	/** @var array<string, string> */
 	private array $defines = [];
 	/** @var list<string> real paths of the files being read */
 	private array $reading = [];
+	/** Includes property. */
 	private int $includes = 0;
+	/** Bytes property. */
 	private int $bytes = 0;
+	/** Sections property. */
 	private int $sections = 0;
+	/** Includes allowed property. */
 	private bool $includesAllowed = true;
 	/** @var array<string, string> probe name => probe module, or '_template' */
 	private array $knownProbes = [];
@@ -133,6 +149,7 @@ final class SmokepingConfigParser {
 		return $this->finish();
 	}
 
+	/** Reset. */
 	private function reset(): void {
 		$this->root            = new SmokepingSection('', SmokepingGrammar::ROOT, '', 0);
 		$this->stack           = [0 => $this->root];
@@ -151,6 +168,11 @@ final class SmokepingConfigParser {
 		$this->allowed         = [];
 	}
 
+	/**
+	 * Finish.
+	 *
+	 * @return SmokepingSection
+	 */
 	private function finish(): SmokepingSection {
 		$this->gotoLevel(0, '');
 		$this->fillDefaults($this->root);
@@ -159,6 +181,12 @@ final class SmokepingConfigParser {
 		return $this->root;
 	}
 
+	/**
+	 * Inside.
+	 *
+	 * @param string $real Real.
+	 * @return bool
+	 */
 	private function inside(string $real): bool {
 		foreach ($this->allowed as $dir) {
 			if ($real === $dir || str_starts_with($real, $dir . '/')) {
@@ -169,10 +197,22 @@ final class SmokepingConfigParser {
 		return false;
 	}
 
+	/**
+	 * Fail.
+	 *
+	 * @param string $reason Reason.
+	 * @return never
+	 */
 	private function fail(string $reason): never {
 		throw new SmokepingConfigError($reason, $this->file, $this->line);
 	}
 
+	/**
+	 * Read file.
+	 *
+	 * @param string $file File.
+	 * @param string $real Real.
+	 */
 	private function readFile(string $file, string $real): void {
 		if (count($this->reading) >= self::MAX_INCLUDE_DEPTH) {
 			$this->fail(sprintf('@include is nested deeper than %d files', self::MAX_INCLUDE_DEPTH));
@@ -205,6 +245,12 @@ final class SmokepingConfigParser {
 		array_pop($this->reading);
 	}
 
+	/**
+	 * Parse text.
+	 *
+	 * @param string $text Text.
+	 * @param string $file File.
+	 */
 	private function parseText(string $text, string $file): void {
 		$this->file = $file;
 		$lines      = explode("\n", $text);
@@ -262,6 +308,11 @@ final class SmokepingConfigParser {
 		return (string) preg_replace(['/^\s+/', '/\s+$/'], '', $line);
 	}
 
+	/**
+	 * Parse line.
+	 *
+	 * @param string $line Line.
+	 */
 	private function parseLine(string $line): void {
 		if (preg_match('/^@include\s+["\']?(.*)["\']?$/', $line, $m) === 1) {
 			$this->include($m[1]);
@@ -352,6 +403,12 @@ final class SmokepingConfigParser {
 		[$this->file, $this->line] = [$file, $line];
 	}
 
+	/**
+	 * Goto level.
+	 *
+	 * @param int $level Level.
+	 * @param string $name Name.
+	 */
 	private function gotoLevel(int $level, string $name): void {
 		if ($level > $this->level) {
 			if ($level > $this->level + 1) {
@@ -373,12 +430,18 @@ final class SmokepingConfigParser {
 		}
 	}
 
+	/** Prev level. */
 	private function prevLevel(): void {
 		$this->fillDefaults($this->stack[$this->level]);
 		unset($this->stack[$this->level]);
 		$this->level--;
 	}
 
+	/**
+	 * Next level.
+	 *
+	 * @param string $name Name.
+	 */
 	private function nextLevel(string $name): void {
 		$parent  = $this->stack[$this->level];
 		$grammar = $this->grammar($parent);
@@ -499,6 +562,12 @@ final class SmokepingConfigParser {
 		return array_values(array_filter(array_map('strval', array_keys($vars)), fn (string $name) => !self::isPattern($name)));
 	}
 
+	/**
+	 * Is pattern.
+	 *
+	 * @param string $name Name.
+	 * @return bool
+	 */
 	private static function isPattern(string $name): bool {
 		return strlen($name) > 1 && $name[0] === '/' && str_ends_with($name, '/');
 	}
@@ -542,6 +611,12 @@ final class SmokepingConfigParser {
 		return $result === 1;
 	}
 
+	/**
+	 * Variable.
+	 *
+	 * @param string $key Key.
+	 * @param string $value Value.
+	 */
 	private function variable(string $key, string $value): void {
 		$section = $this->stack[$this->level];
 
@@ -644,6 +719,14 @@ final class SmokepingConfigParser {
 		}
 	}
 
+	/**
+	 * Check.
+	 *
+	 * @param string $check Check.
+	 * @param string $value Value.
+	 * @param SmokepingSection $section Section.
+	 * @return string|null
+	 */
 	private function check(string $check, string $value, SmokepingSection $section): ?string {
 		$n = self::perlNumber($value);
 
@@ -661,6 +744,13 @@ final class SmokepingConfigParser {
 		};
 	}
 
+	/**
+	 * Check target probe.
+	 *
+	 * @param string $value Value.
+	 * @param SmokepingSection $section Section.
+	 * @return string|null
+	 */
 	private function checkTargetProbe(string $value, SmokepingSection $section): ?string {
 		if (!isset($this->knownProbes[$value])) {
 			return sprintf('probe %s missing from the Probes section', $value);
@@ -694,10 +784,21 @@ final class SmokepingConfigParser {
 		return 0.0;
 	}
 
+	/**
+	 * Perl int.
+	 *
+	 * @param float $n N.
+	 * @return float
+	 */
 	private static function perlInt(float $n): float {
 		return $n >= 0 ? floor($n) : ceil($n);
 	}
 
+	/**
+	 * Table row.
+	 *
+	 * @param string $line Line.
+	 */
 	private function tableRow(string $line): void {
 		$section = $this->stack[$this->level];
 		$table   = $this->grammar($section)['table'] ?? null;
@@ -756,6 +857,11 @@ final class SmokepingConfigParser {
 		return $items;
 	}
 
+	/**
+	 * Fill defaults.
+	 *
+	 * @param SmokepingSection $section Section.
+	 */
 	private function fillDefaults(SmokepingSection $section): void {
 		$vars = $this->grammar($section)['vars'] ?? null;
 
@@ -774,6 +880,11 @@ final class SmokepingConfigParser {
 		}
 	}
 
+	/**
+	 * Check mandatory.
+	 *
+	 * @param SmokepingSection $section Section.
+	 */
 	private function checkMandatory(SmokepingSection $section): void {
 		foreach ($section->mandatory as $name) {
 			if (!isset($section->vars[$name]) && !isset($section->children[$name])) {

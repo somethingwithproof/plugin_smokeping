@@ -19,7 +19,18 @@
 
 namespace Somethingwithproof\Smokeping;
 
+/** Reader result component. */
 final readonly class ReaderResult {
+	/**
+	 * Create a new ReaderResult instance.
+	 *
+	 * @param bool $inventoryRan Inventory ran.
+	 * @param bool $inventoryOk Inventory ok.
+	 * @param int $seriesTotal Series total.
+	 * @param int $seriesRead Series read.
+	 * @param int $seriesFailed Series failed.
+	 * @param bool $overrun Overrun.
+	 */
 	public function __construct(
 		public bool $inventoryRan,
 		public bool $inventoryOk,

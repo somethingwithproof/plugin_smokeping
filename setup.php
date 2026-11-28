@@ -26,10 +26,20 @@
  * whole Cacti UI.
  */
 
+/**
+ * Php supported.
+ *
+ * @return bool
+ */
 function smokeping_php_supported(): bool {
 	return version_compare(PHP_VERSION, '8.2.0', '>=');
 }
 
+/**
+ * Boot.
+ *
+ * @return bool
+ */
 function smokeping_boot(): bool {
 	if (!smokeping_php_supported()) {
 		return false;
@@ -74,6 +84,11 @@ function smokeping_loss_colors(): \Somethingwithproof\Smokeping\LossColors {
 	return \Somethingwithproof\Smokeping\LossColors::resolve((string) read_config_option(\Somethingwithproof\Smokeping\LossColors::SETTING), $version);
 }
 
+/**
+ * Settings.
+ *
+ * @return \Somethingwithproof\Smokeping\Settings
+ */
 function smokeping_settings(): \Somethingwithproof\Smokeping\Settings {
 	global $config;
 
@@ -133,6 +148,7 @@ function plugin_smokeping_version(): array {
 	return $version;
 }
 
+/** Install. */
 function plugin_smokeping_install(): void {
 	if (smokeping_refuse_unsupported_php()) {
 		return;
@@ -141,6 +157,11 @@ function plugin_smokeping_install(): void {
 	plugin_smokeping_upgrade(true);
 }
 
+/**
+ * Check config.
+ *
+ * @return bool
+ */
 function plugin_smokeping_check_config(): bool {
 	if (smokeping_refuse_unsupported_php()) {
 		return false;
@@ -266,6 +287,7 @@ function plugin_smokeping_uninstall(): void {
 	}
 }
 
+/** Config arrays. */
 function smokeping_config_arrays(): void {
 	global $menu;
 
@@ -303,6 +325,7 @@ function smokeping_show_tab(): void {
 	print '<a id="smokeping" href="' . html_escape($config['url_path'] . 'plugins/smokeping/' . \Somethingwithproof\Smokeping\Pages::VIEW) . '"><img src="' . html_escape($config['url_path'] . 'plugins/smokeping/images/tab_smokeping' . $down . '.gif') . '" alt="' . html_escape(__('SmokePing', 'smokeping')) . '"></a>';
 }
 
+/** Config settings. */
 function smokeping_config_settings(): void {
 	global $tabs, $settings, $config;
 
@@ -380,6 +403,11 @@ function smokeping_int_list(array $values): array {
 	return $ints;
 }
 
+/**
+ * Purge guard.
+ *
+ * @return \Somethingwithproof\Smokeping\PurgeGuard
+ */
 function smokeping_purge_guard(): \Somethingwithproof\Smokeping\PurgeGuard {
 	return new \Somethingwithproof\Smokeping\PurgeGuard(new \Somethingwithproof\Smokeping\ObjectRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false));
 }
@@ -525,6 +553,11 @@ function smokeping_import_service(bool $webUser = false): \Somethingwithproof\Sm
 	);
 }
 
+/**
+ * Target actions.
+ *
+ * @return \Somethingwithproof\Smokeping\TargetActions
+ */
 function smokeping_target_actions(): \Somethingwithproof\Smokeping\TargetActions {
 	global $config;
 
@@ -547,6 +580,11 @@ function smokeping_rrd_reader(): ?\Somethingwithproof\Smokeping\RrdReader {
 	return $rrdtool !== '' && is_executable($rrdtool) ? new \Somethingwithproof\Smokeping\RrdtoolProcess($rrdtool) : null;
 }
 
+/**
+ * Device actions.
+ *
+ * @return \Somethingwithproof\Smokeping\DeviceActions
+ */
 function smokeping_device_actions(): \Somethingwithproof\Smokeping\DeviceActions {
 	return new \Somethingwithproof\Smokeping\DeviceActions(smokeping_target_actions(), new \Somethingwithproof\Smokeping\TargetRepository(false), new \Somethingwithproof\Smokeping\CactiObjectRepository(false));
 }
@@ -686,12 +724,16 @@ function smokeping_graph_buttons($data) {
 /**
  * The summary data source's answer for one series, read from the reader's
  * cache with the settings of this poller.
+ *
+ * @param string $series Series key "<target id>~<location>".
+ * @param bool $extended When true, append jitter, quantile, and loss-burst fields.
+ * @return string
  */
-function smokeping_summary_answer(string $series): string {
+function smokeping_summary_answer(string $series, bool $extended = false): string {
 	$clock      = new \Somethingwithproof\Smokeping\SystemClock();
 	$calculator = new \Somethingwithproof\Smokeping\SummaryCalculator(new \Somethingwithproof\Smokeping\FreshnessEvaluator($clock, smokeping_settings()->freshnessAllowance), $clock);
 
-	return (new \Somethingwithproof\Smokeping\SummaryScript(new \Somethingwithproof\Smokeping\ObservationRepository(false), $calculator))->run($series);
+	return (new \Somethingwithproof\Smokeping\SummaryScript(new \Somethingwithproof\Smokeping\ObservationRepository(false), $calculator))->run($series, $extended);
 }
 
 /**
@@ -714,6 +756,7 @@ function smokeping_purge_sweep(): void {
 	smokeping_purge_guard()->sweep(smokeping_settings()->mountPath, $config['rra_path'], $config['base_path']);
 }
 
+/** Poller bottom. */
 function smokeping_poller_bottom(): void {
 	global $config;
 
@@ -806,4 +849,179 @@ function smokeping_page_allowed(): bool {
 		&& api_plugin_is_enabled('smokeping')
 		&& ($current_user['enabled'] ?? '') === 'on'
 		&& api_plugin_user_realm_auth(get_current_page());
+}
+
+/**
+ * abilities_register hook: expose read-only SmokePing abilities gated on the
+ * SmokePing View realm for the token owner ($userId), with zero secrets.
+ *
+ * @param mixed $registrar
+ */
+function smokeping_abilities_register($registrar): void {
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping') || !is_object($registrar)) {
+		return;
+	}
+
+	$settings = smokeping_settings();
+	$clock    = new \Somethingwithproof\Smokeping\SystemClock();
+	$cacti    = new \Somethingwithproof\Smokeping\CactiObjectRepository(false);
+
+	$provider = new \Somethingwithproof\Smokeping\AbilitiesProvider(
+		$settings,
+		new \Somethingwithproof\Smokeping\TargetRepository(false),
+		new \Somethingwithproof\Smokeping\ObservationRepository(false),
+		new \Somethingwithproof\Smokeping\HealthRepository(false),
+		new \Somethingwithproof\Smokeping\FreshnessEvaluator($clock, $settings->freshnessAllowance),
+		$clock,
+		max(60, (int) read_config_option('poller_interval')),
+		static function (int $userId) use ($cacti): bool {
+			return $cacti->userHasPluginRealm($userId, 'smokeping', \Somethingwithproof\Smokeping\Pages::VIEW)
+				|| $cacti->userHasPluginRealm($userId, 'smokeping', 'smokeping_operator.php')
+				|| $cacti->userHasPluginRealm($userId, 'smokeping', 'smokeping_inventory.php');
+		},
+		static function (int $userId): array {
+			$total   = 0;
+			$allowed = get_allowed_devices('', 'description', '', $total, $userId);
+			$devices = array();
+
+			if (is_array($allowed)) {
+				foreach ($allowed as $device) {
+					if (is_array($device) && isset($device['id']) && is_numeric($device['id'])) {
+						$desc = isset($device['description']) && is_string($device['description']) ? $device['description'] : '';
+						$devices[(int) $device['id']] = $desc;
+					}
+				}
+			}
+
+			return $devices;
+		}
+	);
+
+	$provider->register($registrar);
+}
+
+/**
+ * doctor_register_checks hook: report stale targets, orphan RRDs, freshness
+ * breaches, and SmokePing config/mount path health without mutating state.
+ *
+ * @param mixed $context
+ * @return array<int, array<string, mixed>>
+ */
+function smokeping_doctor_register_checks($context = array()) {
+	global $config;
+
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
+		return array();
+	}
+
+	$settings  = smokeping_settings();
+	$clock     = new \Somethingwithproof\Smokeping\SystemClock();
+	$mountinfo = is_readable('/proc/self/mountinfo') ? (string) file_get_contents('/proc/self/mountinfo') : '';
+	$rraPath   = isset($config['rra_path']) && is_string($config['rra_path']) ? $config['rra_path'] : '';
+	$pollerId  = isset($config['poller_id']) && is_numeric($config['poller_id']) ? (int) $config['poller_id'] : 1;
+
+	$doctor = new \Somethingwithproof\Smokeping\DoctorChecks(
+		$settings,
+		new \Somethingwithproof\Smokeping\TargetRepository(false),
+		new \Somethingwithproof\Smokeping\ObservationRepository(false),
+		new \Somethingwithproof\Smokeping\FreshnessEvaluator($clock, $settings->freshnessAllowance),
+		new \Somethingwithproof\Smokeping\MountCheck($mountinfo),
+		new \Somethingwithproof\Smokeping\OrphanRrdScanner(),
+		$rraPath,
+		$pollerId === $settings->pollerId
+	);
+
+	return $doctor->register($context);
+}
+
+/**
+ * casc_register_providers hook: register the SmokePing CasC provider backed by
+ * ConfigCodec and ConfigService (export/validate/plan/apply).
+ *
+ * @param mixed $providers
+ * @return mixed
+ */
+function smokeping_casc_register_providers($providers = null) {
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
+		return is_array($providers) ? $providers : array();
+	}
+
+	$webUser  = PHP_SAPI !== 'cli';
+	$provider = new \Somethingwithproof\Smokeping\CascProvider(smokeping_config_service($webUser), new \Somethingwithproof\Smokeping\SystemClock());
+
+	return $provider->register($providers);
+}
+
+/**
+ * replicate_out hook: push poller-scoped SmokePing configuration tables to a
+ * remote data collector without disturbing local mode or collector caches.
+ *
+ * @param mixed $data
+ * @return mixed
+ */
+function smokeping_replicate_out($data) {
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping') || !is_array($data)) {
+		return $data;
+	}
+
+	$replication = new \Somethingwithproof\Smokeping\RemoteReplication(
+		new \Somethingwithproof\Smokeping\TargetRepository(false),
+		new \Somethingwithproof\Smokeping\ObjectRepository(false)
+	);
+
+	/** @var array<string, mixed> $payload */
+	$payload = $data;
+
+	return $replication->handle($payload);
+}
+
+/**
+ * doctor_register_debug_info hook: expose a redacted SmokePing diagnostic
+ * snapshot as plain arrays with zero cross-plugin PHP imports.
+ *
+ * @param mixed $context
+ * @return array<int, array<string, mixed>>
+ */
+function smokeping_doctor_register_debug_info($context = array()) {
+	global $config;
+
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
+		return array();
+	}
+
+	$settings  = smokeping_settings();
+	$clock     = new \Somethingwithproof\Smokeping\SystemClock();
+	$mountinfo = is_readable('/proc/self/mountinfo') ? (string) file_get_contents('/proc/self/mountinfo') : '';
+	$rraPath   = isset($config['rra_path']) && is_string($config['rra_path']) ? $config['rra_path'] : '';
+	$pollerId  = isset($config['poller_id']) && is_numeric($config['poller_id']) ? (int) $config['poller_id'] : 1;
+	$info      = plugin_smokeping_version();
+	$health    = (new \Somethingwithproof\Smokeping\HealthRepository(false))->forPoller($settings->pollerId);
+
+	$doctor = new \Somethingwithproof\Smokeping\DoctorChecks(
+		$settings,
+		new \Somethingwithproof\Smokeping\TargetRepository(false),
+		new \Somethingwithproof\Smokeping\ObservationRepository(false),
+		new \Somethingwithproof\Smokeping\FreshnessEvaluator($clock, $settings->freshnessAllowance),
+		new \Somethingwithproof\Smokeping\MountCheck($mountinfo),
+		new \Somethingwithproof\Smokeping\OrphanRrdScanner(),
+		$rraPath,
+		$pollerId === $settings->pollerId
+	);
+
+	return $doctor->registerDebugInfo($context, $health, $info['version'] ?? '', \Somethingwithproof\Smokeping\Schema::VERSION);
+}
+
+/**
+ * api_register_resources hook: expose read-only Google AIP resource descriptors
+ * as plain arrays with zero cross-plugin PHP imports.
+ *
+ * @param mixed $resources
+ * @return array<int, array<string, mixed>>
+ */
+function smokeping_api_register_resources($resources = array()) {
+	if (!smokeping_boot() || !api_plugin_is_enabled('smokeping')) {
+		return array();
+	}
+
+	return \Somethingwithproof\Smokeping\ApiResources::register($resources);
 }

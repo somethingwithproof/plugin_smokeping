@@ -24,6 +24,11 @@ namespace Somethingwithproof\Smokeping;
  * hold a link. Html::table() escapes every other cell.
  */
 final readonly class RawHtml {
+	/**
+	 * Create a new RawHtml instance.
+	 *
+	 * @param string $html Html.
+	 */
 	public function __construct(public string $html) {
 	}
 }

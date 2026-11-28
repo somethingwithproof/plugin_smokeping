@@ -108,6 +108,13 @@ final class InventoryImporter {
 		return new ImportPlan($added, $changed, $disappeared, $proposals, $warnings);
 	}
 
+	/**
+	 * Differs.
+	 *
+	 * @param Target $a A.
+	 * @param Target $b B.
+	 * @return bool
+	 */
 	private static function differs(Target $a, Target $b): bool {
 		return $a->host !== $b->host
 			|| $a->probe !== $b->probe

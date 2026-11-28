@@ -31,6 +31,7 @@ namespace Somethingwithproof\Smokeping;
  * never half applied by this one.
  */
 final class ConfigSchema {
+	/** Reserved constant. */
 	public const RESERVED = ['managed_targets', 'probe_profiles'];
 
 	/**
@@ -40,6 +41,7 @@ final class ConfigSchema {
 	 */
 	public const RETIRED = ['smokeping_perl_binary', 'smokeping_lib_dir'];
 
+	/** Max errors constant. */
 	public const MAX_ERRORS = 50;
 
 	/**
@@ -80,14 +82,26 @@ final class ConfigSchema {
 		'nomasterpoll' => 'bool', 'present' => 'bool',
 	];
 
+	/** Target keys constant. */
 	private const TARGET_KEYS = ['path', 'poller_id', 'host', 'probe', 'menu', 'title', 'slaves', 'nomasterpoll', 'step', 'pings', 'mode', 'admin_state', 'present'];
 
 	/** @var list<string> */
 	private array $errors = [];
 
+	/**
+	 * Create a new ConfigSchema instance.
+	 *
+	 * @param ConfigTree $tree Tree.
+	 */
 	private function __construct(private readonly ConfigTree $tree) {
 	}
 
+	/**
+	 * Build.
+	 *
+	 * @param ConfigTree $tree Tree.
+	 * @return ConfigDocument
+	 */
 	public static function build(ConfigTree $tree): ConfigDocument {
 		$schema   = new self($tree);
 		$document = $schema->document();
@@ -117,6 +131,11 @@ final class ConfigSchema {
 		return $text;
 	}
 
+	/**
+	 * Document.
+	 *
+	 * @return ConfigDocument
+	 */
 	private function document(): ConfigDocument {
 		$data = $this->tree->data;
 
@@ -502,6 +521,15 @@ final class ConfigSchema {
 		return $text;
 	}
 
+	/**
+	 * Int.
+	 *
+	 * @param string $path Path.
+	 * @param mixed $value Value.
+	 * @param int $min Min.
+	 * @param int $max Max.
+	 * @return int|null
+	 */
 	private function int(string $path, mixed $value, int $min, int $max): ?int {
 		if (!is_int($value) || $value < $min || $value > $max) {
 			$this->error($path, sprintf('must be a whole number from %d to %d', $min, $max));
@@ -512,6 +540,12 @@ final class ConfigSchema {
 		return $value;
 	}
 
+	/**
+	 * Error.
+	 *
+	 * @param string $path Path.
+	 * @param string $message Message.
+	 */
 	private function error(string $path, string $message): void {
 		if (count($this->errors) === self::MAX_ERRORS) {
 			$this->errors[] = sprintf('more than %d problems; fix these and run the check again', self::MAX_ERRORS);
@@ -526,6 +560,12 @@ final class ConfigSchema {
 		$this->errors[] = ($line === null ? '' : sprintf('line %d: ', $line)) . ($path === '' ? '' : $path . ' ') . $message;
 	}
 
+	/**
+	 * Line of.
+	 *
+	 * @param string $path Path.
+	 * @return int|null
+	 */
 	private function lineOf(string $path): ?int {
 		while ($path !== '') {
 			if (isset($this->tree->lines[$path])) {

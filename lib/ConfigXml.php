@@ -39,14 +39,25 @@ namespace Somethingwithproof\Smokeping;
  *   </smokeping-config>
  */
 final class ConfigXml {
+	/** Max bytes constant. */
 	public const MAX_BYTES = 8388608;
+	/** Max depth constant. */
 	public const MAX_DEPTH = 8;
 
+	/** Root constant. */
 	private const ROOT = 'smokeping-config';
 
 	/** @var array<string, int> */
 	private array $lines = [];
 
+	/**
+	 * Parse.
+	 *
+	 * @param string $text Text.
+	 * @param int $maxBytes Max bytes.
+	 * @param int $maxDepth Max depth.
+	 * @return ConfigTree
+	 */
 	public static function parse(string $text, int $maxBytes = self::MAX_BYTES, int $maxDepth = self::MAX_DEPTH): ConfigTree {
 		if (strlen($text) > $maxBytes) {
 			throw new ConfigException(sprintf('The file is larger than the %d byte limit', $maxBytes));
@@ -185,6 +196,12 @@ final class ConfigXml {
 		return $xml;
 	}
 
+	/**
+	 * Scalar.
+	 *
+	 * @param mixed $value Value.
+	 * @return string
+	 */
 	private static function scalar(mixed $value): string {
 		if (is_bool($value)) {
 			return $value ? 'true' : 'false';
@@ -204,6 +221,13 @@ final class ConfigXml {
 		return $text;
 	}
 
+	/**
+	 * Check depth.
+	 *
+	 * @param \DOMNode $node Node.
+	 * @param int $depth Depth.
+	 * @param int $max Max.
+	 */
 	private static function checkDepth(\DOMNode $node, int $depth, int $max): void {
 		if ($depth > $max) {
 			throw new ConfigException(sprintf('Nesting is deeper than %d levels', $max), $node->getLineNo());
@@ -216,6 +240,12 @@ final class ConfigXml {
 		}
 	}
 
+	/**
+	 * Tree.
+	 *
+	 * @param \DOMElement $root Root.
+	 * @return ConfigTree
+	 */
 	private function tree(\DOMElement $root): ConfigTree {
 		$data = [];
 
@@ -379,6 +409,12 @@ final class ConfigXml {
 		}
 	}
 
+	/**
+	 * Leaf text.
+	 *
+	 * @param \DOMElement $element Element.
+	 * @return string
+	 */
 	private function leafText(\DOMElement $element): string {
 		foreach ($element->childNodes as $child) {
 			if ($child instanceof \DOMElement) {

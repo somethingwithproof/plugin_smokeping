@@ -26,8 +26,15 @@ namespace Somethingwithproof\Smokeping;
  * takes the connection given to the constructor, as TargetRepository does.
  */
 final class ConfigRepository {
+	/** Device chunk constant. */
 	private const DEVICE_CHUNK = 500;
 
+	/**
+	 * Create a new ConfigRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 * @param string $rraPath Rra path.
+	 */
 	public function __construct(private readonly \PDO|false $connection, private readonly string $rraPath) {
 	}
 
@@ -246,6 +253,12 @@ final class ConfigRepository {
 		return $targets;
 	}
 
+	/**
+	 * Clean.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
 	private static function clean(string $text): string {
 		return trim((string) preg_replace('/[\x00-\x1F\x7F]/', ' ', $text));
 	}

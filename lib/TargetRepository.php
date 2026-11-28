@@ -28,6 +28,11 @@ namespace Somethingwithproof\Smokeping;
  * false means Cacti's default for the current process.
  */
 final class TargetRepository {
+	/**
+	 * Create a new TargetRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -40,12 +45,169 @@ final class TargetRepository {
 		return $this->targets($rows);
 	}
 
+	/**
+	 * Filtered, paginated targets for the inventory page, applying device
+	 * visibility before counting so totals never leak hidden devices.
+	 *
+	 * @param list<int> $allowedHostIds devices the user is allowed to view
+	 * @return array{targets: list<Target>, total: int, probes: list<string>}
+	 */
+	public function filteredForPoller(int $pollerId, TargetFilter $filter, array $allowedHostIds): array {
+		$allowedHostIds = array_values(array_unique(array_filter(array_map('intval', $allowedHostIds), static fn (int $id): bool => $id > 0)));
+
+		$visibilitySql = 'm.host_id IS NULL';
+		$visParams     = [];
+
+		if ($allowedHostIds !== []) {
+			$ph            = implode(', ', array_fill(0, count($allowedHostIds), '?'));
+			$visibilitySql = "(m.host_id IS NULL OR m.host_id IN ($ph))";
+			$visParams     = $allowedHostIds;
+		}
+
+		$probeRows = Row::rows(db_fetch_assoc_prepared(
+			"SELECT DISTINCT t.probe
+			FROM plugin_smokeping_target AS t
+			LEFT JOIN plugin_smokeping_mapping AS m ON m.target_id = t.id
+			WHERE t.poller_id = ? AND t.probe <> '' AND $visibilitySql
+			ORDER BY t.probe",
+			array_merge([$pollerId], $visParams),
+			true,
+			$this->connection
+		));
+		$probes = array_values(array_map(static fn (array $row): string => Row::string($row, 'probe'), $probeRows));
+
+		if ($filter->mapping === 'mapped' && $allowedHostIds === []) {
+			return ['targets' => [], 'total' => 0, 'probes' => $probes];
+		}
+
+		$where  = ['t.poller_id = ?', $visibilitySql];
+		$params = array_merge([$pollerId], $visParams);
+
+		if ($filter->search !== '') {
+			$escaped = '%' . strtr(strtolower($filter->search), ['!' => '!!', '%' => '!%', '_' => '!_']) . '%';
+			$where[] = "(LOWER(t.path) LIKE ? ESCAPE '!' OR LOWER(t.title) LIKE ? ESCAPE '!' OR LOWER(t.menu) LIKE ? ESCAPE '!' OR LOWER(t.host) LIKE ? ESCAPE '!')";
+			$params  = array_merge($params, [$escaped, $escaped, $escaped, $escaped]);
+		}
+
+		if ($filter->probe !== '') {
+			$where[]  = 't.probe = ?';
+			$params[] = $filter->probe;
+		}
+
+		if ($filter->presence === 'present') {
+			$where[] = 't.present = 1';
+		} elseif ($filter->presence === 'gone') {
+			$where[] = 't.present = 0';
+		}
+
+		if ($filter->mapping === 'mapped') {
+			$where[] = 'm.host_id IS NOT NULL';
+		} elseif ($filter->mapping === 'unmapped') {
+			$where[] = 'm.host_id IS NULL';
+		}
+
+		$whereSql = implode(' AND ', $where);
+		$total    = (int) db_fetch_cell_prepared(
+			"SELECT COUNT(*)
+			FROM plugin_smokeping_target AS t
+			LEFT JOIN plugin_smokeping_mapping AS m ON m.target_id = t.id
+			WHERE $whereSql",
+			$params,
+			'',
+			true,
+			$this->connection
+		);
+
+		$limitSql = '';
+
+		if ($filter->rows > 0) {
+			$limit    = $filter->rows;
+			$offset   = $filter->offset();
+			$limitSql = "\n\t\t\tLIMIT $limit OFFSET $offset";
+		}
+
+		$rows = Row::rows(db_fetch_assoc_prepared(
+			"SELECT t.*
+			FROM plugin_smokeping_target AS t
+			LEFT JOIN plugin_smokeping_mapping AS m ON m.target_id = t.id
+			WHERE $whereSql
+			ORDER BY t.path$limitSql",
+			$params,
+			true,
+			$this->connection
+		));
+
+		return [
+			'targets' => $this->targets($rows),
+			'total'   => $total,
+			'probes'  => $probes,
+		];
+	}
+
+	/**
+	 * Raw target rows for a single poller, for remote collector replication.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function forPollerRows(int $pollerId): array {
+		return Row::rows(db_fetch_assoc_prepared('SELECT * FROM plugin_smokeping_target WHERE poller_id = ? ORDER BY id', [$pollerId], true, $this->connection));
+	}
+
+	/**
+	 * Raw mapping rows scoped to targets owned by $pollerId, for remote replication.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function mappingsForPollerRows(int $pollerId): array {
+		return Row::rows(db_fetch_assoc_prepared(
+			'SELECT m.*
+			FROM plugin_smokeping_mapping AS m
+			INNER JOIN plugin_smokeping_target AS t ON t.id = m.target_id
+			WHERE t.poller_id = ?
+			ORDER BY m.target_id',
+			[$pollerId],
+			true,
+			$this->connection
+		));
+	}
+
+	/**
+	 * Raw re-link proposal rows scoped to $pollerId, for remote replication.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function relinkForPollerRows(int $pollerId): array {
+		return Row::rows(db_fetch_assoc_prepared(
+			'SELECT r.*
+			FROM plugin_smokeping_relink AS r
+			INNER JOIN plugin_smokeping_target AS o ON o.id = r.old_target_id
+			WHERE o.poller_id = ?
+			ORDER BY r.id',
+			[$pollerId],
+			true,
+			$this->connection
+		));
+	}
+
+	/**
+	 * Find.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @param string $path Path.
+	 * @return Target|null
+	 */
 	public function find(int $pollerId, string $path): ?Target {
 		$row = db_fetch_row_prepared('SELECT * FROM plugin_smokeping_target WHERE poller_id = ? AND path = ?', [$pollerId, $path], true, $this->connection);
 
 		return is_array($row) && $row !== [] ? Target::fromRow($row) : null;
 	}
 
+	/**
+	 * By id.
+	 *
+	 * @param int $id Id.
+	 * @return Target|null
+	 */
 	public function byId(int $id): ?Target {
 		$row = db_fetch_row_prepared('SELECT * FROM plugin_smokeping_target WHERE id = ?', [$id], true, $this->connection);
 
@@ -90,10 +252,21 @@ final class TargetRepository {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM plugin_smokeping_mapping WHERE host_id = ?', [$hostId], '', true, $this->connection) > 0;
 	}
 
+	/**
+	 * Mapped host.
+	 *
+	 * @param int $targetId Target id.
+	 * @return int
+	 */
 	public function mappedHost(int $targetId): int {
 		return (int) db_fetch_cell_prepared('SELECT host_id FROM plugin_smokeping_mapping WHERE target_id = ?', [$targetId], '', true, $this->connection);
 	}
 
+	/**
+	 * Unmap.
+	 *
+	 * @param int $targetId Target id.
+	 */
 	public function unmap(int $targetId): void {
 		db_execute_prepared('DELETE FROM plugin_smokeping_mapping WHERE target_id = ?', [$targetId], true, $this->connection);
 	}
@@ -114,6 +287,14 @@ final class TargetRepository {
 		return $old === null || $new === null ? null : ['old' => $old, 'new' => $new];
 	}
 
+	/**
+	 * Decide proposal.
+	 *
+	 * @param int $id Id.
+	 * @param string $status Status.
+	 * @param int $userId User id.
+	 * @param int $now Now.
+	 */
 	public function decideProposal(int $id, string $status, int $userId, int $now): void {
 		db_execute_prepared("UPDATE plugin_smokeping_relink SET status = ?, decided_at = ?, decided_by = ? WHERE id = ? AND status = 'proposed'", [$status, $now, $userId, $id], true, $this->connection);
 	}
@@ -251,6 +432,12 @@ final class TargetRepository {
 		return true;
 	}
 
+	/**
+	 * Insert.
+	 *
+	 * @param Target $target Target.
+	 * @param int $now Now.
+	 */
 	private function insert(Target $target, int $now): void {
 		$this->execute('INSERT INTO plugin_smokeping_target
 			(poller_id, path, host, probe, probe_desc, alerts, menu, title, slaves, nomasterpoll, step, pings, mode, admin_state, present, first_seen, last_seen)
@@ -262,6 +449,12 @@ final class TargetRepository {
 			]);
 	}
 
+	/**
+	 * Update.
+	 *
+	 * @param Target $target Target.
+	 * @param int $now Now.
+	 */
 	private function update(Target $target, int $now): void {
 		$this->execute('UPDATE plugin_smokeping_target
 			SET host = ?, probe = ?, probe_desc = ?, alerts = ?, menu = ?, title = ?, slaves = ?, nomasterpoll = ?, step = ?, pings = ?, present = 1, last_seen = ?

@@ -36,19 +36,36 @@ namespace Somethingwithproof\Smokeping;
  * text.
  */
 final class YamlReader {
+	/** Max bytes constant. */
 	public const MAX_BYTES = 8388608;
+	/** Max depth constant. */
 	public const MAX_DEPTH = 8;
+	/** Max line constant. */
 	public const MAX_LINE  = 16384;
 
 	/** @var array<int, string> */
 	private array $raw = [];
+	/** Pos property. */
 	private int $pos = 0;
 	/** @var array<string, int> */
 	private array $lineMap = [];
 
+	/**
+	 * Create a new YamlReader instance.
+	 *
+	 * @param int $maxDepth Max depth.
+	 */
 	private function __construct(private readonly int $maxDepth) {
 	}
 
+	/**
+	 * Parse.
+	 *
+	 * @param string $text Text.
+	 * @param int $maxBytes Max bytes.
+	 * @param int $maxDepth Max depth.
+	 * @return ConfigTree
+	 */
 	public static function parse(string $text, int $maxBytes = self::MAX_BYTES, int $maxDepth = self::MAX_DEPTH): ConfigTree {
 		if (strlen($text) > $maxBytes) {
 			throw new ConfigException(sprintf('The file is larger than the %d byte limit', $maxBytes));
@@ -67,6 +84,12 @@ final class YamlReader {
 		return $reader->run($text);
 	}
 
+	/**
+	 * Run.
+	 *
+	 * @param string $text Text.
+	 * @return ConfigTree
+	 */
 	private function run(string $text): ConfigTree {
 		$text = str_replace("\r\n", "\n", $text);
 
@@ -151,6 +174,14 @@ final class YamlReader {
 		return null;
 	}
 
+	/**
+	 * Block.
+	 *
+	 * @param int $indent Indent.
+	 * @param string $path Path.
+	 * @param int $depth Depth.
+	 * @return mixed
+	 */
 	private function block(int $indent, string $path, int $depth): mixed {
 		$cur = $this->peek();
 
@@ -161,12 +192,23 @@ final class YamlReader {
 		return self::isItem($cur[2]) ? $this->sequence($indent, $path, $depth) : $this->map($indent, $path, $depth);
 	}
 
+	/**
+	 * Guard depth.
+	 *
+	 * @param int $depth Depth.
+	 */
 	private function guardDepth(int $depth): void {
 		if ($depth > $this->maxDepth) {
 			throw new ConfigException(sprintf('Nesting is deeper than %d levels', $this->maxDepth), $this->pos + 1);
 		}
 	}
 
+	/**
+	 * Is item.
+	 *
+	 * @param string $text Text.
+	 * @return bool
+	 */
 	private static function isItem(string $text): bool {
 		return $text === '-' || str_starts_with($text, '- ');
 	}
@@ -377,6 +419,13 @@ final class YamlReader {
 		return [$key, ltrim(substr($text, $at + 1), ' ')];
 	}
 
+	/**
+	 * Scalar.
+	 *
+	 * @param string $text Text.
+	 * @param int $no No.
+	 * @return null|bool|int|string
+	 */
 	private function scalar(string $text, int $no): null|bool|int|string {
 		if ($text[0] === '"' || $text[0] === "'") {
 			[$value, $end] = $this->quoted($text, 0, $no);
@@ -481,6 +530,12 @@ final class YamlReader {
 		throw new ConfigException('Unterminated quoted scalar (a quoted scalar must close on the line it starts)', $no);
 	}
 
+	/**
+	 * Utf8.
+	 *
+	 * @param int $code Code.
+	 * @return string
+	 */
 	private static function utf8(int $code): string {
 		return match (true) {
 			$code < 0x80  => chr($code),

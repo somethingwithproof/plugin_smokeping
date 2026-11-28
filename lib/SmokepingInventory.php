@@ -124,6 +124,12 @@ final class SmokepingInventory {
 		return [null, null, null];
 	}
 
+	/**
+	 * Int or null.
+	 *
+	 * @param string|null $value Value.
+	 * @return int|null
+	 */
 	private static function intOrNull(?string $value): ?int {
 		if ($value === null || preg_match('/^\d+$/D', $value) !== 1) {
 			return null;

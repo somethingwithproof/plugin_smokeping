@@ -153,6 +153,16 @@ foreach (get_allowed_devices() as $smokeping_device) {
 	$smokeping_visible[(int) $smokeping_device['id']] = $smokeping_device['description'];
 }
 
+$smokeping_filter = new \Somethingwithproof\Smokeping\TargetFilter(
+	isset_request_var('filter') ? (string) get_nfilter_request_var('filter') : '',
+	isset_request_var('probe') ? (string) get_nfilter_request_var('probe') : '',
+	isset_request_var('presence') ? (string) get_nfilter_request_var('presence') : 'all',
+	isset_request_var('mapping') ? (string) get_nfilter_request_var('mapping') : 'all',
+	'all',
+	isset_request_var('page') ? (int) get_nfilter_request_var('page') : 1,
+	isset_request_var('rows') ? (int) get_nfilter_request_var('rows') : 0
+);
+
 top_header();
-$smokeping_page->render($smokeping_settings->pollerId, $smokeping_visible);
+$smokeping_page->render($smokeping_settings->pollerId, $smokeping_visible, $smokeping_filter);
 bottom_footer();

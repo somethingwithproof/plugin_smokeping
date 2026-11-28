@@ -24,18 +24,38 @@ namespace Somethingwithproof\Smokeping;
  * share Cacti's log file, rotation, and verbosity filter.
  */
 final class Log {
+	/**
+	 * Debug.
+	 *
+	 * @param string $message Message.
+	 */
 	public static function debug(string $message): void {
 		cacti_log('DEBUG: ' . $message, false, 'SMOKEPING', POLLER_VERBOSITY_DEBUG);
 	}
 
+	/**
+	 * Info.
+	 *
+	 * @param string $message Message.
+	 */
 	public static function info(string $message): void {
 		cacti_log('NOTE: ' . $message, false, 'SMOKEPING', POLLER_VERBOSITY_MEDIUM);
 	}
 
+	/**
+	 * Warning.
+	 *
+	 * @param string $message Message.
+	 */
 	public static function warning(string $message): void {
 		cacti_log('WARNING: ' . $message, false, 'SMOKEPING');
 	}
 
+	/**
+	 * Error.
+	 *
+	 * @param string $message Message.
+	 */
 	public static function error(string $message): void {
 		cacti_log('ERROR: ' . $message, false, 'SMOKEPING');
 	}

@@ -26,7 +26,9 @@ namespace Somethingwithproof\Smokeping;
  * hierarchy into a graph tree.
  */
 final readonly class SmokepingImportOptions {
+	/** Per host constant. */
 	public const PER_HOST   = 'host';
+	/** Per target constant. */
 	public const PER_TARGET = 'target';
 
 	/**
@@ -45,6 +47,11 @@ final readonly class SmokepingImportOptions {
 	) {
 	}
 
+	/**
+	 * Mirrors tree.
+	 *
+	 * @return bool
+	 */
 	public function mirrorsTree(): bool {
 		return $this->treeId > 0 || $this->treeName !== '';
 	}

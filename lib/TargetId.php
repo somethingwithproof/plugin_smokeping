@@ -19,10 +19,22 @@
 
 namespace Somethingwithproof\Smokeping;
 
+/** Target id component. */
 final readonly class TargetId {
+	/**
+	 * Create a new TargetId instance.
+	 *
+	 * @param int $value Value.
+	 */
 	private function __construct(public int $value) {
 	}
 
+	/**
+	 * From int.
+	 *
+	 * @param int $value Value.
+	 * @return self
+	 */
 	public static function fromInt(int $value): self {
 		if ($value < 1) {
 			throw new \InvalidArgumentException(sprintf('Target id must be positive, got %d', $value));

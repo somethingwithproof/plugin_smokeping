@@ -29,7 +29,7 @@ const SMOKEPING_TABLES = [
 	'plugin_smokeping_target',
 ];
 
-const SMOKEPING_HOOKS = ['api_device_save', 'auth_alternate_realms', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top', 'top_graph_header_tabs', 'top_header_tabs'];
+const SMOKEPING_HOOKS = ['abilities_register', 'api_device_save', 'api_register_resources', 'auth_alternate_realms', 'casc_register_providers', 'config_arrays', 'config_settings', 'data_source_remove', 'device_action_array', 'device_action_execute', 'device_action_prepare', 'device_remove', 'doctor_register_checks', 'doctor_register_debug_info', 'draw_navigation_text', 'graph_buttons', 'graph_buttons_thumbnails', 'poller_bottom', 'poller_finishing', 'poller_top', 'replicate_out', 'top_graph_header_tabs', 'top_header_tabs'];
 
 beforeEach(function () {
 	lifecycle('reset');

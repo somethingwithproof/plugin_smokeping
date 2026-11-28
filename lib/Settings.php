@@ -29,6 +29,7 @@ namespace Somethingwithproof\Smokeping;
  * SmokePing's datadir; files are read through the mount.
  */
 final readonly class Settings {
+	/** Names constant. */
 	public const NAMES = [
 		'smokeping_config_file',
 		'smokeping_datadir',
@@ -41,6 +42,19 @@ final readonly class Settings {
 		'smokeping_backup_dir',
 	];
 
+	/**
+	 * Create a new Settings instance.
+	 *
+	 * @param string $configFile Config file.
+	 * @param string $datadir Datadir.
+	 * @param string $mountPath Mount path.
+	 * @param int $pollerId Poller id.
+	 * @param int $readerBudget Reader budget.
+	 * @param int $inventoryInterval Inventory interval.
+	 * @param int $freshnessAllowance Freshness allowance.
+	 * @param bool $keepTablesOnUninstall Keep tables on uninstall.
+	 * @param string $backupDir Backup dir.
+	 */
 	public function __construct(
 		public string $configFile,
 		public string $datadir,
@@ -54,6 +68,12 @@ final readonly class Settings {
 	) {
 	}
 
+	/**
+	 * Default mount path.
+	 *
+	 * @param string $rraPath Rra path.
+	 * @return string
+	 */
 	public static function defaultMountPath(string $rraPath): string {
 		return rtrim($rraPath, '/') . '/smokeping';
 	}

@@ -26,6 +26,20 @@ namespace Somethingwithproof\Smokeping;
  * looked. Only observedAt says anything about measurement freshness.
  */
 final readonly class Observation {
+	/**
+	 * Create a new Observation instance.
+	 *
+	 * @param TargetId $targetId Target id.
+	 * @param string $location Location.
+	 * @param int $observedAt Observed at.
+	 * @param int $ingestedAt Ingested at.
+	 * @param int $expectedInterval Expected interval.
+	 * @param int $pings Pings.
+	 * @param float|null $loss Loss.
+	 * @param float|null $median Median.
+	 * @param bool $filePresent File present.
+	 * @param string $revision Revision.
+	 */
 	public function __construct(
 		public TargetId $targetId,
 		public string $location,

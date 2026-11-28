@@ -27,6 +27,12 @@ namespace Somethingwithproof\Smokeping;
  * so neither can make old data look current.
  */
 final class FreshnessEvaluator {
+	/**
+	 * Create a new FreshnessEvaluator instance.
+	 *
+	 * @param Clock $clock Clock.
+	 * @param int $allowance Allowance.
+	 */
 	public function __construct(private readonly Clock $clock, private readonly int $allowance) {
 	}
 
@@ -86,6 +92,12 @@ final class FreshnessEvaluator {
 		return $observation->loss > 0 ? Condition::Degraded : Condition::WithinPolicy;
 	}
 
+	/**
+	 * Age.
+	 *
+	 * @param Observation $observation Observation.
+	 * @return int|null
+	 */
 	public function age(Observation $observation): ?int {
 		return $observation->observedAt > 0 ? $this->clock->now() - $observation->observedAt : null;
 	}

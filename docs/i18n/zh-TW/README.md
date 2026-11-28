@@ -1,4 +1,4 @@
-<!-- Source: README.md; SHA256: 17905aa1eac76a7d10dab526734605629fa3d1ada56397642ad4154c5be1feff -->
+<!-- Source: README.md; SHA256: b41ec705327127cc34ff07d1514a141262752f99c5e2296fdc323d584a777b84 -->
 
 <!-- translations:start -->
 [English](../../../README.md) | [简体中文](../zh-CN/README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية (السعودية)](../ar-SA/README.md) | [Afrikaans](../af-ZA/README.md) | [አማርኛ](../am-ET/README.md) | [العربية (مصر)](../ar-EG/README.md) | [العربية (المغرب)](../ar-MA/README.md) | [বাংলা](../bn-BD/README.md) | [Bosanski](../bs-BA/README.md) | [Deutsch](../de-DE/README.md) | [فارسی](../fa-IR/README.md) | [Filipino](../fil-PH/README.md) | [Français](../fr-FR/README.md) | [Français (Maroc)](../fr-MA/README.md) | [Français (Sénégal)](../fr-SN/README.md) | [Hausa](../ha-NG/README.md) | [עברית](../he-IL/README.md) | [Hrvatski](../hr-HR/README.md) | [Bahasa Indonesia](../id-ID/README.md) | [Igbo](../ig-NG/README.md) | [Italiano](../it-IT/README.md) | [日本語](../ja-JP/README.md) | [한국어](../ko-KR/README.md) | [Malagasy](../mg-MG/README.md) | [मराठी](../mr-IN/README.md) | [Bahasa Melayu](../ms-MY/README.md) | [Nederlands](../nl-NL/README.md) | [Polski](../pl-PL/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru-RU/README.md) | [Kinyarwanda](../rw-RW/README.md) | [Soomaali](../so-SO/README.md) | [Српски](../sr-RS/README.md) | [Svenska](../sv-SE/README.md) | [Kiswahili](../sw-KE/README.md) | [தமிழ்](../ta-IN/README.md) | [తెలుగు](../te-IN/README.md) | [ไทย](../th-TH/README.md) | [Türkçe](../tr-TR/README.md) | [Українська](../uk-UA/README.md) | [اردو](../ur-PK/README.md) | [Tiếng Việt](../vi-VN/README.md) | [isiXhosa](../xh-ZA/README.md) | [Yorùbá](../yo-NG/README.md) | [繁體中文](README.md) | [isiZulu](../zu-ZA/README.md)
@@ -25,7 +25,7 @@
 
 這個 Cacti 1.2 外掛程式將 SmokePing 的延遲與封包遺失測量資料匯入 Cacti，作為一般的裝置、資料來源與圖表。煙霧圖會直接顯示在其所屬裝置旁，受 Cacti 權限控管，且可由 Thold 與 Maint 進行告警與抑制。此為針對 Cacti 的獨立實作，並非 [SmokePing](https://oss.oetiker.ch/smokeping/)（原作者為 Tobias Oetiker 與 Niko Tyni）的一部分，亦未獲得其官方背書。本外掛程式不包含也不會執行 SmokePing 的程式碼：它僅讀取 SmokePing 寫入的設定與 RRD 檔案，其圖表範本則是為了繪製與 SmokePing 自身圖表相同的資料序列而建置。
 
-> **狀態：開發中。觀察模式（第 1 階段）已於 `main` 分支實作，並發布為 1.0.0-rc.1 預發布版本。** 本外掛程式會讀取 SmokePing 的設定與 RRD 檔案、顯示其狀態、為其建立 Cacti 裝置、資料來源與圖表，並將資料提供給 Thold 與 Maint，且不會對 SmokePing 寫入任何內容。託管模式（由外掛程式寫入 SmokePing 設定）與遠端收集器屬於後續階段，尚未開始，亦不包含在此版本中。真實環境的試點部署與更貼近 SmokePing 圖例的樣式仍在里程碑 4 中進行。請參閱 [docs/install.md](../../install.md) 開始使用。
+> **狀態：開發中。觀察模式（第 1 階段）已於 `main` 分支實作（1.0.0-rc.1），包含操作員篩選、CSV 匯出、孤立 RRD 偵測、Thold 告警轉換、生態系統整合掛鉤與遠端收集器抄寫。** 本外掛程式會讀取 SmokePing 的設定與 RRD 檔案、顯示其狀態、為其建立 Cacti 裝置、資料來源與圖表，並將資料提供給 Thold 與 Maint，且不會對 SmokePing 寫入任何內容。託管模式（由外掛程式寫入 SmokePing 設定）屬於後續階段，尚未開始，亦不包含在此版本中。真實環境的試點部署與更貼近 SmokePing 圖例的樣式仍在里程碑 4 中進行。請參閱 [docs/install.md](../../install.md) 開始使用。
 
 ## 存取角色
 
@@ -57,16 +57,25 @@ SmokePing 能精準測量延遲分佈與封包遺失，其煙霧圖也能呈現�
 - **缺乏裝置脈絡。** 同一台裝置的延遲資料與介面計數器存在於不同的工具中。
 - **無法串接至 Cacti 告警。** Thold 與 Maint 是針對 Cacti 資料來源與裝置運作，因此 SmokePing 告警必須分開設定與抑制。
 
-本外掛程式透過將每個 SmokePing 目標表示為指向 SmokePing 現有 RRD 檔案的 Cacti 物件，並搭配一組精簡的輪詢摘要數值，來彌補這些落差。它直接沿用 Cacti 的圖表繪製、權限管理、Thold 與 Maint，而非另外建置平行系統。對 Cacti 遠端資料收集器的支援預計於第 3 階段提供，尚未包含在此版本中。
+本外掛程式透過將每個 SmokePing 目標表示為指向 SmokePing 現有 RRD 檔案的 Cacti 物件，並搭配一組精簡的輪詢摘要數值，來彌補這些落差。它直接沿用 Cacti 的圖表繪製、權限管理、Thold 與 Maint，而非另外建置平行系統。以輪詢器為範圍的組態抄寫（`replicate_out`）會推送遠端輪詢器組態資料表，同時保持本機模式（poller 1）與收集器本機觀測快取彼此隔離。
 
 ## 範圍與狀態
 
 | 階段 | 範圍 | 里程碑 | 狀態 |
 |---|---|---|---|
 | 0，研究 | 相容性矩陣、上游行為確認、圖表還原度驗證 | [M1](https://github.com/somethingwithproof/plugin_smokeping/milestone/1) | 研究結果位於 `docs/research`；部分研究議題仍為開啟狀態 |
-| 1，觀察 | 清單匯入、Cacti 裝置、煙霧圖與摘要圖、Thold 告警、Maint 抑制、健康狀態頁面 | [M2](https://github.com/somethingwithproof/plugin_smokeping/milestone/2)、[M3](https://github.com/somethingwithproof/plugin_smokeping/milestone/3)、[M4](https://github.com/somethingwithproof/plugin_smokeping/milestone/4) | 已發布為 1.0.0-rc.1；試點測試進行中 |
+| 1，觀察 | 清單匯入、Cacti 裝置、煙霧圖與摘要圖、Thold 告警與告警轉換、Maint 抑制、篩選檢視、CSV 匯出、孤立 RRD 偵測、生態系統掛鉤 | [M2](https://github.com/somethingwithproof/plugin_smokeping/milestone/2)、[M3](https://github.com/somethingwithproof/plugin_smokeping/milestone/3)、[M4](https://github.com/somethingwithproof/plugin_smokeping/milestone/4) | 已實作；試點測試進行中 |
 | 2，託管 | 由 Cacti 管理的設定命名空間、ICMP 與 TCP 探測設定檔、修訂版、驗證、重新載入、回復 | [M5](https://github.com/somethingwithproof/plugin_smokeping/milestone/5) | 已規劃，尚未開始 |
-| 3，遠端 | Cacti 遠端資料收集器上的 SmokePing，將從屬節點作為測量位置 | [M6](https://github.com/somethingwithproof/plugin_smokeping/milestone/6) | 已規劃，尚未開始 |
+| 3，遠端 | 遠端資料收集器的輪詢器範圍查詢與 `replicate_out` 資料表抄寫（`RemoteReplication`）；完整多收集器 SmokePing 部署驗證 | [M6](https://github.com/somethingwithproof/plugin_smokeping/milestone/6) | 抄寫與輪詢器範圍機制已實作；多收集器部署驗證仍為開啟狀態 |
+
+已實作的操作員工作流程、CLI 指令與生態系統掛鉤：
+
+- **清單與目標篩選（`smokeping_inventory.php`、`smokeping.php`）**：`TargetFilter`、`TargetRepository::filteredForPoller()`、`InventoryPage` 與 `ViewPage` 提供搜尋（`filter`）、探測器（`probe`）、清單存在狀態（`presence`）、對應狀態（`mapping`）、新鮮度狀態（`state`），以及選用的分頁筆數設定（`rows`：`All`、`25`、`50`、`100`、`200`）。裝置可見性會在計數前於 SQL 中強制執行，因此總數絕不會洩漏隱藏裝置。
+- **CSV 匯出（`smokeping.php?action=export_csv`）**：`CsvExporter` 會依呼叫者的裝置權限，為目前作用中的篩選檢視串流輸出符合 RFC 4180 CRLF 格式的結果，並在以 `=`、`+`、`-`、`@`、Tab 或歸位字元開頭的儲存格前加上單引號，以停用試算表公式。
+- **孤立 RRD 偵測（`smokeping_health.php`）**：`OrphanRrdScanner` 與 `HealthCheck::orphanRrds()` 會在讀取端輪詢器上對 SmokePing 掛載點執行有限範圍掃描，略過 `__cgi`、`__sortercache` 與符號連結，並將無主的 `.rrd` 檔案與開啟中的重新連結提案進行交叉比對。
+- **SmokePing 至 Thold 轉換（`smokeping_health.php`、`cli/smokeping.php`）**：`TholdTranslator` 與 `TholdGenerator` 會讀取 SmokePing `*** Alerts ***` 定義，並在不修改 SmokePing 組態檔的情況下，將支援的連續封包遺失模式轉換為等效的 `loss_pct` Thold 閾值。網頁流程會先執行 GET 預覽（`action=thold_preview`、`HealthPage::renderTholdPreview()`），再執行受 CSRF 保護的 POST（`action=thold_create`）。不支援的模式（RTT 告警、萬用字元衰減、混合層級）會略過而不進行寫入。
+- **管理員 CLI（`cli/smokeping.php`）**：支援 `provision <target path> [--device=ID] [--location=NAME]`、`relink <old target path> <new target path> [--location=NAME]`、`thold-generate <target path> [--alert=NAME] [--apply]`、`size-graphs`、`upgrade-graphs`、`export [--format=yaml|xml] [--file=PATH]`、`import --file=PATH [--format=yaml|xml] [--apply --confirm=PLAN]`，以及 `import-smokeping [--dry-run | --apply --confirm=PLAN] [--file=PATH] [--sections=A,B/C] [--device-per=host|target] [--device-template=ID] [--poller=ID] [--site=ID] [--tree=ID | --tree-name=NAME]`。
+- **生態系統掛鉤（`setup.php`、`Schema::HOOKS`）**：註冊 21 個掛鉤，包括 `abilities_register`（`AbilitiesProvider`：嚴格唯讀的 `smokeping-list-targets` 與 `smokeping-get-health`，依呼叫者使用者 ID 檢查 View 領域權限，不回傳任何機密資料）、`doctor_register_checks`（`DoctorChecks`：`smokeping_stale_targets`、`smokeping_freshness_breaches`、`smokeping_orphan_rrds`、`smokeping_config_path`）、`casc_register_providers`（`CascProvider`：由 `ConfigCodec` 與 `ConfigService` 支援的 `smokeping` YAML/XML `export`、`validate`、`plan` 與 `apply`），以及 `replicate_out`（`RemoteReplication`：針對 `poller_id > 1` 的遠端輪詢器，以輪詢器為範圍同步 `plugin_smokeping_target`、`plugin_smokeping_mapping`、`plugin_smokeping_object` 與 `plugin_smokeping_relink`）。
 
 不在範圍內的項目：外掛程式自有的告警引擎、報表引擎、自訂常駐程式或網路協定、託管 HTTP/DNS/服務檢查（由 servcheck 負責），以及寫入 SmokePing 的 RRD 檔案。
 
@@ -101,6 +110,7 @@ SmokePing 能精準測量延遲分佈與封包遺失，其煙霧圖也能呈現�
 - [docs/PLAN.md](../../PLAN.md) 為完整計畫書：包含架構、所依據的上游事實（附來源）、狀態模型、安全性邊界、效能估算、測試與風險。
 - [docs/decisions/](../../decisions) 存放已拍板決策的架構決策紀錄。
 - [docs/REQUIREMENTS.md](../../REQUIREMENTS.md) 將每個需求 ID 對應至其議題。
+- 本機驗證會執行 Pest 單元與原始碼規則檢查（`pest --configuration=phpunit.xml`）、PHPStan 第 9 級分析（`CACTI_PATH=<cacti-dir> phpstan analyse -c phpstan.neon --no-progress`）、進入點語法檢查（對 `*.php`、`include/*.php`、`scripts/*.php`、`cli/*.php` 執行 `php -l`），以及翻譯檢查（`sh locales/build_gettext.sh --check`）。整合測試與容器端對端測試套件請參閱 [docs/testing.md](../../testing.md)。
 
 ```mermaid
 flowchart LR

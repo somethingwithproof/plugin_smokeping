@@ -24,5 +24,11 @@ namespace Somethingwithproof\Smokeping;
  * Whether a Cacti device is in a maintenance window.
  */
 interface DeviceMaintenance {
+	/**
+	 * In maintenance.
+	 *
+	 * @param int $hostId Host id.
+	 * @return bool
+	 */
 	public function inMaintenance(int $hostId): bool;
 }

@@ -31,7 +31,9 @@ final class ObjectRepository {
 	/** Graphs behind the template version (bound twice) and not failed at it, in the given states. */
 	private const BEHIND_TEMPLATES = 'o.template_version < ? AND o.template_failed < ? AND o.local_graph_id > 0 AND o.state IN (?, ?, ?) AND gl.graph_template_id > 0';
 
+	/** Active constant. */
 	public const ACTIVE   = 'active';
+	/** Archived constant. */
 	public const ARCHIVED = 'archived';
 
 	/**
@@ -40,6 +42,11 @@ final class ObjectRepository {
 	 */
 	public const SUMMARY  = 'summary';
 
+	/**
+	 * Create a new ObjectRepository instance.
+	 *
+	 * @param \PDO|false $connection Connection.
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -81,6 +88,47 @@ final class ObjectRepository {
 		$rows = Row::rows(db_fetch_assoc_prepared('SELECT location, local_data_id FROM plugin_smokeping_object WHERE target_id = ? AND state = ? ORDER BY location', [$targetId, self::SUMMARY], true, $this->connection));
 
 		return array_values(array_map(fn (array $row) => ['location' => Row::string($row, 'location'), 'local_data_id' => Row::int($row, 'local_data_id')], $rows));
+	}
+
+	/**
+	 * Summary data sources of a target including host_id, for Thold threshold generation.
+	 *
+	 * @return list<array{local_data_id: int, host_id: int, location: string}>
+	 */
+	public function summaryDataSourcesForTarget(int $targetId): array {
+		$rows = Row::rows(db_fetch_assoc_prepared(
+			'SELECT local_data_id, host_id, location
+			FROM plugin_smokeping_object
+			WHERE target_id = ? AND state = ?
+			ORDER BY location, local_data_id',
+			[$targetId, self::SUMMARY],
+			true,
+			$this->connection
+		));
+
+		return array_values(array_map(static fn (array $row): array => [
+			'local_data_id' => Row::int($row, 'local_data_id'),
+			'host_id'       => Row::int($row, 'host_id'),
+			'location'      => Row::string($row, 'location'),
+		], $rows));
+	}
+
+	/**
+	 * Raw object rows scoped to targets on $pollerId, for remote collector replication.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function forPollerRows(int $pollerId): array {
+		return Row::rows(db_fetch_assoc_prepared(
+			'SELECT o.*
+			FROM plugin_smokeping_object AS o
+			INNER JOIN plugin_smokeping_target AS t ON t.id = o.target_id
+			WHERE t.poller_id = ?
+			ORDER BY o.id',
+			[$pollerId],
+			true,
+			$this->connection
+		));
 	}
 
 	/**
@@ -177,6 +225,18 @@ final class ObjectRepository {
 		return array_values(array_map(fn (array $row) => ['local_graph_id' => Row::int($row, 'local_graph_id'), 'rrd_path' => Row::string($row, 'rrd_path'), 'sized_limit' => Row::string($row, 'sized_limit')], $rows));
 	}
 
+	/**
+	 * Add.
+	 *
+	 * @param int $targetId Target id.
+	 * @param string $location Location.
+	 * @param int $hostId Host id.
+	 * @param int $localDataId Local data id.
+	 * @param int $localGraphId Local graph id.
+	 * @param string $rrdPath Rrd path.
+	 * @param string $state State.
+	 * @param int $now Now.
+	 */
 	public function add(int $targetId, string $location, int $hostId, int $localDataId, int $localGraphId, string $rrdPath, string $state, int $now): void {
 		// A new graph has the items of the templates installed now, whichever
 		// version that is; the setting is the installed one, not this code's.
@@ -227,6 +287,13 @@ final class ObjectRepository {
 		return array_map(fn (array $row) => ['local_graph_id' => Row::int($row, 'local_graph_id'), 'graph_template_id' => Row::int($row, 'graph_template_id')], $rows);
 	}
 
+	/**
+	 * Record template version.
+	 *
+	 * @param int $localGraphId Local graph id.
+	 * @param int $version Version.
+	 * @return bool
+	 */
 	public function recordTemplateVersion(int $localGraphId, int $version): bool {
 		return db_execute_prepared('UPDATE plugin_smokeping_object SET template_version = ?, template_failed = 0 WHERE local_graph_id = ?', [$version, $localGraphId], true, $this->connection) !== false;
 	}
@@ -251,10 +318,23 @@ final class ObjectRepository {
 		return (int) db_affected_rows($this->connection);
 	}
 
+	/**
+	 * Host of.
+	 *
+	 * @param int $localDataId Local data id.
+	 * @return int
+	 */
 	public function hostOf(int $localDataId): int {
 		return (int) db_fetch_cell_prepared('SELECT host_id FROM plugin_smokeping_object WHERE local_data_id = ?', [$localDataId], '', true, $this->connection);
 	}
 
+	/**
+	 * Repoint.
+	 *
+	 * @param int $localDataId Local data id.
+	 * @param int $targetId Target id.
+	 * @param string $rrdPath Rrd path.
+	 */
 	public function repoint(int $localDataId, int $targetId, string $rrdPath): void {
 		db_execute_prepared('UPDATE plugin_smokeping_object SET target_id = ?, rrd_path = ? WHERE local_data_id = ?', [$targetId, $rrdPath, $localDataId], true, $this->connection);
 	}

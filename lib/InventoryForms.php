@@ -46,6 +46,14 @@ final class InventoryForms {
 		html_end_box(false);
 	}
 
+	/**
+	 * Relink.
+	 *
+	 * @param int $proposalId Proposal id.
+	 * @param Target $old Old.
+	 * @param Target $new New.
+	 * @param int $hostId Host id.
+	 */
 	public static function relink(int $proposalId, Target $old, Target $new, int $hostId): void {
 		html_start_box(html_escape(__('Confirm Re-link', 'smokeping')), '100%', '', '3', 'center', '');
 		form_start('smokeping_inventory.php', 'smokeping_relink');

@@ -28,6 +28,18 @@ namespace Somethingwithproof\Smokeping;
  * consistent cache and the next run starts with the series it skipped.
  */
 final class ReaderJob {
+	/**
+	 * Create a new ReaderJob instance.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @param Settings $settings Settings.
+	 * @param TargetRepository $targets Targets.
+	 * @param ObservationRepository $observations Observations.
+	 * @param HealthRepository $health Health.
+	 * @param InventoryReader $inventory Inventory.
+	 * @param RrdReader $rrd Rrd.
+	 * @param Clock $clock Clock.
+	 */
 	public function __construct(
 		private readonly int $pollerId,
 		private readonly Settings $settings,
@@ -40,6 +52,12 @@ final class ReaderJob {
 	) {
 	}
 
+	/**
+	 * Run.
+	 *
+	 * @param bool $forceInventory Force inventory.
+	 * @return ReaderResult
+	 */
 	public function run(bool $forceInventory = false): ReaderResult {
 		$started = $this->clock->now();
 		$timer   = hrtime(true);
@@ -137,6 +155,13 @@ final class ReaderJob {
 		return array_map(fn (array $entry) => [$entry[0], $entry[1]], $queue);
 	}
 
+	/**
+	 * Read series.
+	 *
+	 * @param Target $target Target.
+	 * @param string $location Location.
+	 * @return bool
+	 */
 	private function readSeries(Target $target, string $location): bool {
 		if ($target->id === null) {
 			return false;

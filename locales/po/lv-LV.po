@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-27 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: lv-LV\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 0 || n % 100 >= 11 && n % 100 <= 19) ? 0 : ((n % 10 == 1 && n % 100 != 11) ? 1 : 2);\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "Galvenais"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "Salīdziniet zudumus un latentumu ar SmokePing grafikiem un apkopes stāvokli. Par trūkstošiem failiem, importu un pārsaistīšanu ziņojiet administratoram."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "izlaists, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (noklusējums)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "SmokePing konfigurācija"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Jūsu ierīču atļaujas neaptver visas ierīces, tāpēc nevarat eksportēt vai importēt SmokePing konfigurāciju. Sazinieties ar administratoru, kuram ir piekļuve visām ierīcēm."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "Eksportēt SmokePing konfigurāciju"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "Eksports satur spraudņa iestatījumus, spraudņa nolasītos SmokePing mērķus un katra mērķa ierīces sasaisti pēc ierīces resursdatora nosaukuma un apraksta. Tas nesatur datu avotus, grafikus, RRD failus vai akreditācijas datus."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "Lejupielādēt"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "Importēt SmokePing konfigurāciju"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "Faila izvēle tikai pārbauda to. Nākamajā ekrānā būs uzskaitītas visas izmaiņas, ko fails veiktu, un nekas netiks ierakstīts, līdz apstiprināsiet šo sarakstu. Imports tikai pievieno un atjaunina; tas nekad nedzēš mērķi, nepārvieto sasaisti, neveido RRD failu un neskar SmokePing datu direktoriju."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "Pārbaudīt failu"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "Importa pārbaude"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "Nekas netika ierakstīts."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "Atpakaļ"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "Failu nevar importēt, kamēr šīs kļūdas nav novērstas. Nekas netika ierakstīts."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "Instalācija jau atbilst failam. Nav nekā importējama."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "Plāns %s. Piemērošana veiks tieši šīs izmaiņas vienā transakcijā. Ja kopš šīs pārbaudes fails vai instalācija ir mainījusies, imports tiks noraidīts un jums būs jāveic pārbaude vēlreiz."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "Piemērot importu"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "Atcelt"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "Pievienot SmokePing mērķus"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "nav atbilstoša SmokePing mērķa"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "Noklikšķiniet uz \"Turpināt\", lai pievienotu SmokePing mērķus, kuru resursdators sakrīt ar katras atlasītās ierīces resursdatora nosaukumu. Katrs mērķis iegūst kopsavilkuma grafiku trauksmēm un, ja SmokePing datus var attēlot grafikā, dūmu grafiku. Ierīces šeit nekad netiek veidotas."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "Atbilst %d mērķi."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "Izveidoti vai sasaistīti %d objekti, izlaisti %d."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "Šai ierīcei ir SmokePing mērķi, bet lasītājs, kas aizpilda to kopsavilkuma vērtības, darbojas aptaujātājā %d, kamēr ierīce ir saglabāta aptaujātājā %d. Kopsavilkuma vērtības un trauksmes nedarbosies, līdz ierīce atkal tiks piešķirta aptaujātājam %d."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "Šīs ierīces SmokePing mērķi"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "%d dūmu grafiki joprojām izmanto citas krāsas; galvenais aptaujātājs pārceļ līdz 200 grafikiem vienā ciklā."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "%d dūmu grafikus nevarēja pārcelt; palaidiet upgrade-graphs, lai mēģinātu vēlreiz, un skatiet iemeslu Cacti žurnālā."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "Iestatījums \"Zudumu krāsas\" pieprasa SmokePing %s zudumu krāsas, taču lasītājs atrada SmokePing %s. Iestatiet to uz \"Automātiski\", ja vien nevēlaties, lai grafiki atšķirtos no SmokePing."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "Iestatījums \"Zudumu krāsas\" dūmu grafikiem izvēlas SmokePing %s zudumu krāsas."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "Lasītājs neatrada SmokePing versiju, tāpēc iestatījums \"Zudumu krāsas\" izvēlas SmokePing 2.8 un jaunāku versiju zudumu krāsas. Ja izmantojat SmokePing 2.7, iestatiet \"Zudumu krāsas\" uz \"SmokePing 2.7\"."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "Lasītājs atrada SmokePing %s, tāpēc iestatījums \"Zudumu krāsas\" izvēlas tā zudumu krāsas."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold nav instalēts, tāpēc nevienam mērķim nav trauksmju vienlaikus SmokePing un Thold."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "Nevienam mērķim nav vienlaikus SmokePing trauksmes un iespējota Thold sliekšņa."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d mērķiem ir gan SmokePing trauksme, gan iespējots Thold slieksnis, tāpēc par vienu problēmu var pienākt divi paziņojumi. Pirms kāda noņemšanas salīdziniet to trauksmes nosacījumus: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "SmokePing veidņu imports neizdevās un netiek atkārtots automātiski: %s Pēc iemesla novēršanas izmantojiet \"Atkārtot veidņu importu\"."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "SmokePing veidnes nav importētas. Izmantojiet \"Atkārtot veidņu importu\"."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "SmokePing veidnes ir importētas."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "Katru ierīci ar kopsavilkuma datu avotiem aptaujā lasītāja aptaujātājs."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "%d ierīcēm ir kopsavilkuma datu avoti, bet tās neaptaujā aptaujātājs %d, kurā darbojas lasītājs, tāpēc to kopsavilkuma vērtībām un trauksmēm nav datu: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "SmokePing konfigurācija tiek lasīta aptaujātājā %d, nevis šajā serverī; inventāra rinda rāda pēdējās nolasīšanas rezultātu."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "SmokePing konfigurāciju %s nevar nolasīt: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "SmokePing konfigurācijā %s ir uzskaitīti %d mērķi; izlaisti %d ieraksti: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "SmokePing konfigurācijā %s ir uzskaitīti %d mērķi."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "PHP izpildāmā faila ceļa iestatījums ir tukšs vai nenorāda uz izpildāmu failu, tāpēc lasītājs nevar startēt."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "Lasītājs tiek palaists ar %s."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "Lasītājs šajā aptaujātājā vēl nav pabeidzis nevienu izpildi."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "Pēdējā lasītāja izpilde beidzās pirms %d sekundēm, kas ir vairāk nekā trīs aptaujātāja intervāli."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "Lasītājs nolasīja %d no %d datu rindām %.1f sekundēs un ir pārsniedzis savu laika limitu %d reizes."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "Lasītājs nolasīja %d no %d datu rindām %.1f sekundēs, pirms %d sekundēm."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "Šajā aptaujātājā vēl nav nolasīts inventārs."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "Pēdējā inventāra nolasīšana neizdevās pirms %d sekundēm, un joprojām tiek izmantots iepriekšējais inventārs: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "Inventārs uzskaitīja %d mērķus pirms %d sekundēm."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "SmokePing darbspēja aptaujātājam %d"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "Pārbaude"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "Detaļas"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "Statuss"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "Atkārtot veidņu importu"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "Kārtībā"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "Brīdinājums"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "Kļūda"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "Nezināms"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "pirms %d s"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "nekad"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "Importēt SmokePing konfigurāciju"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "Konfigurācija"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "Konfigurētais SmokePing fails tiek lasīts kopā ar tajā iekļautajiem failiem no tā paša direktorija. Augšupielādēts fails tiek lasīts atsevišķi: tajā @include nav atļauts."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "Konfigurētais fails, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "Augšupielādēts fails, bez @include"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "Augšupielādētais fails"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "Tikai augšupielādētam failam: SmokePing konfigurācija, ne lielāka par 4 MiB."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "Ierīces"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "Viena ierīce katram SmokePing resursdatoram grupē mērķus, kas zondē to pašu resursdatoru. Jaunas ierīces vietā tiek izmantota ierīce, kurai izvēlētajā aptaujātājā jau ir šis resursdatora nosaukums."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "Viena ierīce katram SmokePing resursdatoram"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "Viena ierīce katram SmokePing mērķim"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "Ierīces veidne"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "Veidne ierīcēm, kuras izveido imports."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "Aptaujātājs"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "Jauno ierīču aptaujātājs. Tam jābūt aptaujātājam, kurā darbojas SmokePing lasītājs, citādi to kopsavilkuma datu avoti nesaņems datus."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "Lokācija"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "Jauno ierīču lokācija."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "Nav"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "Grafiku koks"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "Atspoguļot SmokePing hierarhiju grafiku kokā: katra sadaļa kļūst par zaru un katra ierīce par resursdatoru zem savu mērķu zara. Esošie zari un resursdatori tiek izmantoti atkārtoti."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "Jauns koks, nosaukums norādīts zemāk"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "Neatspoguļot"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "Jaunā koka nosaukums"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "Tikai jaunam kokam. Ja koks ar šādu nosaukumu jau pastāv, tiks izmantots tas."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "Priekšskatījums nolasa konfigurāciju un uzskaita, ko imports izveidotu. Nekas netiek ierakstīts, līdz apstiprināt šo sarakstu nākamajā ekrānā, un paša SmokePing faili nekad netiek mainīti."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "Priekšskatījums"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "Piezīme"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "Līmenis"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "Ziņojums"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "SmokePing sadaļas"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "Importēt"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "Sadaļa"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "Mērķi"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "Nav atzīmēta neviena sadaļa, tāpēc ir atlasīti visi mērķi. Atzīmējiet sadaļas un atjauniniet priekšskatījumu, lai importētu tikai tās."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "Ir atlasīti tikai mērķi atzīmētajās sadaļās."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "Atjaunināt priekšskatījumu"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "Izveidot"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "Izmantot ierīci %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "Jau sasaistīts ar ierīci %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "Izlaist: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "Ierīces: %d jāizveido, %d esošās izmantot, %d jau sasaistītas, %d izlaistas"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "Darbība"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "Apraksts"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "Resursdatora nosaukums"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "SmokePing mērķi"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "Nav ierīces."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Dūmu"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "Kopsavilkums"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "galvenais"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "Grafiki: %d jāizveido, %d jau pastāv"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "Grafiks"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "Atrašanās vieta"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "SmokePing mērķis"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "Nav izveidojamu grafiku."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "Iemesls"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "Tikai kopsavilkuma dati: %d mērķi"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "Zars"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "Ierīce"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "Grafiku koks: %d zari, %d ierīču ieraksti"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "Aprēķins"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "Paredzamā slodze"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "Apstiprināt"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "Konfigurāciju nevar importēt, kamēr iepriekš minētās kļūdas nav novērstas. Nekas netika ierakstīts."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "Katrs atlasītais mērķis jau ir Cacti sistēmā. Nav nekā importējama."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "Plāns %s. Importēšana izveidos tieši to, kas uzskaitīts iepriekš, izmantojot Cacti ierīču, grafiku un koka funkcijas. Ja kopš šī priekšskatījuma SmokePing konfigurācija vai Cacti ir mainījies, imports tiks noraidīts un jums būs jāveic priekšskatījums vēlreiz."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s un vēl %d"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "Pievienot %s sistēmai Cacti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "SmokePing mērķim %s (resursdators %s) nav Cacti ierīces. Izvēlieties, kā ar to rīkoties."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "Izveidot jaunu ierīci no SmokePing mērķa veidnes"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "Sasaistīt ar esošu ierīci"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "Jebkurā gadījumā mērķis iegūst kopsavilkuma grafiku trauksmēm un, ja SmokePing datus var attēlot grafikā, dūmu grafiku. Cacti nekad neraksta SmokePing failos."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "Pievienot"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "Apstiprināt pārsaisti"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing vairs neuzskaita %s. Mērķim %s ir tas pats resursdators (%s) un zonde (%s). Jaunam ceļam SmokePing izveido jaunu, tukšu failu."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "Pārsaistīšana pārceļ dūmu grafiku un kopsavilkuma datu avotu uz jauno mērķi kopā ar ierīces sasaisti. Vecais fails saglabā savu vēsturi arhivētā grafikā. Nekas netiek dzēsts."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "Ierīce %d ir sasaistīta ar veco mērķi."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "Noraidīt priekšlikumu"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "Pārsaistīt"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "Pazudis"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "Pastāv"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "Nesasaistīts"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Pievienot Cacti"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "SmokePing inventārs"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "Resursdators"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "Inventārs"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "Sasaiste"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "Nosaukums"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "Ceļš"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "Zonde"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "Pakārtotie"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "Solis / pingi"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "Šajā aptaujātājā nav importēts neviens mērķis."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "Pārskatīt"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "Pārsaistes priekšlikumi"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "Pazudušais ceļš"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "Jaunais ceļš"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "Nav pārsaistes priekšlikumu."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "%d datu rindas: aptuveni %.1f zondes paketes sekundē un %.2f RRD atjauninājumi sekundē sistēmā SmokePing."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti saņems aptuveni %d datu avotu rindas un %d grafika elementu rindas."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "SmokePing montējums %s nepastāv. Pievienojiet SmokePing datu direktoriju šeit tikai lasāmā režīmā."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s atrodas RRA ceļā un nav sasniegts caur simbolisko saiti."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Cacti lietotājs var rakstīt %s. SmokePing RRD failiem attiecībā pret Cacti jābūt tikai lasāmiem."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "SmokePing montējums %s neatrodas Cacti RRA ceļā %s."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Cacti RRA ceļš %s nepastāv."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "SmokePing montējums %s satur tukšu, \".\" vai \"..\" segmentu."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "SmokePing montējums %s tiek sasniegts caur simbolisko saiti, ko Cacti noraida. Tā vietā izmantojiet tikai lasāmu piesaistes montējumu (bind mount)."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "Nevar nolasīt montējumu tabulu, tāpēc nevarēja apstiprināt, ka montējums ir tikai lasāms."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s atrodas tikai lasāmā montējumā."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s atrodas rakstāmā montējumā %s. Pievienojiet SmokePing datu direktoriju tikai lasāmā režīmā."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "Vēl nav inventāra, tāpēc netiek gaidīti RRD faili."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "Visi %d gaidītie RRD faili ir redzami caur montējumu."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "%d no %d gaidītajiem RRD failiem nav redzami caur montējumu, piemēram, %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Pārskatiet tālāk reģistrētos novērojumus. Pieņemšana zināšanai attiecas tikai uz šo sesiju, zaudē spēku, mainoties novērojumiem, un nekad neapslāpē trauksmes vai nemaina darbspēju."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "SmokePing operācijas"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "Darbības"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Izmeklēšana"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Objekts"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Novērots (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Stāvoklis"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Nezināms vai novecojis"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "Nekad"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Pieņemts zināšanai; darbspēja nemainījās."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Pieņemt zināšanai"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Ierīcēm, kurām jums ir piekļuve, nav pieejamu novērojumu."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "SmokePing operators"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "SmokePing skatīšana"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "SmokePing administrators"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "SmokePing darbspēja"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "abiem mērķiem jābūt tajā aptaujātājā, kurā darbojas lasītājs"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "jaunais mērķis jau ir sasaistīts ar ierīci %d"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "vecajam mērķim ir datu avoti ierīcē %d, ar kuru tas nav sasaistīts"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "SmokePing avots"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "SmokePing aptaujātājs"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Cacti aptaujātājs, kas darbojas SmokePing resursdatorā vai koplieto ar to failu sistēmu. Tikai šis aptaujātājs lasa SmokePing datus."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "SmokePing konfigurācijas fails"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "Galvenais SmokePing konfigurācijas fails, ko nolasa aptaujātājs, kurā darbojas lasītājs. Spraudnis nolasa to un tajā iekļautos failus ar savu parsētāju un nekad tajos neraksta. Iekļautajiem failiem jāatrodas šī faila direktorijā."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "SmokePing datu direktorijs"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "Iestatījums datadir no SmokePing konfigurācijas tā, kā to redz SmokePing."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "Datu direktorija Cacti montējums"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "Tikai lasāms piesaistes (bind) vai NFS montējums SmokePing datu direktorijam Cacti RRA ceļā. Cacti nolasa RRD failus tikai savā RRA ceļā un nekad caur simbolisko saiti."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "Lasītājs"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "Lasītāja laika limits"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "Sekundes, ko viena lasītāja izpilde drīkst patērēt RRD failu lasīšanai, pirms tā apstājas un turpina nākamajā aptaujātāja ciklā."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "Inventāra intervāls"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "Minimālais sekunžu skaits starp inventāra izpildēm. Inventārs tiek izpildīts arī tad, kad mainās konfigurācijas fails."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "Aktualitātes pielaide"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "Sekundes pēc viena soļa, kuru laikā mērījums joprojām tiek uzskatīts par aktuālu."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "Zudumu krāsas"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "Kuras SmokePing zudumu krāsas attēlo dūmu grafiki. SmokePing 2.7 attēlo citus zudumu līmeņus nekā 2.8 un jaunākas versijas. Režīms \"Automātiski\" seko SmokePing versijai, ko lasītājs atrod blakus SmokePing (redzama darbspējas lapā), un izmanto 2.8 un jaunāku versiju krāsas, ja versija netiek atrasta."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "Automātiski"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 un jaunākas versijas"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Atinstalēšana"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Atinstalējot saglabāt spraudņa tabulas"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "Ja atzīmēts, atinstalējot spraudni tiek saglabātas tā inventāra, sasaistes un darbspējas tabulas. SmokePing faili nevienā gadījumā netiek dzēsti."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "Rezerves kopiju direktorijs"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "Vieta, kur atinstalēšanas laikā tiek ierakstīts spraudņa konfigurācijas eksports. Atstājiet tukšu, lai izmantotu Cacti direktoriju cache/smokeping, ko spraudnis aizsargā ar pilnas piekļuves aizlieguma kārtulu. Šeit norādītajam direktorijam jau jāpastāv, tajā jāvar rakstīt, un tam jāatrodas ārpus tīmekļa saknes direktorija; ja tajā nevar rakstīt, eksports netiek ierakstīts."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "Mērķis vēl nav saglabāts."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "Mērķis sūta %d ping pieprasījumus vienā ciklā. Dūmu grafiki pastāv tikai 10, 20 un 30 pieprasījumiem; tam ir tikai kopsavilkuma dati."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti glabā RRD failus serverī RRDproxy, kur SmokePing faili nepastāv. Ir pieejami tikai kopsavilkuma dati."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "Ierīci aptaujā aptaujātājs %d, bet lasītājs, kas aizpilda kopsavilkuma vērtības, darbojas aptaujātājā %d. Piešķiriet ierīci aptaujātājam %d."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "Kopsavilkuma grafika veidne nav instalēta."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "Kopsavilkuma datu veidne nav instalēta."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti neizveidoja kopsavilkuma grafiku."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "Vispirms jāsaglabā abi mērķi."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "Vecajam mērķim nav pārvietojama dūmu datu avota."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "RRD fails %s nav redzams caur SmokePing montējumu."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "RRD fails %s ved ārpus SmokePing montējuma."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "Dūmu grafika veidne nav instalēta."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti neizveidoja dūmu grafiku."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti nepieņem šo SmokePing ceļu datu avotam."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "Pašlaik darbojas cits SmokePing konfigurācijas imports, tāpēc nekas netika importēts. Pārbaudiet vēlreiz, kad tas būs pabeigts."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "Kopš pārbaudes konfigurācija vai instalācija ir mainījusies, tāpēc nekas netika importēts. Pārbaudiet vēlreiz."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "Atspoguļošanai grafiku kokā nepieciešama atļauja rediģēt kokus."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "Mērķus nevarēja saglabāt; skatiet Cacti žurnālu. Nekas cits netika mainīts."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: izlaists, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: izlaists, Cacti neizveidoja ierīci"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: izveidota ierīce %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: izlaists, mērķis netika saglabāts"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: jau atrodas Cacti ierīcē %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "Grafiku koku %s nevarēja izveidot."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "izveidots grafiku koks %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "koka zaru %s nevarēja izveidot"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "koka zars %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "ierīci %d nevarēja pievienot kokam"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "ierīce %d zem koka zara %s"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "mērķis vēl nav saglabāts"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "jau sasaistīts ar ierīci %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti neizveidoja ierīci"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "izveidota ierīce %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "pa to laiku mērķis tika sasaistīts ar citu ierīci; ierīcei %d nav SmokePing grafiku"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "pa to laiku mērķis tika sasaistīts ar citu ierīci"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "sasaistīts ar ierīci %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "kopsavilkuma grafiks %d priekš %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "nav kopsavilkuma priekš %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "dūmu grafiks %d priekš %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "nav dūmu grafika priekš %s: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "%d ierīces netika apstrādātas atļautajā laikā. Palaidiet darbību tām vēlreiz; jau pievienotās ierīces tiks izlaistas."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "Laika ierobežojums"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "nevienam nesasaistītam SmokePing mērķim nav resursdatora %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "priekšlikums vairs nav atvērts"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "jaunais mērķis ir sasaistīts ar citu ierīci"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "dūmu grafiks %d tagad lasa jauno failu; vecais fails paliek attēlojams arhivētā grafikā"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "kopsavilkuma datu avots %d seko jaunajam mērķim"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "ierīce %d ir sasaistīta ar jauno mērķi"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "Stāvoklis"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "Aktualitāte"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "Pēdējais atjauninājums"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "Zudumi"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "Apkope"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "Mediāna"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "Mērķis"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "Neviens SmokePing mērķis nav sasaistīts ar ierīcēm, kuras varat skatīt."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "Apkopē"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "Nē"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "Nekad nav novērots"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Spraudnim SmokePing ir nepieciešama PHP %s vai jaunāka versija. Šajā serverī darbojas PHP %s, tāpēc spraudnis netika instalēts vai iespējots."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "Spraudnis SmokePing nav iespējots."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "Spraudnim SmokePing ir nepieciešama PHP %s vai jaunāka versija."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "SmokePing konfigurācija tika eksportēta uz %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "SmokePing konfigurācija netika eksportēta; skatiet SmokePing žurnālu. Atinstalēšana turpinājās."
+
+#: setup.php
+msgid "Management"
+msgstr "Pārvaldība"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "Imports/eksports"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "Jums nav atļaujas pievienot SmokePing mērķus."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "Netika augšupielādēts neviens fails vai tas ir lielāks, nekā pieļauj serveris."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "Nav pārbaudīta importa, ko piemērot. Pārbaudiet failu vēlreiz."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "Konfigurācija tika importēta."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "SmokePing veidņu imports neizdevās. Skatiet darbspējas tabulu."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "Jūsu ierīču atļaujas neaptver visas ierīces, tāpēc nevarat importēt SmokePing konfigurāciju. Sazinieties ar administratoru, kuram ir piekļuve visām ierīcēm."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "Nosauciet jauno grafiku koku vai izvēlieties esošu koku vai bez koka."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "Augšupielādētais fails ir lielāks par 4 MiB."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "SmokePing konfigurāciju nevar nolasīt, tāpēc nekas netika importēts: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "Nav priekšskatīta importa, ko piemērot. Veiciet priekšskatījumu vēlreiz."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "un vēl %d; skatiet Cacti žurnālu"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "SmokePing konfigurācija tika importēta."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "Izvēlieties mērķi šajā aptaujātājā un, lai to sasaistītu, ierīci, kuru drīkstat mainīt."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "Priekšlikums nav atvērts vai skar ierīci vai aptaujātāju, kuru nedrīkstat mainīt."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "Priekšlikums tika noraidīts."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "Uzraudzības skats"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Novērojumus nevarēja nolasīt. Lūdziet administratoram pārbaudīt spraudņa žurnālu."

@@ -42,6 +42,13 @@ final readonly class ConfigState {
 	) {
 	}
 
+	/**
+	 * Target key.
+	 *
+	 * @param int $pollerId Poller id.
+	 * @param string $path Path.
+	 * @return string
+	 */
 	public static function targetKey(int $pollerId, string $path): string {
 		return $pollerId . ':' . $path;
 	}

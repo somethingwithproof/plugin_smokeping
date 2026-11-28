@@ -113,4 +113,64 @@ describe('Schema::migrate to versions 5 and 6', function () {
 			->and(array_column($tables['plugin_smokeping_object']['columns'], 'name'))->toContain('template_version', 'template_failed')
 			->and(array_column($tables['plugin_smokeping_health']['columns'], 'name'))->toContain('smokeping_version');
 	});
+
+	it('upgrades cleanly and idempotently from prior main schema via plugin_smokeping_upgrade()', function () {
+		require_once dirname(__DIR__) . '/Support/OperatorStubs.php';
+
+		$versionInfo            = plugin_smokeping_version();
+		$registeredHooks        = [];
+		$recordedSchema         = 7;
+		$recordedPluginVersion  = '0.9.0';
+		$recordedHooksCount     = 17; // Prior main hook count before ecosystem hooks.
+		$recordedRealmsCount    = 3;
+
+		$GLOBALS['__operator_hooks']             = [];
+		$GLOBALS['__operator_registered_realms'] = [];
+		$GLOBALS['__smokeping_db_exec']          = [];
+		$GLOBALS['__smokeping_db_fail']          = null;
+		$GLOBALS['__smokeping_options']          = ['smokeping_templates_version' => '4'];
+		$GLOBALS['__smokeping_db_cell']          = static function (string $sql, array $params) use (
+			&$recordedSchema,
+			&$recordedPluginVersion,
+			&$recordedHooksCount,
+			&$recordedRealmsCount,
+			$versionInfo
+		) {
+			return match (true) {
+				str_contains($sql, 'FROM settings WHERE name = ?') && ($params[0] ?? '') === 'smokeping_schema_version' => (string) $recordedSchema,
+				str_contains($sql, 'SELECT version FROM plugin_config')                                                => $recordedPluginVersion,
+				str_contains($sql, 'SELECT status FROM plugin_config')                                                 => 1,
+				str_contains($sql, 'FROM plugin_hooks')                                                                => $recordedHooksCount,
+				str_contains($sql, 'FROM plugin_realms')                                                               => $recordedRealmsCount,
+				str_contains($sql, 'information_schema.TABLES')                                                        => 1,
+				str_contains($sql, 'COLUMN_NAME IN')                                                                   => count($params) - 1,
+				str_contains($sql, 'information_schema.COLUMNS')                                                       => 1,
+				str_contains($sql, 'FROM host_template')                                                               => 1,
+				str_contains($sql, 'FROM graph_templates')                                                             => 6,
+				str_contains($sql, 'FROM data_template')                                                               => 3,
+				str_contains($sql, 'FROM data_input')                                                                  => 1,
+				default                                                                                                => 0,
+			};
+		};
+
+		// First upgrade from prior main state registers all 23 hooks and advances version.
+		expect(plugin_smokeping_upgrade())->toBeTrue()
+			->and(count($GLOBALS['__operator_hooks']))->toBe(count(Schema::HOOKS))
+			->and($GLOBALS['__operator_hooks'])->toHaveKey('doctor_register_debug_info')
+			->and($GLOBALS['__operator_hooks'])->toHaveKey('api_register_resources');
+
+		// Simulate post-upgrade persisted state: second upgrade is a clean idempotent no-op.
+		$recordedPluginVersion          = $versionInfo['version'];
+		$recordedHooksCount             = count(Schema::HOOKS);
+		$GLOBALS['__operator_hooks']    = [];
+		$GLOBALS['__smokeping_db_exec'] = [];
+
+		expect(plugin_smokeping_upgrade())->toBeTrue()
+			->and($GLOBALS['__operator_hooks'])->toBe([])
+			->and($GLOBALS['__smokeping_db_exec'])->toBe([]);
+
+		// Refusing downgrade when DB schema is newer than code.
+		$recordedSchema = Schema::VERSION + 1;
+		expect((new Schema(false))->migrate())->toBeFalse();
+	});
 });

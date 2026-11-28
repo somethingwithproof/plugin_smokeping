@@ -56,6 +56,12 @@ final readonly class RrdLastUpdate {
 		return new self((int) $match[1], $parsed);
 	}
 
+	/**
+	 * Value.
+	 *
+	 * @param string $name Name.
+	 * @return float|null
+	 */
 	public function value(string $name): ?float {
 		return $this->values[$name] ?? null;
 	}
@@ -66,5 +72,29 @@ final readonly class RrdLastUpdate {
 	 */
 	public function allUnknown(): bool {
 		return array_filter($this->values, fn (?float $value) => $value !== null) === [];
+	}
+
+	/**
+	 * Extract non-unknown SmokePing round samples (ping1..pingN) in numeric
+	 * ping index order, in seconds as stored in the RRD.
+	 *
+	 * @return list<float>
+	 */
+	public function pingSamples(): array {
+		$indexed = [];
+
+		foreach ($this->values as $name => $value) {
+			if ($value === null || !is_finite($value) || $value < 0.0) {
+				continue;
+			}
+
+			if (preg_match('/^ping([1-9][0-9]*)$/', $name, $match) === 1) {
+				$indexed[(int) $match[1]] = $value;
+			}
+		}
+
+		ksort($indexed, SORT_NUMERIC);
+
+		return array_values($indexed);
 	}
 }

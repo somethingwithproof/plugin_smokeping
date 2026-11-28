@@ -27,6 +27,7 @@ namespace Somethingwithproof\Smokeping;
  * for managed targets or probe profiles; schema version 1 refuses those keys.
  */
 final readonly class ConfigDocument {
+	/** Version constant. */
 	public const VERSION = 1;
 
 	/**

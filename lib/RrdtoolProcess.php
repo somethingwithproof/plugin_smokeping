@@ -34,9 +34,21 @@ final class RrdtoolProcess implements RrdReader {
 	/** @var array<int, resource> */
 	private array $pipes = [];
 
+	/**
+	 * Create a new RrdtoolProcess instance.
+	 *
+	 * @param string $rrdtool Rrdtool.
+	 * @param int $timeout Timeout.
+	 */
 	public function __construct(private readonly string $rrdtool, private readonly int $timeout = 30) {
 	}
 
+	/**
+	 * Last update.
+	 *
+	 * @param string $file File.
+	 * @return RrdLastUpdate|null
+	 */
 	public function lastUpdate(string $file): ?RrdLastUpdate {
 		$this->checkPath($file);
 
@@ -47,6 +59,13 @@ final class RrdtoolProcess implements RrdReader {
 		return RrdLastUpdate::parse($this->execute('lastupdate ' . $file));
 	}
 
+	/**
+	 * Max median.
+	 *
+	 * @param string $file File.
+	 * @param int $seconds Seconds.
+	 * @return float|null
+	 */
 	public function maxMedian(string $file, int $seconds): ?float {
 		$this->checkPath($file);
 
@@ -72,6 +91,7 @@ final class RrdtoolProcess implements RrdReader {
 		}
 	}
 
+	/** Close. */
 	public function close(): void {
 		if ($this->process === null) {
 			return;
@@ -89,10 +109,17 @@ final class RrdtoolProcess implements RrdReader {
 		$this->pipes   = [];
 	}
 
+	/** Destruct. */
 	public function __destruct() {
 		$this->close();
 	}
 
+	/**
+	 * Execute.
+	 *
+	 * @param string $command Command.
+	 * @return string
+	 */
 	private function execute(string $command): string {
 		$this->start();
 
@@ -119,6 +146,7 @@ final class RrdtoolProcess implements RrdReader {
 		throw new \RuntimeException($meta['timed_out'] ? 'rrdtool did not answer in time' : 'rrdtool exited unexpectedly');
 	}
 
+	/** Start. */
 	private function start(): void {
 		if ($this->process !== null) {
 			return;

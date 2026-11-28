@@ -1,0 +1,1330 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: smokeping 1.0.0-rc.1\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_smokeping/issues\n"
+"PO-Revision-Date: 2026-11-27 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: ka-GE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: include/operator.php lib/ViewPage.php
+msgid "Master"
+msgstr "მთავარი"
+
+#: include/operator.php
+msgid "Compare loss and latency with the SmokePing graphs and maintenance state. Escalate missing files, imports and relinking to an administrator."
+msgstr "შეადარეთ დანაკარგი და დაყოვნება SmokePing გრაფიკებსა და ტექნიკური მომსახურების მდგომარეობას. დაკარგული ფაილების, იმპორტისა და ხელახალი მიბმის საკითხები გადასცეთ ადმინისტრატორს."
+
+#: lib/ActionOutcome.php
+#, php-format
+msgid "skipped, %s"
+msgstr "გამოტოვებულია, %s"
+
+#: lib/ConfigPage.php
+msgid "XML"
+msgstr "XML"
+
+#: lib/ConfigPage.php
+msgid "YAML (default)"
+msgstr "YAML (ნაგულისხმევი)"
+
+#: lib/ConfigPage.php lib/Pages.php
+msgid "SmokePing Configuration"
+msgstr "SmokePing კონფიგურაცია"
+
+#: lib/ConfigPage.php
+msgid "Your device permissions do not cover every device, so you cannot export or import the SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "თქვენი მოწყობილობის უფლებები არ ფარავს ყველა მოწყობილობას, ამიტომ არ შეგიძლიათ SmokePing კონფიგურაციის ექსპორტი ან იმპორტი. მიმართეთ ადმინისტრატორს, რომელსაც ყველა მოწყობილობაზე აქვს წვდომა."
+
+#: lib/ConfigPage.php
+msgid "Export the SmokePing Configuration"
+msgstr "SmokePing კონფიგურაციის ექსპორტი"
+
+#: lib/ConfigPage.php
+msgid "The export holds the plugin settings, the SmokePing targets the plugin has read, and which device each is mapped to, by the device's host name and description. It holds no data source, graph, RRD file, or credential."
+msgstr "ექსპორტი შეიცავს პლაგინის პარამეტრებს, პლაგინის მიერ წაკითხულ SmokePing სამიზნეებს და თითოეული მათგანის მიბმას მოწყობილობაზე, ჰოსტის სახელისა და აღწერის მიხედვით. ის არ შეიცავს მონაცემთა წყაროს, გრაფიკს, RRD ფაილს ან ავტორიზაციის მონაცემს."
+
+#: lib/ConfigPage.php
+msgid "Download"
+msgstr "ჩამოტვირთვა"
+
+#: lib/ConfigPage.php
+msgid "Import a SmokePing Configuration"
+msgstr "SmokePing კონფიგურაციის იმპორტი"
+
+#: lib/ConfigPage.php
+msgid "Choosing a file only checks it. The next screen lists every change the file would make, and nothing is written until you confirm that list. An import adds and updates; it never deletes a target or moves a mapping, and it never creates an RRD file or touches the SmokePing data directory."
+msgstr "ფაილის არჩევა მხოლოდ მის შემოწმებას ახდენს. შემდეგ ეკრანზე ჩამოთვლილი იქნება ყველა ცვლილება, რომელსაც ფაილი შეიტანს, და არაფერი ჩაიწერება, სანამ ამ სიას არ დაადასტურებთ. იმპორტი ამატებს და ანახლებს; ის არასდროს შლის სამიზნეს, არ გადააქვს მიბმა, არ ქმნის RRD ფაილს და არ ეხება SmokePing-ის მონაცემთა დირექტორიას."
+
+#: lib/ConfigPage.php
+msgid "Check File"
+msgstr "ფაილის შემოწმება"
+
+#: lib/ConfigPage.php lib/ImportPage.php
+msgid "Import Check"
+msgstr "იმპორტის შემოწმება"
+
+#: lib/ConfigPage.php
+msgid "Nothing was written."
+msgstr "არაფერი ჩაიწერა."
+
+#: lib/ConfigPage.php lib/ImportPage.php smokeping_import.php
+msgid "Back"
+msgstr "უკან"
+
+#: lib/ConfigPage.php
+msgid "The file cannot be imported until these errors are fixed. Nothing was written."
+msgstr "ფაილის იმპორტი შეუძლებელია ამ შეცდომების გამოსწორებამდე. არაფერი ჩაიწერა."
+
+#: lib/ConfigPage.php
+msgid "The installation already matches the file. There is nothing to import."
+msgstr "ინსტალაცია უკვე შეესაბამება ფაილს. დასაიმპორტებელი არაფერია."
+
+#: lib/ConfigPage.php
+#, php-format
+msgid "Plan %s. Applying makes exactly these changes in one transaction. If the file or the installation changed since this check, the import is refused and you check again."
+msgstr "გეგმა %s. გამოყენება ზუსტად ამ ცვლილებებს განახორციელებს ერთ ტრანზაქციაში. თუ შემოწმების შემდეგ ფაილი ან ინსტალაცია შეიცვალა, იმპორტი უარყოფილი იქნება და ხელახლა შემოწმება დაგჭირდებათ."
+
+#: lib/ConfigPage.php
+msgid "Apply Import"
+msgstr "იმპორტის გამოყენება"
+
+#: lib/ConfigPage.php lib/ImportPage.php lib/InventoryForms.php
+msgid "Cancel"
+msgstr "გაუქმება"
+
+#: lib/DeviceActions.php
+msgid "Add SmokePing Targets"
+msgstr "SmokePing სამიზნეების დამატება"
+
+#: lib/DeviceActions.php
+msgid "no matching SmokePing target"
+msgstr "შესაბამისი SmokePing სამიზნე არ მოიძებნა"
+
+#: lib/DeviceActions.php
+msgid "Click Continue to add the SmokePing targets whose host is the host name of each selected device. Each target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Devices are never created here."
+msgstr "დააწკაპუნეთ „გაგრძელება“-ზე იმ SmokePing სამიზნეების დასამატებლად, რომელთა ჰოსტი ემთხვევა თითოეული არჩეული მოწყობილობის ჰოსტის სახელს. თითოეული სამიზნე მიიღებს შემაჯამებელ გრაფიკს განგაშებისთვის და, როცა SmokePing მონაცემების გრაფიკზე გამოტანა შესაძლებელია, Smoke გრაფიკს. აქ მოწყობილობები არასდროს იქმნება."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d targets match."
+msgstr "ემთხვევა %d სამიზნე."
+
+#: lib/DeviceActions.php
+#, php-format
+msgid "%d objects created or mapped, %d skipped."
+msgstr "შეიქმნა ან მიება %d ობიექტი, გამოტოვებულია %d."
+
+#: lib/DeviceSaveCheck.php
+#, php-format
+msgid "This device has SmokePing targets, but the reader that fills their summary values runs on poller %d and the device is saved on poller %d. Summary values and alerts stop until the device is assigned to poller %d again."
+msgstr "ამ მოწყობილობას აქვს SmokePing სამიზნეები, მაგრამ წამკითხველი, რომელიც მათ შემაჯამებელ მნიშვნელობებს ავსებს, გაშვებულია პოლერზე %d, ხოლო მოწყობილობა შენახულია პოლერზე %d. შემაჯამებელი მნიშვნელობები და განგაშები შეჩერდება, სანამ მოწყობილობა კვლავ პოლერ %d-ს არ მიენიჭება."
+
+#: lib/GraphLinks.php
+msgid "SmokePing Targets of this Device"
+msgstr "ამ მოწყობილობის SmokePing სამიზნეები"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs still draw the other colors; the main poller moves up to 200 per cycle."
+msgstr "%d Smoke გრაფიკი ჯერ კიდევ სხვა ფერებით იხაზება; მთავარი პოლერი თითო ციკლში 200-მდე გრაფიკს ანახლებს."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d smoke graphs could not be moved; run upgrade-graphs to try them again, and see the Cacti log for the cause."
+msgstr "%d Smoke გრაფიკის გადატანა ვერ მოხერხდა; ხელახლა საცდელად გაუშვით upgrade-graphs და მიზეზის სანახავად იხილეთ Cacti-ის ჟურნალი."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting asks for SmokePing %s loss colors, but the reader found SmokePing %s. Set it to Automatic unless the graphs should differ from SmokePing's."
+msgstr "დანაკარგის ფერების პარამეტრი ითხოვს SmokePing %s-ის დანაკარგის ფერებს, მაგრამ წამკითხველმა აღმოაჩინა SmokePing %s. დააყენეთ „ავტომატური“, თუ არ გსურთ გრაფიკები განსხვავდებოდეს SmokePing-ისგან."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The Loss Colors setting selects SmokePing %s loss colors for smoke graphs."
+msgstr "დანაკარგის ფერების პარამეტრი Smoke გრაფიკებისთვის ირჩევს SmokePing %s-ის დანაკარგის ფერებს."
+
+#: lib/HealthCheck.php
+msgid "The reader found no SmokePing version, so the Loss Colors setting selects the loss colors of SmokePing 2.8 and later. If SmokePing is 2.7, set Loss Colors to SmokePing 2.7."
+msgstr "წამკითხველმა ვერ იპოვა SmokePing-ის ვერსია, ამიტომ დანაკარგის ფერების პარამეტრი ირჩევს SmokePing 2.8 და უფრო ახალი ვერსიის ფერებს. თუ იყენებთ SmokePing 2.7-ს, დააყენეთ დანაკარგის ფერები „SmokePing 2.7“-ზე."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader found SmokePing %s, so the Loss Colors setting selects its loss colors."
+msgstr "წამკითხველმა აღმოაჩინა SmokePing %s, ამიტომ დანაკარგის ფერების პარამეტრი მის ფერებს ირჩევს."
+
+#: lib/HealthCheck.php
+msgid "Thold is not installed, so no target alerts in both SmokePing and Thold."
+msgstr "Thold არ არის დაყენებული, ამიტომ არცერთი სამიზნე არ აგზავნის განგაშს ერთდროულად SmokePing-სა და Thold-ში."
+
+#: lib/HealthCheck.php
+msgid "No target has both a SmokePing alert and an enabled Thold threshold."
+msgstr "არცერთ სამიზნეს არ აქვს ერთდროულად SmokePing-ის განგაში და ჩართული Thold ზღვარი."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d targets have both a SmokePing alert and an enabled Thold threshold, so one problem may notify twice. Compare their alert conditions before removing either: %s"
+msgstr "%d სამიზნეს აქვს ერთდროულად SmokePing-ის განგაში და ჩართული Thold ზღვარი, ამიტომ ერთმა პრობლემამ შეიძლება ორჯერ გამოაგზავნოს შეტყობინება. რომელიმეს წაშლამდე შეადარეთ მათი განგაშის პირობები: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing templates failed to import and are not retried automatically: %s Use Retry Template Import after fixing the cause."
+msgstr "SmokePing შაბლონების იმპორტი ვერ მოხერხდა და ავტომატურად აღარ განმეორდება: %s მიზეზის გამოსწორების შემდეგ გამოიყენეთ „შაბლონების იმპორტის ხელახლა ცდა“."
+
+#: lib/HealthCheck.php
+msgid "The SmokePing templates are not imported. Use Retry Template Import."
+msgstr "SmokePing შაბლონები არ არის დაიმპორტებული. გამოიყენეთ „შაბლონების იმპორტის ხელახლა ცდა“."
+
+#: lib/HealthCheck.php smokeping_health.php
+msgid "The SmokePing templates are imported."
+msgstr "SmokePing შაბლონები დაიმპორტებულია."
+
+#: lib/HealthCheck.php
+msgid "Every device with summary data sources is polled by the reader's poller."
+msgstr "შემაჯამებელი მონაცემთა წყაროების მქონე ყველა მოწყობილობას იკითხავს წამკითხველის პოლერი."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "%d devices have summary data sources but are not polled by poller %d, which runs the reader, so their summary values and alerts have no data: %s"
+msgstr "%d მოწყობილობას აქვს შემაჯამებელი მონაცემთა წყაროები, მაგრამ მათ არ იკითხავს პოლერი %d, რომელზეც წამკითხველია გაშვებული, ამიტომ მათ შემაჯამებელ მნიშვნელობებსა და განგაშებს მონაცემები არ აქვს: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration is read on poller %d, not on this server; the inventory row shows the result of its last read."
+msgstr "SmokePing კონფიგურაცია იკითხება პოლერ %d-ზე და არა ამ სერვერზე; ინვენტარის სტრიქონი აჩვენებს მისი ბოლო წაკითხვის შედეგს."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s cannot be read: %s"
+msgstr "SmokePing კონფიგურაციის (%s) წაკითხვა ვერ მოხერხდა: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets; %d entries are skipped: %s"
+msgstr "SmokePing კონფიგურაცია %s შეიცავს %d სამიზნეს; %d ჩანაწერი გამოტოვებულია: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The SmokePing configuration %s lists %d targets."
+msgstr "SmokePing კონფიგურაცია %s შეიცავს %d სამიზნეს."
+
+#: lib/HealthCheck.php
+msgid "The PHP binary path setting is empty or not an executable file, so the reader cannot start."
+msgstr "PHP-ის შესრულებადი ფაილის გზა ცარიელია ან არ არის შესრულებადი ფაილი, ამიტომ წამკითხველი ვერ გაეშვება."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader starts with %s."
+msgstr "წამკითხველი იშვება ბრძანებით %s."
+
+#: lib/HealthCheck.php
+msgid "The reader has not completed a run on this poller."
+msgstr "წამკითხველს ამ პოლერზე გაშვება ჯერ არ დაუსრულებია."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last reader run finished %d seconds ago, more than three poller intervals."
+msgstr "წამკითხველის ბოლო გაშვება დასრულდა %d წამის წინ, რაც პოლერის სამ ინტერვალზე მეტია."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds and has exceeded its time budget %d times."
+msgstr "წამკითხველმა წაიკითხა %d სერია %d-დან %.1f წამში და დროის ლიმიტს %d-ჯერ გადააჭარბა."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The reader read %d of %d series in %.1f seconds, %d seconds ago."
+msgstr "წამკითხველმა წაიკითხა %d სერია %d-დან %.1f წამში, %d წამის წინ."
+
+#: lib/HealthCheck.php
+msgid "No inventory has been read on this poller."
+msgstr "ამ პოლერზე ინვენტარი ჯერ არ წაკითხულა."
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The last inventory failed %d seconds ago and the previous one is still in use: %s"
+msgstr "ბოლო ინვენტარიზაცია ჩაიშალა %d წამის წინ და კვლავ წინა მონაცემები გამოიყენება: %s"
+
+#: lib/HealthCheck.php
+#, php-format
+msgid "The inventory listed %d targets %d seconds ago."
+msgstr "ინვენტარიზაციამ აღრიცხა %d სამიზნე %d წამის წინ."
+
+#: lib/HealthPage.php
+#, php-format
+msgid "SmokePing Health for Poller %d"
+msgstr "SmokePing გამართულობა პოლერ %d-სთვის"
+
+#: lib/HealthPage.php
+msgid "Check"
+msgstr "შემოწმება"
+
+#: lib/HealthPage.php
+msgid "Detail"
+msgstr "დეტალები"
+
+#: lib/HealthPage.php
+msgid "Status"
+msgstr "სტატუსი"
+
+#: lib/HealthPage.php
+msgid "Retry Template Import"
+msgstr "შაბლონების იმპორტის ხელახლა ცდა"
+
+#: lib/Html.php
+msgid "OK"
+msgstr "წესრიგშია"
+
+#: lib/Html.php
+msgid "Warning"
+msgstr "გაფრთხილება"
+
+#: lib/Html.php lib/ImportPage.php
+msgid "Error"
+msgstr "შეცდომა"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "Unknown"
+msgstr "უცნობი"
+
+#: lib/Html.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d წმ-ის წინ"
+
+#: lib/Html.php lib/ViewPage.php
+msgid "never"
+msgstr "არასდროს"
+
+#: lib/ImportPage.php lib/Pages.php
+msgid "Import SmokePing Configuration"
+msgstr "SmokePing კონფიგურაციის იმპორტი"
+
+#: lib/ImportPage.php
+msgid "Configuration"
+msgstr "კონფიგურაცია"
+
+#: lib/ImportPage.php
+msgid "The configured SmokePing file is read with the files it includes, from its own directory. An uploaded file is read on its own: @include is not allowed in it."
+msgstr "კონფიგურირებული SmokePing ფაილი იკითხება მასში ჩართულ ფაილებთან ერთად, საკუთარი დირექტორიიდან. ატვირთული ფაილი იკითხება დამოუკიდებლად: მასში @include დაშვებული არ არის."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "The configured file, %s"
+msgstr "კონფიგურირებული ფაილი, %s"
+
+#: lib/ImportPage.php
+msgid "An uploaded file, without @include"
+msgstr "ატვირთული ფაილი, @include-ის გარეშე"
+
+#: lib/ImportPage.php
+msgid "Uploaded File"
+msgstr "ატვირთული ფაილი"
+
+#: lib/ImportPage.php
+msgid "Only for an uploaded file: a SmokePing configuration of at most 4 MiB."
+msgstr "მხოლოდ ატვირთული ფაილისთვის: SmokePing კონფიგურაცია მაქსიმუმ 4 MiB ზომით."
+
+#: lib/ImportPage.php
+msgid "Devices"
+msgstr "მოწყობილობები"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host groups targets that probe the same host. A device that already has the host name on the chosen poller is used instead of a new one."
+msgstr "თითო მოწყობილობა თითო SmokePing ჰოსტზე აჯგუფებს სამიზნეებს, რომლებიც ერთსა და იმავე ჰოსტს ამოწმებენ. ახლის შექმნის ნაცვლად გამოიყენება არსებული მოწყობილობა, რომელსაც არჩეულ პოლერზე უკვე აქვს ეს ჰოსტის სახელი."
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing host"
+msgstr "ერთი მოწყობილობა თითო SmokePing ჰოსტზე"
+
+#: lib/ImportPage.php
+msgid "One device per SmokePing target"
+msgstr "ერთი მოწყობილობა თითო SmokePing სამიზნეზე"
+
+#: lib/ImportPage.php
+msgid "Device Template"
+msgstr "მოწყობილობის შაბლონი"
+
+#: lib/ImportPage.php
+msgid "The template of devices the import creates."
+msgstr "იმ მოწყობილობების შაბლონი, რომლებსაც იმპორტი ქმნის."
+
+#: lib/ImportPage.php
+msgid "Poller"
+msgstr "პოლერი"
+
+#: lib/ImportPage.php
+msgid "The poller of new devices. It must be the poller that runs the SmokePing reader, or their summary data sources get no data."
+msgstr "ახალი მოწყობილობების პოლერი. ეს უნდა იყოს ის პოლერი, რომელზეც SmokePing წამკითხველი მუშაობს, წინააღმდეგ შემთხვევაში მათ შემაჯამებელ მონაცემთა წყაროებს მონაცემები არ ექნება."
+
+#: lib/ImportPage.php
+msgid "Site"
+msgstr "საიტი"
+
+#: lib/ImportPage.php
+msgid "The site of new devices."
+msgstr "ახალი მოწყობილობების საიტი."
+
+#: lib/ImportPage.php smokeping_inventory.php
+msgid "None"
+msgstr "არცერთი"
+
+#: lib/ImportPage.php
+msgid "Graph Tree"
+msgstr "გრაფიკების ხე"
+
+#: lib/ImportPage.php
+msgid "Mirror the SmokePing hierarchy into a graph tree: each section becomes a branch, and each device a host under the branch of its targets. Existing branches and hosts are reused."
+msgstr "SmokePing-ის იერარქიის ასახვა გრაფიკების ხეში: თითოეული სექცია ხდება ტოტი, ხოლო თითოეული მოწყობილობა ჰოსტი მისი სამიზნეების ტოტის ქვეშ. არსებული ტოტები და ჰოსტები ხელახლა გამოიყენება."
+
+#: lib/ImportPage.php
+msgid "A new tree, named below"
+msgstr "ახალი ხე, ქვემოთ მითითებული სახელით"
+
+#: lib/ImportPage.php
+msgid "Do not mirror"
+msgstr "არ აისახოს"
+
+#: lib/ImportPage.php
+msgid "New Tree Name"
+msgstr "ახალი ხის სახელი"
+
+#: lib/ImportPage.php
+msgid "Only for a new tree. A tree that already has this name is used."
+msgstr "მხოლოდ ახალი ხისთვის. თუ ამ სახელის ხე უკვე არსებობს, ის გამოიყენება."
+
+#: lib/ImportPage.php
+msgid "Preview reads the configuration and lists what the import would create. Nothing is written until you confirm that list on the next screen, and SmokePing's own files are never written."
+msgstr "წინასწარი ნახვა კითხულობს კონფიგურაციას და აჩვენებს, რას შექმნის იმპორტი. არაფერი ჩაიწერება, სანამ ამ სიას შემდეგ ეკრანზე არ დაადასტურებთ, ხოლო SmokePing-ის საკუთარ ფაილებში ჩაწერა არასდროს ხდება."
+
+#: lib/ImportPage.php
+msgid "Preview"
+msgstr "წინასწარი ნახვა"
+
+#: lib/ImportPage.php
+msgid "Note"
+msgstr "შენიშვნა"
+
+#: lib/ImportPage.php
+msgid "Level"
+msgstr "დონე"
+
+#: lib/ImportPage.php
+msgid "Message"
+msgstr "შეტყობინება"
+
+#: lib/ImportPage.php
+msgid "SmokePing Sections"
+msgstr "SmokePing სექციები"
+
+#: lib/ImportPage.php
+msgid "Import"
+msgstr "იმპორტი"
+
+#: lib/ImportPage.php
+msgid "Section"
+msgstr "სექცია"
+
+#: lib/ImportPage.php
+msgid "Targets"
+msgstr "სამიზნეები"
+
+#: lib/ImportPage.php
+msgid "No section is checked, so every target is selected. Check sections and update the preview to import only those."
+msgstr "არცერთი სექცია არ არის მონიშნული, ამიტომ ყველა სამიზნე არჩეულია. მონიშნეთ სექციები და განაახლეთ წინასწარი ნახვა მხოლოდ მათი იმპორტისთვის."
+
+#: lib/ImportPage.php
+msgid "Only targets in the checked sections are selected."
+msgstr "არჩეულია მხოლოდ მონიშნულ სექციებში მყოფი სამიზნეები."
+
+#: lib/ImportPage.php
+msgid "Update Preview"
+msgstr "წინასწარი ნახვის განახლება"
+
+#: lib/ImportPage.php
+msgid "Create"
+msgstr "შექმნა"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Use device %d"
+msgstr "მოწყობილობა %d-ის გამოყენება"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Already mapped to device %d"
+msgstr "უკვე მიბმულია მოწყობილობაზე %d"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Skip: %s"
+msgstr "გამოტოვება: %s"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Devices: %d to create, %d existing to use, %d already mapped, %d skipped"
+msgstr "მოწყობილობები: %d შესაქმნელი, %d არსებული გამოსაყენებლად, %d უკვე მიბმული, %d გამოტოვებული"
+
+#: lib/ImportPage.php lib/InventoryPage.php
+msgid "Action"
+msgstr "მოქმედება"
+
+#: lib/ImportPage.php
+msgid "Description"
+msgstr "აღწერა"
+
+#: lib/ImportPage.php
+msgid "Host Name"
+msgstr "ჰოსტის სახელი"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "SmokePing Targets"
+msgstr "SmokePing სამიზნეები"
+
+#: lib/ImportPage.php
+msgid "No device."
+msgstr "მოწყობილობა არ არის."
+
+#: lib/ImportPage.php
+msgid "Smoke"
+msgstr "Smoke"
+
+#: lib/ImportPage.php
+msgid "Summary"
+msgstr "შემაჯამებელი"
+
+#: lib/ImportPage.php lib/TargetActions.php
+msgid "master"
+msgstr "მთავარი"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graphs: %d to create, %d already exist"
+msgstr "გრაფიკები: %d შესაქმნელი, %d უკვე არსებობს"
+
+#: lib/ImportPage.php
+msgid "Graph"
+msgstr "გრაფიკი"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Location"
+msgstr "მდებარეობა"
+
+#: lib/ImportPage.php
+msgid "SmokePing Target"
+msgstr "SmokePing სამიზნე"
+
+#: lib/ImportPage.php
+msgid "No graph to create."
+msgstr "შესაქმნელი გრაფიკი არ არის."
+
+#: lib/ImportPage.php
+msgid "Reason"
+msgstr "მიზეზი"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Summary Data Only: %d targets"
+msgstr "მხოლოდ შემაჯამებელი მონაცემები: %d სამიზნე"
+
+#: lib/ImportPage.php
+msgid "Branch"
+msgstr "ტოტი"
+
+#: lib/ImportPage.php lib/ViewPage.php
+msgid "Device"
+msgstr "მოწყობილობა"
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Graph Tree: %d branches, %d device entries"
+msgstr "გრაფიკების ხე: %d ტოტი, %d მოწყობილობის ჩანაწერი"
+
+#: lib/ImportPage.php
+msgid "Estimate"
+msgstr "შეფასება"
+
+#: lib/ImportPage.php
+msgid "Estimated Load"
+msgstr "სავარაუდო დატვირთვა"
+
+#: lib/ImportPage.php
+msgid "Confirm"
+msgstr "დადასტურება"
+
+#: lib/ImportPage.php
+msgid "The configuration cannot be imported until the errors above are fixed. Nothing was written."
+msgstr "კონფიგურაციის იმპორტი შეუძლებელია ზემოთ მოცემული შეცდომების გამოსწორებამდე. არაფერი ჩაიწერა."
+
+#: lib/ImportPage.php
+msgid "Every selected target is already in Cacti. There is nothing to import."
+msgstr "ყველა არჩეული სამიზნე უკვე არის Cacti-ში. დასაიმპორტებელი არაფერია."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "Plan %s. Importing creates exactly what is listed above through Cacti's device, graph, and tree functions. If the SmokePing configuration or Cacti changed since this preview, the import is refused and you preview again."
+msgstr "გეგმა %s. იმპორტი შექმნის ზუსტად იმას, რაც ზემოთ არის ჩამოთვლილი, Cacti-ის მოწყობილობის, გრაფიკისა და ხის ფუნქციების მეშვეობით. თუ ამ წინასწარი ნახვის შემდეგ SmokePing კონფიგურაცია ან Cacti შეიცვალა, იმპორტი უარყოფილი იქნება და ხელახლა წინასწარი ნახვა დაგჭირდებათ."
+
+#: lib/ImportPage.php
+#, php-format
+msgid "%s and %d more"
+msgstr "%s და კიდევ %d"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Add %s to Cacti"
+msgstr "%s-ის დამატება Cacti-ში"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing target %s (host %s) has no Cacti device. Choose what to do with it."
+msgstr "SmokePing სამიზნეს %s (ჰოსტი %s) არ აქვს Cacti მოწყობილობა. აირჩიეთ რა მოქმედება შესრულდეს."
+
+#: lib/InventoryForms.php
+msgid "Create a new device from the SmokePing Target template"
+msgstr "ახალი მოწყობილობის შექმნა SmokePing სამიზნის შაბლონიდან"
+
+#: lib/InventoryForms.php
+msgid "Map it to an existing device"
+msgstr "მიბმა არსებულ მოწყობილობაზე"
+
+#: lib/InventoryForms.php
+msgid "Either way the target gets a summary graph for alerting and, when SmokePing's data can be graphed, a smoke graph. Cacti never writes SmokePing's files."
+msgstr "ორივე შემთხვევაში სამიზნე მიიღებს შემაჯამებელ გრაფიკს განგაშებისთვის და, როცა SmokePing მონაცემების გრაფიკზე გამოტანა შესაძლებელია, Smoke გრაფიკს. Cacti არასდროს წერს SmokePing-ის ფაილებში."
+
+#: lib/InventoryForms.php
+msgid "Add"
+msgstr "დამატება"
+
+#: lib/InventoryForms.php
+msgid "Confirm Re-link"
+msgstr "ხელახალი მიბმის დადასტურება"
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "SmokePing no longer lists %s. %s has the same host (%s) and probe (%s). SmokePing starts a new, empty file for a new path."
+msgstr "SmokePing აღარ შეიცავს ჩანაწერს %s. ჩანაწერს %s აქვს იგივე ჰოსტი (%s) და ზონდი (%s). ახალი გზისთვის SmokePing ქმნის ახალ, ცარიელ ფაილს."
+
+#: lib/InventoryForms.php
+msgid "Re-linking moves the smoke graph and the summary data source to the new target and the device mapping with them. The old file keeps its history in an archived graph. Nothing is deleted."
+msgstr "ხელახალი მიბმა გადაიტანს Smoke გრაფიკს, შემაჯამებელ მონაცემთა წყაროსა და მოწყობილობის მიბმას ახალ სამიზნეზე. ძველი ფაილი ინარჩუნებს თავის ისტორიას დაარქივებულ გრაფიკში. არაფერი იშლება."
+
+#: lib/InventoryForms.php
+#, php-format
+msgid "Device %d is mapped to the old target."
+msgstr "მოწყობილობა %d მიბმულია ძველ სამიზნეზე."
+
+#: lib/InventoryForms.php
+msgid "Dismiss Proposal"
+msgstr "შემოთავაზების უარყოფა"
+
+#: lib/InventoryForms.php
+msgid "Re-link"
+msgstr "ხელახლა მიბმა"
+
+#: lib/InventoryPage.php
+msgid "Gone"
+msgstr "გამქრალია"
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr "არსებობს"
+
+#: lib/InventoryPage.php
+msgid "Unmapped"
+msgstr "მიუბმელი"
+
+#: lib/InventoryPage.php
+msgid "Add to Cacti"
+msgstr "Cacti-ში დამატება"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "SmokePing Inventory"
+msgstr "SmokePing ინვენტარი"
+
+#: lib/InventoryPage.php
+msgid "Host"
+msgstr "ჰოსტი"
+
+#: lib/InventoryPage.php
+msgid "Inventory"
+msgstr "ინვენტარი"
+
+#: lib/InventoryPage.php
+msgid "Mapping"
+msgstr "მიბმა"
+
+#: lib/InventoryPage.php
+msgid "Name"
+msgstr "სახელი"
+
+#: lib/InventoryPage.php
+msgid "Path"
+msgstr "გზა"
+
+#: lib/InventoryPage.php
+msgid "Probe"
+msgstr "ზონდი"
+
+#: lib/InventoryPage.php
+msgid "Slaves"
+msgstr "დაქვემდებარებულები"
+
+#: lib/InventoryPage.php
+msgid "Step / Pings"
+msgstr "ბიჯი / პინგები"
+
+#: lib/InventoryPage.php
+msgid "No targets have been imported on this poller."
+msgstr "ამ პოლერზე სამიზნეები ჯერ არ არის დაიმპორტებული."
+
+#: lib/InventoryPage.php
+msgid "Review"
+msgstr "განხილვა"
+
+#: lib/InventoryPage.php
+msgid "Re-link Proposals"
+msgstr "ხელახალი მიბმის შემოთავაზებები"
+
+#: lib/InventoryPage.php
+msgid "Disappeared Path"
+msgstr "გამქრალი გზა"
+
+#: lib/InventoryPage.php
+msgid "New Path"
+msgstr "ახალი გზა"
+
+#: lib/InventoryPage.php
+msgid "No re-link proposals."
+msgstr "ხელახალი მიბმის შემოთავაზებები არ არის."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "%d series: about %.1f probe packets per second and %.2f RRD updates per second in SmokePing."
+msgstr "%d სერია: დაახლოებით %.1f ზონდის პაკეტი წამში და %.2f RRD განახლება წამში SmokePing-ში."
+
+#: lib/LoadEstimate.php
+#, php-format
+msgid "Cacti gets about %d data source rows and %d graph item rows."
+msgstr "Cacti მიიღებს დაახლოებით %d მონაცემთა წყაროს სტრიქონს და %d გრაფიკის ელემენტის სტრიქონს."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s does not exist. Mount SmokePing's data directory there read-only."
+msgstr "SmokePing მიმაგრება %s არ არსებობს. მიამაგრეთ იქ SmokePing-ის მონაცემთა დირექტორია მხოლოდ წაკითხვის რეჟიმში."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is inside the RRA path and not reached through a symlink."
+msgstr "%s მდებარეობს RRA გზის შიგნით და მასზე წვდომა არ ხდება სიმბოლური ბმულით."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti user can write to %s. SmokePing's RRD files must be read-only to Cacti."
+msgstr "Cacti-ის მომხმარებელს შეუძლია ჩაწერა %s-ში. SmokePing-ის RRD ფაილები Cacti-სთვის მხოლოდ წასაკითხი უნდა იყოს."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is not inside the Cacti RRA path %s."
+msgstr "SmokePing მიმაგრება %s არ მდებარეობს Cacti-ის RRA გზის (%s) შიგნით."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The Cacti RRA path %s does not exist."
+msgstr "Cacti-ის RRA გზა %s არ არსებობს."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s contains an empty, \".\" or \"..\" segment."
+msgstr "SmokePing მიმაგრება %s შეიცავს ცარიელ, „.“ ან „..“ სეგმენტს."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "The SmokePing mount %s is reached through a symlink, which Cacti refuses. Use a read-only bind mount instead."
+msgstr "SmokePing მიმაგრებაზე %s წვდომა ხდება სიმბოლური ბმულით, რასაც Cacti უარყოფს. ამის ნაცვლად გამოიყენეთ მხოლოდ წასაკითხი bind მიმაგრება."
+
+#: lib/MountCheck.php
+msgid "Unable to read the mount table, so the mount could not be confirmed read-only."
+msgstr "მიმაგრებების ცხრილის წაკითხვა ვერ მოხერხდა, ამიტომ ვერ დადასტურდა, რომ მიმაგრება მხოლოდ წასაკითხია."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on a read-only mount."
+msgstr "%s მდებარეობს მხოლოდ წასაკითხ მიმაგრებაზე."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%s is on the writable mount %s. Mount SmokePing's data directory read-only."
+msgstr "%s მდებარეობს ჩაწერად მიმაგრებაზე %s. მიამაგრეთ SmokePing-ის მონაცემთა დირექტორია მხოლოდ წაკითხვის რეჟიმში."
+
+#: lib/MountCheck.php
+msgid "No inventory yet, so no RRD files are expected."
+msgstr "ინვენტარი ჯერ არ არის, ამიტომ RRD ფაილები მოსალოდნელი არ არის."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "All %d expected RRD files are visible through the mount."
+msgstr "ყველა %d მოსალოდნელი RRD ფაილი ჩანს მიმაგრების გავლით."
+
+#: lib/MountCheck.php
+#, php-format
+msgid "%d of %d expected RRD files are not visible through the mount, for example %s."
+msgstr "%d (%d-დან) მოსალოდნელი RRD ფაილი არ ჩანს მიმაგრების გავლით, მაგალითად %s."
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "გადახედეთ ქვემოთ ჩაწერილ დაკვირვებებს. აღიარებები პერსონალურია ამ სესიისთვის, ძალას კარგავს დაკვირვებების შეცვლისას და არასდროს ახშობს განგაშებს ან ცვლის გამართულობას."
+
+#: lib/OperatorPage.php lib/Pages.php smokeping.php
+msgid "SmokePing Operations"
+msgstr "SmokePing ოპერაციები"
+
+#: lib/OperatorPage.php
+msgid "Actions"
+msgstr "მოქმედებები"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "გამოკვლევა"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "ობიექტი"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "დაფიქსირებულია (UTC)"
+
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "მდგომარეობა"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "უცნობი ან მოძველებული"
+
+#: lib/OperatorPage.php
+msgid "Never"
+msgstr "არასდროს"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "აღიარებულია; გამართულობა უცვლელია."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "აღიარება"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "თქვენთვის ხელმისაწვდომი მოწყობილობებისთვის დაკვირვებები არ არის."
+
+#: lib/Pages.php
+msgid "SmokePing Operator"
+msgstr "SmokePing ოპერატორი"
+
+#: lib/Pages.php
+msgid "SmokePing View"
+msgstr "SmokePing ნახვა"
+
+#: lib/Pages.php
+msgid "SmokePing Admin"
+msgstr "SmokePing ადმინისტრატორი"
+
+#: lib/Pages.php
+msgid "SmokePing Health"
+msgstr "SmokePing გამართულობა"
+
+#: lib/Pages.php setup.php
+msgid "SmokePing"
+msgstr "SmokePing"
+
+#: lib/RelinkGuard.php
+msgid "both targets must be on the poller that runs the reader"
+msgstr "ორივე სამიზნე უნდა იყოს იმ პოლერზე, რომელზეც წამკითხველი მუშაობს"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the new target is already mapped to device %d"
+msgstr "ახალი სამიზნე უკვე მიბმულია მოწყობილობაზე %d"
+
+#: lib/RelinkGuard.php
+#, php-format
+msgid "the old target has data sources on device %d, which it is not mapped to"
+msgstr "ძველ სამიზნეს აქვს მონაცემთა წყაროები მოწყობილობაზე %d, რომელზეც ის არ არის მიბმული"
+
+#: lib/Settings.php
+msgid "SmokePing Source"
+msgstr "SmokePing წყარო"
+
+#: lib/Settings.php
+msgid "SmokePing Poller"
+msgstr "SmokePing პოლერი"
+
+#: lib/Settings.php
+msgid "The Cacti poller that runs on, or shares a filesystem with, the SmokePing host. Only this poller reads SmokePing data."
+msgstr "Cacti პოლერი, რომელიც მუშაობს SmokePing ჰოსტზე ან იზიარებს მასთან ფაილურ სისტემას. SmokePing მონაცემებს მხოლოდ ეს პოლერი კითხულობს."
+
+#: lib/Settings.php
+msgid "SmokePing Configuration File"
+msgstr "SmokePing კონფიგურაციის ფაილი"
+
+#: lib/Settings.php
+msgid "The main SmokePing configuration file, read by the poller that runs the reader. The plugin reads it and the files it includes with its own parser and never writes to them. Includes must stay inside this file's directory."
+msgstr "SmokePing-ის მთავარი კონფიგურაციის ფაილი, რომელსაც კითხულობს წამკითხველის მატარებელი პოლერი. პლაგინი მას და მასში ჩართულ ფაილებს საკუთარი პარსერით კითხულობს და არასდროს წერს მათში. ჩართული ფაილები ამ ფაილის დირექტორიაში უნდა მდებარეობდეს."
+
+#: lib/Settings.php
+msgid "SmokePing Data Directory"
+msgstr "SmokePing მონაცემთა დირექტორია"
+
+#: lib/Settings.php
+msgid "The datadir from SmokePing's configuration, as SmokePing sees it."
+msgstr "SmokePing კონფიგურაციის datadir გზა, როგორც მას SmokePing ხედავს."
+
+#: lib/Settings.php
+msgid "Cacti Mount of the Data Directory"
+msgstr "მონაცემთა დირექტორიის Cacti მიმაგრება"
+
+#: lib/Settings.php
+msgid "A read-only bind or NFS mount of the SmokePing data directory inside the Cacti RRA path. Cacti only reads RRD files inside its RRA path and never through a symlink."
+msgstr "SmokePing მონაცემთა დირექტორიის მხოლოდ წასაკითხი bind ან NFS მიმაგრება Cacti-ის RRA გზის შიგნით. Cacti კითხულობს RRD ფაილებს მხოლოდ თავისი RRA გზის შიგნით და არასდროს სიმბოლური ბმულით."
+
+#: lib/Settings.php
+msgid "Reader"
+msgstr "წამკითხველი"
+
+#: lib/Settings.php
+msgid "Reader Time Budget"
+msgstr "წამკითხველის დროის ლიმიტი"
+
+#: lib/Settings.php
+msgid "Seconds one reader run may spend reading RRD files before it stops and resumes on the next poller cycle."
+msgstr "წამების რაოდენობა, რომელიც წამკითხველის ერთ გაშვებას შეუძლია დახარჯოს RRD ფაილების კითხვაზე, სანამ შეჩერდება და შემდეგ პოლერის ციკლზე გაგრძელდება."
+
+#: lib/Settings.php
+msgid "Inventory Interval"
+msgstr "ინვენტარიზაციის ინტერვალი"
+
+#: lib/Settings.php
+msgid "Minimum seconds between inventory runs. The inventory also runs when the configuration file changes."
+msgstr "მინიმალური წამების რაოდენობა ინვენტარიზაციის გაშვებებს შორის. ინვენტარიზაცია ასევე იშვება კონფიგურაციის ფაილის შეცვლისას."
+
+#: lib/Settings.php
+msgid "Freshness Allowance"
+msgstr "აქტუალურობის დასაშვები ვადა"
+
+#: lib/Settings.php
+msgid "Seconds past one step for which a measurement still counts as current."
+msgstr "წამების რაოდენობა ერთი ბიჯის შემდეგ, რომლის განმავლობაშიც გაზომვა კვლავ აქტუალურად ითვლება."
+
+#: lib/Settings.php
+msgid "Loss Colors"
+msgstr "დანაკარგის ფერები"
+
+#: lib/Settings.php
+msgid "Which SmokePing loss colors the smoke graphs draw. SmokePing 2.7 draws other loss levels than 2.8 and later. Automatic follows the SmokePing version the reader finds next to SmokePing, shown on the health page, and uses 2.8 and later when it finds none."
+msgstr "SmokePing-ის რომელი დანაკარგის ფერები დაიხაზოს Smoke გრაფიკებზე. SmokePing 2.7 იყენებს 2.8 და უფრო ახალი ვერსიებისგან განსხვავებულ დანაკარგის დონეებს. „ავტომატური“ მიჰყვება SmokePing-ის იმ ვერსიას, რომელსაც წამკითხველი იპოვის (ნაჩვენებია გამართულობის გვერდზე), ხოლო ვერსიის ვერპოვნისას იყენებს 2.8 და უფრო ახალს."
+
+#: lib/Settings.php
+msgid "Automatic"
+msgstr "ავტომატური"
+
+#: lib/Settings.php
+msgid "SmokePing 2.8 and later"
+msgstr "SmokePing 2.8 და უფრო ახალი"
+
+#: lib/Settings.php
+msgid "SmokePing 2.7"
+msgstr "SmokePing 2.7"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "დეინსტალაცია"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "პლაგინის ცხრილების შენახვა დეინსტალაციისას"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its inventory, mapping, and health tables. SmokePing files are never removed either way."
+msgstr "მონიშვნის შემთხვევაში, პლაგინის წაშლისას შენარჩუნდება მისი ინვენტარის, მიბმებისა და გამართულობის ცხრილები. SmokePing ფაილები არცერთ შემთხვევაში არ იშლება."
+
+#: lib/Settings.php
+msgid "Backup Directory"
+msgstr "სარეზერვო ასლების დირექტორია"
+
+#: lib/Settings.php
+msgid "Where the uninstall writes its export of the plugin configuration. Leave blank to use the cache/smokeping directory of Cacti, which the plugin protects with a deny-all rule. A directory set here must already exist, be writable, and be outside the web root; when it is not writable no export is written."
+msgstr "სად ჩაიწეროს პლაგინის კონფიგურაციის ექსპორტი დეინსტალაციისას. დატოვეთ ცარიელი Cacti-ის cache/smokeping დირექტორიის გამოსაყენებლად, რომელსაც პლაგინი deny-all წესით იცავს. აქ მითითებული დირექტორია უკვე უნდა არსებობდეს, იყოს ჩაწერადი და მდებარეობდეს ვებ-ძირის გარეთ; თუ ჩაწერადი არ არის, ექსპორტი არ შეიქმნება."
+
+#: lib/SmokeProvisioner.php
+msgid "The target has not been saved yet."
+msgstr "სამიზნე ჯერ არ შენახულა."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The target sends %d pings per round. Smoke graphs exist only for 10, 20, and 30; it has summary data only."
+msgstr "სამიზნე თითო რაუნდში აგზავნის %d პინგს. Smoke გრაფიკები არსებობს მხოლოდ 10, 20 და 30-ისთვის; მას მხოლოდ შემაჯამებელი მონაცემები აქვს."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti keeps RRD files on an RRDproxy, where SmokePing's files do not exist. Only summary data is available."
+msgstr "Cacti ინახავს RRD ფაილებს RRDproxy-ზე, სადაც SmokePing-ის ფაილები არ არსებობს. ხელმისაწვდომია მხოლოდ შემაჯამებელი მონაცემები."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The device is polled by poller %d, but the reader that fills the summary values runs on poller %d. Assign the device to poller %d."
+msgstr "მოწყობილობას იკითხავს პოლერი %d, მაგრამ წამკითხველი, რომელიც შემაჯამებელ მნიშვნელობებს ავსებს, გაშვებულია პოლერზე %d. მიანიჭეთ მოწყობილობა პოლერ %d-ს."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary graph template is not installed."
+msgstr "შემაჯამებელი გრაფიკის შაბლონი არ არის დაყენებული."
+
+#: lib/SmokeProvisioner.php
+msgid "The summary data template is not installed."
+msgstr "შემაჯამებელი მონაცემთა შაბლონი არ არის დაყენებული."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the summary graph."
+msgstr "Cacti-მ ვერ შექმნა შემაჯამებელი გრაფიკი."
+
+#: lib/SmokeProvisioner.php
+msgid "Both targets must be saved first."
+msgstr "ჯერ ორივე სამიზნე უნდა იყოს შენახული."
+
+#: lib/SmokeProvisioner.php
+msgid "The old target has no smoke data source to move."
+msgstr "ძველ სამიზნეს არ აქვს გადასატანი Smoke მონაცემთა წყარო."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s is not visible through the SmokePing mount."
+msgstr "RRD ფაილი %s არ ჩანს SmokePing მიმაგრების გავლით."
+
+#: lib/SmokeProvisioner.php
+#, php-format
+msgid "The RRD file %s resolves outside the SmokePing mount."
+msgstr "RRD ფაილი %s მიუთითებს SmokePing მიმაგრების გარეთ."
+
+#: lib/SmokeProvisioner.php
+msgid "The smoke graph template is not installed."
+msgstr "Smoke გრაფიკის შაბლონი არ არის დაყენებული."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti did not create the smoke graph."
+msgstr "Cacti-მ ვერ შექმნა Smoke გრაფიკი."
+
+#: lib/SmokeProvisioner.php
+msgid "Cacti does not accept the SmokePing path for a data source."
+msgstr "Cacti არ იღებს SmokePing გზას მონაცემთა წყაროსთვის."
+
+#: lib/SmokepingImportService.php
+msgid "Another SmokePing configuration import is running, so nothing was imported. Check again when it has finished."
+msgstr "SmokePing კონფიგურაციის სხვა იმპორტი უკვე მიმდინარეობს, ამიტომ არაფერი დაიმპორტდა. შეამოწმეთ ხელახლა მისი დასრულების შემდეგ."
+
+#: lib/SmokepingImportService.php
+msgid "The configuration or the installation changed since the check, so nothing was imported. Check again."
+msgstr "შემოწმების შემდეგ კონფიგურაცია ან ინსტალაცია შეიცვალა, ამიტომ არაფერი დაიმპორტდა. შეამოწმეთ ხელახლა."
+
+#: lib/SmokepingImportService.php
+msgid "Mirroring into a graph tree needs permission to edit trees."
+msgstr "გრაფიკების ხეში ასახვისთვის საჭიროა ხეების რედაქტირების უფლება."
+
+#: lib/SmokepingImportService.php
+msgid "The targets could not be stored; see the Cacti log. Nothing else was changed."
+msgstr "სამიზნეების შენახვა ვერ მოხერხდა; იხილეთ Cacti-ის ჟურნალი. სხვა არაფერი შეცვლილა."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, %s"
+msgstr "%s: გამოტოვებულია, %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, Cacti did not create the device"
+msgstr "%s: გამოტოვებულია, Cacti-მ ვერ შექმნა მოწყობილობა"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: created device %d"
+msgstr "%s: შეიქმნა მოწყობილობა %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: skipped, the target was not stored"
+msgstr "%s: გამოტოვებულია, სამიზნე ვერ შეინახა"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "%s: already in Cacti on device %d"
+msgstr "%s: უკვე არის Cacti-ში მოწყობილობაზე %d"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "The graph tree %s could not be created."
+msgstr "გრაფიკების ხის (%s) შექმნა ვერ მოხერხდა."
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "created graph tree %s"
+msgstr "შეიქმნა გრაფიკების ხე %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "the tree branch %s could not be created"
+msgstr "ხის ტოტის (%s) შექმნა ვერ მოხერხდა"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "tree branch %s"
+msgstr "ხის ტოტი %s"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d could not be added to the tree"
+msgstr "მოწყობილობა %d ვერ დაემატა ხეში"
+
+#: lib/SmokepingImportService.php
+#, php-format
+msgid "device %d under tree branch %s"
+msgstr "მოწყობილობა %d ხის ტოტის (%s) ქვეშ"
+
+#: lib/TargetActions.php
+msgid "the target has not been saved yet"
+msgstr "სამიზნე ჯერ არ შენახულა"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "already mapped to device %d"
+msgstr "უკვე მიბმულია მოწყობილობაზე %d"
+
+#: lib/TargetActions.php
+msgid "Cacti did not create the device"
+msgstr "Cacti-მ ვერ შექმნა მოწყობილობა"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "created device %d"
+msgstr "შეიქმნა მოწყობილობა %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "the target was mapped to another device meanwhile; device %d has no SmokePing graphs"
+msgstr "ამასობაში სამიზნე სხვა მოწყობილობას მიება; მოწყობილობას %d არ აქვს SmokePing გრაფიკები"
+
+#: lib/TargetActions.php
+msgid "the target was mapped to another device meanwhile"
+msgstr "ამასობაში სამიზნე სხვა მოწყობილობას მიება"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "mapped to device %d"
+msgstr "მიბმულია მოწყობილობაზე %d"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary graph %d for %s"
+msgstr "შემაჯამებელი გრაფიკი %d %s-სთვის"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no summary for %s: %s"
+msgstr "შემაჯამებელი მონაცემები არ არის %s-სთვის: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d for %s"
+msgstr "Smoke გრაფიკი %d %s-სთვის"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no smoke graph for %s: %s"
+msgstr "Smoke გრაფიკი არ არის %s-სთვის: %s"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "%d devices were not processed in the time allowed. Run the action again for them; devices already added are skipped."
+msgstr "გამოყოფილ დროში %d მოწყობილობა ვერ დამუშავდა. გაუშვით მოქმედება ხელახლა მათთვის; უკვე დამატებული მოწყობილობები გამოტოვებული იქნება."
+
+#: lib/TargetActions.php
+msgid "Time limit"
+msgstr "დროის ლიმიტი"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "no unmapped SmokePing target has the host %s"
+msgstr "არცერთ მიუბმელ SmokePing სამიზნეს არ აქვს ჰოსტი %s"
+
+#: lib/TargetActions.php
+msgid "the proposal is no longer open"
+msgstr "შემოთავაზება აღარ არის ღია"
+
+#: lib/TargetActions.php
+msgid "the new target is mapped to another device"
+msgstr "ახალი სამიზნე სხვა მოწყობილობაზეა მიბმული"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "smoke graph %d now reads the new file; the old file stays graphable in an archived graph"
+msgstr "Smoke გრაფიკი %d ახლა ახალ ფაილს კითხულობს; ძველი ფაილი კვლავ ხელმისაწვდომია დაარქივებულ გრაფიკში"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "summary data source %d follows the new target"
+msgstr "შემაჯამებელი მონაცემთა წყარო %d მიჰყვება ახალ სამიზნეს"
+
+#: lib/TargetActions.php
+#, php-format
+msgid "device %d is mapped to the new target"
+msgstr "მოწყობილობა %d მიბმულია ახალ სამიზნეზე"
+
+#: lib/ViewPage.php
+msgid "Condition"
+msgstr "პირობა"
+
+#: lib/ViewPage.php
+msgid "Freshness"
+msgstr "აქტუალურობა"
+
+#: lib/ViewPage.php
+msgid "Last Update"
+msgstr "ბოლო განახლება"
+
+#: lib/ViewPage.php
+msgid "Loss"
+msgstr "დანაკარგი"
+
+#: lib/ViewPage.php
+msgid "Maintenance"
+msgstr "ტექნიკური მომსახურება"
+
+#: lib/ViewPage.php
+msgid "Median"
+msgstr "მედიანა"
+
+#: lib/ViewPage.php
+msgid "Target"
+msgstr "სამიზნე"
+
+#: lib/ViewPage.php
+msgid "No SmokePing targets are mapped to devices you can view."
+msgstr "თქვენთვის ხელმისაწვდომ მოწყობილობებზე SmokePing სამიზნეები მიბმული არ არის."
+
+#: lib/ViewPage.php
+msgid "In maintenance"
+msgstr "ტექნიკურ მომსახურებაზეა"
+
+#: lib/ViewPage.php
+msgid "No"
+msgstr "არა"
+
+#: lib/ViewPage.php
+msgid "Never observed"
+msgstr "არასდროს დაფიქსირებულა"
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "SmokePing პლაგინი საჭიროებს PHP %s ან უფრო ახალ ვერსიას. ამ სერვერზე გაშვებულია PHP %s, ამიტომ პლაგინი არ დაყენდა და არ ჩაირთო."
+
+#: setup.php
+msgid "The SmokePing plugin is not enabled."
+msgstr "SmokePing პლაგინი არ არის ჩართული."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing plugin requires PHP %s or later."
+msgstr "SmokePing პლაგინი საჭიროებს PHP %s ან უფრო ახალ ვერსიას."
+
+#: setup.php
+#, php-format
+msgid "The SmokePing configuration was exported to %s"
+msgstr "SmokePing კონფიგურაცია დაექსპორტდა მისამართზე %s"
+
+#: setup.php
+msgid "The SmokePing configuration was not exported; see the SmokePing log. The uninstall went ahead."
+msgstr "SmokePing კონფიგურაციის ექსპორტი ვერ მოხერხდა; იხილეთ SmokePing-ის ჟურნალი. დეინსტალაცია გაგრძელდა."
+
+#: setup.php
+msgid "Management"
+msgstr "მართვა"
+
+#: setup.php
+msgid "Import/Export"
+msgstr "იმპორტი/ექსპორტი"
+
+#: setup.php
+msgid "You do not have permission to add SmokePing targets."
+msgstr "თქვენ არ გაქვთ SmokePing სამიზნეების დამატების უფლება."
+
+#: smokeping_config.php smokeping_import.php
+msgid "No file was uploaded, or it is larger than the server accepts."
+msgstr "ფაილი არ აიტვირთა ან მისი ზომა სერვერის მიერ დაშვებულ ლიმიტს აღემატება."
+
+#: smokeping_config.php
+msgid "There is no checked import to apply. Check the file again."
+msgstr "გამოსაყენებელი შემოწმებული იმპორტი არ არსებობს. შეამოწმეთ ფაილი ხელახლა."
+
+#: smokeping_config.php
+msgid "The configuration was imported."
+msgstr "კონფიგურაცია დაიმპორტდა."
+
+#: smokeping_health.php
+msgid "The SmokePing templates failed to import. See the health table."
+msgstr "SmokePing შაბლონების იმპორტი ვერ მოხერხდა. იხილეთ გამართულობის ცხრილი."
+
+#: smokeping_import.php
+msgid "Your device permissions do not cover every device, so you cannot import a SmokePing configuration. Ask an administrator with access to all devices."
+msgstr "თქვენი მოწყობილობის უფლებები არ ფარავს ყველა მოწყობილობას, ამიტომ არ შეგიძლიათ SmokePing კონფიგურაციის იმპორტი. მიმართეთ ადმინისტრატორს, რომელსაც ყველა მოწყობილობაზე აქვს წვდომა."
+
+#: smokeping_import.php
+msgid "Name the new graph tree, or choose an existing tree or no tree."
+msgstr "დაარქვით სახელი ახალ გრაფიკების ხეს, ან აირჩიეთ არსებული ხე, ან ხის გარეშე."
+
+#: smokeping_import.php
+msgid "The uploaded file is larger than 4 MiB."
+msgstr "ატვირთული ფაილი 4 MiB-ზე დიდია."
+
+#: smokeping_import.php
+#, php-format
+msgid "The SmokePing configuration cannot be read, so nothing was imported: %s"
+msgstr "SmokePing კონფიგურაციის წაკითხვა ვერ მოხერხდა, ამიტომ არაფერი დაიმპორტდა: %s"
+
+#: smokeping_import.php
+msgid "There is no previewed import to apply. Preview it again."
+msgstr "გამოსაყენებელი წინასწარ ნანახი იმპორტი არ არსებობს. გახსენით წინასწარი ნახვა ხელახლა."
+
+#: smokeping_import.php
+#, php-format
+msgid "and %d more; see the Cacti log"
+msgstr "და კიდევ %d; იხილეთ Cacti-ის ჟურნალი"
+
+#: smokeping_import.php
+msgid "The SmokePing configuration was imported."
+msgstr "SmokePing კონფიგურაცია დაიმპორტდა."
+
+#: smokeping_inventory.php
+msgid "Choose a target on this poller and, to map it, a device you may change."
+msgstr "აირჩიეთ სამიზნე ამ პოლერზე და, მის მისაბმელად, მოწყობილობა, რომლის შეცვლის უფლებაც გაქვთ."
+
+#: smokeping_inventory.php
+msgid "The proposal is not open, or it involves a device or poller you may not change."
+msgstr "შემოთავაზება არ არის ღია, ან მოიცავს მოწყობილობას ან პოლერს, რომლის შეცვლის უფლებაც არ გაქვთ."
+
+#: smokeping_inventory.php
+msgid "The proposal was dismissed."
+msgstr "შემოთავაზება უარყოფილია."
+
+#: smokeping_operator.php
+msgid "Monitoring view"
+msgstr "მონიტორინგის ხედი"
+
+#: smokeping_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "დაკვირვებების წაკითხვა ვერ მოხერხდა. სთხოვეთ ადმინისტრატორს პლაგინის ჟურნალის შემოწმება."
